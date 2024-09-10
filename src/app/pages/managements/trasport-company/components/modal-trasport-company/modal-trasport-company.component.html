@@ -1,0 +1,95 @@
+<p-dialog [header]="!transportCompanyService.isEdit ? 'Registro Compañía de trasporte' : 'Modificar Compañía de trasporte'" [(visible)]="transportCompanyService.showModal"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="transportCompanyForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Nombre<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. TRANSPORTADORA ..." 
+                        [class.ng-dirty]="validatorsService.inputValid('name',transportCompanyForm)" />
+                    <small *ngIf="validatorsService.inputValid('name',transportCompanyForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("name",transportCompanyForm) }}
+                    </small>
+                </div>
+
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <div class="field mt-2">
+                            <label class="block mb-0">Nit</label>
+                            <input
+                                type="number"
+                                pInputText
+                                placeholder="EJ. 579....03"
+                                formControlName="nit"
+                                pKeyFilter="int"
+                                [class.ng-dirty]="validatorsService.inputValid('nit',transportCompanyForm)"
+                            />
+                            <small *ngIf="validatorsService.inputValid('nit',transportCompanyForm)" class="p-error block">
+                                {{ validatorsService.inputValidMessage("nit",transportCompanyForm) }}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <div class="field mt-2">
+                            <label class="block mb-0">Celular</label>
+                            <input
+                                type="text"
+                                pInputText
+                                placeholder="EJ. "
+                                formControlName="cellphone"
+                                pKeyFilter="int"
+                                [class.ng-dirty]="validatorsService.inputValid('cellphone',transportCompanyForm)"
+                            />
+                            <small *ngIf="validatorsService.inputValid('cellphone',transportCompanyForm)" class="p-error block">
+                                {{ 'Celular invalido' }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="field mt-2">
+                    <label class="block mb-0">Dirección</label>
+                    <textarea pInputTextarea
+                        type="text"
+                        style="text-transform: uppercase"
+                        pInputText
+                        [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="address"
+                        placeholder="EJ. ......"
+                        class="mt-1"
+                        [class.ng-dirty]="validatorsService.inputValid('address',transportCompanyForm)"
+                    ></textarea>
+                    <small *ngIf="validatorsService.inputValid('address',transportCompanyForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("address",transportCompanyForm) }}
+                    </small>
+                </div>
+                <div class="row mt-1 ">
+                    <label class="block">Estado:<span class="text-danger">*</span></label>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-3">
+                        <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    </div>
+                    <div class="col">
+                        <p-tag  [rounded]="true" 
+                                [icon]="transportCompanyForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
+                                [style]="transportCompanyForm.get('status')!.value
+                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
+                                          : { 'background-color': 'red', color: '#ffffff' }" 
+                                [value]="transportCompanyForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                        </p-tag>
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? (transportCompanyService.isEdit ? editTrasportCompany() : newTrasportCompany()) : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="transportCompanyService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

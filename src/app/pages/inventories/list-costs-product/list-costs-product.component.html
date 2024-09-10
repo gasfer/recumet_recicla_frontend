@@ -1,0 +1,55 @@
+<form [formGroup]="formReport">
+    <div class="card shadow mb-4 icon-box ">
+      <div class="card-body">
+        <div class="row text-center">
+          <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE LISTA DE PRECIOS</b></h3>
+        </div>
+        <div class="p-fluid grid mt-sm-3 mt-md-0 ps-md-4 pe-md-4">
+          <app-alert-notify title="Realiza tus consultas por los parámetros que sean necesarios,"
+            subTitle="Se considera todos los campos que estén llenados para realizar la consulta" [subTitle2]="''"
+            [required]="false"></app-alert-notify>
+          <div class="field col-12">
+            <div class="row mt-1">
+              <div class="col-12 col-sm-6">
+                <div class="row">
+                  <div class="col-12 col-sm-6">
+                    <label class="block mb-1">Categoría</label>
+                    <p-dropdown [options]="categories()" 
+                                [showClear]="true"
+                                placeholder="Selecciona una opción" 
+                                optionLabel="name"
+                                optionValue="code"
+                                appendTo="body"
+                                formControlName="id_category" 
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-2 mt-sm-3 mt-md-0 ps-md-5 pe-md-5 me-3 bg-transparent text-end">
+        <p-button (click)="!loading() ?  this.getAllAndSearchProducts(this.page(), this.rows()) : null" styleClass="p-button-rounded p-button-sm" label="Buscar"
+          icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
+        <p-splitButton *ngIf="validatorsService.withPermission('COMPRAS','reports')" icon="fas fa-print" label="Imprimir" [model]="this.buttonItems"
+          [menuStyle]="{'width':'10em'}"
+          [size]="'small'"
+          [rounded]="true"
+          [severity]="'danger'"    
+          (onClick)="!loading() ? this.printPdfReport() : null" styleClass="ms-1">
+          <app-loading></app-loading>
+        </p-splitButton>
+        <p-button (click)="clearInputs()" styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
+          icon="fas fa-broom" label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
+        </p-button>
+      </div>
+      <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+        [activeItem]="searchItems()[0]"></p-tabMenu>
+    </div>
+  </form>
+  <app-table-list-costs-products [cols]="cols()" (customSort$)="customSort($event)"
+    [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+    [data]="productsCosts()" [loading]="loading()" (saveProduct$)="saveProductCostUpdate($event)"> 
+  </app-table-list-costs-products>
+  

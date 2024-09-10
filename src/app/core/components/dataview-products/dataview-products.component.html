@@ -1,0 +1,72 @@
+<div class="card  border-light shadow">
+    <div class="card-header bg-primary text-white m-0">
+        <div class="text-center m-0">
+            <b>PRODUCTOS</b>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="text-center" [formGroup]="formSearch">
+            <div class="row">
+                <div class="col-12 col-sm-12 col-md-3 m-0 p-0">
+                    <p-dropdown [options]="searchFor()" formControlName="searchSelect" placeholder="Buscar por:"
+                        pTooltip="Selecciona buscar por" tooltipPosition="top" optionLabel="name" optionValue="code"
+                        [style]="{'width':'100%'}" (onChange)="changeSearchProductBy($event)">
+                    </p-dropdown>
+                </div>
+                <div class="col mt-1 mt-sm-1 mt-md-0 mt-lg-0 m-0 p-0">
+                    <p-dropdown *ngIf="!isSearchByProduct()" [options]="categories()"
+                        placeholder="Selecciona una categoría" optionLabel="name" optionValue="code"
+                        [style]="{'width':'100%'}" (onChange)="searchByCategory($event)" [showClear]="true"
+                        appendTo="body" [filter]="true" filterBy="name" [virtualScrollItemSize]="38"
+                        [lazy]="true"></p-dropdown>
+                    <app-input-search *ngIf="isSearchByProduct()" (onEnters)="searchByProduct($event)"
+                        (onDebounce)="searchByProduct($event)" [icon]="'fa-solid fa-cart-plus'"
+                        [placeholder]="'Busque un producto aquí....'">
+                    </app-input-search>
+                </div>
+            </div>
+        </div>
+        <hr class="m-1">
+        <div class="row animated fadeIn fast" *ngIf="products().length === 0 && loading() === false">
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <h4 class="alert-heading">No se encontraron productos</h4>
+                    <i class="fa fa-spin fa-refresh fa-2x"></i>
+                    <p class="mb-0">Intenta una nueva búsqueda</p>
+                </div>
+            </div>
+        </div>
+        <p-scrollPanel *ngIf="!loading()" [style]="{width: '100%', height: '400px'}">
+            <div class="container mt-2">
+                <div class="row">
+                    <div *ngFor="let product of products()"
+                        class="col-12 col-sm-6 col-md-6 col-lg-4 animated animate zoomIn mt-0">
+                        <div class="card cardProduct" (click)="addListDetailPos(product)">
+                            <div class="image-container d-flex justify-content-center text-center container-fluid">
+                                <img class="card-img img-fluid" [src]="product.img | image:'products'"
+                                    alt="{{product.name}}">
+                            </div>
+                            <div class="card-img-overlay d-flex justify-content-end">
+                                <p-badge value="{{product.unit.siglas}}"></p-badge>
+                            </div>
+                            <div class="card-body mt-1 pt-1 m-2 p-2">
+                                <h6 class="m-0 p-0">{{ product.name}}</h6>
+                                <p class="card-text p-0"><b>{{ product.cod}} </b>- {{product.description | slice:0:150}}</p>
+                                <div class="buy">
+                                    <p-badge *ngIf="!isViewPrice" severity="success"
+                                        value="Costo: {{ product.costo | number: decimal()}}"></p-badge>
+                                    <p-badge *ngIf="isViewPrice" severity="success"
+                                        value="Precio: {{ product.prices[0].price | number: decimal()}}"></p-badge>
+                                    <p-badge *ngIf="isViewQuantity"
+                                        value="Stock: {{ product.total_stock}}"></p-badge>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p-scrollPanel>
+        <p-paginator [rows]="rows" [rowsPerPageOptions]="[50, 100, 200]" [showCurrentPageReport]="true"
+            currentPageReportTemplate="{{ from }} al {{ to }} de {{total}}" [totalRecords]="total"
+            (onPageChange)="paginate($event)"></p-paginator>
+    </div>

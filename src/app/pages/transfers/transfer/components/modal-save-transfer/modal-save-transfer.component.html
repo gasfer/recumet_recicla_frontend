@@ -1,0 +1,64 @@
+<p-dialog [header]="'Registro de traslado'" [(visible)]="transfersService.showModalSaveTransfer"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '40vw' }" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true" (onHide)="resetModal()">
+    <form [formGroup]="formTransferData">
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Sucursal destino<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="sucursales()" 
+                        optionLabel="name" optionValue="id"
+                        [showClear]="false" appendTo="body"
+                        [virtualScrollItemSize]="38" [lazy]="true" 
+                        formControlName="id_sucursal_received"
+                        [class.ng-dirty]="validatorsService.inputValid('id_sucursal_received',formTransferData)"
+                        placeholder="SELECCIONA SUCURSAL"></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('id_sucursal_received',formTransferData)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("id_sucursal_received",formTransferData) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12">
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Total</label><br>
+                                <p-tag [rounded]="true"
+                                    [icon]="'fa-solid fa-comments-dollar'"
+                                    value="{{totalSummary() | number:decimal()}}"></p-tag>
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Productos</label><br>
+                                <p-tag [rounded]="true" [severity]="'success'"
+                                    [icon]="'fa-solid fa-tag'"
+                                    value="{{totalItems()}}"></p-tag>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-12 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Observaciones de envió</label>
+                        <textarea pInputTextarea
+                            type="text"
+                            style="text-transform: uppercase"
+                            pInputText
+                            [pKeyFilter]="validatorsService.expRegValidInput"
+                            formControlName="observations_send"
+                            placeholder="EJ. ......"
+                            class="mt-1"
+                            [class.ng-dirty]="validatorsService.inputValid('observations_send',formTransferData)"
+                        ></textarea> 
+                        <small *ngIf="validatorsService.inputValid('observations_send',formTransferData)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("observations_send",formTransferData) }}
+                        </small>
+                    </div>
+                </div>
+            </div> 
+        </div> 
+      </form>
+      <ng-template pTemplate="footer">
+        <p-button (click)="loading() ? null : saveTransfer()" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()" ></p-button>
+        <p-button (click)="transfersService.showModalSaveTransfer = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

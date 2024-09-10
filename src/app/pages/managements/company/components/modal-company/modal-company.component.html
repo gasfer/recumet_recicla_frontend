@@ -1,0 +1,119 @@
+<p-dialog [header]="'Modificar compañía'" [(visible)]="companiesService.showModal"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="companyForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Nombre Compañía<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. RECUMET" 
+                        [class.ng-dirty]="validatorsService.inputValid('name',companyForm)" />
+                    <small *ngIf="validatorsService.inputValid('name',companyForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("name",companyForm) }}
+                    </small>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Nit<span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            pInputText
+                            placeholder="EJ. 5749....03"
+                            formControlName="nit"
+                            pKeyFilter="int"
+                            [class.ng-dirty]="validatorsService.inputValid('nit',companyForm)"
+                        />
+                        <small *ngIf="validatorsService.inputValid('nit',companyForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("nit",companyForm) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Razón social<span class="text-danger">*</span>
+                        </label>
+                        <input type="text" pInputText 
+                            formControlName="razon_social" 
+                            [class.ng-dirty]="validatorsService.inputValid('razon_social',companyForm)" />
+                        <small *ngIf="validatorsService.inputValid('razon_social',companyForm)" class="p-error block">
+                            {{ 'Razón social no valido' }}
+                        </small>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Actividad<span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            pInputText
+                            placeholder="EJ. "
+                            formControlName="activity"
+                            pKeyFilter="int"
+                            [class.ng-dirty]="validatorsService.inputValid('activity',companyForm)"
+                        />
+                        <small *ngIf="validatorsService.inputValid('activity',companyForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("activity",companyForm) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Correo<span class="text-danger">*</span>
+                        </label>
+                        <input type="text" pInputText 
+                            formControlName="email" 
+                            [class.ng-dirty]="validatorsService.inputValid('email',companyForm)" />
+                        <small *ngIf="validatorsService.inputValid('email',companyForm)" class="p-error block">
+                            {{ 'Correo no valido' }}
+                        </small>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-12 col-12">
+                        <label class="block mb-0">Teléfono / Celular<span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            pInputText
+                            placeholder="EJ. "
+                            formControlName="cellphone"
+                            [class.ng-dirty]="validatorsService.inputValid('cellphone',companyForm)"
+                        />
+                        <small *ngIf="validatorsService.inputValid('cellphone',companyForm)" class="p-error block">
+                            {{ 'Celular invalido' }}
+                        </small>
+                    </div>
+                    <!-- <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Logo<span class="text-danger">*</span>
+                        </label>
+                       
+                    </div> -->
+                </div>
+            </div>
+            <div class="field mt-2">
+                <label class="block mb-0">Dirección<span class="text-danger">*</span>
+                </label>
+                <textarea pInputTextarea
+                    type="text"
+                    style="text-transform: uppercase"
+                    pInputText
+                    [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="address"
+                    placeholder="EJ. ......"
+                    class="mt-1"
+                    [class.ng-dirty]="validatorsService.inputValid('address',companyForm)"
+                ></textarea>
+                <small *ngIf="validatorsService.inputValid('address',companyForm)" class="p-error block">
+                    {{ validatorsService.inputValidMessage("address",companyForm) }}
+                </small>
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? editCompany() : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="companiesService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

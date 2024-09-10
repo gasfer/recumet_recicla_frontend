@@ -1,0 +1,24 @@
+<form (ngSubmit)="searchForEnter()" autocomplete="off">
+    <div class="p-inputgroup">
+        <span class="p-inputgroup-addon"><i [class]="icon" style="line-height: 1.25;"></i></span>   
+        <span class=" d-flex input-group">
+            <input 
+                type="text" 
+                #txtTermino
+                pInputText 
+                [pKeyFilter]="validatorsService.expRegValidInput"
+                style="text-transform: uppercase"
+                [formControl]="termino"
+                (input)="searchTyping()"
+                [placeholder]="placeholder"
+            > 
+            
+            <button type="button" class="input-group-addon btn bg-transparent" (click)="clearInput()" style="margin-left: -40px; z-index: 100; border: none;">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+        </span>
+        <button *ngIf="btnNew" type="button" pButton pRipple [icon]="iconBtnNew" (click)="clickBtnNew()" ></button>      
+    </div>
+</form>
+
+

@@ -1,0 +1,7 @@
+<div class="pagetitle">
+    <nav>
+        <ol class="breadcrumb">
+            <li *ngFor="let item of breadcrumbs" [class]="item.active ? 'breadcrumb-item text-black' : 'breadcrumb-item active' ">{{item.title}}</li>
+        </ol>
+    </nav>
+</div>

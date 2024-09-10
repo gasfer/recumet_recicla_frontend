@@ -1,0 +1,113 @@
+{
+  "HEADER": {
+    "SEARCH": "Buscar...",
+    "SUCURSALES": "SUCURSALES",
+    "SETTINGS": "Configuración",
+    "UI": {
+      "TITLE": "Componentes de la interfaz de usuario",
+      "LIGHTBOX": "LightBox",
+      "RANGE_SLIDER": "Control deslizante de rango",
+      "SWEET_ALERT": "Alerta dulce",
+      "RATING": "Calificación",
+      "FORMS": "Formularios",
+      "TABLES": "Tablas",
+      "CHARTS": "Gráficos"
+    },
+   
+    "LOGIN": {
+      "PROFILE": "Perfil",
+      "MY_WALLET": "Mi billetera",
+      "SETTINGS": "Configuración",
+      "LOCK_SCREEN": "Pantalla de bloqueo",
+      "LOGOUT": "Cerrar sesión"
+    }
+  },
+  "MENUITEMS": {
+    "MENU": { "TEXT": "Menú" },
+    "USUARIO": { "TEXT": "Usuarios" },
+    "DASHBOARDS": {
+      "TEXT": "Dashboard",
+      "LIST": {
+        "HOME": "Home",
+        "GRAFICOS": "Gráficos",
+        "HISTORICO": "Histórico"
+      }
+    },
+    "COMPRAS": { "TEXT": "Compras" },
+    "ENTRADAS": {
+      "TEXT": "Entradas",
+      "LIST": {
+        "PROVEEDORES": "Proveedores",
+        "REALIZARCOMPRAS": "Realizar Compras",
+        "CONSULTARCOMPRAS": "Consultar Compras",
+        "CLASIFICADOS": "Clasificados"
+      }
+    },
+    "CLASIFICADOS": {
+      "TEXT": "Clasificados",
+      "LIST": {
+        "REALIZARCLASIFICADOS": "Realizar Clasificados",
+        "CONSULTARCLASIFICADOS": "Consultar Clasif."
+      }
+    },
+    "VENTAS": { "TEXT": "Ventas" },
+    "SALIDAS": {
+      "TEXT": "Salidas",
+      "LIST": {
+        "CLIENTES": "Clientes",
+        "REALIZARVENTAS": "Realizar Ventas",
+        "CONSULTARVENTAS": "Consultar Ventas"
+      }
+    },
+    "TRASLADOS": {
+      "TEXT": "Traslados",
+      "LIST": {
+        "REALIZARTRASLADOS": "Realizar Traslados",
+        "CONSULTARTRASLADOS": "Consultar Traslados",
+        "CONSULTARRECEPCIONES": "Consultar Recepción"
+      }
+    },
+    "INVENTARIO": {"TEXT": "Inventario"},
+    "KARDEX": {"TEXT": "Kardex"},
+    "KARDEXFISICO": {"TEXT": "Kardex Físico"},
+    "KARDEXHISTORICO": {"TEXT": "Kardex Histórico"},
+    "KARDEXEXISTENCIA": {"TEXT": "Kardex De Existencia"},
+    "ADMCAJA": {"TEXT": "Adm. Caja"},
+    "CAJA": {
+      "TEXT": "Caja",
+      "LIST": {
+        "ADMCAJA": "Adm. caja",
+        "COSULTARCAJA": "Consultas caja"
+      }
+    },
+    "CUENTAS": {
+      "TEXT": "Cuentas",
+      "LIST": {
+        "CUENTASPORPAGAR": "Cuentas por pagar",
+        "CUENTASPORCOBRAR": "Cuentas por cobrar"
+      }
+    },
+    "ADMINISTRACION": {
+      "TEXT": "Administración"
+    },
+    "ALMACEN": {
+      "TEXT": "Almacén",
+      "LIST": {
+        "CATEGORIAS": "Categorías",
+        "UNIDADMEDIDA": "Unidad de medida",
+        "PRODUCTOS": "Productos",
+        "BALANZAS": "Balanzas"
+      }
+    },
+    "GESTION": {
+      "TEXT": "Gestion",
+      "LIST": {
+        "USUARIOS": "Usuarios",
+        "ALMACENES": "Almacenes",
+        "SUCURSALES": "Sucursales",
+        "EMPRESA": "Empresa",
+        "TRASPORTES": "C. de trasporte"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+<div class="card shadow">
+    <p-toolbar>
+      <div class="p-toolbar-group-left">
+        <h4>EMPRESA</h4>
+      </div>
+    </p-toolbar>
+    <app-modal-company></app-modal-company>
+    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
+    <app-table [cols]="cols()" [isCustomSort]="false"
+      [data]="companies()" [loading]="loading()">
+    </app-table>
+</div>

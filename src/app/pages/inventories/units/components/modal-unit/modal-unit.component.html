@@ -1,0 +1,54 @@
+<p-dialog [header]="!unitsService.isEdit ? 'Registro Unidad' : 'Modificar Unidad'" [(visible)]="unitsService.showModal"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="unitForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Nombre<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. UNIDAD" 
+                        [class.ng-dirty]="validatorsService.inputValid('name',unitForm)" />
+                    <small *ngIf="validatorsService.inputValid('name',unitForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("name",unitForm) }}
+                    </small>
+                </div>
+                <div class="field mt-2">
+                    <label class="block mb-0">Siglas<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="siglas" placeholder="EJ. UND" 
+                        [class.ng-dirty]="validatorsService.inputValid('siglas',unitForm)" />
+                    <small *ngIf="validatorsService.inputValid('siglas',unitForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("siglas",unitForm) }}
+                    </small>
+                </div>
+                <div class="row mt-1 ">
+                    <label class="block">Estado:<span class="text-danger">*</span></label>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-3">
+                        <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    </div>
+                    <div class="col">
+                        <p-tag  [rounded]="true" 
+                                [icon]="unitForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
+                                [style]="unitForm.get('status')!.value
+                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
+                                          : { 'background-color': 'red', color: '#ffffff' }" 
+                                [value]="unitForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                        </p-tag>
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? (unitsService.isEdit ? editUnit() : newUnit()) : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="unitsService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

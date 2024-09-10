@@ -1,0 +1,70 @@
+<p-dialog [header]="!scalesService.isEdit ? 'Registro Balanza' : 'Modificar Balanza'" [(visible)]="scalesService.showModal"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="scaleForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Nombre<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. BALANZA ETC." 
+                        [class.ng-dirty]="validatorsService.inputValid('name',scaleForm)" />
+                    <small *ngIf="validatorsService.inputValid('name',scaleForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("name",scaleForm) }}
+                    </small>
+                </div>
+                
+                <div class="field">
+                    <label class="block mb-0">Celular</label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="cellphone" placeholder="EJ. 7974..." 
+                        [class.ng-dirty]="validatorsService.inputValid('cellphone',scaleForm)" />
+                    <small *ngIf="validatorsService.inputValid('cellphone',scaleForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("cellphone",scaleForm) }}
+                    </small>
+                </div>
+                <div class="field">
+                    <label class="block mb-0">Dirección</label>
+                    <textarea pInputTextarea
+                        type="text"
+                        style="text-transform: uppercase"
+                        pInputText
+                        [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="address"
+                        placeholder="EJ. ......"
+                        class="mt-1"
+                        [class.ng-dirty]="validatorsService.inputValid('address',scaleForm)"
+                    ></textarea>
+                    <small *ngIf="validatorsService.inputValid('address',scaleForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("address",scaleForm) }}
+                    </small>
+                </div>
+                <div class="row mt-1 ">
+                    <label class="block">Estado:<span class="text-danger">*</span></label>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-3">
+                        <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    </div>
+                    <div class="col">
+                        <p-tag  [rounded]="true" 
+                                [icon]="scaleForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
+                                [style]="scaleForm.get('status')!.value
+                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
+                                          : { 'background-color': 'red', color: '#ffffff' }" 
+                                [value]="scaleForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                        </p-tag>
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? (scalesService.isEdit ? editScale() : newScale()) : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="scalesService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

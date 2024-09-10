@@ -1,0 +1,139 @@
+<app-card-empty *ngIf="data?.data?.length === 0 && loading === false"></app-card-empty>
+
+<p-table #dt id="table" [value]="data?.data" styleClass="p-datatable-sm p-datatable-striped animated fadeIn" 
+    [scrollHeight]="heightTable"  [resizableColumns]="true" [rowHover]="true"  [rows]="50"
+    [columns]="cols" responsiveLayout="stack" [paginator]="customPagination" 
+    [showCurrentPageReport]="true" [sortField]="sortField" [sortOrder]="sortOrder === 'DESC' ? 0 : 1" 
+    sortMode="single" (onLazyLoad)="customSort($event)" [lazy]="isCustomSort" 
+    currentPageReportTemplate="Mostrando del {first} al {last} total de {totalRecords}" 
+    [rowsPerPageOptions]="[10, 50, 100, 200, 500]"
+    [globalFilterFields]="stringSearch"> 
+<ng-template *ngIf="includeSearch" pTemplate="caption">
+    <div class="text-center">
+        <p-dropdown  [options]="searchFor"   [formControl]="searchSelect" placeholder="Buscar por:"  optionLabel="name" optionValue="code" appendTo="body"></p-dropdown>
+        <span class="p-input-icon-right ms-2 mt-1">
+            <i (click)="clearSearch()" class="fa-solid fa-circle-xmark cursor-pointer"></i>
+            <input  type="text" style="text-transform:uppercase" 
+                pInputText placeholder="Escriba para filtrar..."
+                [formControl]="txtTermino"
+                (keyup)="search()"/>
+        </span>
+    </div>
+</ng-template>
+<ng-template *ngIf="!includeSearch && customPagination" pTemplate="caption">
+    <div class="text-center">
+        <span class="p-input-icon-left ml-auto">
+            <i class="fas fa-search"></i>
+            <input pInputText type="text" style="text-transform: uppercase" (input)="applyFilterGlobal($event, 'contains')" placeholder="Escriba para filtrar..." />
+        </span>
+    </div>
+</ng-template>
+<ng-template pTemplate="header" let-columns>
+    <ng-content  *ngIf="!loading"></ng-content>
+    <tr  *ngIf="!loading">
+        <th *ngFor="let col of columns"
+            [style]="col.style"
+            style="background-color: var(--bg-primary)"
+            class="text-white"
+            [pSortableColumn]="col.field">
+            {{col.header}}<p-sortIcon [field]="col.field" *ngIf="col.activeSortable ?? true"></p-sortIcon>
+        </th>
+    </tr>
+</ng-template>
+<ng-template pTemplate="body" let-rowData let-columns="columns">
+<tr  *ngIf="!loading">
+    <td *ngFor="let col of columns"
+        ngClass="tdwith"
+        [style]="col.style"
+        style="text-align: left; white-space:normal"
+        [pTooltip] ="col.tooltip ? col.tooltipMsg ? col.tooltipMsg : getRowData(rowData,col) : null" tooltipPosition="top">
+        <span class="p-column-title"><b>{{col.header}}</b></span>
+        <div *ngIf="col.isArray">
+            <button pButton label="Ver" (click)="op.toggle($event)" pRipple icon="fas fa-eye" class="p-button-rounded p-button-success p-button-sm"></button>
+            <p-overlayPanel #op [showCloseIcon]="true" [style]="{width: col.widthTable ?? '500px'}">
+                <ng-template pTemplate>
+                    <p-table [value]="getRowData(rowData,col)" responsiveLayout="scroll" 
+                            [scrollHeight]="'180px'" [columns]="col.colsChild"
+                            styleClass="p-datatable-sm p-datatable-striped animated fadeIn">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let colC of columns"
+                                    style="background-color: var(--primary-color)"
+                                    class="text-white"
+                                    [pSortableColumn]="colC.field">
+                                    {{colC.header}}<p-sortIcon></p-sortIcon>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData">
+                                <td *ngFor="let colC of columns">{{getRowData(rowData,colC)}}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </ng-template>
+            </p-overlayPanel>
+        </div>
+        <div *ngIf="col.isButton">
+            <button *ngFor="let button of rowData[col.field]" 
+                pButton [label]="button.label"
+                [disabled]="getReturnDisable(button.disabled)" 
+                [pTooltip] ="button.tooltip" tooltipPosition="bottom"
+                (click)="!getReturnDisable(button.disabled) ? button.eventClick() : null" 
+                pRipple [icon]="button.icon" 
+                [style]="button.style"
+                [class]="button.class">
+            </button>
+        </div>
+        <div *ngIf="col.isTag">
+            <p-tag
+                [style]="{ 'background': col.tagColor(getRowData(rowData,col))}"
+                styleClass="mr-2"
+                [rounded]="true"
+                [severity]="col?.tagColor(getRowData(rowData,col)) || 'primary'"
+                [value]="col?.tagValue(getRowData(rowData,col))"
+                [icon]="col?.tagIcon(getRowData(rowData,col))"
+            ></p-tag>
+        </div>
+        <div *ngIf="col.isImg">
+            <img [src]="rowData[col.field] | image : col.typeImg"
+                width="50px" class="cursor-pointer" style="border-radius: 5px;"
+                (click)="openViewImage(rowData)" alt="">
+        </div>
+        <div *ngIf="col.isText">
+            <p>
+                {{getRowData(rowData,col)}}
+            </p>
+        </div>
+        <div *ngIf="col.isLink">
+            <p class="badge text-bg-light text-primary p-2 cursor-pointer" (click)="returnLink(col.link,getRowData2(rowData,col))"> {{getRowData(rowData,col)}}</p>
+        </div>
+        <div *ngIf="col.isDoubleValue">
+            <p class="m-0 p-0">
+                {{getRowData(rowData,col)}}
+            </p>
+            <div class="text-end">
+                <span class="badge text-bg-light">  {{getRowData2(rowData,col)}}</span>
+            </div>
+        </div>
+        <div *ngIf="col.isValueUpdate">
+            {{col?.tagValue(getRowData(rowData,col))}}
+        </div>
+        <div *ngIf="!col.isLink && !col.isDoubleValue && !col.isButton && !col.isArray && !col.isTag && !col.isImg && !col.isText && !col.isValueUpdate">
+            {{getRowData(rowData,col)}}
+        </div>
+    </td>
+</tr>
+</ng-template>
+</p-table>
+<app-table-loading *ngIf="loading" [cols]="cols" [customPagination]="customPagination" [includeSearch]="includeSearch"></app-table-loading>
+
+<p-paginator *ngIf="!customPagination" [rows]="rows" [rowsPerPageOptions]="[50,100,200,500]" 
+    (onPageChange)="paginate($event)" [showCurrentPageReport]="true" 
+    currentPageReportTemplate="Mostrando del {{from}} al {{to}} total de {{total}}" 
+    [totalRecords]="total" #paginator
+    [dropdownAppendTo]="'body'"
+    >
+</p-paginator>
+
+<app-view-image></app-view-image>

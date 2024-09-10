@@ -1,0 +1,302 @@
+<p-dialog [header]="'Asignación de turnos'" [(visible)]="userService.showModalAssignShifts"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '65vw' }" [draggable]="false"
+    [resizable]="false" 
+    [dismissableMask]="true">
+    <form [formGroup]="formGroup">
+        <app-alert-notify [subTitle]="'Selecciona los horarios de asignación por dia.'" [subTitle2]="'Se restringirá el acceso'" [required]="false" ></app-alert-notify>
+        
+        <div class="row" >
+            <div class="col-xl-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-start mb-1">
+                            <div class="d-block justify-content-center">
+                                <span class="badge badge-soft-success">{{'ACTIVO'}}</span>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <h6 class="font-size-15 mt-3 mb-1">DOMINGO</h6>
+                            
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedDomingo" value="06:00-13:59" formControlName="selectedDomingo" inputId="selected06"></p-radioButton>
+                                <label for="selected06" class="ms-2 mt-1">06:00 - 13:59</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedDomingo" value="12:00-19:59" formControlName="selectedDomingo" inputId="selected12"></p-radioButton>
+                                <label for="selected12" class="ms-2 mt-1">12:00 - 19:59</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedDomingo" value="18:00-00:00" formControlName="selectedDomingo" inputId="selected18"></p-radioButton>
+                                <label for="selected18" class="ms-2 mt-1">18:00 - 00:00</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedDomingo" value="00:00-23:59" formControlName="selectedDomingo" inputId="selectedTodo"></p-radioButton>
+                                <label for="selectedTodo" class="ms-2 mt-1">TODO EL DIA</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedDomingo" value="SIN_ACCESO" formControlName="selectedDomingo" inputId="selectedD"></p-radioButton>
+                                <label for="selectedD" class="ms-2 mt-1">SIN ACCESO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-start mb-1">
+                            <div class="flex-grow-1">
+                                <span class="badge badge-soft-success">{{'ACTIVO'}}</span>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <h6 class="font-size-15 mt-3 mb-1">LUNES</h6>
+                            
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedLunes" value="06:00-13:59" formControlName="selectedLunes" inputId="selectedL06"></p-radioButton>
+                                <label for="selectedL06" class="ms-2 mt-1">06:00 - 13:59</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedLunes" value="12:00-19:59" formControlName="selectedLunes" inputId="selectedL12"></p-radioButton>
+                                <label for="selectedL12" class="ms-2 mt-1">12:00 - 19:59</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedLunes" value="18:00-00:00" formControlName="selectedLunes" inputId="selectedL18"></p-radioButton>
+                                <label for="selectedL18" class="ms-2 mt-1">18:00 - 00:00</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedLunes" value="00:00-23:59" formControlName="selectedLunes" inputId="selectedLTodo"></p-radioButton>
+                                <label for="selectedLTodo" class="ms-2 mt-1">TODO EL DIA</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedLunes" value="SIN_ACCESO" formControlName="selectedLunes" inputId="selectedL"></p-radioButton>
+                                <label for="selectedL" class="ms-2 mt-1">SIN ACCESO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-start mb-1">
+                            <div class="flex-grow-1">
+                                <span class="badge badge-soft-success">{{'ACTIVO'}}</span>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <h6 class="font-size-15 mt-3 mb-1">MARTES</h6>
+                            
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMartes" value="06:00-13:59" formControlName="selectedMartes" inputId="selectedM06"></p-radioButton>
+                                <label for="selectedM06" class="ms-2 mt-1">06:00 - 13:59</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMartes" value="12:00-19:59" formControlName="selectedMartes" inputId="selectedM12"></p-radioButton>
+                                <label for="selectedM12" class="ms-2 mt-1">12:00 - 19:59</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMartes" value="18:00-00:00" formControlName="selectedMartes" inputId="selectedM18"></p-radioButton>
+                                <label for="selectedM18" class="ms-2 mt-1">18:00 - 00:00</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMartes" value="00:00-23:59" formControlName="selectedMartes" inputId="selectedMTodo"></p-radioButton>
+                                <label for="selectedMTodo" class="ms-2 mt-1">TODO EL DIA</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMartes" value="SIN_ACCESO" formControlName="selectedMartes" inputId="selectedM"></p-radioButton>
+                                <label for="selectedM" class="ms-2 mt-1">SIN ACCESO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-start mb-1">
+                            <div class="flex-grow-1">
+                                <span class="badge badge-soft-success">{{'ACTIVO'}}</span>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <h6 class="font-size-15 mt-3 mb-1">MIÉRCOLES</h6>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMiercoles" value="06:00-13:59" formControlName="selectedMiercoles" inputId="selectedMM06"></p-radioButton>
+                                <label for="selectedMM06" class="ms-2 mt-1">06:00 - 13:59</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMiercoles" value="12:00-19:59" formControlName="selectedMiercoles" inputId="selectedMM12"></p-radioButton>
+                                <label for="selectedMM12" class="ms-2 mt-1">12:00 - 19:59</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMiercoles" value="18:00-00:00" formControlName="selectedMiercoles" inputId="selectedMM18"></p-radioButton>
+                                <label for="selectedMM18" class="ms-2 mt-1">18:00 - 00:00</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMiercoles" value="00:00-23:59" formControlName="selectedMiercoles" inputId="selectedMMTodo"></p-radioButton>
+                                <label for="selectedMMTodo" class="ms-2 mt-1">TODO EL DIA</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedMiercoles" value="SIN_ACCESO" formControlName="selectedMiercoles" inputId="selectedMM"></p-radioButton>
+                                <label for="selectedMM" class="ms-2 mt-1">SIN ACCESO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-start mb-1">
+                            <div class="flex-grow-1">
+                                <span class="badge badge-soft-success">{{'ACTIVO'}}</span>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <h6 class="font-size-15 mt-3 mb-1">JUEVES</h6>
+                            
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedJueves" value="06:00-13:59" formControlName="selectedJueves" inputId="selectedJ06"></p-radioButton>
+                                <label for="selectedJ06" class="ms-2 mt-1">06:00 - 13:59</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedJueves" value="12:00-19:59" formControlName="selectedJueves" inputId="selectedJ12"></p-radioButton>
+                                <label for="selectedJ12" class="ms-2 mt-1">12:00 - 19:59</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedJueves" value="18:00-00:00" formControlName="selectedJueves" inputId="selectedJ18"></p-radioButton>
+                                <label for="selectedJ18" class="ms-2 mt-1">18:00 - 00:00</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedJueves" value="00:00-23:59" formControlName="selectedJueves" inputId="selectedJTodo"></p-radioButton>
+                                <label for="selectedJTodo" class="ms-2 mt-1">TODO EL DIA</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedJueves" value="SIN_ACCESO" formControlName="selectedJueves" inputId="selectedJ"></p-radioButton>
+                                <label for="selectedJ" class="ms-2 mt-1">SIN ACCESO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-start mb-1">
+                            <div class="flex-grow-1">
+                                <span class="badge badge-soft-success">{{'ACTIVO'}}</span>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <h6 class="font-size-15 mt-3 mb-1">VIERNES</h6>
+                            
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedViernes" value="06:00-13:59" formControlName="selectedViernes" inputId="selectedV06"></p-radioButton>
+                                <label for="selectedV06" class="ms-2 mt-1">06:00 - 13:59</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedViernes" value="12:00-19:59" formControlName="selectedViernes" inputId="selectedV12"></p-radioButton>
+                                <label for="selectedV12" class="ms-2 mt-1">12:00 - 19:59</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedViernes" value="18:00-00:00" formControlName="selectedViernes" inputId="selectedV18"></p-radioButton>
+                                <label for="selectedV18" class="ms-2 mt-1">18:00 - 00:00</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedViernes" value="00:00-23:59" formControlName="selectedViernes" inputId="selectedVTodo"></p-radioButton>
+                                <label for="selectedVTodo" class="ms-2 mt-1">TODO EL DIA</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedViernes" value="SIN_ACCESO" formControlName="selectedViernes" inputId="selectedV"></p-radioButton>
+                                <label for="selectedV" class="ms-2 mt-1">SIN ACCESO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-start mb-1">
+                            <div class="flex-grow-1">
+                                <span class="badge badge-soft-success">{{'ACTIVO'}}</span>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <h6 class="font-size-15 mt-3 mb-1">SÁBADO</h6>
+                            
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedSabado" value="06:00-13:59" formControlName="selectedSabado" inputId="selectedS06"></p-radioButton>
+                                <label for="selectedS06" class="ms-2 mt-1">06:00 - 13:59</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedSabado" value="12:00-19:59" formControlName="selectedSabado" inputId="selectedS12"></p-radioButton>
+                                <label for="selectedS12" class="ms-2 mt-1">12:00 - 19:59</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedSabado" value="18:00-00:00" formControlName="selectedSabado" inputId="selectedS18"></p-radioButton>
+                                <label for="selectedS18" class="ms-2 mt-1">18:00 - 00:00</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedSabado" value="00:00-23:59" formControlName="selectedSabado" inputId="selectedSTodo"></p-radioButton>
+                                <label for="selectedSTodo" class="ms-2 mt-1">TODO EL DIA</label>
+                            </div>
+                        </div>
+                        <div class="hstack gap-2 justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <p-radioButton name="selectedSabado" value="SIN_ACCESO" formControlName="selectedSabado" inputId="selectedS"></p-radioButton>
+                                <label for="selectedS" class="ms-2 mt-1">SIN ACCESO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? saveNewAssignShifts() : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="userService.showModalAssignShifts = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,18 @@
+<p-dialog [header]="'Proveedores'" [(visible)]="productsService.showModalProvider"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '45vw' }" [draggable]="false"
+    [resizable]="false" 
+    [dismissableMask]="true">
+    <form>
+        <app-alert-notify [subTitle]="'Proveedores del producto: ' + product?.name" [required]="false" [subTitle2]="''"></app-alert-notify>
+        <div class="d-flex text-center justify-content-center align-content-center align-items-center"  *ngIf="this.loading()">
+            <app-loading class="m-0" [ngStyle]="{'width': '250px'}"></app-loading>
+        </div>
+        <app-table  [cols]="cols()" (customSort$)="customSort($event)"
+            [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)"
+            [data]="providersProduct()" [loading]="loading()">
+        </app-table>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="productsService.showModalProvider = false" label="OK, Cerrar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

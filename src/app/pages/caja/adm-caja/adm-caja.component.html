@@ -1,0 +1,145 @@
+<div class="card shadow mb-2 icon-box ">
+    <div class="card-body">
+        <div class="row text-center">
+            <h3 style="color: var(--bg-2665C);"><b>ADMINISTRAR CAJA - MOVIMIENTOS DE CAJA</b></h3>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <div class="">
+                    <h6 class="mt-1">Fecha de caja: <b *ngIf="totalMovements()">{{ date() | date:'dd-MM-YYYY'}}</b></h6>
+                    &nbsp;
+                    <p-tag [rounded]="true" [icon]="totalMovements() ? 'fa-solid fa-cash-register' : ''" [severity]="totalMovements() ? 'success' : 'danger'"
+                        [value]="totalMovements() ? 'VIGENTE / ABIERTO' : 'CAJA CERRADA'">
+                    </p-tag>
+                </div>
+            </div>
+            <div class="col mt-4">
+                <div class="text-end">
+                    <p-button *ngIf="!totalMovements()" (click)="!loading() ? postOpenCaja() : null" styleClass="p-button-rounded p-button-sm m-1"
+                        label="Abrir caja" icon="fa-regular fa-folder-open" [loading]="loading()"></p-button>
+                    <p-splitButton  #btnOptions  *ngIf="totalMovements()"  icon="fas fa-print" label="Opciones" [model]="this.optionsList()"
+                        [menuStyle]="{'width':'10em'}" 
+                        [size]="'small'" [rounded]="true" [severity]="'secondary'"
+                        (onClick)="btnOptions.onDropdownButtonClick($event)"
+                        styleClass="m-1">
+                    </p-splitButton>
+                    <p-splitButton #btnMovements *ngIf="totalMovements()" icon="fa-solid fa-arrows-rotate" label="Movimientos caja" [model]="this.moveList()"
+                        [menuStyle]="{'width':'10em'}" (onClick)="btnMovements.onDropdownButtonClick($event)"
+                        [size]="'small'" [rounded]="true" [severity]="'help'"
+                        styleClass="m-1">
+                    </p-splitButton>
+                </div>
+            </div>
+        </div>
+        <hr class="mt-4 mb-4">
+        <div class="row">
+            <div class="col-md-5">
+                <!-- Navigation widget -->
+                <div class="panel panel-flat">
+                    <div class="table-responsive">
+                        <table class="table table-xxs table-hover">
+                            <tbody>
+                                <tr>
+                                    <td><i class="fa-solid fa-square" style="color:#3366CC;" aria-hidden="true"></i>
+                                    </td>
+                                    <td class="text-grey-800">
+                                        <b>MONTO INICIAL</b> <a data-toggle="modal" data-target=".bs-example-modal-sm"
+                                            style="color:#5b5d5f"></a>
+                                    </td>
+                                    <td></td>
+                                    <td id="inicial" class="text-right"> BS {{totalMovements()?.monto_apertura | number: decimal()}}</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-square" style="color:#66CC33;" aria-hidden="true"></i>
+                                    </td>
+                                    <td class="text-teal">
+                                        <b>INGRESOS</b> <a data-toggle="modal" data-target=".bs-example-modal-sm"
+                                            style="color:#5b5d5f"> </a>
+                                    </td>
+                                    <td></td>
+                                    <td id="ingresos" class="text-right">BS  {{totalMovements()?.total_ingresos | number: decimal()}}</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-square" style="color:#CC3333;" aria-hidden="true"></i>
+                                    </td>
+                                    <td class=" ">
+                                        <b>GASTOS</b>
+                                    </td>
+                                    <td></td>
+                                    <td id="gastos" class="text-right">BS {{totalMovements()?.total_gastos | number: decimal()}}</td>
+                                </tr>
+                                <tr class="">
+                                    <th class=""></th>
+                                    <th class="text-success ">
+                                        <h5>
+                                            <b><strong>INGRESOS TOTALES</strong></b>
+                                        </h5>
+                                    </th>
+                                    <th class=""></th>
+                                    <th class="text-right text-success">
+                                        <h5><strong id="Ingresos">BS {{totalMovements()?.total_ingresos | number: decimal()}}</strong></h5>
+                                    </th>
+                                </tr>
+                                <tr class="">
+                                    <th class=""></th>
+                                    <th class="text-danger ">
+                                        <h5>
+                                            <b><strong>EGRESOS TOTALES</strong></b>
+                                        </h5>
+                                    </th>
+                                    <th class=""></th>
+                                    <th class="text-right text-danger">
+                                        <h5><strong id="Egresos">BS {{totalMovements()?.total_gastos | number: decimal()}}</strong></h5>
+                                    </th>
+                                </tr>
+                                <tr class="">
+                                    <td class=""></td>
+                                    <td class="">
+                                        <h5>
+                                            <b><strong>SALDO</strong></b>
+                                        </h5>
+                                    </td>
+                                    <th class=""></th>
+                                    <th class="text-right">
+                                        <h5><strong id="Saldo">BS {{totalMovements()?.saldo | number: decimal()}}</strong></h5>
+                                    </th>
+                                </tr>
+                                <tr class="">
+                                    <td class=""></td>
+                                    <td class="text-primary">
+                                        <h5>
+                                            <b><strong>MONTO INICIAL + SALDO </strong></b>
+                                        </h5>
+                                    </td>
+                                    <th class=""></th>
+                                    <th class="text-right text-primary">
+                                        <h5><strong id="Diferencia">BS {{totalMovements()?.monto_apertura_mas_saldo | number: decimal()}}</strong></h5>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <p-chart *ngIf="!this.loading()" type="pie" [height]="'330'" [data]="data" [options]="options"></p-chart>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card shadow mb-2 icon-box ">
+    <div class="card-body">
+        <div class="text-start">
+            <h5 style="color: var(--bg-2665C);"><b>Movimientos de caja</b></h5>
+        </div>
+        <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+            [activeItem]="searchItems()[0]"></p-tabMenu>
+        <app-table [cols]="cols()" [isCustomSort]="false"
+            [includeSearch]="false" [customPagination]="true"
+            [data]="movementsTable()" [loading]="loading()">
+        </app-table>
+    </div>
+</div>
+
+<app-modal-open-close-edit-apertura-caja (save$)="getAllTotalesMovements()" [totalMovements]="totalMovements()"></app-modal-open-close-edit-apertura-caja>
+<app-modal-new-detail-caja (save$)="getAllTotalesMovements()" ></app-modal-new-detail-caja>

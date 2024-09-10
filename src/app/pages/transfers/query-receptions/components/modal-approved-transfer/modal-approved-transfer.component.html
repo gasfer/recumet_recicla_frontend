@@ -1,0 +1,50 @@
+<p-dialog [header]="'Confirmación de recepción'" [(visible)]="transfersService.showModalConfirmationReception"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="approvedForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Area / Almacén ingreso stock<span class="text-danger">*</span>
+                    </label>
+                    <p-dropdown [options]="validatorsService.storages()" 
+                        placeholder="Selecciona un almacén" 
+                        optionLabel="name"
+                        optionValue="id"
+                        appendTo="body" [filter]="true" filterBy="name"
+                        [virtualScrollItemSize]="38" [lazy]="true"
+                        formControlName="id_storage_received" 
+                        [class.ng-dirty]="validatorsService.inputValid('id_storage_received',approvedForm)"
+                    ></p-dropdown>
+                    <small *ngIf="validatorsService.inputValid('id_storage_received',approvedForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("id_storage_received",approvedForm) }}
+                    </small>
+                </div>
+            </div>
+            <div class="field mt-2">
+                <label class="block mb-0">Observaciones de recepción<span class="text-danger">*</span>
+                </label>
+                <textarea pInputTextarea
+                    type="text"
+                    style="text-transform: uppercase"
+                    pInputText
+                    [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="observations_received"
+                    placeholder="EJ. ......"
+                    class="mt-1"
+                    [class.ng-dirty]="validatorsService.inputValid('observations_received',approvedForm)"
+                ></textarea> 
+                <small *ngIf="validatorsService.inputValid('observations_received',approvedForm)" class="p-error block">
+                    {{ validatorsService.inputValidMessage("observations_received",approvedForm) }}
+                </small>
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? postApprovedTransfer() : null" styleClass="p-button-sm p-button-rounded"
+            label="Ok, Aprobar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="transfersService.showModalConfirmationReception = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

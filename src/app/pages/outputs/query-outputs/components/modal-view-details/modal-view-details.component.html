@@ -1,0 +1,133 @@
+<p-dialog [header]="'Detalle Venta: '+ output()?.cod" [(visible)]="outputService.showModalDetailsInput" [modal]="true"
+    [breakpoints]="{ '960px': '85vw', '576px': '95%' }" [style]="{ width: '60vw' }" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true">
+    <form>
+        <p-tag styleClass="m-2 ms-0 mb-1" value="VENTA: {{output()?.cod}} " [rounded]="true"></p-tag>
+        <div class="table-responsive">
+            <table class="table table-xxs  table-sm">
+                <tbody class="border-solid">
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA VENTA</td>
+                        <td width="30%">{{output()?.createdAt | date:'dd/MM/yyyy, HH:mm:ss'}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TIPO VENTA</td>
+                        <td width="30%">{{output()?.voucher}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TIPO PESAJE</td>
+                        <td width="30%">{{output()?.type_registry}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">NRO.</td>
+                        <td width="30%">{{output()?.number_registry}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">PAGO. | CUENTA</td>
+                        <td width="30%">{{output()?.type_payment}}{{output()?.bank ? ' | ' + output()?.bank?.name : ''}}{{output()?.account_output ? ' | ' + output()?.account_output : ''}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TIPO PAGO.</td>
+                        <td width="30%">{{output()?.type_output}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">CLIENTE</td>
+                        <td width="30%">{{output()?.client?.full_names}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">CARNET CLIENTE</td>
+                        <td width="30%">{{output()?.client?.number_document}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">BALANZA</td>
+                        <td width="30%">{{output()?.scale?.name}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">USUARIO</td>
+                        <td width="30%">{{output()?.user?.full_names}} - {{output()?.user?.number_document}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">COMENTARIOS</td>
+                        <td colspan="3" width="80%">{{output()?.comments}}</td>
+                    </tr>
+                    <tr *ngIf="output()?.voucher != 'MENOR'">
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">ORIGEN</td>
+                        <td width="30%">{{output()?.outputBig?.origin}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">DESTINO</td>
+                        <td width="30%">{{output()?.outputBig?.destination}}</td>
+                    </tr>
+                    <tr *ngIf="output()?.voucher != 'MENOR'">
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">EMPRESA</td>
+                        <td colspan="3" width="80%">{{output()?.outputBig?.chauffeur?.trasport_company?.name}}</td>
+                    </tr>
+                    <tr *ngIf="output()?.voucher != 'MENOR'">
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">CHOFER</td>
+                        <td width="30%">{{output()?.outputBig?.chauffeur?.full_names ?? '-'}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">CAMION</td>
+                        <td width="30%">{{output()?.outputBig?.cargo_truck?.placa ?? '-'}}</td>
+                    </tr>
+                    <tr *ngIf="output()?.voucher == 'MAYOR. EXTERIOR'">
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">AGENCIA PORT.</td>
+                        <td width="30%">{{output()?.outputBig?.agencia ?? '-'}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TRANS. MARITI.</td>
+                        <td width="30%">{{output()?.outputBig?.trans_mariti ?? '-'}}</td>
+                    </tr>
+                    <tr *ngIf="output()?.voucher == 'MAYOR. EXTERIOR'">
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">Nº FACTURA.</td>
+                        <td width="30%">{{output()?.outputBig?.number_factura ?? '-'}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">Nº PRECINTO</td>
+                        <td width="30%">{{output()?.outputBig?.number_precinto ?? '-'}}</td>
+                    </tr>
+                    <tr *ngIf="output()?.voucher == 'MAYOR. EXTERIOR'">
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">Nº CONTENEDOR</td>
+                        <td width="30%">{{output()?.outputBig?.number_container ?? '-'}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TIPO DE CONTE.</td>
+                        <td width="30%">{{output()?.outputBig?.type_container ?? '-'}}</td>
+                    </tr>
+                    <tr *ngIf="output()?.outputBig?.poliza_seguro">
+                        <td width="15%" class="text-black text-left fw-bold bg-secondary-subtle">PÓLIZA DE SEGURO</td>
+                        <td width="20%">{{output()?.outputBig?.poliza_seguro ?? '-'}}</td>
+                    </tr>
+                </tbody>
+            </table>     
+        </div>
+        <p-tag styleClass="m-2 ms-0 mb-1" severity="success" value="DETALLE DE VENTA {{output()?.cod}} " [rounded]="true"></p-tag>
+        <div class="table-responsive">
+			<table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm">
+				<thead>
+					<tr>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Producto </th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Cantidad </th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Precio </th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Importe </th>
+					</tr>
+				</thead>
+				<tbody>
+                    <tr *ngFor="let detail of output()?.detailsOutput" >
+                        <td style="max-width: 200px;">
+                            <h5 class="m-0 p-0">{{detail.product.name}}</h5>
+                            <p style="font-size: 10px;" class="text-muted">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
+                        </td>
+                        <td>{{detail.quantity}}</td>
+                        <td>{{detail.price | number:decimal()}}</td>
+                        <td>{{detail.total | number:decimal()}}</td>
+                    </tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td width="10%" class="table-active fw-bold">SUBTOTAL</td>
+						<td id="subtotal">{{output()?.sub_total | number:decimal()}}</td>
+					</tr>
+                    <tr>
+						<td></td>
+						<td></td>
+						<td width="10%" class="table-active fw-bold">DESCUENTO</td>
+						<td id="subtotal">{{output()?.discount | number:decimal()}}</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td width="10%" class="table-active fw-bold">TOTAL</td>
+                        <td id="total"> <p-tag [style]="{'font-size': '15px'}" value="{{output()?.total | number:decimal()}}" [rounded]="true"></p-tag> </td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="outputService.showModalDetailsInput = false" label="OK, Cerrar"
+            styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

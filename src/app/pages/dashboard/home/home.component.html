@@ -1,0 +1,32 @@
+<!-- ======= Hero Section ======= -->
+<section id="hero1" class="mt-0 pt-0 m-0 p-0 d-flex flex-column justify-content-center">
+    <div class="m-4 mt-0 mb-3 pt-0"  data-aos="zoom-in" data-aos-delay="100">
+        <h1>Bienvenido: {{authService.getUser.full_names}}</h1>
+        <p> <ngx-typed-js [strings]="['Administrar', 'Reportes', 'Compras', 'Ventas']"
+                [backDelay]="3000" [backSpeed]="100" [typeSpeed]="40" [loop]="true">
+                Aquí podrás, <span class="typing"></span>
+            </ngx-typed-js></p>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row mt-4">
+                    <div *ngFor="let card of cardsRequestPermission()" class="col-xxl-3 col-md-6 cursor-pointer">
+                        <app-card-home  [data]="card"></app-card-home>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section><!-- End Hero -->
+<div class="card">
+    <div class="card-body">
+        <h3 class="text-center">Últimos Eventos</h3>
+        <div class="row mt-2">
+            <div class="col-12">
+                <app-table [cols]="cols()" [isCustomSort]="false"
+                    [includeSearch]="false" [customPagination]="true"
+                    [data]="histories()" [loading]="loading()">
+                </app-table>
+            </div>
+        </div>
+    </div>
+</div>

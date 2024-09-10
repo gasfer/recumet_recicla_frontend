@@ -1,0 +1,142 @@
+<!--Pos config modal-->
+<app-modal-config-classified></app-modal-config-classified> 
+<!--Pos Data modal save-->
+<app-modal-save-classified 
+    [id_sucursal]="formReport.get('id_sucursal')?.value" 
+    [id_storage]="formReport.get('id_storage')?.value"
+></app-modal-save-classified>
+<!--provider new modal-->
+<app-modal-product></app-modal-product>
+
+<div class="card bg-light m-0">
+    <div class="card-body shadow pt-2 pb-2">
+        <h4>{{'REGISTRO DE CLASIFICADOS'}}</h4>
+        <div [formGroup]="formReport"  class="row mt-2">
+            <div class="col-12 col-sm-6">
+                <label class="block mb-0">Area / Almacén: &nbsp;</label>
+                <p-dropdown [options]="validatorsService.storages()" 
+                  placeholder="Selecciona un almacén" 
+                  optionLabel="name"
+                  optionValue="id"
+                  (onChange)="setSelectStorage()"
+                  (onHide)="this.componentService.clearInputSearch$.next(true)"
+                  appendTo="body" [filter]="true" filterBy="name"
+                  [virtualScrollItemSize]="38" [lazy]="true"
+                  formControlName="id_storage" 
+                  [class.ng-dirty]="validatorsService.inputValid('id_storage',formReport)"
+                ></p-dropdown>
+                <small *ngIf="validatorsService.inputValid('id_storage',formReport)" class="p-error block">
+                    {{ validatorsService.inputValidMessage("id_storage",formReport) }}
+                </small>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-sm-6 col-12 mt-0">
+                <app-input-search (onEnters)="setSuggestedProducts($event)" (onDebounce)="setSuggestedProducts($event)"
+                    (onBtnNew)="newProduct()" [icon]="'fa-solid fa-tag'" [btnNew]="true"
+                    [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un producto aquí....'">
+                </app-input-search>
+                <small>Producto buscado por la sucursal y area / almacén seleccionado.</small>
+                <div style="position: absolute; z-index: 999; width: 90%;">
+                    <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
+                        <li class="list-group-item list-group-item-action">
+                            <span class='fw-bold'>Cargando....</span>
+                        </li>
+                    </ul>
+                    <ul class="list-group shadow cursor-pointer">
+                        <li *ngFor="let product of suggestedProducts()"
+                            class="list-group-item list-group-item-action" (click)="selectProduct(product)">
+                            <span class='fw-bold'>{{product.cod}} - {{ product.name}}</span>
+                            <br>
+                            <span class="text-muted fw-normal align-content-end">{{product.description }} -
+                                {{product.category.name}} / {{product.unit.siglas}}</span>
+                        </li>
+                    </ul>
+                    <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
+                        <li class="list-group-item list-group-item-action">
+                            <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-sm-5 col-12 mt-2 m-md-0">
+                <b>Producto a clasificar:
+                    <p-tag [rounded]="true" icon="fa-solid fa-tag"
+                        [severity]="productSelect() ? 'info' : 'warning'"
+                        [value]="productSelect() ? 'COD: ' + productSelect()?.cod+' / ' + productSelect()?.name : 'COD: 0 / SELECCIONE UN PRODUCTO'">
+                        <p-badge *ngIf="productSelect()" class="cursor-pointer" severity="danger"
+                            (click)="classifiedService.productSelect.set(undefined)" [value]="'X'" styleClass="mr-2"
+                            pTooltip="Quitar Producto" tooltipPosition="top">
+                        </p-badge>
+                    </p-tag>
+                    <p-tag [rounded]="true"  [severity]="productSelect() ? 'success' : 'warning'"
+                        [value]="productSelect() ? 'Stock: ' + productSelect()?.total_stock?.toString() : 'Stock: 0'">
+                    </p-tag>
+                </b>
+            </div>
+            <div class="col-sm-1 col-12">
+                <div class="d-flex justify-content-end">
+                    <i class="cursor-pointer fa-solid fa-gear" pTooltip="Config. Modo de clasificación" tooltipPosition="left"
+                        (click)="classifiedService.showModalConfigClassified = true">
+                    </i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-1">
+    <div class="col-sm-12 mb-2"
+        [ngClass]="{'col-md-7': classifiedService._classifiedConfig.viewCardProducts, 'col-md-12': !classifiedService._classifiedConfig.viewCardProducts}">
+        <div class="card">
+            <div class="card-body shadow m-0 p-0">
+                <div class="row m-1 mt-0">
+                    <div class="col-12">
+                        <p-messages severity="info">
+                            <ng-template pTemplate>
+                                <b>ITEMS CLASIFICADOS <i class="fa-solid fa-cart-arrow-down"></i></b>
+                                <i class="fa-solid fa-tags ms-5 p-text-secondary" pBadge style="font-size: 1.2rem;"
+                                    value="{{totalItems()}}"></i>
+                            </ng-template>
+                        </p-messages>
+                        <app-input-search *ngIf="!classifiedService._classifiedConfig.viewCardProducts" (onEnters)="suggestedProductClassifieds($event)" (onDebounce)="suggestedProductClassifieds($event)"
+                            [icon]="'fa-solid fa-cart-plus'"
+                            [placeholder]="'Busque un producto aquí....'"></app-input-search>
+                        <div style="position: absolute; z-index: 999; width: 96%;">
+                            <ul *ngIf="loadingSearchProductClassified()" class="list-group shadow">
+                                <li class="list-group-item list-group-item-action">
+                                    <span class='fw-bold'>Cargando....</span>
+                                </li>
+                            </ul>
+                            <ul class="list-group shadow cursor-pointer">
+                                <li *ngFor="let product of suggestedProductsClassified()"
+                                    class="list-group-item list-group-item-action" (click)="addItemCar(product)">
+                                    <span class='fw-bold'>{{product.cod}} - {{ product.name}}</span>
+                                    <br>
+                                    <span class="text-muted fw-normal align-content-end">{{product.description }} -
+                                        {{product.category.name}} / {{product.unit.siglas}}</span>
+                                </li>
+                            </ul>
+                            <ul *ngIf="suggestedProductsClassified().length == 0 && txtSearchProductClassified() && !loadingSearchProductClassified()" class="list-group shadow">
+                                <li class="list-group-item list-group-item-action">
+                                    <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <app-table-classified-details></app-table-classified-details>
+        </div>
+    </div>
+    
+    <div *ngIf="classifiedService._classifiedConfig.viewCardProducts" class="col-sm-12 col-md-5">
+        <app-dataview-products 
+            [isViewQuantity]="true" 
+            [isViewPrice]="false"
+            [id_sucursal]="formReport.get('id_sucursal')?.value" 
+            [id_storage]="formReport.get('id_storage')?.value" 
+            (onProductSelect)="addItemCarByViewProduct($event)" 
+            (onProductByCod)="addItemCarByCodProduct($event)">
+        </app-dataview-products>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+<p-dialog [header]="'Detalle Traslado: '+ transfer()?.cod" [(visible)]="transfersService.showModalDetailsTransfer" [modal]="true"
+    [breakpoints]="{ '960px': '85vw', '576px': '95%' }" [style]="{ width: '55vw' }" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true">
+    <form>
+        <p-tag styleClass="m-2 ms-0 mb-1" value="TRASLADO: {{transfer()?.cod}} " [rounded]="true"></p-tag>
+        <div class="table-responsive">
+            <table class="table table-xxs  table-sm">
+                <tbody class="border-solid">
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">SUCURSAL ORIGEN</td>
+                        <td width="30%">{{transfer()?.sucursal_send?.name}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">SUCURSAL DESTINO</td>
+                        <td width="30%">{{transfer()?.sucursal_received?.name}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA ENVIÓ</td>
+                        <td width="30%">{{transfer()?.date_send| date:'dd/MM/yyyy, HH:mm:ss'}}</td>
+                        <td *ngIf="transfer()?.status == 'RECEIVED'" width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA RECEPCIÓN</td>
+                        <td *ngIf="transfer()?.status == 'RECEIVED'" width="30%">{{transfer()?.date_received| date:'dd/MM/yyyy, HH:mm:ss'}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">USUARIO ENVIÓ</td>
+                        <td width="30%">{{transfer()?.user_send?.full_names}}</td>
+                        <td *ngIf="transfer()?.status == 'RECEIVED'" width="20%" class="text-black text-left fw-bold bg-secondary-subtle">USUARIO RECEPCIÓN</td>
+                        <td *ngIf="transfer()?.status == 'RECEIVED'" width="30%">{{transfer()?.user_received?.full_names}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">OBS. ENVIÓ</td>
+                        <td colspan="3" width="80%">{{transfer()?.observations_send}}</td>
+                    </tr>
+                    <tr *ngIf="transfer()?.status == 'RECEIVED'">
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">OBS. RECEPCIÓN</td>
+                        <td colspan="3" width="80%">{{transfer()?.observations_received }}</td>
+                    </tr>
+                </tbody>
+            </table>     
+        </div>
+        <p-tag styleClass="m-2 ms-0 mb-1" severity="success" value="DETALLE DE TRASLADO: {{transfer()?.cod}} " [rounded]="true"></p-tag>
+        <div class="table-responsive">
+			<table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm">
+				<thead>
+					<tr>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Producto </th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Cantidad </th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Costo </th>
+					</tr>
+				</thead>
+				<tbody>
+                    <tr *ngFor="let detail of transfer()?.detailsTransfers" >
+                        <td style="max-width: 200px;">
+                            <h5 class="m-0 p-0">{{detail.product.name}}</h5>
+                            <p style="font-size: 10px;" class="text-muted">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
+                        </td>
+                        <td>{{detail.quantity}}</td>
+                        <td>{{detail.cost  | number:decimal()}}</td>
+                    </tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td width="10%" class="table-active fw-bold">TOTAL</td>
+                        <td id="total"> <p-tag [style]="{'font-size': '15px'}" value="{{totalQuantityItems() | number:decimal()}}" [rounded]="true"></p-tag> </td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="transfersService.showModalDetailsTransfer = false" label="OK, Cerrar"
+            styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,121 @@
+<form [formGroup]="formReport">
+    <div class="card shadow mb-4 icon-box ">
+        <div class="card-body">
+            <div class="row text-center">
+                <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE VENTAS</b></h3>
+            </div>
+            <div class="p-fluid grid mt-sm-3 mt-md-0 ps-md-4 pe-md-4">
+                <app-alert-notify title="Realiza tus consultas por los parámetros que sean necesarios,"
+                    subTitle="Se considera todos los campos que estén llenados para realizar la consulta"
+                    [subTitle2]="''" [required]="false"></app-alert-notify>
+                <div class="field col-12">
+                    <div class="row mt-1">
+                        <div class="col-12 col-sm-6">
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    <label class="block mb-1">Tipo Filtrado<span class="text-danger">*</span></label>
+                                    <p-dropdown [options]="types_filtrado()" formControlName="filterBy"
+                                        optionLabel="name" optionValue="code" appendTo="body"
+                                        (onChange)="onChangeTypesFilter()">
+                                    </p-dropdown>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <label class="block mb-1">Fecha<span class="text-danger">*</span>
+                                    </label>
+                                    <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'"
+                                        formControlName="dates" view="month" dateFormat="mm/yy" [readonlyInput]="true"
+                                        inputId="monthpicker" placeholder="MM/YYYY"
+                                        [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"
+                                        [showIcon]="true">
+                                    </p-calendar>
+                                    <p-calendar *ngIf="formReport.get('filterBy')?.value == 'RANGE'"
+                                        formControlName="dates" selectionMode="range" dateFormat="dd/mm/yy"
+                                        [readonlyInput]="true" inputId="range" placeholder="DD/MM/YYYY"
+                                        [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"
+                                        [showIcon]="true">
+                                    </p-calendar>
+                                    <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'"
+                                        formControlName="dates" view="year" dateFormat="yy" inputId="yearpicker"
+                                        [showIcon]="true" placeholder="YYYY"
+                                        [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
+                                    </p-calendar>
+                                    <p-calendar *ngIf="formReport.get('filterBy')?.value == 'DAY'"
+                                        formControlName="dates" inputId="basic" dateFormat="dd/mm/yy" [showIcon]="true"
+                                        placeholder="DD/MM/YYYY"
+                                        [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
+                                    </p-calendar>
+                                    <small *ngIf="validatorsService.inputValid('dates',formReport)"
+                                        class="p-error block">
+                                        {{ validatorsService.inputValidMessage("dates",formReport) }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    <label class="block mb-1">Tipo Registro</label>
+                                    <p-dropdown [options]="types_registry()" [showClear]="true"
+                                        placeholder="Selecciona una opción" optionLabel="name" optionValue="code"
+                                        appendTo="body" formControlName="type_registry"
+                                        [class.ng-dirty]="validatorsService.inputValid('type_registry',formReport)"></p-dropdown>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <label class="block mb-1">Tipo de venta</label>
+                                    <p-dropdown [options]="types_output()" [showClear]="true" placeholder="Selecciona una opción" optionLabel="name"
+                                    optionValue="name" appendTo="body"  formControlName="type_output"
+                                    [class.ng-dirty]="validatorsService.inputValid('type_output',formReport)"></p-dropdown>
+                                    <!-- <label class="block mb-1">Cliente</label>
+                                    <p-dropdown [options]="[]" [showClear]="true" formControlName="id_client"
+                                        optionLabel="name" optionValue="code" appendTo="body" [filter]="true"
+                                        filterBy="name" [virtualScrollItemSize]="38" [lazy]="true"
+                                        placeholder="SELECCIONA CLIENTE"
+                                        [class.ng-dirty]="validatorsService.inputValid('id_client',formReport)"></p-dropdown> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    <label class="block mb-0">Area / Almacén</label>
+                                    <p-dropdown [options]="validatorsService.storages()" placeholder="Selecciona un almacén"
+                                        optionLabel="name" optionValue="id" [showClear]="true" appendTo="body"
+                                        [filter]="true" filterBy="name" [virtualScrollItemSize]="38" [lazy]="true"
+                                        formControlName="id_storage"
+                                        [class.ng-dirty]="validatorsService.inputValid('id_storage',formReport)"></p-dropdown>
+                                    <small *ngIf="validatorsService.inputValid('id_storage',formReport)"
+                                        class="p-error block">
+                                        {{ validatorsService.inputValidMessage("id_storage",formReport) }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mb-2 mt-sm-3 mt-md-0 ps-md-5 pe-md-5 me-3 bg-transparent text-end">
+            <p-button (click)="!loading() ? this.getAllAndSearchOutputs(1,rows()) : null"
+                styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
+                [loading]="loading()"></p-button>
+            <p-splitButton *ngIf="this.validatorsService.withPermission('VENTAS','reports')" icon="fas fa-print" label="Imprimir" [model]="this.buttonItems"
+                [menuStyle]="{'width':'10em'}" (onClick)="!loading() ? printPdfReport() : null"
+                [size]="'small'"
+                [rounded]="true"
+                [severity]="'danger'"
+                styleClass="ms-1">
+            </p-splitButton>
+            <p-button (click)="clearInputs()"
+                styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
+                label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
+            </p-button>
+        </div>
+        <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+            [activeItem]="searchItems()[0]"></p-tabMenu>
+    </div>
+</form>
+<app-table [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+    [data]="outputs()" [loading]="loading()" (customSort$)="customSort($event)">
+</app-table>
+
+<app-modal-view-details></app-modal-view-details>

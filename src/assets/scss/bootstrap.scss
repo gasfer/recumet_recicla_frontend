@@ -1,0 +1,36 @@
+/*
+Template Name: Skote - Admin & Dashboard Template
+Author: Themesbrand
+Version: 4.1.0.
+Website: https://themesbrand.com/
+Contact: themesbrand@gmail.com
+File: Custom Bootstrap Css File
+*/
+/* Define the layers */
+@layer bootstrap, primeng ;
+// @layer bootstrap-reboot, primeng;
+
+// @import "..css" layer(bootstrap-rebooot);
+/* Import Bootstrap styles into the 'bootstrap' layer */
+@layer bootstrap {
+  //Core files
+    @import "./node_modules/bootstrap/scss/functions";
+    @import "./node_modules/bootstrap/scss/variables";
+    @import "variables";
+    @import "variables-dark";
+    @import "./node_modules/bootstrap/scss/bootstrap";
+
+    @import "custom/components/root";
+    @import "custom/components/reboot";
+    @import "custom/components/badge";
+    @import "custom/components/buttons";
+    @import "custom/components/breadcrumb";
+    @import "custom/components/card";
+    @import "custom/components/dropdown";
+    @import "custom/components/nav";
+    @import "custom/components/table";
+    @import "custom/components/pagination";
+    @import "custom/components/progress";
+}
+
+

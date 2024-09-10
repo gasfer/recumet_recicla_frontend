@@ -1,0 +1,40 @@
+<p-dialog [header]="'Asignación de sucursales'" [(visible)]="userService.showModalSucursales"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '45vw' }" [draggable]="false"
+    [resizable]="false" (onShow)="this.getAllSucursales();"
+    [dismissableMask]="true">
+    <form >
+        <app-alert-notify [subTitle]="'Marca las sucursales a asignar'" [required]="false" [subTitle2]="''"></app-alert-notify>
+        <p-table   [value]="sucursales()" [styleClass]="'p-datatable-sm'">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th  class="text-white" style="min-width:20px;max-width:20px; background-color: var(--bg-primary)" >SELEC.</th>
+                    <th  class="text-white" style="min-width:70px; max-width:70px; background-color: var(--bg-primary)">NOMBRE</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-sucursal>
+                <tr>
+                    <td style="min-width:20px;max-width:20px;">
+                        <button
+                            pButton
+                            pTooltip="Asignar"
+                            tooltipPosition="bottom"
+                            (click)="assignSucursal(sucursal)"
+                            pRipple
+                            [icon]="sucursal.select ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-check'"
+                            class="p-button-rounded"
+                            [ngClass]="{
+                                'p-button-outlined' : !sucursal.select ,
+                            }"
+                        ></button>
+                    </td>
+                    <td  style="text-align: left; white-space:normal; min-width:70px;max-width:70px;" >{{ sucursal.name }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? saveAssignSucursales() : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="userService.showModalSucursales = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

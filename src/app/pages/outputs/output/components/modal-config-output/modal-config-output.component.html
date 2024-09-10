@@ -1,0 +1,28 @@
+<p-dialog [header]="'Configuración de ventas'" [(visible)]="outputService.showModalConfigInput"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true">
+    <app-alert-notify [subTitle]="'Configurar los aspectos del módulo de ventas.'" [subTitle2]="'Por favor, tenga en cuenta que los casilleros de verificación se consideran como afirmativos.'" [required]="false"></app-alert-notify>
+    <div [formGroup]="formConfig">
+        <div class="field-checkbox">
+            <p-checkbox class="m-1" [binary]="true"  formControlName="searchForCode"  inputId="codigoB"></p-checkbox>
+            <label class="cursor-pointer m-1" for="codigoB">Buscador por lector Cod. Barra</label>
+        </div>
+        <div class="field-checkbox">
+          <p-checkbox class="m-1" [binary]="true"  formControlName="clearInputAfterProductSearch"  inputId="clearI"></p-checkbox>
+          <label class="cursor-pointer m-1" for="clearI">Limpiar buscador al agregar productos (Buscador 1)</label>
+        </div>
+        <div class="field-checkbox">
+            <p-checkbox class="m-1" [binary]="true" formControlName="viewCardProducts" inputId="ListaP"></p-checkbox>
+            <label class="cursor-pointer m-1" for="ListaP">Ver tarjeta de productos</label>
+        </div>
+        <div class="field-checkbox">
+            <p-checkbox class="m-1" [binary]="true" formControlName="printSale" inputId="ImprimirF"></p-checkbox>
+            <label class="cursor-pointer m-1" for="ImprimirF">Imprimir al finalizar venta</label>
+        </div>
+      </div>
+      <ng-template pTemplate="footer">
+        <p-button (click)="saveConfig()" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk"></p-button>
+        <p-button (click)="outputService.showModalConfigInput = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

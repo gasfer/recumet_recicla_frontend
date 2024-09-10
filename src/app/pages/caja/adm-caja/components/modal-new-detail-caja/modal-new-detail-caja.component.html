@@ -1,0 +1,60 @@
+<p-dialog [header]="cajaService.type_movement == 'INGRESO' ? 'Nuevo ingreso' : 'Nuevo gasto'" [(visible)]="cajaService.showModalMovementCaja"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false"  (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="form">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Monto<span class="text-danger">*</span>
+                    </label>
+                    <p-inputNumber
+                        locale="en-US"
+                        mode="decimal"
+                        inputId="locale-us"
+                        formControlName="monto"
+                        [minFractionDigits]="decimalLength()"
+                        [maxFractionDigits]="decimalLength()"
+                        [showButtons]="true"
+                        buttonLayout="horizontal"
+                        spinnerMode="horizontal"
+                        decrementButtonClass="p-button-secondary"
+                        incrementButtonClass="p-button-primary"
+                        incrementButtonIcon="fa-solid fa-plus"
+                        decrementButtonIcon="fa-solid fa-minus"
+                        [min]="0"
+                        [max]="100000000"
+                        [class.ng-dirty]="validatorsService.inputValid('monto',form)" 
+                    >
+                    </p-inputNumber>
+                    <small *ngIf="validatorsService.inputValid('monto',form)" class="p-error block">
+                        {{ 'Monto no valido' }}
+                    </small> 
+                </div>
+            </div>
+            <div class="field mt-2">
+                <label class="block mb-0">Descripcion<span class="text-danger">*</span>
+                </label>
+                <textarea pInputTextarea
+                    type="text"
+                    style="text-transform: uppercase"
+                    pInputText
+                    [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="description"
+                    placeholder="EJ. ......"
+                    class="mt-1"
+                    [class.ng-dirty]="validatorsService.inputValid('description',form)"
+                ></textarea>
+                <small *ngIf="validatorsService.inputValid('description',form)" class="p-error block">
+                    {{ validatorsService.inputValidMessage("description",form) }}
+                </small>
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? newDetailCaja() : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="cajaService.showModalMovementCaja = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

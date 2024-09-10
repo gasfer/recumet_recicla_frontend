@@ -1,0 +1,31 @@
+<p-dialog
+  [header]="componentsService.nameImg()"
+  [(visible)]="componentsService.setShowImg"
+  [modal]="true"
+  [breakpoints]="{ '960px': '75vw', '576px': '95%' }"
+  [style]="{ width: componentsService.withModal}"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+>
+  <form>
+    <div class="p-fluid grid">
+      <p-tag
+          styleClass="m-1"
+          [rounded]="true"
+          [value]="componentsService.textImg()"
+          icon="fa-solid fa-image"
+      ></p-tag>
+        <div class="text-center">
+            <img class="img-fluid" [src]="componentsService.srcImg() | image: componentsService.typeImg()" 
+              style="border-radius: 10px;" alt="">
+        </div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button (click)="componentsService.setShowImg = false;" 
+      label="Ok, Cerrar" 
+      styleClass="p-button-outlined p-button-sm p-button-rounded">
+    </p-button>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,25 @@
+<p-table #dt id="tableloading" [value]="cols" responsiveLayout="scroll" 
+       scrollHeight="400px"  styleClass=" p-datatable-sm p-datatable-striped animated fadeIn" >
+        <ng-template pTemplate="header">
+            <tr>
+                <th *ngFor="let col of cols"
+                style="background-color: var(--bg-primary)"
+                class="text-white">
+                    {{col.header}}
+                    <p-sortIcon></p-sortIcon>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body">
+            <tr>
+                <td *ngFor="let col of cols">
+                    <p-skeleton></p-skeleton>
+                </td>
+            </tr>
+            <tr>
+                <td *ngFor="let col of cols">
+                    <p-skeleton></p-skeleton>
+                </td>
+            </tr>
+        </ng-template>
+</p-table>

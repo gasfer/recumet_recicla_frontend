@@ -1,0 +1,44 @@
+<p-dialog [header]="!storageService.isEdit ? 'Registro almacén' : 'Modificar almacén'" [(visible)]="storageService.showModal"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="storageForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Nombre area / almacén:<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. ALMACEN 1" 
+                        [class.ng-dirty]="validatorsService.inputValid('name',storageForm)" />
+                    <small *ngIf="validatorsService.inputValid('name',storageForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("name",storageForm) }}
+                    </small>
+                </div>
+            </div>
+            <div class="row mt-1 ">
+                <label class="block">Estado:<span class="text-danger">*</span></label>
+            </div>
+            <div class="row mt-0">
+                <div class="col-3">
+                    <p-inputSwitch formControlName="status"></p-inputSwitch>
+                </div>
+                <div class="col">
+                    <p-tag  [rounded]="true" 
+                            [icon]="storageForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
+                            [style]="storageForm.get('status')!.value
+                                      ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
+                                      : { 'background-color': 'red', color: '#ffffff' }" 
+                            [value]="storageForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                    </p-tag>
+                </div>
+            </div>  
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? (storageService.isEdit ? editStorage() : newStorage()) : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="storageService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

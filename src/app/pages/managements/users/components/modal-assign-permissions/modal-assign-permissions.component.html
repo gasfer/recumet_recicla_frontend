@@ -1,0 +1,52 @@
+<p-dialog [header]="'Asignación de permisos'" [(visible)]="userService.showModalAssignPermissions" [modal]="true"
+  [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '65vw' }" [draggable]="false"
+  [resizable]="false" (onHide)="resetFormGroup()" [dismissableMask]="true">
+  <form [formGroup]="permissionsForm">
+    <app-alert-notify [subTitle]="'Selecciona los accesos por modulo.'" [subTitle2]="'Se restringirá el acceso'"
+      [required]="false"></app-alert-notify>
+    <p-table responsiveLayout="stack" [value]="this.formArray.controls" [rows]="10" [styleClass]="'p-datatable-sm p-datatable-striped'" 
+      [scrollable]="true" [responsive]="true" scrollHeight="450px" virtualScroll="true" >
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="text-white" style="background-color: var(--bg-primary)">Modulo</th>
+          <th class="text-white" style="background-color: var(--bg-primary)">Ver</th>
+          <th class="text-white" style="background-color: var(--bg-primary)">Crear</th>
+          <th class="text-white" style="background-color: var(--bg-primary)">Modificar</th>
+          <th class="text-white" style="background-color: var(--bg-primary)">Eliminar</th>
+          <th class="text-white" style="background-color: var(--bg-primary)">Reporte</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" formArrayName="permissions" let-permission let-i="rowIndex">
+        <tr [formGroupName]="i">
+          <td><span class="p-column-title">Modulo</span>{{ permission.get('module').value }}</td>
+          <td><span class="p-column-title">View</span><p-checkbox formControlName="view" [binary]="true"></p-checkbox><i
+              class="ms-1 fa-solid "  style="color: #008000;"
+              [ngClass]="{'fa-eye':permission.get('view').value,'fa-xmark':!permission.get('view').value}" ></i>
+          </td>
+          <td><span class="p-column-title">Crear</span><p-checkbox formControlName="create"
+              [binary]="true"></p-checkbox><i class="ms-1 fa-solid" style="color: #0D89EC;"
+              [ngClass]="{'fa-circle-plus':permission.get('create').value,'fa-xmark':!permission.get('create').value}"
+              ></i></td>
+          <td><span class="p-column-title">Modificar</span><p-checkbox formControlName="update"
+              [binary]="true"></p-checkbox><i class="ms-1 fas" style="color: #FAB710;"
+              [ngClass]="{' fa-edit':permission.get('update').value,'fa-solid fa-xmark':!permission.get('update').value}"
+              ></i></td>
+          <td><span class="p-column-title">Eliminar</span><p-checkbox formControlName="delete"
+              [binary]="true"></p-checkbox><i class="ms-1 fa-solid" style="color: #C02929;"
+              [ngClass]="{'fa-trash-can':permission.get('delete').value,'fa-xmark':!permission.get('delete').value}"
+              ></i></td>
+          <td><span class="p-column-title">Reporte</span><p-checkbox formControlName="reports"
+              [binary]="true"></p-checkbox><i class="ms-1 fa-solid" style="color: #56717D;"
+              [ngClass]="{' fa-file-pdf':permission.get('reports').value,'fa-xmark':!permission.get('reports').value}"
+              ></i></td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button (click)="!loading() ? sendNewPermissions() : null" styleClass="p-button-sm p-button-rounded"
+      label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+    <p-button (click)="userService.showModalAssignPermissions = false" label="Cancelar"
+      styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+  </ng-template>
+</p-dialog>

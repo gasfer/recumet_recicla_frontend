@@ -1,0 +1,282 @@
+<p-dialog [header]="!productsService.isEdit ? 'Registro Producto' : 'Modificar Producto'" [(visible)]="productsService.showModal"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '40vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="productForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Producto<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. ...." 
+                        [class.ng-dirty]="validatorsService.inputValid('name',productForm)" />
+                    <small *ngIf="validatorsService.inputValid('name',productForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("name",productForm) }}
+                    </small>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Código</label>
+                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="cod" placeholder="EJ. 12586255" 
+                        [class.ng-dirty]="validatorsService.inputValid('cod',productForm)" />
+                    <small *ngIf="validatorsService.inputValid('cod',productForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("cod",productForm) }}
+                    </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Descripcion / Variantes</label>
+                        <textarea pInputTextarea
+                            type="text"
+                            style="text-transform: uppercase"
+                            pInputText
+                            [pKeyFilter]="validatorsService.expRegValidInput"
+                            formControlName="description"
+                            placeholder="EJ. ......"
+                            class="mt-1"
+                            [class.ng-dirty]="validatorsService.inputValid('description',productForm)"
+                        ></textarea>
+                        <small *ngIf="validatorsService.inputValid('description',productForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("description",productForm) }}
+                        </small>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Costo<span class="text-danger">*</span>
+                        </label>
+                        <p-inputNumber
+                            locale="en-US"
+                            mode="decimal"
+                            inputId="locale-us"
+                            formControlName="costo"
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            spinnerMode="horizontal"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            incrementButtonIcon="fa-solid fa-plus"
+                            decrementButtonIcon="fa-solid fa-minus"
+                            [class.ng-dirty]="validatorsService.inputValid('costo',productForm)"
+                            [min]="0"
+                            [max]="9999999999999.99"
+                        >
+                        </p-inputNumber>
+                        <small *ngIf="validatorsService.inputValid('costo',productForm)" class="p-error block">
+                            {{ 'Costo no valido' }}
+                        </small>
+                    </div>
+                    <!-- <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Controlar Inventariado<span class="text-danger">*</span>
+                        </label>
+                        <p-dropdown [options]="inventariable()" 
+                          placeholder="Selecciona una opción" 
+                          optionLabel="name"
+                          optionValue="code"
+                          appendTo="body"
+                          formControlName="inventariable" 
+                          [class.ng-dirty]="validatorsService.inputValid('inventariable',productForm)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('inventariable',productForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("inventariable",productForm) }}
+                        </small>
+                    </div> -->
+                </div>
+                <div *ngIf="!productsService.isEdit" class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">M. Utilidad [%]<span class="text-danger">*</span>
+                        </label>
+                        <p-inputNumber
+                            locale="en-US"
+                            mode="decimal"
+                            inputId="locale-us"
+                            formControlName="margen_utilidad"
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            spinnerMode="horizontal"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            incrementButtonIcon="fa-solid fa-plus"
+                            decrementButtonIcon="fa-solid fa-minus"
+                            [class.ng-dirty]="validatorsService.inputValid('margen_utilidad',productForm)"
+                            [min]="0"
+                            [max]="9999999999999.99"
+                        >
+                        </p-inputNumber>
+                        <small *ngIf="validatorsService.inputValid('margen_utilidad',productForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("margen_utilidad",productForm) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Precio de venta<span class="text-danger">*</span>
+                        </label>
+                        <p-inputNumber
+                            locale="en-US"
+                            mode="decimal"
+                            inputId="locale-us"
+                            formControlName="precio_venta"
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            spinnerMode="vertical"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            incrementButtonIcon="fa-solid fa-plus"
+                            decrementButtonIcon="fa-solid fa-minus"
+                            [class.ng-dirty]="validatorsService.inputValid('precio_venta',productForm)"
+                            [min]="0"
+                            [max]="9999999999999.99"
+                        >
+                        </p-inputNumber>
+                        <small *ngIf="validatorsService.inputValid('precio_venta',productForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("precio_venta",productForm) }}
+                        </small>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Categoría<span class="text-danger">*</span>
+                        </label>
+                        <p-dropdown [options]="categories()" 
+                          placeholder="Selecciona una categoría" 
+                          optionLabel="name"
+                          optionValue="code"
+                          appendTo="body" [filter]="true" filterBy="name"
+                          [virtualScrollItemSize]="38" [lazy]="true"
+                          formControlName="id_category" 
+                          [class.ng-dirty]="validatorsService.inputValid('id_category',productForm)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('id_category',productForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("id_category",productForm) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Unidad de medida<span class="text-danger">*</span>
+                        </label>
+                        <p-dropdown [options]="units()" 
+                          placeholder="Selecciona una opción" 
+                          optionLabel="name"
+                          optionValue="code"
+                          appendTo="body"  [filter]="true" filterBy="name"
+                          [virtualScrollItemSize]="38" [lazy]="true"
+                          formControlName="id_unit" 
+                          [class.ng-dirty]="validatorsService.inputValid('id_unit',productForm)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('id_unit',productForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("id_unit",productForm) }}
+                        </small>
+                    </div>
+                </div>
+                <div *ngIf="!productsService.isEdit" class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Area / Almacén (Ingreso stock inicial)</label>
+                        <p-dropdown [options]="validatorsService.storages()" 
+                          placeholder="Selecciona un almacén" 
+                          optionLabel="name"
+                          optionValue="id"
+                          appendTo="body" [filter]="true" filterBy="name"
+                          [virtualScrollItemSize]="38" [lazy]="true"
+                          formControlName="id_storage" 
+                          [class.ng-dirty]="validatorsService.inputValid('id_storage',productForm)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('id_storage',productForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("id_storage",productForm) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Stock inicial</label>
+                        <p-inputNumber
+                            locale="en-US"
+                            mode="decimal"
+                            inputId="locale-us"
+                            formControlName="stock"
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            spinnerMode="vertical"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            incrementButtonIcon="fa-solid fa-plus"
+                            decrementButtonIcon="fa-solid fa-minus"
+                            [class.ng-dirty]="validatorsService.inputValid('stock',productForm)"
+                            [min]="0"
+                            [max]="9999999999999.99"
+                        >
+                        </p-inputNumber>
+                        <small *ngIf="validatorsService.inputValid('stock',productForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("stock",productForm) }}
+                        </small>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-12">
+                        <p><b>Imagen Producto</b></p>
+                        <div class="text-center">
+                            <div class="col">
+                                <img *ngIf="validatorsService.compressLoading" src="../../../../../../assets/img/gifs/loading.gif" alt="" width="250px">
+                                <img
+                                    *ngIf="!imgTempProd && !validatorsService.compressLoading"
+                                    [src]="imgPathProd | image: 'products'"
+                                    width="180px"
+                                    class="img-fluid mb-2"
+                                />
+                                <img
+                                    *ngIf="imgTempProd && !validatorsService.compressLoading"
+                                    [src]="imgTempProd"
+                                    width="180px"
+                                />
+                                <button
+                                    pButton
+                                    pRipple
+                                    type="button"
+                                    [pTooltip]="'Quitar'"
+                                    icon="fa-solid fa-trash"
+                                    class="p-button-rounded p-button-danger"
+                                    (click)="quitarProdImg()"
+                                ></button>
+                            </div>
+            
+                            <input
+                                #inputFileProd
+                                type="file"
+                                class="form-control mt-1"
+                                accept=".png, .jpg, .jpeg"
+                                (change)="cambiarImgProd($event)"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <label class="block">Estado:<span class="text-danger">*</span></label>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-3">
+                        <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    </div>
+                    <div class="col">
+                        <p-tag  [rounded]="true" 
+                                [icon]="productForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
+                                [style]="productForm.get('status')!.value
+                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
+                                          : { 'background-color': 'red', color: '#ffffff' }" 
+                                [value]="productForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                        </p-tag>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ? (productsService.isEdit ? editProduct() : newProduct()) : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fas fa-save" [loading]="loading()"></p-button>
+        <p-button (click)="productsService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

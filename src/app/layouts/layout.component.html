@@ -1,0 +1,6 @@
+<!-- vertical layout -->
+<app-vertical *ngIf="isVerticalLayoutRequested()" [breadcrumbs]="breadcrumbs"></app-vertical>
+<img *ngIf="validatorsService.loadingPage()" class="loading-page img-fluid" src="../../assets/img/gifs/loading-none-back.gif" alt="">
+
+<!-- horizontal layout -->
+<app-horizontal *ngIf="isHorizontalLayoutRequested()" [breadcrumbs]="breadcrumbs"></app-horizontal>

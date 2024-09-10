@@ -1,0 +1,44 @@
+<p-dialog [header]="'Registro camion / vehículo para: ' + transportCompany?.name" [(visible)]="transportCompanyService.showModalNewCargoTruck"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="cargoTruckForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="field">
+                    <label class="block mb-0">Placa<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="placa" placeholder="EJ. 123ABC..." 
+                        [class.ng-dirty]="validatorsService.inputValid('placa',cargoTruckForm)" />
+                    <small *ngIf="validatorsService.inputValid('placa',cargoTruckForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("placa",cargoTruckForm) }}
+                    </small>
+                </div>
+                <div class="row mt-1 ">
+                    <label class="block">Estado:<span class="text-danger">*</span></label>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-3">
+                        <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    </div>
+                    <div class="col">
+                        <p-tag  [rounded]="true" 
+                                [icon]="cargoTruckForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
+                                [style]="cargoTruckForm.get('status')!.value
+                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
+                                          : { 'background-color': 'red', color: '#ffffff' }" 
+                                [value]="cargoTruckForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                        </p-tag>
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ?  newCargoTruck() : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="transportCompanyService.showModalNewCargoTruck = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

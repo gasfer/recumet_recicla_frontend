@@ -1,0 +1,92 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+    --bg-primary: rgba(42, 48, 66, 0.90);
+}
+.background-primary {
+    background-color: var(--bg-primary) !important;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.swal-alert {
+    z-index: 99999 !important;
+}
+.sweetalert2{
+    z-index: 999999 !important;
+}
+
+.p-inputgroup p-dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+body .p-datepicker table td {
+    padding: 0.0rem;
+} 
+
+.cardItem {
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.25;
+    border-radius: 30px !important;
+}
+.cardItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 16px rgba(0, 0, 0, 0.2);
+}
+p {
+    font-size: small;
+}
+html {
+    font-size: 14px !important;
+}
+
+body .p-datepicker table td {
+    padding: 0.10rem;
+} 
+
+.loading-page {
+    position: fixed;
+    z-index: 9999999;
+    top: 50%;
+    height: 100%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+ 
+
+
+body .p-dialog .p-dialog-header  {
+    border-top-right-radius: 10px !important;
+    border-top-left-radius: 10px !important;
+}
+
+body .p-dialog .p-dialog-footer {
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+body .p-inputtext {
+    border-radius: 6px;
+}
+body .p-inputgroup .p-inputtext {
+    border-radius: 3px;
+}
+body .p-inputgroup .p-dropdown {
+    border-radius: 6px 0px 0px 6px;
+}
+body .p-calendar-w-btn .p-inputtext {
+    border-radius: 6px 0px 0px 6px;
+}
+body .p-inputnumber-buttons-stacked .p-inputnumber-input {
+    border-radius: 3px;
+}
+body .p-fluid .p-inputnumber .p-inputnumber-input {
+    border-radius: 0px !important;
+}
+
+body .p-dropdown {
+    border-radius: 6px;
+}

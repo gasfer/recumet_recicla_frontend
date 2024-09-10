@@ -1,0 +1,7 @@
+<div [class]="'alert '+ classColor +' m-2 d-flex align-items-center alert-dismissible fade show'" role="alert">
+    <i class="fa-solid fa-circle-info"></i>
+      <div #alertText class="ms-2">
+        <b>{{title}}</b> {{subTitle}} <span *ngIf="required" class="text-danger">*</span> {{subTitle2}}
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>

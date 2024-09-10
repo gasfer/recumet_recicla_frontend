@@ -1,0 +1,159 @@
+<app-card-empty *ngIf="data?.data?.length === 0 && loading === false"></app-card-empty>
+
+<p-table #dt id="table" [value]="data?.data" styleClass="p-datatable-sm p-datatable-striped animated fadeIn"
+    [scrollHeight]="heightTable" [resizableColumns]="true" [rowHover]="true" [rows]="50" [columns]="cols"
+    responsiveLayout="stack" [paginator]="customPagination" [showCurrentPageReport]="true" [sortField]="sortField"
+    [sortOrder]="sortOrder === 'DESC' ? 0 : 1" sortMode="single" (onLazyLoad)="customSort($event)" [lazy]="isCustomSort"
+    currentPageReportTemplate="Mostrando del {first} al {last} total de {totalRecords}"
+    [rowsPerPageOptions]="[10, 50, 100, 200, 500]" [globalFilterFields]="stringSearch" dataKey="id" editMode="row">
+    <ng-template *ngIf="includeSearch" pTemplate="caption">
+        <div class="text-center">
+            <p-dropdown [options]="searchFor" [formControl]="searchSelect" placeholder="Buscar por:" optionLabel="name"
+                optionValue="code" appendTo="body"></p-dropdown>
+            <span class="p-input-icon-right ms-2 mt-1">
+                <i (click)="clearSearch()" class="fa-solid fa-circle-xmark cursor-pointer"></i>
+                <input type="text" style="text-transform:uppercase" pInputText placeholder="Escriba para filtrar..."
+                    [formControl]="txtTermino" (keyup)="search()" />
+            </span>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <ng-content *ngIf="!loading"></ng-content>
+        <tr *ngIf="!loading">
+            <th *ngFor="let col of columns" [style]="col.style" style="background-color: var(--bg-primary)"
+                class="text-white" [pSortableColumn]="col.field">
+                {{col.header}}<p-sortIcon [field]="col.field" *ngIf="col.activeSortable ?? true"></p-sortIcon>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData  let-editing="editing" let-ri="rowIndex">
+        <tr [pEditableRow]="rowData">
+            <td>
+                {{rowData.cod}}
+            </td>
+            <td>
+                {{rowData.name}}
+            </td>
+            <td>
+                <p>
+                    {{rowData.description}}
+                </p>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-inputNumber
+                            [style]="{'height': '38px'}"
+                            [size]="10"
+                            locale="en-US" 
+                            mode="decimal" 
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            placeholder="0.00"
+                            [min]="0"
+                            [max]="99999999999999"
+                            [(ngModel)] = "rowData.productCosts.cost"
+                            tooltipPosition="top">
+                        </p-inputNumber> 
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <p-tag
+                            styleClass="mr-2"
+                            [rounded]="true"
+                            [severity]="'info'"
+                            value="{{rowData.productCosts.cost  | number:decimal()}}"
+                            [icon]="'fa-solid fa-sack-dollar'"
+                        ></p-tag>
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-inputNumber
+                            [style]="{'height': '38px'}"
+                            [size]="10"
+                            locale="en-US" 
+                            mode="decimal" 
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            placeholder="0.00"
+                            [min]="0"
+                            [max]="99999999999999"
+                            [(ngModel)] = "rowData.productCosts.cost_two"
+                            tooltipPosition="top">
+                        </p-inputNumber>  
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <p-tag
+                            styleClass="mr-2"
+                            [rounded]="true"
+                            [severity]="'success'"
+                            value="{{rowData.productCosts.cost_two  | number:decimal()}}"
+                            [icon]="'fa-solid fa-sack-dollar'"
+                        ></p-tag>
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-inputNumber
+                            [style]="{'height': '38px'}"
+                            [size]="10"
+                            locale="en-US" 
+                            mode="decimal" 
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            placeholder="0.00"
+                            [min]="0"
+                            [max]="99999999999999"
+                            [(ngModel)] = "rowData.productCosts.cost_tree"
+                            tooltipPosition="top">
+                        </p-inputNumber>  
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <p-tag
+                        styleClass="mr-2"
+                        [rounded]="true"
+                        [severity]="'secondary'"
+                        value="{{rowData.productCosts.cost_tree | number:decimal()}}"
+                        [icon]="'fa-solid fa-sack-dollar'"
+                    ></p-tag>
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+           
+            <td>
+                <div class="flex align-items-center justify-content-center gap-2">
+                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="fas fa-pencil"
+                        (click)="onRowEditInit(rowData)" class="p-button-rounded p-button-warning p-button-sm  ms-2">
+                    </button>
+                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="fas fa-check"
+                        (click)="onRowEditSave(rowData)"
+                        class="p-button-rounded p-button-success p-button-success ms-2">
+                    </button>
+                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="fas fa-times"
+                        (click)="onRowEditCancel(rowData, ri)"
+                        class="p-button-rounded p-button-danger p-button-danger ms-2">
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-paginator *ngIf="!customPagination" [rows]="rows" [rowsPerPageOptions]="[50,100,200,500]"
+    (onPageChange)="paginate($event)" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando del {{from}} al {{to}} total de {{total}}" [totalRecords]="total" #paginator
+    [dropdownAppendTo]="'body'">
+</p-paginator>

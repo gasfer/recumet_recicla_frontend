@@ -1,0 +1,419 @@
+<p-dialog
+    [header]="outputService.isEdit ? 'Editar venta: ' + outputService.dataOutputForEdit()?.cod :  'Registro de venta'"
+    [(visible)]="outputService.showModalSaveInput" [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }"
+    [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false" [dismissableMask]="true"
+    (onShow)="onShowModal()" (onHide)="resetModal()">
+    <form [formGroup]="formOutput">
+        <div class="m-2">
+            <p-messages *ngIf="outputService.isEdit" severity="warn" class="animated fadeInDown">
+                <ng-template pTemplate>
+                    <ul class="mb-0 pb-0">
+                        <li>
+                            <b>PROCESO DE EDICIÓN VENTA: {{outputService.dataOutputForEdit()?.cod}} <i class="fas fa-edit"></i></b>
+                        </li>
+                    </ul>
+                </ng-template>
+            </p-messages>
+        </div>
+        <div formGroupName="output_data" class="p-fluid grid">
+            <div class="field col-12">
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Cliente<span class="text-danger">*</span></label><br>
+                        <p-tag [rounded]="true" icon="fa-solid fa-truck-moving"
+                            [severity]="clientSelect() ? 'info' : 'warning'"
+                            [value]="clientSelect() ? 'NIT-CI: ' + clientSelect()?.number_document+' / ' + clientSelect()?.full_names : 'NIT-CI: 0 / SELECCIONE UN CLIENTE'">
+                            <p-badge *ngIf="clientSelect()" class="cursor-pointer" severity="danger"
+                                (click)="outputService.clientSelect.set(undefined)" [value]="'X'" styleClass="mr-2"
+                                pTooltip="Quitar cliente" tooltipPosition="top">
+                            </p-badge>
+                        </p-tag><br>
+                        <small *ngIf="!clientSelect() && formOutput.get('output_data.pay_to_credit')!.value" class="p-error block">
+                            <b>{{ 'Selecciona un cliente, para venta a crédito.' }}</b>
+                        </small> 
+                    </div>
+                    <div class="col-12 mt-sm-0 mt-1" [ngClass]="{
+                        'col-sm-3': formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR',
+                        'col-sm-6': formOutput.get('output_data.voucher')!.value != 'MAYOR. EXTERIOR',
+                    }">
+                        <label class="block mb-0">Tipo venta<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="types_output()" placeholder="Selecciona una opción" optionLabel="name"
+                            optionValue="name" appendTo="body" (onChange)="selectTypeOutput()" formControlName="voucher"
+                            [class.ng-dirty]="validatorsService.inputValid('output_data.voucher',formOutput)"></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_data.voucher',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_data.voucher",formOutput) }}
+                        </small>        
+                    </div>
+                    <div *ngIf="formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR'" class="col-sm-3 col-12 mt-sm-0 mt-1 animated fadeInDown">
+                        <label class="mb-0">Camion abierto:</label>
+                        <div class="row">
+                            <div class="col mt-1">
+                                <p-inputSwitch formControlName="open_truck"></p-inputSwitch>
+                            </div>
+                            <div class="col mt-1 ms-1">
+                                <p-tag [rounded]="true" [icon]="formOutput.get('output_data.open_truck')!.value
+                                    ? 'fa-solid fa-truck-ramp-box'
+                                    : 'fa-solid fa-truck'" [severity]="formOutput.get('output_data.open_truck')!.value
+                                    ? 'success'
+                                    : 'warning'" [value]="formOutput.get('output_data.open_truck')!.value
+                                    ? 'SI'
+                                    : 'NO'">
+                                </p-tag>  
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Comprobante<span class="text-danger">*</span></label>
+                                <p-dropdown [options]="types_comprobante()" placeholder="Selecciona una opción" optionLabel="name"
+                                    optionValue="name" appendTo="body" formControlName="type_voucher"
+                                    [class.ng-dirty]="validatorsService.inputValid('output_data.type_voucher',formOutput)"></p-dropdown>
+                                <small *ngIf="validatorsService.inputValid('output_data.type_voucher',formOutput)" class="p-error block">
+                                    {{ validatorsService.inputValidMessage("output_data.type_voucher",formOutput) }}
+                                </small>
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Pesaje<span class="text-danger">*</span></label>
+                                <p-dropdown [options]="scalas()" placeholder="Selecciona una opción" optionLabel="name"
+                                    optionValue="id" appendTo="body" formControlName="id_scale"
+                                    [class.ng-dirty]="validatorsService.inputValid('output_data.id_scale',formOutput)"></p-dropdown>
+                                <small *ngIf="validatorsService.inputValid('output_data.id_scale',formOutput)" class="p-error block">
+                                    {{ validatorsService.inputValidMessage("output_data.id_scale",formOutput) }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Tipo pesaje<span class="text-danger">*</span></label>
+                                <p-dropdown [options]="types_registry()" 
+                                  placeholder="Selecciona una opción" 
+                                  optionLabel="name"
+                                  optionValue="code"
+                                  appendTo="body"
+                                  formControlName="type_registry" 
+                                  [class.ng-dirty]="validatorsService.inputValid('output_data.type_registry',formOutput)"
+                                ></p-dropdown>
+                                <small *ngIf="validatorsService.inputValid('output_data.type_registry',formOutput)" class="p-error block">
+                                    {{ validatorsService.inputValidMessage("output_data.type_registry",formOutput) }}
+                                </small>   
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Nro.</label>
+                                <input type="text" style="text-transform: uppercase" pInputText
+                                    [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_registry"
+                                    placeholder="EJ. 0001" [pKeyFilter]="validatorsService.expRegValidInput"
+                                    [class.ng-dirty]="validatorsService.inputValid('output_data.number_registry',formOutput)" />
+                                <small *ngIf="validatorsService.inputValid('output_data.number_registry',formOutput)"
+                                    class="p-error block">
+                                    {{ validatorsService.inputValidMessage("output_data.number_registry",formOutput) }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <div class="row">
+                            <div class="col-sm-7 col-12">
+                                <div class="row">
+                                    <div class="col-sm-6 col-12">
+                                        <label class="block mb-0">Sumas<span class="text-danger">*</span></label>
+                                        <p-tag [rounded]="true" [severity]="'success'"
+                                            [icon]="'fa-solid fa-comments-dollar'"
+                                            value="{{formOutput.get('output_data.sub_total')?.value| number:decimal()}}"></p-tag>
+                                    </div>
+                                    <div class="col-sm-6 col-12">
+                                        <label class="block mb-0">Total<span class="text-danger">*</span></label>
+                                        <p-tag class="ms-1" [rounded]="true" [icon]="'fa-solid fa-comments-dollar'"
+                                            value="{{formOutput.get('output_data.total')?.value | number:decimal()}}"></p-tag>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-5 col-12">
+                                <label class="block mb-0">Descuento</label>
+                                <p-inputNumber locale="en-US" mode="decimal" inputId="locale-us"
+                                    formControlName="discount" [minFractionDigits]="decimalLength()"
+                                    [maxFractionDigits]="decimalLength()" [showButtons]="true"
+                                    (onBlur)="onChangeDescuento()" buttonLayout="horizontal" spinnerMode="horizontal"
+                                    decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-primary"
+                                    incrementButtonIcon="fa-solid fa-plus" decrementButtonIcon="fa-solid fa-minus"
+                                    [class.ng-dirty]="validatorsService.inputValid('output_data.discount',formOutput)" [min]="0"
+                                    [max]="formOutput.get('output_data.sub_total')?.value"
+                                    [class.ng-dirty]="validatorsService.inputValid('output_data.discount',formOutput)">
+                                </p-inputNumber>
+                                <small *ngIf="validatorsService.inputValid('output_data.discount',formOutput)"
+                                    class="p-error block">
+                                    {{ 'Descuento no valido' }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1 ">
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <div class="row">
+                                    <label class="block mb-0">Seleccione tipo pago:<span
+                                            class="text-danger">*</span></label>
+                                    <div *ngIf="!blockedOutputCredit()" class="col-4 mt-1">
+                                        <p-inputSwitch formControlName="pay_to_credit"></p-inputSwitch>
+                                    </div>
+                                    <div class="col-7 mt-1 ms-1">
+                                        <p-tag [rounded]="true" [icon]="formOutput.get('output_data.pay_to_credit')!.value
+                                            ? 'fa-solid fa-comments-dollar'
+                                            : 'fa-solid fa-sack-dollar'" [severity]="formOutput.get('output_data.pay_to_credit')!.value
+                                            ? 'success'
+                                            : 'info'" [value]="formOutput.get('output_data.pay_to_credit')!.value
+                                            ? 'A CRÉDITO'
+                                            : 'AL CONTADO'"></p-tag>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="formOutput.get('output_data.pay_to_credit')!.value && !blockedOutputCredit()"
+                                class="col-sm-6 col-12 animated fadeInDown">
+                                <label class="block mb-0">A cuenta:<span class="text-danger">*</span></label>
+                                <p-inputNumber locale="en-US" mode="decimal" inputId="locale-us"
+                                    formControlName="on_account" [minFractionDigits]="decimalLength()"
+                                    [maxFractionDigits]="decimalLength()" [showButtons]="true" buttonLayout="horizontal"
+                                    spinnerMode="horizontal" decrementButtonClass="p-button-secondary"
+                                    incrementButtonClass="p-button-primary" incrementButtonIcon="fa-solid fa-plus"
+                                    decrementButtonIcon="fa-solid fa-minus"
+                                    [class.ng-dirty]="validatorsService.inputValid('on_account',formOutput)" [min]="0"
+                                    [max]="formOutput.get('output_data.total')?.value"
+                                    [class.ng-dirty]="validatorsService.inputValid('on_account',formOutput)">
+                                </p-inputNumber>
+                                <small *ngIf="validatorsService.inputValid('on_account',formOutput)"
+                                    class="p-error block">
+                                    {{ 'Monto no valido' }}
+                                </small>
+                            </div>
+                            <div *ngIf="formOutput.get('output_data.pay_to_credit')!.value && blockedOutputCredit()"
+                                class="col-sm-6 col-12 animated fadeInDown">
+                                <small class="p-error block">
+                                    {{ 'El monto a crédito no se puede cambiar. Se han realizado múltiples abonos' }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Pago en<span class="text-danger">*</span>
+                        </label>
+                        <p-dropdown [options]="types_pay()" placeholder="Selecciona una opción" optionLabel="name"
+                            optionValue="name" appendTo="body" (onChange)="selectTypePay()" [virtualScrollItemSize]="38"
+                            [lazy]="true" formControlName="type_payment"
+                            [class.ng-dirty]="validatorsService.inputValid('output_data.type_payment',formOutput)"></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_data.type_payment',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_data.type_payment",formOutput) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Observaciones</label>
+                        <textarea pInputTextarea type="text" style="text-transform: uppercase" pInputText
+                            [pKeyFilter]="validatorsService.expRegValidInput" formControlName="comments"
+                            placeholder="EJ. ......" class="mt-1"
+                            [class.ng-dirty]="validatorsService.inputValid('output_data.comments',formOutput)"></textarea>
+                        <small *ngIf="validatorsService.inputValid('output_data.comments',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_data.comments",formOutput) }}
+                        </small>
+                    </div>
+                </div>
+                <div *ngIf="formOutput.get('output_data.type_payment')?.value != 'EFECTIVO'" class="row mt-1  animated fadeInDown">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Banco<span class="text-danger">*</span>
+                        </label>
+                        <p-dropdown [options]="banks()" placeholder="Selecciona una opción" optionLabel="name"
+                            optionValue="id" appendTo="body" [virtualScrollItemSize]="38" [lazy]="true"
+                            formControlName="id_bank"
+                            [class.ng-dirty]="validatorsService.inputValid('output_data.id_bank',formOutput)"></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_data.id_bank',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_data.id_bank",formOutput) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label *ngIf="formOutput.get('output_data.type_payment')?.value == 'CHEQUE'" class="block mb-0">N.
+                            Cheque</label>
+                        <label *ngIf="formOutput.get('output_data.type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N.
+                            Cuenta</label>
+                        <input type="text" style="text-transform: uppercase" pInputText
+                            [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_output"
+                            placeholder="EJ. "
+                            [class.ng-dirty]="validatorsService.inputValid('output_data.account_output',formOutput)" />
+                        <small *ngIf="validatorsService.inputValid('output_data.account_output',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_data.account_output",formOutput) }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div *ngIf="formOutput.get('output_data.voucher')!.value != 'MENOR'" formGroupName="output_big" class="p-fluid grid animated fadeInDown">
+            <div class="field col-12">
+                <div class="row mt-1">
+                    <div class="col-12" [ngClass]="{
+                            'col-sm-4': formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR',
+                            'col-sm-6': formOutput.get('output_data.voucher')!.value != 'MAYOR. EXTERIOR',
+                        }">
+                        <label class="block mb-0">Origen<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="types_origin()" placeholder="Selecciona una opción" optionLabel="name"
+                            optionValue="name" appendTo="body" formControlName="origin"
+                            [class.ng-dirty]="validatorsService.inputValid('output_big.origin',formOutput)"></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_big.origin',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_big.origin",formOutput) }}
+                        </small>
+                    </div>
+                    <div class="col-12" [ngClass]="{
+                            'col-sm-4': formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR',
+                            'col-sm-6': formOutput.get('output_data.voucher')!.value != 'MAYOR. EXTERIOR',
+                        }">
+                        <label class="block mb-0">Destino<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="types_destination()" placeholder="Selecciona una opción" optionLabel="name"
+                            optionValue="name" appendTo="body" formControlName="destination"
+                            [class.ng-dirty]="validatorsService.inputValid('output_big.destination',formOutput)"></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_big.destination',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_big.destination",formOutput) }}
+                        </small>
+                    </div>
+                    <div *ngIf="formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR'" class="col-sm-4 col-12 animated fadeInDown">
+                        <label class="block mb-0">Agencia Port.<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="types_agencia()" placeholder="Selecciona una opción" optionLabel="name"
+                            optionValue="name" appendTo="body" formControlName="agencia"
+                            [class.ng-dirty]="validatorsService.inputValid('output_big.agencia',formOutput)"></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_big.agencia',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_big.agencia",formOutput) }}
+                        </small>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-12" [ngClass]="{
+                            'col-sm-4': formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR',
+                            'col-sm-6': formOutput.get('output_data.voucher')!.value != 'MAYOR. EXTERIOR',
+                        }">
+                        <label class="block mb-0">Chofer<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="chauffeurs()" 
+                          placeholder="Selecciona una opción" 
+                          optionLabel="name"
+                          appendTo="body"
+                          (onChange)="selectCargoTrucks()"
+                          formControlName="chauffeur" 
+                          [class.ng-dirty]="validatorsService.inputValid('output_big.chauffeur',formOutput)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_big.chauffeur',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_big.chauffeur",formOutput) }}
+                        </small>   
+                    </div>
+                    <div class="col-12" [ngClass]="{
+                            'col-sm-4': formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR',
+                            'col-sm-6': formOutput.get('output_data.voucher')!.value != 'MAYOR. EXTERIOR',
+                        }">
+                        <label class="block mb-0">Camion<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="cargoTrucksSelect()" 
+                            placeholder="Selecciona una opción" 
+                            optionLabel="placa"
+                            optionValue="id"
+                            appendTo="body"
+                            formControlName="id_cargo_truck" 
+                            [class.ng-dirty]="validatorsService.inputValid('output_big.id_cargo_truck',formOutput)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_big.id_cargo_truck',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_big.id_cargo_truck",formOutput) }}
+                        </small>   
+                    </div>
+                    <div *ngIf="formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR'" class="col-sm-4 col-12 animated fadeInDown">
+                        <label class="block mb-0">Trans. Maríti<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="types_trans_mariti()" placeholder="Selecciona una opción" optionLabel="name"
+                            optionValue="name" appendTo="body" formControlName="trans_mariti"
+                            [class.ng-dirty]="validatorsService.inputValid('output_big.trans_mariti',formOutput)"></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('output_big.trans_mariti',formOutput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("output_big.trans_mariti",formOutput) }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div *ngIf="formOutput.get('output_data.voucher')!.value == 'MAYOR. EXTERIOR'" class="row mt-1 animated fadeInDown">
+                <div class="col-sm-6 col-12">
+                    <div class="row">
+                        <div class="col-sm-6 col-12">
+                            <label class="block mb-0">Nº Factura</label>
+                            <input type="text" style="text-transform: uppercase" pInputText
+                                [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_factura"
+                                placeholder="EJ. 0001" [pKeyFilter]="validatorsService.expRegValidInput"
+                                [class.ng-dirty]="validatorsService.inputValid('output_big.number_factura',formOutput)" />
+                            <small *ngIf="validatorsService.inputValid('output_big.number_factura',formOutput)"
+                                class="p-error block">
+                                {{ validatorsService.inputValidMessage("output_big.number_factura",formOutput) }}
+                            </small>
+                        </div>
+                        <div class="col-sm-6 col-12">
+                            <label class="block mb-0">Nº Precinto</label>
+                            <input type="text" style="text-transform: uppercase" pInputText
+                                [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_precinto"
+                                placeholder="EJ. S/N" [pKeyFilter]="validatorsService.expRegValidInput"
+                                [class.ng-dirty]="validatorsService.inputValid('output_big.number_precinto',formOutput)" />
+                            <small *ngIf="validatorsService.inputValid('output_big.number_precinto',formOutput)"
+                                class="p-error block">
+                                {{ validatorsService.inputValidMessage("output_big.number_precinto",formOutput) }}
+                            </small>    
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                    <div *ngIf="!formOutput.get('output_data.open_truck')!.value" class="row animated fadeInDown">
+                        <div class="col-sm-6 col-12">
+                            <label class="block mb-0">Tipo contenedor<span class="text-danger">*</span></label>
+                            <p-dropdown [options]="types_containers()" 
+                            placeholder="Selecciona una opción" 
+                            optionLabel="name"
+                            optionValue="name"
+                            appendTo="body"
+                            formControlName="type_container" 
+                            [class.ng-dirty]="validatorsService.inputValid('output_big.type_container',formOutput)"
+                            ></p-dropdown>
+                            <small *ngIf="validatorsService.inputValid('output_big.type_container',formOutput)" class="p-error block">
+                                {{ validatorsService.inputValidMessage("output_big.type_container",formOutput) }}
+                            </small>   
+                        </div>
+                        <div class="col-sm-6 col-12">
+                            <label class="block mb-0">Nro.</label>
+                            <input type="text" style="text-transform: uppercase" pInputText
+                                [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_contenedor"
+                                placeholder="EJ. S/N" [pKeyFilter]="validatorsService.expRegValidInput"
+                                [class.ng-dirty]="validatorsService.inputValid('output_big.number_contenedor',formOutput)" />
+                            <small *ngIf="validatorsService.inputValid('output_big.number_contenedor',formOutput)"
+                                class="p-error block">
+                                {{ validatorsService.inputValidMessage("output_big.number_contenedor",formOutput) }}
+                            </small>
+                        </div>
+                    </div>
+                    <div *ngIf="formOutput.get('output_data.open_truck')!.value" class="row animated fadeInDown">
+                        <div class="col-sm-12 col-12">
+                            <label class="block mb-0">Póliza de Seguro</label>
+                            <input type="text" style="text-transform: uppercase" pInputText
+                                [pKeyFilter]="validatorsService.expRegValidInput" formControlName="poliza_seguro"
+                                placeholder="EJ." [pKeyFilter]="validatorsService.expRegValidInput"
+                                [class.ng-dirty]="validatorsService.inputValid('output_big.poliza_seguro',formOutput)" />
+                            <small *ngIf="validatorsService.inputValid('output_big.poliza_seguro',formOutput)"
+                                class="p-error block">
+                                {{ validatorsService.inputValidMessage("output_big.poliza_seguro",formOutput) }}
+                            </small>      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="loading() ? null : this.outputService.isEdit ? editOutput() : saveOutput()"
+            styleClass="p-button-sm p-button-rounded" label="Guardar" icon="fa-solid fa-floppy-disk"
+            [loading]="loading()"></p-button>
+        <p-button (click)="outputService.showModalSaveInput = false" label="Cancelar"
+            styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

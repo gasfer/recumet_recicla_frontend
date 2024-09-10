@@ -1,0 +1,72 @@
+<p-dialog [header]="'Detalle Clasificado: '+ classified()?.cod" [(visible)]="classifiedService.showModalDetailsClassified" [modal]="true"
+    [breakpoints]="{ '960px': '85vw', '576px': '95%' }" [style]="{ width: '55vw' }" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true">
+    <form>
+        <p-tag styleClass="m-2 ms-0 mb-1" value="CLASIFICADO: {{classified()?.cod}} " [rounded]="true"></p-tag>
+        <div class="table-responsive">
+            <table class="table table-xxs  table-sm">
+                <tbody class="border-solid">
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA CLASIFICADO</td>
+                        <td width="30%">{{classified()?.date_classified| date:'dd/MM/yyyy, HH:mm:ss'}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">BALANZA</td>
+                        <td width="30%">{{classified()?.scale?.name}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TIPO DOC.</td>
+                        <td width="30%">{{classified()?.type_registry}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">NO. DOC.</td>
+                        <td width="30%">{{classified()?.number_registry}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">PRODUCTO</td>
+                        <td width="30%">{{classified()?.product?.name}}</td>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">COSTO | CANTIDAD</td>
+                        <td width="30%">{{classified()?.cost_product }} | {{classified()?.quantity_product}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">USUARIO</td>
+                        <td colspan="3" width="80%">{{classified()?.user?.full_names}} - {{classified()?.user?.number_document}}</td>
+                    </tr>
+                    <tr>
+                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">COMENTARIOS</td>
+                        <td colspan="3" width="80%">{{classified()?.comments}}</td>
+                    </tr>
+                </tbody>
+            </table>     
+        </div>
+        <p-tag styleClass="m-2 ms-0 mb-1" severity="success" value="DETALLE DE CLASIFICADO: {{classified()?.cod}} " [rounded]="true"></p-tag>
+        <div class="table-responsive">
+			<table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm">
+				<thead>
+					<tr>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Producto </th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Costo </th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Cantidad </th>
+					</tr>
+				</thead>
+				<tbody>
+                    <tr *ngFor="let detail of classified()?.detailsClassified" >
+                        <td style="max-width: 200px;">
+                            <h5 class="m-0 p-0">{{detail.product.name}}</h5>
+                            <p style="font-size: 10px;" class="text-muted">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
+                        </td>
+                        <td>{{detail.cost  | number:decimal()}}</td>
+                        <td>{{detail.quantity}}</td>
+                    </tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td width="10%" class="table-active fw-bold">TOTAL</td>
+                        <td id="total"> <p-tag [style]="{'font-size': '15px'}" value="{{totalQuantityItems() | number:decimal()}}" [rounded]="true"></p-tag> </td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="classifiedService.showModalDetailsClassified = false" label="OK, Cerrar"
+            styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

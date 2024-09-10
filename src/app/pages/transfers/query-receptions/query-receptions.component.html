@@ -1,0 +1,84 @@
+<div [formGroup]="formReport">
+    <div class="card shadow mb-4 icon-box ">
+      <div class="card-body">
+        <div class="row text-center">
+          <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE RECEPCIONES</b></h3>
+        </div>
+        <div class="p-fluid grid mt-sm-3 mt-md-0 ps-md-4 pe-md-4">
+          <app-alert-notify title="Realiza tus consultas por los parámetros que sean necesarios,"
+            subTitle="Se considera todos los campos que estén llenados para realizar la consulta" [subTitle2]="''"
+            [required]="false"></app-alert-notify>
+          <div class="field col-12">
+            <div class="row mt-1">
+              <div class="col-12 col-sm-6">
+                <div class="row">
+                  <div class="col-12 col-sm-6">
+                    <label class="block mb-1">Tipo Filtrado<span class="text-danger">*</span></label>
+                    <p-dropdown [options]="types_filtrado()" formControlName="filterBy" optionLabel="name"
+                      optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()">
+                    </p-dropdown>
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <label class="block mb-1">Fecha<span class="text-danger">*</span>
+                    </label>
+                    <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'" formControlName="dates" view="month"
+                      dateFormat="mm/yy" [readonlyInput]="true" inputId="monthpicker" placeholder="MM/YYYY"
+                      [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true">
+                    </p-calendar>
+                    <p-calendar *ngIf="formReport.get('filterBy')?.value == 'RANGE'" formControlName="dates"
+                      selectionMode="range" dateFormat="dd/mm/yy" [readonlyInput]="true" inputId="range"
+                      placeholder="DD/MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"
+                      [showIcon]="true">
+                    </p-calendar>
+                    <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" formControlName="dates" view="year"
+                      dateFormat="yy" inputId="yearpicker" [showIcon]="true" placeholder="YYYY"
+                      [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
+                    </p-calendar>
+                    <p-calendar *ngIf="formReport.get('filterBy')?.value == 'DAY'" formControlName="dates" inputId="basic"
+                      dateFormat="dd/mm/yy" [showIcon]="true" placeholder="DD/MM/YYYY"
+                      [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
+                    </p-calendar>
+                    <small *ngIf="validatorsService.inputValid('dates',formReport)" class="p-error block">
+                      {{ validatorsService.inputValidMessage("dates",formReport) }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="row">
+                  <div class="col-12 col-sm-6">
+                    <label class="block mb-1">Sucursal origen</label>
+                    <p-dropdown [options]="sucursales()" optionLabel="name" optionValue="id" [showClear]="true"
+                      [virtualScrollItemSize]="38" [lazy]="true" formControlName="id_sucursal_send"
+                      placeholder="SELECCIONA SUCURSAL"></p-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-2 mt-sm-3 mt-md-0 ps-md-5 pe-md-5 me-3 bg-transparent text-end">
+        <p-button (click)="!loading() ? this.getAllAndSearchTransfers(1,rows()) : null"
+          styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
+          [loading]="loading()"></p-button>
+        <p-splitButton *ngIf="this.validatorsService.withPermission('RECEPCIONES','reports')" icon="fas fa-print" label="Imprimir" [model]="this.buttonItems" [menuStyle]="{'width':'10em'}"
+          [size]="'small'"
+          [rounded]="true"
+          [severity]="'danger'"
+          (onClick)="!loading() ? printPdfReport() : null" styleClass="ms-1">
+        </p-splitButton>
+        <p-button (click)="clearTransfers()"
+          styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
+          label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
+        </p-button>
+      </div>
+      <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+        [activeItem]="searchItems()[0]"></p-tabMenu>
+    </div>
+  </div>
+  <app-table [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+    [data]="transfers()" [loading]="loading()" (customSort$)="customSort($event)">
+  </app-table>
+  <app-modal-view-details></app-modal-view-details>
+  <app-modal-approved-transfer [id_transfer]="id_transfer()" (save$)="this.getAllAndSearchTransfers(1,this.rows())"></app-modal-approved-transfer>

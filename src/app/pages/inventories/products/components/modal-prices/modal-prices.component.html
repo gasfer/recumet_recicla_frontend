@@ -1,0 +1,18 @@
+<p-dialog [header]="'Vista de precios: '" [(visible)]="productsService.showModalPrices" [modal]="true"
+    [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '45vw' }" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true">
+    <div class="justify-content-between d-flex">
+        <h4 class="text-muted">{{product?.cod}} - {{product?.name}}</h4>
+        <p-button icon="fa-solid fa-circle-plus" (click)="productsService.showModalNewPrice = true" pTooltip="Añadir Nuevo" tooltipPosition="left"
+            styleClass="p-button-primary p-button-rounded mb-1" label="Añadir"></p-button>
+    </div>
+    <app-table [cols]="cols()" [includeSearch]="false" [data]="prices()" 
+        [loading]="false" [isCustomSort]="false"
+        [customPagination]="true">
+    </app-table>
+    <ng-template pTemplate="footer">
+        <p-button (click)="productsService.showModalPrices = false" label="Cerrar"
+            styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>
+<app-modal-new-price></app-modal-new-price>

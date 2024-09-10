@@ -1,0 +1,108 @@
+<p-dialog [header]="'Registro precio para: ' + product?.name" [(visible)]="productsService.showModalNewPrice"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true">
+    <form [formGroup]="priceForm">
+        <app-alert-notify></app-alert-notify>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="row">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Nombre<span class="text-danger">*</span>
+                        </label>
+                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                            formControlName="name" placeholder="EJ. PROMOCIÓN..." 
+                            [class.ng-dirty]="validatorsService.inputValid('name',priceForm)" />
+                        <small *ngIf="validatorsService.inputValid('name',priceForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("name",priceForm) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Costo</label>  <br>     
+                        <p-tag  [rounded]="true" class="mt-1"
+                        [icon]="'fa-solid fa-hand-holding-dollar'" 
+                        severity="success" 
+                        [value]="product?.costo?.toString()">
+                </p-tag>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">M. Utilidad [%]<span class="text-danger">*</span>
+                        </label>
+                        <p-inputNumber
+                            locale="en-US"
+                            mode="decimal"
+                            inputId="locale-us"
+                            formControlName="profit_margin"
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            spinnerMode="horizontal"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            incrementButtonIcon="fa-solid fa-plus"
+                            decrementButtonIcon="fa-solid fa-minus"
+                            [class.ng-dirty]="validatorsService.inputValid('profit_margin',priceForm)"
+                            [min]="0"
+                            [max]="9999999999999.99"
+                        >
+                        </p-inputNumber>
+                        <small *ngIf="validatorsService.inputValid('profit_margin',priceForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("profit_margin",priceForm) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Precio de venta<span class="text-danger">*</span>
+                        </label>
+                        <p-inputNumber
+                            locale="en-US"
+                            mode="decimal"
+                            inputId="locale-us"
+                            formControlName="price"
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            spinnerMode="vertical"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            incrementButtonIcon="fa-solid fa-plus"
+                            decrementButtonIcon="fa-solid fa-minus"
+                            [class.ng-dirty]="validatorsService.inputValid('price',priceForm)"
+                            [min]="0"
+                            [max]="9999999999999.99"
+                        >
+                        </p-inputNumber>
+                        <small *ngIf="validatorsService.inputValid('price',priceForm)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("price",priceForm) }}
+                        </small>
+                    </div>
+                </div>
+                <div class="row mt-1 ">
+                    <label class="block">Estado:<span class="text-danger">*</span></label>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-3">
+                        <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    </div>
+                    <div class="col">
+                        <p-tag  [rounded]="true" 
+                                [icon]="priceForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
+                                [style]="priceForm.get('status')!.value
+                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
+                                          : { 'background-color': 'red', color: '#ffffff' }" 
+                                [value]="priceForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                        </p-tag>
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button (click)="!loading() ?  newPrice() : null" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button (click)="productsService.showModalNewPrice = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

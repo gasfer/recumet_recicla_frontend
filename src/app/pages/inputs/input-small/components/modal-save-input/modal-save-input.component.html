@@ -1,0 +1,323 @@
+<p-dialog [header]="inputsService.isEdit ? 'Editar compra: ' + inputsService.dataInputForEdit()?.cod :  'Registro de compra'" [(visible)]="inputsService.showModalSaveInput"
+    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '50vw' }" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()" (onHide)="resetModal()">
+    <form [formGroup]="formInput">
+        <div class="m-2">
+            <p-messages *ngIf="inputsService.isEdit" severity="warn" class="animated fadeInDown">
+                <ng-template pTemplate>
+                    <ul class="mb-0 pb-0">
+                        <li>
+                            <b>PROCESO DE EDICIÓN COMPRA: {{inputsService.dataInputForEdit()?.cod}} <i class="fas fa-edit"></i></b>
+                        </li>
+                    </ul>
+                </ng-template>
+            </p-messages>
+        </div>
+        <div class="p-fluid grid">
+            <div class="field col-12">
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Proveedor<span class="text-danger">*</span></label><br>
+                        <p-tag [rounded]="true" icon="fa-solid fa-truck-moving"
+                            [severity]="providerSelect() ? 'info' : 'warning'"
+                            [value]="providerSelect() ? 'NIT-CI: ' + providerSelect()?.number_document+' / ' + providerSelect()?.full_names : 'NIT-CI: 0 / SELECCIONE UN PROVEEDOR'">
+                            <p-badge *ngIf="providerSelect()" class="cursor-pointer" severity="danger"
+                                (click)="inputsService.providerSelect.set(undefined)" [value]="'X'" styleClass="mr-2"
+                                pTooltip="Quitar Proveedor" tooltipPosition="top">
+                            </p-badge>
+                        </p-tag><br>
+                        <small *ngIf="!providerSelect()" class="p-error block">
+                            {{ 'Selecciona un proveedor' }}
+                        </small> 
+                    </div>
+                    <!-- <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                         
+                    </div> -->
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Area / Almacén ingreso stock<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="validatorsService.storages()" 
+                          placeholder="Selecciona un almacén" 
+                          optionLabel="name"
+                          optionValue="id"
+                          appendTo="body" [filter]="true" filterBy="name"
+                          [virtualScrollItemSize]="38" [lazy]="true"
+                          formControlName="id_storage" 
+                          [class.ng-dirty]="validatorsService.inputValid('id_storage',formInput)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('id_storage',formInput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("id_storage",formInput) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Pesaje<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="scalas()" 
+                          placeholder="Selecciona una opción" 
+                          optionLabel="name"
+                          optionValue="id"
+                          appendTo="body"
+                          formControlName="id_scales" 
+                          [class.ng-dirty]="validatorsService.inputValid('id_scales',formInput)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('id_scales',formInput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("id_scales",formInput) }}
+                        </small> 
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <div class="row">
+                                    <label class="block mb-0">Factura:<span class="text-danger">*</span></label>
+                                    <div *ngIf="!blockedInputCredit()" class="col-3 mt-1">
+                                        <p-inputSwitch formControlName="is_paid"
+                                        ></p-inputSwitch>
+                                    </div>
+                                    <div class="col-8 mt-1 ms-1">
+                                        <p-tag
+                                            [rounded]="true"
+                                            [icon]="formInput.get('is_paid')!.value
+                                            ? 'fa-solid fa-file-circle-check'
+                                            : 'fa-solid fa-file-circle-xmark'"
+                                            [style]="{ 'background': formInput.get('is_paid')!.value ? 'var(--teal-600)' : 'var(--bluegray-400)'}"
+                                            [value]="formInput.get('is_paid')!.value
+                                            ? 'CON FACTURA'
+                                            : 'SIN FACTURA'"
+                                        ></p-tag>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Fecha de comprobante<span class="text-danger">*</span>
+                                </label>
+                                <p-calendar 
+                                    formControlName="date_voucher"
+                                    appendTo="body"
+                                    dateFormat="dd/mm/yy" 
+                                    [showIcon]="true" 
+                                    [class.ng-dirty]="validatorsService.inputValid('date_voucher',formInput)">
+                                </p-calendar>
+                                <small *ngIf="validatorsService.inputValid('date_voucher',formInput)" class="p-error block">
+                                    {{ validatorsService.inputValidMessage("date_voucher",formInput) }}
+                                </small>  
+                            </div>
+                        </div>     
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Tipo pesaje<span class="text-danger">*</span></label>
+                                <p-dropdown [options]="types_registry()" 
+                                  placeholder="Selecciona una opción" 
+                                  optionLabel="name"
+                                  optionValue="code"
+                                  appendTo="body"
+                                  formControlName="type_registry" 
+                                  [class.ng-dirty]="validatorsService.inputValid('type_registry',formInput)"
+                                ></p-dropdown>
+                                <small *ngIf="validatorsService.inputValid('type_registry',formInput)" class="p-error block">
+                                    {{ validatorsService.inputValidMessage("type_registry",formInput) }}
+                                </small>   
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Nro.</label>
+                                <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                                    formControlName="registry_number" placeholder="EJ. 0001" 
+                                    [pKeyFilter]="validatorsService.expRegValidInput"
+                                    [class.ng-dirty]="validatorsService.inputValid('registry_number',formInput)" 
+                                />
+                                <small *ngIf="validatorsService.inputValid('registry_number',formInput)" class="p-error block">
+                                    {{ validatorsService.inputValidMessage("registry_number",formInput) }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <div class="row">
+                            <div class="col-sm-7 col-12">
+                                <div class="row">
+                                    <div class="col-sm-6 col-12">
+                                        <label class="block mb-0">Sumas<span class="text-danger">*</span></label>
+                                        <p-tag
+                                            [rounded]="true"
+                                            [severity]="'success'"
+                                            [icon]="'fa-solid fa-comments-dollar'"
+                                            value="{{formInput.get('sumas')?.value| number:decimal()}}"
+                                        ></p-tag>        
+                                    </div>
+                                    <div class="col-sm-6 col-12">
+                                        <label class="block mb-0">Total<span class="text-danger">*</span></label>
+                                        <p-tag
+                                            class="ms-1"
+                                            [rounded]="true"
+                                            [icon]="'fa-solid fa-comments-dollar'"
+                                            value="{{formInput.get('total')?.value | number:decimal()}}"
+                                        ></p-tag>        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-5 col-12">
+                                <label class="block mb-0">Descuento</label>
+                                <p-inputNumber
+                                    locale="en-US"
+                                    mode="decimal"
+                                    inputId="locale-us"
+                                    formControlName="discount"
+                                    [minFractionDigits]="decimalLength()"
+                                    [maxFractionDigits]="decimalLength()"
+                                    [showButtons]="true"
+                                    (onBlur)="onChangeDescuento()"
+                                    buttonLayout="horizontal"
+                                    spinnerMode="horizontal"
+                                    decrementButtonClass="p-button-secondary"
+                                    incrementButtonClass="p-button-primary"
+                                    incrementButtonIcon="fa-solid fa-plus"
+                                    decrementButtonIcon="fa-solid fa-minus"
+                                    [min]="0"
+                                    [max]="formInput.get('sumas')?.value"
+                                    [class.ng-dirty]="validatorsService.inputValid('discount',formInput)" 
+                                >
+                                </p-inputNumber>
+                                <small *ngIf="validatorsService.inputValid('discount',formInput)" class="p-error block">
+                                    {{ 'Descuento no valido' }}
+                                </small> 
+                            </div>
+                        </div>
+                    </div>
+                    <div  class="col-sm-6 col-12 mt-sm-0 mt-1 ">
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <div class="row">
+                                    <label class="block mb-0">Seleccione tipo pago:<span class="text-danger">*</span></label>
+                                    <div *ngIf="!blockedInputCredit()" class="col-4 mt-1">
+                                        <p-inputSwitch formControlName="pay_to_credit"
+                                        ></p-inputSwitch>
+                                    </div>
+                                    <div class="col-7 mt-1 ms-1">
+                                        <p-tag
+                                            [rounded]="true"
+                                            [icon]="formInput.get('pay_to_credit')!.value
+                                            ? 'fa-solid fa-comments-dollar'
+                                            : 'fa-solid fa-sack-dollar'"
+                                            [severity]="formInput.get('pay_to_credit')!.value
+                                            ? 'success'
+                                            : 'info'"
+                                            [value]="formInput.get('pay_to_credit')!.value
+                                            ? 'A CRÉDITO'
+                                            : 'AL CONTADO'"
+                                        ></p-tag>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="formInput.get('pay_to_credit')!.value && !blockedInputCredit()" class="col-sm-6 col-12 animated fadeInDown">
+                                <label class="block mb-0">A cuenta:<span class="text-danger">*</span></label>
+                                <p-inputNumber
+                                    locale="en-US"
+                                    mode="decimal"
+                                    inputId="locale-us"
+                                    formControlName="on_account"
+                                    [minFractionDigits]="decimalLength()"
+                                    [maxFractionDigits]="decimalLength()"
+                                    [showButtons]="true"
+                                    buttonLayout="horizontal"
+                                    spinnerMode="horizontal"
+                                    decrementButtonClass="p-button-secondary"
+                                    incrementButtonClass="p-button-primary"
+                                    incrementButtonIcon="fa-solid fa-plus"
+                                    decrementButtonIcon="fa-solid fa-minus"
+                                    [class.ng-dirty]="validatorsService.inputValid('on_account',formInput)"
+                                    [min]="0"
+                                    [max]="formInput.get('total')?.value"
+                                    [class.ng-dirty]="validatorsService.inputValid('on_account',formInput)" 
+                                >
+                                </p-inputNumber>
+                                <small *ngIf="validatorsService.inputValid('on_account',formInput)" class="p-error block">
+                                    {{ 'Monto no valido' }}
+                                </small> 
+                            </div>
+                            <div *ngIf="formInput.get('pay_to_credit')!.value && blockedInputCredit()" class="col-sm-6 col-12 animated fadeInDown">
+                                <small class="p-error block">
+                                    {{ 'El monto a crédito no se puede cambiar. Se han realizado múltiples abonos' }}
+                                </small> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Pago en<span class="text-danger">*</span>
+                        </label>
+                        <p-dropdown [options]="types_pay()" 
+                          placeholder="Selecciona una opción" 
+                          optionLabel="name"
+                          optionValue="code"
+                          appendTo="body"
+                          (onChange)="selectTypePay()"  
+                          [virtualScrollItemSize]="38" [lazy]="true"
+                          formControlName="type_payment" 
+                          [class.ng-dirty]="validatorsService.inputValid('type_payment',formInput)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('type_payment',formInput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("type_payment",formInput) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Observaciones</label>
+                        <textarea pInputTextarea
+                            type="text"
+                            style="text-transform: uppercase"
+                            pInputText
+                            [pKeyFilter]="validatorsService.expRegValidInput"
+                            formControlName="comments"
+                            placeholder="EJ. ......"
+                            class="mt-1"
+                            [class.ng-dirty]="validatorsService.inputValid('comments',formInput)"
+                        ></textarea> 
+                        <small *ngIf="validatorsService.inputValid('comments',formInput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("comments",formInput) }}
+                        </small>
+                    </div>
+                </div>
+                <div *ngIf="formInput.get('type_payment')?.value != 'EFECTIVO'" class="row mt-1  animated fadeInDown">
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Banco<span class="text-danger">*</span>
+                        </label>
+                        <p-dropdown [options]="banks()" 
+                          placeholder="Selecciona una opción" 
+                          optionLabel="name"
+                          optionValue="id"
+                          appendTo="body"  
+                          [virtualScrollItemSize]="38" [lazy]="true"
+                          formControlName="id_bank" 
+                          [class.ng-dirty]="validatorsService.inputValid('id_bank',formInput)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('id_bank',formInput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("id_bank",formInput) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label *ngIf="formInput.get('type_payment')?.value == 'CHEQUE'" class="block mb-0">N. Cheque</label>
+                        <label *ngIf="formInput.get('type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N. Cuenta</label>
+                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                            formControlName="account_input" placeholder="EJ. " 
+                            [class.ng-dirty]="validatorsService.inputValid('account_input',formInput)" 
+                        />
+                        <small *ngIf="validatorsService.inputValid('account_input',formInput)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("account_input",formInput) }}
+                        </small>    
+                    </div>
+                </div>
+            </div> 
+        </div> 
+      </form>
+      <ng-template pTemplate="footer">
+        <p-button (click)="loading() ? null : this.inputsService.isEdit ? editInput() :saveInput()" styleClass="p-button-sm p-button-rounded"
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()" ></p-button>
+        <p-button (click)="inputsService.showModalSaveInput = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>

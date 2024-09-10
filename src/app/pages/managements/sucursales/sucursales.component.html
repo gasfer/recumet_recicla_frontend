@@ -1,0 +1,27 @@
+<div class="card shadow">
+    <p-toolbar>
+      <div class="p-toolbar-group-left">
+        <h4>LISTADO DE SUCURSALES</h4>
+      </div>
+      <div *ngIf="this.validatorsService.withPermission('SUCURSALES','create')" class="p-toolbar-group-right ms-1">
+        <p-button
+          icon="fa-solid fa-circle-plus"
+          (click)="showModal()"
+          pTooltip="Añadir Nuevo"
+          tooltipPosition="left"
+          styleClass="p-button-primary p-button-rounded"
+          label="Añadir"
+        ></p-button>
+      </div>
+    </p-toolbar>
+    <app-modal-sucursal></app-modal-sucursal>
+    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
+    <app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)"
+      [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+      [data]="sucursales()" [loading]="loading()">
+    </app-table>
+    <app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)"
+      [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+      [data]="sucursales()" [loading]="loading()">
+    </app-table>
+</div>
