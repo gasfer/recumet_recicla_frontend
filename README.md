@@ -1,5 +1,5 @@
 <h1 align="center">RECUMENT FRONTED</h1>
-<p align="center">Author <a href="https://www.linkedin.com/in/gaston-fern%C3%A1ndez-flores/">GASTON FERNANDEZ</a>.</p>
+<p align="center">Author <a href="https://www.linkedin.com/in/gaston-fern%C3%A1ndez-flores/">CloudPC Smart Technology</a>.</p>
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.4.
 
