@@ -38,9 +38,10 @@ export class TransferComponent implements OnInit {
 
   ngOnInit(): void {
     const id_storage_tras  = localStorage.getItem('id_storage_tras');
+    const findStorage = this.validatorsService.storages().find(resp => resp.id === Number(id_storage_tras));
     this.formReport.patchValue({
       id_sucursal: this.validatorsService.id_sucursal(),
-      id_storage: Number(id_storage_tras)
+      id_storage: findStorage ? Number(id_storage_tras) : null
     });
     this.formReport.markAllAsTouched();
   }

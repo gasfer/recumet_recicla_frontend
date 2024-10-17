@@ -27,7 +27,7 @@
     "chart.js": "^4.4.2",
     "metismenujs": "^1.4.0",
     "moment": "^2.29.4",
-    "ngx-bootstrap": "^11.0.2",
+    "ngx-bootstrap": "^18.0.2",
     "ngx-image-compress": "^15.1.6",
     "ngx-typed-js": "^2.1.1",
     "primeng": "^17.18.8",

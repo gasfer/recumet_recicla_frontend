@@ -76,18 +76,22 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   getAllCategories() {
     this.categories.set([]);
     this.categoriesService.getAllAndSearch(1,1000,true).subscribe(resp => {
-      resp.categories.data.forEach(category => {
-        this.categories().push({name: category.name, code: category.id!.toString()})
-      });
+      const formattedCategory = resp.categories.data.map(category => ({
+        name: category.name,
+        code: category.id!.toString()
+      }));
+      this.categories.set(formattedCategory);
     });
   }
 
   getAllSectors() {
     this.sectors.set([]);
     this.providersService.getAllSectorProvider(1,10000,true).subscribe(resp => {
-      resp.sectors.data.forEach(sector => {
-        this.sectors().push({name: sector.name, code: sector.id!.toString()})
-      });
+      const formattedSector = resp.sectors.data.map(sector => ({
+        name: sector.name,
+        code: sector.id!.toString()
+      }));
+      this.sectors.set(formattedSector);
     });
   }
   

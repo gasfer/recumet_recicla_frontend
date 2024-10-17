@@ -64,7 +64,6 @@ export class ModalOpenCloseEditAperturaCajaComponent {
     this.loading.set(true);
     this.cajaService.postOpenCaja(this.form.get('id_sucursal')?.value,this.form.get('monto')?.value).subscribe({
       complete: () => {
-        this.save$.next(true);
         this.loading.set(false);
         this.cajaService.showModalOpenCaja = false;
         Swal.fire({ 
@@ -74,6 +73,7 @@ export class ModalOpenCloseEditAperturaCajaComponent {
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
+        this.save$.next(true);
       },
       error: () => this.loading.set(false) 
     });
@@ -85,17 +85,18 @@ export class ModalOpenCloseEditAperturaCajaComponent {
     this.loading.set(true);
     this.cajaService.putCierreCaja(this.form.get('id_sucursal')?.value,this.form.get('monto')?.value).subscribe({
       complete: () => {
-        this.save$.next(true);
         this.loading.set(false);
+        this.cajaService.showModalOpenCaja = false;
         Swal.fire({ 
           title: 'Éxito!', 
           text: `Caja cerrada correctamente`,
           icon: 'success', 
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
+        }).then(() => {
+          this.cajaService.printPdfArqueoCaja(this.totalMovements!.id_caja_small);
+          this.save$.next(true);
         });
-        this.cajaService.showModalOpenCaja = false;
-        this.cajaService.printPdfArqueoCaja(this.totalMovements!.id_caja_small);
       },
       error: () => this.loading.set(false) 
     });
@@ -107,7 +108,6 @@ export class ModalOpenCloseEditAperturaCajaComponent {
     this.loading.set(true);
     this.cajaService.putUpdateMontoCaja(this.form.get('id_sucursal')?.value,this.form.get('monto')?.value).subscribe({
       complete: () => {
-        this.save$.next(true);
         this.loading.set(false);
         this.cajaService.showModalOpenCaja = false;
         Swal.fire({ 
@@ -117,6 +117,7 @@ export class ModalOpenCloseEditAperturaCajaComponent {
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
+        this.save$.next(true);
       },
       error: () => this.loading.set(false) 
     });
@@ -124,7 +125,7 @@ export class ModalOpenCloseEditAperturaCajaComponent {
 
   resetModal() { 
     this.form.reset({
-      id_sucursal: 1,
+      id_sucursal: this.validatorsService.id_sucursal(),
       monto: '',
     });
   }

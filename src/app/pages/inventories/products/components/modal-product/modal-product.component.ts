@@ -176,15 +176,19 @@ export class ModalProductComponent implements OnInit , OnDestroy{
     this.categories.set([]);
     this.units.set([]);
     this.categoriesService.getAllAndSearch(1,1000,true).subscribe(resp => {
-      resp.categories.data.forEach(category => {
-        this.categories().push({name: category.name, code: category.id!.toString()})
-      });
-    })
+      const formattedCategories = resp.categories.data.map(category => ({
+        name: category.name,
+        code: category.id!.toString()
+      }));
+      this.categories.set(formattedCategories);
+    });
     this.unitsService.getAllAndSearch(1,1000,true).subscribe(resp => {
-      resp.units.data.forEach(unit => {
-        this.units().push({name: unit.name, code: unit.id!.toString()})
-      });
-    })
+      const formattedUnits = resp.units.data.map(unit => ({
+        name: unit.name,
+        code: unit.id!.toString()
+      }));
+      this.units.set(formattedUnits);
+    });
   }
 
   calcularPrecio() {
