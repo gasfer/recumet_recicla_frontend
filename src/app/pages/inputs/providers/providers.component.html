@@ -19,21 +19,14 @@
             <div class="col-12 col-sm-6">
                 <label class="block mb-1">Tipo proveedor</label>
                 <p-dropdown [options]="types()" placeholder="Selecciona una opción"
-                  optionLabel="name" optionValue="code" appendTo="body" formControlName="id_type_provider"
+                  optionLabel="name" appendTo="body" formControlName="id_type_provider"
+                  [disabled]="loading()"
+                  (onChange)="!loading() ? this.getAllAndSearchProviders(1,rows(),true) : null"
                   [class.ng-dirty]="validatorsService.inputValid('id_type_provider',formReport)"></p-dropdown>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="mb-2 mt-sm-3 mt-md-0 ps-md-5 pe-md-5 me-3 bg-transparent text-end">
-      <p-button (click)="!loading() ? this.getAllAndSearchProviders(1,rows(),true) : null"
-        styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
-        [loading]="loading()"></p-button>
-      <p-button (click)="clearInputs()"
-        styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
-        label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
-      </p-button>
     </div>
     <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
       [activeItem]="searchItems()[0]"></p-tabMenu>

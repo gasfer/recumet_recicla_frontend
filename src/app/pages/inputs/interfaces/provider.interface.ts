@@ -33,6 +33,9 @@ export interface Provider {
     updatedAt:         string;
     category:          Category;
     sector:            Sector;
+    companyContacts: string,
+    workAreaOrPositionOrUnit: string,
+    frequency: string,
     type:              Type | null;
     options?:          Options[];
 }

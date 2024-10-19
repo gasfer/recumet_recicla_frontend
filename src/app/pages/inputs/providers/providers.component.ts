@@ -32,30 +32,14 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       this.getAllAndSearchProviders(1,this.rows(),false)
     } },
   ]);
-  cols = signal<ColsTable[]>([
-    { field: 'full_names', header: 'NOMBRE COMPLETO' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
-    { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
-    { field: `number_document`, header: 'DOCUMENTO' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
-    { field: `cellphone`, header: 'CELULAR' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
-    { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-    { field: `type.name`, header: 'TIPO' , style:'min-width:100px;max-width:100px;', tooltip: true , isText:true },
-    { field: `mayorista`, header: 'MAYOR.' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
-      tagValue: (val:boolean)=> val ? 'SI' : 'NO',
-      tagColor: (val:boolean)=> val ? 'primary' : 'success',
-      tagIcon: (val:boolean)=> val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box',
-    },
-    { field: `name_contact`, header: 'CONTACTO' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
-    { field: `cellphone_contact`, header: 'CELULAR C.' , style:'min-width:120px;max-width:120px;', tooltip: true  , isText:true},
-    { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
-    { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
-  ]);
+  cols = signal<ColsTable[]>([]);
   searchFor = signal<SearchFor[]>([
     {name: 'NOMBRES', code: 'full_names'},
     {name: 'SECTOR', code: 'sector.name'},
     {name: 'DOCUMENTO', code: 'number_document'},
     {name: 'CELULAR', code: 'cellphone'},
     {name: 'DIRECCIÓN', code: 'direction'},
-    {name: 'TIPO', code: 'type'},
+    {name: 'TIPO', code: 'type.name'},
     {name: 'CONTACTO', code: 'name_contact'},
     {name: 'CELULAR C.', code: 'cellphone_contact'},
     {name: 'CATEGORÍA', code: 'category.name'},
@@ -82,11 +66,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   fb                = inject(FormBuilder);
   save$!: Subscription;
   formReport:UntypedFormGroup = this.fb.group({
-    id_type_provider: ['1'],
+    id_type_provider: [],
   });
   ngOnInit(): void {
     this.getAllTypes();
-    this.getAllAndSearchProviders(1,this.rows(),true);
     this.save$ = this.providersService.save$.subscribe(resp => this.getAllAndSearchProviders(this.page(),this.rows(),this.status()));
   }
   ngOnDestroy(): void {
@@ -97,8 +80,9 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   getAllAndSearchProviders(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
     if(!query) {this.loading.set(true);} //not loading in search
     this.status.set(status);
+    this.loadColsTableByType();
     const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
-    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider).subscribe({
+    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider.id).subscribe({
       next: (resp) => {
         this.providers.set(resp.providers);
         this.providers()!.data.forEach((provider) => {
@@ -234,15 +218,119 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     this.providersService.getAllTypesProvider().subscribe(resp => {
       const formattedType = resp.typesProvider.map(type => ({
         name: type.name,
-        code: type.id!.toString()
+        id: type.id!.toString(),
+        code: type.code,
       }));
       this.types.set(formattedType);
+      if(formattedType.length > 0) {
+        this.formReport.get('id_type_provider')?.setValue({
+          name: formattedType[0].name,
+          id: formattedType[0].id!.toString(),
+          code: formattedType[0].code,
+        });
+        this.getAllAndSearchProviders(1,this.rows(),true);
+      }
     });
   }
+
 
   clearInputs() {
     this.formReport.patchValue({
       id_type_provider: '1',
     });
+  }
+
+  loadColsTableByType() {
+    const type = this.formReport.get('id_type_provider')?.value;
+    switch (type.code) {
+      case 'A':
+        this.cols.set([
+          { field: 'full_names', header: 'EMPRESA' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
+          { field: `number_document`, header: 'NIT' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
+          { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
+          { field: `companyContacts`, header: 'CONTACTO' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
+          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
+          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
+          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
+          { field: `workAreaOrPositionOrUnit`, header: 'AREA - UNIDAD' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
+          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
+          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
+        ]);
+        break;
+      case 'B':
+          this.cols.set([
+            { field: 'full_names', header: 'TALLER, NEGOCIO' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
+            { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
+            { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
+            { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
+            { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
+            { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
+            { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
+            { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
+          ]);
+        break;
+      case 'C':
+        this.cols.set([
+          { field: 'full_names', header: 'ACOPIADORA MAYORISTA' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
+          { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
+          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
+          { field: `mayorista`, header: 'MAYOR.' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
+            tagValue: (val:boolean)=> val ? 'SI' : 'NO',
+            tagColor: (val:boolean)=> val ? 'primary' : 'success',
+            tagIcon: (val:boolean)=> val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box',
+          },
+          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
+          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
+          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
+          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
+        ]);
+        break;  
+      case 'D':
+        this.cols.set([
+          { field: `direction`, header: 'DIRECCIÓN ACOPIADORA MINORISTA' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
+          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
+          { field: `mayorista`, header: 'MAYOR.' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
+            tagValue: (val:boolean)=> val ? 'SI' : 'NO',
+            tagColor: (val:boolean)=> val ? 'primary' : 'success',
+            tagIcon: (val:boolean)=> val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box',
+          },
+          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
+          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
+          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
+          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
+        ]);
+        break  
+      case 'E':
+        this.cols.set([
+          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
+          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
+          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
+          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
+          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
+        ]);
+        break
+      case 'F':
+        this.cols.set([
+          { field: 'full_names', header: 'EMPRESA PUBLICA' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
+          { field: `number_document`, header: 'NIT' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
+          { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
+          { field: `companyContacts`, header: 'CONTACTO' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
+          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
+          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
+          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
+          { field: `workAreaOrPositionOrUnit`, header: 'AREA - UNIDAD' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
+          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
+          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
+        ]);
+        break
+      default:
+          this.cols.set([]);
+        break;
+    }
   }
 }
