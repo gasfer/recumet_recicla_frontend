@@ -20,10 +20,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   loading           = signal(false);
   isEditSub$!: Subscription;
   isReloadSub$!: Subscription;
-  types = signal([
-    { name: 'NATURAL', code: 'NATURAL'},
-    { name: 'JURÍDICA', code: 'JURIDICO'},
-  ]);
+  types = signal<{name:string, code:string}[]>([]);
   categories = signal<{name:string,code:string}[]>([]);
   sectors = signal<{name:string,code:string}[]>([]);
   providerForm: FormGroup = this.fb.group({
@@ -33,7 +30,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     number_document: [null, [Validators.maxLength(50)]],
     cellphone: [ null, [Validators.min(60000000),Validators.max(79999999)]],
     direction: [ null, [Validators.maxLength(254)]],
-    type: ['', [Validators.required]],
+    id_type_provider: ['', [Validators.required]],
     mayorista: [ false, [Validators.required]],
     name_contact: [ null, [Validators.maxLength(174)]],
     cellphone_contact: [ null, [Validators.min(60000000),Validators.max(79999999)]],
@@ -45,6 +42,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getAllCategories();
     this.getAllSectors();
+    this.getAllTypes();
     this.isEditSub$ = this.providersService.editSubs.subscribe(resp => {
       this.providerForm.reset({
         id: resp.id,
@@ -92,6 +90,17 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         code: sector.id!.toString()
       }));
       this.sectors.set(formattedSector);
+    });
+  }
+
+  getAllTypes() {
+    this.types.set([]);
+    this.providersService.getAllTypesProvider().subscribe(resp => {
+      const formattedType = resp.typesProvider.map(type => ({
+        name: type.name,
+        code: type.id!.toString()
+      }));
+      this.types.set(formattedType);
     });
   }
   

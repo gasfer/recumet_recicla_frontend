@@ -6,6 +6,22 @@
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
             <div class="field col-12">
+                <div class="row">
+                    <label class="block mb-0">Tipo<span class="text-danger">*</span>
+                    </label>
+                    <p-dropdown [options]="types()" 
+                        placeholder="Selecciona un tipo" 
+                        optionLabel="name"
+                        optionValue="code"
+                        appendTo="body"
+                        [filter]="true" filterBy="name"
+                        formControlName="id_type_provider" 
+                        [class.ng-dirty]="validatorsService.inputValid('id_type_provider',providerForm)"
+                    ></p-dropdown>
+                    <small *ngIf="validatorsService.inputValid('id_type_provider',providerForm)" class="p-error block">
+                        {{ validatorsService.inputValidMessage("id_type_provider",providerForm) }}
+                    </small>
+                </div>
                 <div class="row mt-1">
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">Nombre completo<span class="text-danger">*</span>
@@ -70,7 +86,7 @@
                 </div>
                 <div class="row mt-1">
                     <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Tipo<span class="text-danger">*</span>
+                        <!-- <label class="block mb-0">Tipo<span class="text-danger">*</span>
                         </label>
                         <p-dropdown [options]="types()" 
                           placeholder="Selecciona un tipo" 
@@ -82,7 +98,7 @@
                         ></p-dropdown>
                         <small *ngIf="validatorsService.inputValid('type',providerForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("type",providerForm) }}
-                        </small>
+                        </small> -->
                     </div>
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Dirección</label>

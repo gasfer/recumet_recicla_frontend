@@ -23,7 +23,6 @@ export interface Provider {
     number_document:   string;
     cellphone:         number;
     direction:         string;
-    type:              string;
     mayorista:         boolean;
     name_contact:      string;
     cellphone_contact: number;
@@ -34,9 +33,18 @@ export interface Provider {
     updatedAt:         string;
     category:          Category;
     sector:            Sector;
+    type:              Type | null;
     options?:          Options[];
 }
 
+interface Type {
+    id: number,
+    name: string,
+    code: string,
+    status: boolean,
+    createdAt: string,
+    updatedAt: string
+}
 interface Category {
     id:          number;
     name:        string;
@@ -44,4 +52,19 @@ interface Category {
     status:      boolean;
     createdAt:   string;
     updatedAt:   string;
+}
+
+
+export interface GetAllTypesProvider {
+    ok:            boolean;
+    typesProvider: TypesProvider[];
+}
+
+export interface TypesProvider {
+    id:        number;
+    name:      string;
+    code:      string;
+    status:    boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }

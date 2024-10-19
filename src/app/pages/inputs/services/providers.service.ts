@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { GetAllProviders, Provider } from '../interfaces/provider.interface';
+import { GetAllProviders, GetAllTypesProvider, Provider } from '../interfaces/provider.interface';
 import { environment } from 'src/environments/environment';
 import { GetAllSectorProviders, Sector } from '../interfaces/sector.interface';
 const base_url = environment.base_url;
@@ -19,12 +19,12 @@ export class ProvidersService {
   reloadCategoriesSectors$: Subject<boolean> = new Subject();
   editSubs: EventEmitter<Provider> = new EventEmitter<Provider>();
 
-  getAllAndSearch(page: number, limit: number,status:boolean, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllProviders>{
+  getAllAndSearch(page: number, limit: number,status:boolean, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC', id_type_provider:string = ''): Observable<GetAllProviders>{
     let url = '';
     if(type === ''){
-      url = `${base_url}/provider?page=${page}&limit=${limit}&status=${status}&field_sort=${field_sort}&order=${order}`;
+      url = `${base_url}/provider?page=${page}&limit=${limit}&status=${status}&field_sort=${field_sort}&order=${order}&id_type_provider=${id_type_provider}`;
     } else {
-      url = `${base_url}/provider?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&field_sort=${field_sort}&order=${order}`;
+      url = `${base_url}/provider?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&field_sort=${field_sort}&order=${order}&id_type_provider=${id_type_provider}`;
     }
     return this.http.get<GetAllProviders>(url);
   }
@@ -65,5 +65,10 @@ export class ProvidersService {
   deleteSector(id:number) {
     const url = `${base_url}/provider/sector/destroy/${id}`;
     return this.http.delete(url);
+  }
+
+  getAllTypesProvider(): Observable<GetAllTypesProvider>{
+    let url = `${base_url}/provider/types`;
+    return this.http.get<GetAllTypesProvider>(url);
   }
 }

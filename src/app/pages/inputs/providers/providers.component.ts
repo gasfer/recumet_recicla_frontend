@@ -7,17 +7,30 @@ import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { Router } from '@angular/router';
+import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-providers',
   templateUrl: './providers.component.html',
-  styles: [
-  ]
+  styles: [`
+      .title {
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+      }
+    
+  `]
 })
 export class ProvidersComponent implements OnInit, OnDestroy {
   searchItems = signal<MenuItem[]>([
-    { label: 'Activos',   icon: 'fa-solid fa-circle-check' ,command: () => {this.type.set('');this.getAllAndSearchProviders(1,this.rows(),true);}},
-    { label: 'Inactivos', icon: 'fa-solid fa-trash-can', command: () => {this.type.set('');this.getAllAndSearchProviders(1,this.rows(),false)} },
+    { label: 'Activos',   icon: 'fa-solid fa-circle-check' ,command: () => {
+      this.type.set('');
+      this.getAllAndSearchProviders(1,this.rows(),true);
+    }},
+    { label: 'Inactivos', icon: 'fa-solid fa-trash-can', command: () => {
+      this.type.set('');
+      this.getAllAndSearchProviders(1,this.rows(),false)
+    } },
   ]);
   cols = signal<ColsTable[]>([
     { field: 'full_names', header: 'NOMBRE COMPLETO' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
@@ -25,7 +38,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     { field: `number_document`, header: 'DOCUMENTO' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
     { field: `cellphone`, header: 'CELULAR' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
     { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-    { field: `type`, header: 'TIPO' , style:'min-width:100px;max-width:100px;', tooltip: true , isText:true },
+    { field: `type.name`, header: 'TIPO' , style:'min-width:100px;max-width:100px;', tooltip: true , isText:true },
     { field: `mayorista`, header: 'MAYOR.' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
       tagValue: (val:boolean)=> val ? 'SI' : 'NO',
       tagColor: (val:boolean)=> val ? 'primary' : 'success',
@@ -55,13 +68,24 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   status    = signal(true);
   type      = signal('');
   query     = signal('');
+  types = signal<{name:string, code:string}[]>([]);
+  types_filtrado = signal([
+    {name: 'DIA', code: 'DAY'},
+    {name: 'MES', code: 'MONTH'},
+    {name: 'AÑO', code: 'YEAR'},
+    {name: 'RANGO', code: 'RANGE'},
+  ]);
   providers = signal<Providers|undefined>(undefined);
   private providersService = inject(ProvidersService);
   validatorsService = inject(ValidatorsService);
   router            = inject(Router);
+  fb                = inject(FormBuilder);
   save$!: Subscription;
-
+  formReport:UntypedFormGroup = this.fb.group({
+    id_type_provider: ['1'],
+  });
   ngOnInit(): void {
+    this.getAllTypes();
     this.getAllAndSearchProviders(1,this.rows(),true);
     this.save$ = this.providersService.save$.subscribe(resp => this.getAllAndSearchProviders(this.page(),this.rows(),this.status()));
   }
@@ -73,7 +97,8 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   getAllAndSearchProviders(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
     if(!query) {this.loading.set(true);} //not loading in search
     this.status.set(status);
-    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order()).subscribe({
+    const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
+    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider).subscribe({
       next: (resp) => {
         this.providers.set(resp.providers);
         this.providers()!.data.forEach((provider) => {
@@ -193,5 +218,31 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     this.providersService.isEdit = true;
     this.providersService.editSubs.emit(provider);
     this.providersService.showModal = true;
+  }
+
+  onChangeTypesFilter() {
+    const type_filter = this.formReport.get('filterBy')?.value;
+    if(type_filter == 'RANGE'){
+      this.formReport.get('dates')?.setValue([new Date()]);
+    } else {
+      this.formReport.get('dates')?.setValue(new Date());
+    }
+  }
+
+  getAllTypes() {
+    this.types.set([]);
+    this.providersService.getAllTypesProvider().subscribe(resp => {
+      const formattedType = resp.typesProvider.map(type => ({
+        name: type.name,
+        code: type.id!.toString()
+      }));
+      this.types.set(formattedType);
+    });
+  }
+
+  clearInputs() {
+    this.formReport.patchValue({
+      id_type_provider: '1',
+    });
   }
 }

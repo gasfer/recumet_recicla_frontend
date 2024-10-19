@@ -1,28 +1,50 @@
-<div class="card shadow">
-    <p-toolbar>
-      <div class="p-toolbar-group-left">
-        <h4>LISTADO DE PROVEEDORES</h4>
+<form [formGroup]="formReport">
+  <div class="card shadow mb-4 icon-box ">
+    <div class="card-body">
+      <div class="title">
+        <h3 style="color: var(--bg-2665C); text-align: center; flex: 1; margin-right: auto;">
+          <b>CONSULTA DE PROVEEDORES</b>
+        </h3>
+        <div *ngIf="validatorsService.withPermission('PROVEEDORES','create')" class="ms-1">
+          <p-button icon="fa-solid fa-circle-plus" (click)="showModal()" pTooltip="Añadir Nuevo" tooltipPosition="left"
+            [rounded]="true" label="Añadir"></p-button>
+        </div>
       </div>
-      <div *ngIf="validatorsService.withPermission('PROVEEDORES','create')"
-        class="p-toolbar-group-right ms-1">
-        <p-button
-          icon="fa-solid fa-circle-plus"
-          (click)="showModal()"
-          pTooltip="Añadir Nuevo"
-          tooltipPosition="left"
-          [rounded]="true"
-          label="Añadir"
-        ></p-button>
+      <div class="p-fluid grid mt-sm-3 mt-md-0 ps-md-4 pe-md-4">
+        <app-alert-notify title="Realiza tus consultas por los parámetros que sean necesarios,"
+          subTitle="Se considera todos los campos que estén llenados para realizar la consulta" [subTitle2]="''"
+          [required]="false"></app-alert-notify>
+        <div class="field col-12">
+          <div class="row mt-1">
+            <div class="col-12 col-sm-6">
+                <label class="block mb-1">Tipo proveedor</label>
+                <p-dropdown [options]="types()" placeholder="Selecciona una opción"
+                  optionLabel="name" optionValue="code" appendTo="body" formControlName="id_type_provider"
+                  [class.ng-dirty]="validatorsService.inputValid('id_type_provider',formReport)"></p-dropdown>
+            </div>
+          </div>
+        </div>
       </div>
-    </p-toolbar>
-    <app-modal-provider></app-modal-provider>
-    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
-    <app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)"
-      [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
-      [data]="providers()" [loading]="loading()">
-    </app-table>
-    <app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)"
-      [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
-      [data]="providers()" [loading]="loading()">
-    </app-table>
-</div>
+    </div>
+    <div class="mb-2 mt-sm-3 mt-md-0 ps-md-5 pe-md-5 me-3 bg-transparent text-end">
+      <p-button (click)="!loading() ? this.getAllAndSearchProviders(1,rows(),true) : null"
+        styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
+        [loading]="loading()"></p-button>
+      <p-button (click)="clearInputs()"
+        styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
+        label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
+      </p-button>
+    </div>
+    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+      [activeItem]="searchItems()[0]"></p-tabMenu>
+
+  </div>
+</form>
+<app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
+</app-table>
+<app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
+</app-table>
+
+<app-modal-provider></app-modal-provider>
