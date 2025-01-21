@@ -12,7 +12,9 @@ import { Router } from '@angular/router';
   selector: 'app-table',
   templateUrl: './table.component.html',
   styles: [`
-    :host ::ng-deep .p-datatable .p-datatable-thead > tr:nth-child(0) > th {
+    // tr:nth-child(0)
+
+    :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
         position: -webkit-sticky;
         position: sticky;
         top: 0rem;

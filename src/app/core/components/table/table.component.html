@@ -1,4 +1,4 @@
-<app-card-empty *ngIf="data?.data?.length === 0 && loading === false"></app-card-empty>
+<app-card-empty *ngIf="(data?.data?.length === 0 && !loading) || !data && !loading "></app-card-empty>
 
 <p-table #dt id="table" [value]="data?.data" styleClass="p-datatable-sm p-datatable-striped animated fadeIn" 
     [scrollHeight]="heightTable"  [resizableColumns]="true" [rowHover]="true"  [rows]="50"
@@ -35,8 +35,8 @@
             [style]="col.style"
             style="background-color: var(--bg-primary)"
             class="text-white"
-            [pSortableColumn]="col.field">
-            {{col.header}}<p-sortIcon [field]="col.field" *ngIf="col.activeSortable ?? true"></p-sortIcon>
+            [pSortableColumn]="(col.activeSortable ?? true) && !col.isButton ?  col.field : ''">
+            {{col.header}}<p-sortIcon [field]="col.field" *ngIf="(col.activeSortable ?? true) && !col.isButton"></p-sortIcon>
         </th>
     </tr>
 </ng-template>

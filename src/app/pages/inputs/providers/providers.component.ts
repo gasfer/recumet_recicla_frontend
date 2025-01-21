@@ -36,7 +36,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   searchFor = signal<SearchFor[]>([
     {name: 'NOMBRES', code: 'full_names'},
     {name: 'SECTOR', code: 'sector.name'},
-    {name: 'DOCUMENTO', code: 'number_document'},
+    {name: 'CI / NIT', code: 'number_document'},
     {name: 'CELULAR', code: 'cellphone'},
     {name: 'DIRECCIÓN', code: 'direction'},
     {name: 'TIPO', code: 'type.name'},
@@ -261,6 +261,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       case 'B':
           this.cols.set([
             { field: 'full_names', header: 'TALLER, NEGOCIO' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
+            { field: `number_document`, header: 'CI / NIT' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
             { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
             { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
             { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
@@ -273,6 +274,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       case 'C':
         this.cols.set([
           { field: 'full_names', header: 'ACOPIADORA MAYORISTA' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
+          { field: `number_document`, header: 'CI / NIT' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
           { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
           { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
           { field: `mayorista`, header: 'MAYOR.' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
@@ -289,6 +291,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         break;  
       case 'D':
         this.cols.set([
+          { field: `number_document`, header: 'CI / NIT' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
           { field: `direction`, header: 'DIRECCIÓN ACOPIADORA MINORISTA' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
           { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
           { field: `mayorista`, header: 'MAYOR.' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
@@ -305,6 +308,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         break  
       case 'E':
         this.cols.set([
+          { field: `number_document`, header: 'CI / NIT' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
           { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
           { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
           { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},

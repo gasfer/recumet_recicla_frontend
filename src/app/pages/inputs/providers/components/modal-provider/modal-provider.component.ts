@@ -32,7 +32,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   ]);
   providerForm: FormGroup = this.fb.group({
     id: [''],
-    full_names: [ '', [Validators.minLength(2),Validators.maxLength(174),this.validatorsService.isSpacesInDynamicTxt]],
+    full_names: [ '', [Validators.minLength(2),Validators.maxLength(174)]],
     id_sector: [ '', [ Validators.required]],
     number_document: [null, [Validators.maxLength(50)]],
     cellphone: [ null, [Validators.min(60000000),Validators.max(79999999)]],
@@ -44,7 +44,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     id_category: [ '', [Validators.required]],
     id_sucursal: [ null],
     companyContacts:[ '', [Validators.maxLength(254)]],
-    frequency:[ '', [Validators.maxLength(254)]],
+    frequency:[ 'MENSUAL', [Validators.maxLength(254)]],
     workAreaOrPositionOrUnit: ['', [Validators.maxLength(254)]],
     status: [true]
   });
@@ -150,10 +150,9 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     if(!this.providerForm.valid) return;
     this.loading.set(true);
     const id_type_provider = this.providerForm.get('id_type_provider')?.value;
-    this.providerForm.patchValue({
-      id_type_provider:id_type_provider.id
-    })
-    this.providersService.postNew(this.providerForm.value).subscribe({
+    const formProvider = this.providerForm.value;
+    formProvider.id_type_provider = id_type_provider.id;
+    this.providersService.postNew(formProvider).subscribe({
       complete: () => {
         this.providersService.save$.next(true);
         this.loading.set(false);
@@ -175,10 +174,9 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     if(!this.providerForm.valid) return;
     this.loading.set(true);
     const id_type_provider = this.providerForm.get('id_type_provider')?.value;
-    this.providerForm.patchValue({
-      id_type_provider:id_type_provider.id
-    })
-    this.providersService.putUpdate(this.providerForm.value).subscribe({
+    const formProvider = this.providerForm.value;
+    formProvider.id_type_provider = id_type_provider.id;
+    this.providersService.putUpdate(formProvider).subscribe({
       complete: () => {
         this.providersService.save$.next(true);
         this.loading.set(false);
@@ -222,7 +220,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       id_category: '',
       id_sucursal: null,
       companyContacts: '',
-      frequency: '',
+      frequency: 'MENSUAL',
       workAreaOrPositionOrUnit: '',
       status: true,
     });
@@ -263,6 +261,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         this.formP = {
           ...defaultFormConfig,
           full_names: { label: 'Nombre del taller o negocio', view: true },
+          number_document: {label:'CI / NIT', view: true},
           direction: { label: 'Dirección del taller o negocio', view: true },
         };
         break;
@@ -271,6 +270,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
           ...defaultFormConfig,
           full_names: { label: 'Nombre de la acopiadora mayorista', view: true },
           direction: { label: 'Dirección de la acopiadora mayorista', view: true },
+          number_document: {label:'CI / NIT', view: true},
           mayorista: {  label: 'Mayorista o minorista', view: true},
         };
         break;
@@ -279,6 +279,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
           ...defaultFormConfig,
           full_names: { label: '', view: false },
           direction: { label: 'Dirección de la acopiadora minorista', view: true },
+          number_document: {label:'CI / NIT', view: true},
           mayorista: {  label: 'Mayorista o minorista', view: true},
         };
         break;
@@ -286,6 +287,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         this.formP = {
           ...defaultFormConfig,
           full_names: { label: '', view: false },
+          number_document: {label:'CI / Nit', view: true},
           direction: { label: '', view: false },
         };
         break;
