@@ -5,6 +5,7 @@ import { Storage } from '../pages/managements/interfaces/sucursales.interface';
 import { Subject } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
 import { User } from '../auth/auth.interface';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -128,5 +129,16 @@ export class ValidatorsService {
       int8Array[i] = byteString.charCodeAt(i);
     } const blob = new Blob([int8Array], { type: 'image/jpeg' });
     return blob;
+  }
+
+  hasDaysPassedSinceEdit(date: string, limit_days:number):boolean {
+    const _date_output = moment(date);
+    const _dateOutput = moment();
+    const differentDays = _dateOutput.diff(_date_output, 'days');
+    if (differentDays >= limit_days) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

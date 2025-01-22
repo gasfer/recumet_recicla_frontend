@@ -58,7 +58,9 @@
                                     <p-badge *ngIf="isViewPrice" severity="success"
                                         value="Precio: {{ product.prices[0].price | number: decimal()}}"></p-badge>
                                     <p-badge *ngIf="isViewQuantity"
-                                        value="Stock: {{ product.total_stock}}"></p-badge>
+                                        [value]="'Stock:' + product.total_stock"
+                                        [severity]="product.total_stock === 0 ? 'danger' : 'primary'">
+                                    </p-badge>
                                 </div>
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, computed, inject, signal } from '@angular/core';
 import { InputsService } from '../../../services/inputs.service';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
@@ -8,6 +8,7 @@ import { BankService } from 'src/app/pages/managements/services/bank.service';
 import { Bank } from 'src/app/pages/managements/interfaces/bank.interface';
 import { NewInputForm } from '../../../interfaces/input.interface';
 import Swal from 'sweetalert2';
+import { ComponentsService } from 'src/app/core/services/components.service';
 
 @Component({
   selector: 'app-modal-save-input',
@@ -20,6 +21,7 @@ export class ModalSaveInputComponent implements OnInit {
   bankService       = inject( BankService );
   scalesService     = inject( ScalesService );
   validatorsService = inject( ValidatorsService );
+  componentService  = inject( ComponentsService );
   fb                = inject( FormBuilder );
   types_pay         = signal([{name: 'EFECTIVO', code: 'EFECTIVO'},{name: 'CHEQUE', code: 'CHEQUE'},{name: 'TRANSFERENCIA', code: 'TRANSFERENCIA'}]);
   types_registry    = computed(() => this.inputsService.types_registry());
@@ -31,6 +33,7 @@ export class ModalSaveInputComponent implements OnInit {
   loading           = signal(false);
   providerSelect    = computed(() => this.inputsService.providerSelect());
   totalSummary      = computed(() => this.inputsService.detailShopping().reduce( (sum, product) => Number(sum) + Number(product.import),0));
+  @Input({required: true}) id_storage : number | null = null;
 
   formInput: UntypedFormGroup  = this.fb.group({
     id_provider: ['',[Validators.required]],
@@ -59,8 +62,12 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   saveInput() {
+    this.formInput.patchValue({
+      id_provider: this.providerSelect()?.id, 
+      id_sucursal: this.validatorsService.id_sucursal(),
+      id_storage: this.id_storage
+    });
     this.formInput.markAllAsTouched();
-    this.formInput.patchValue({id_provider: this.providerSelect()?.id, id_sucursal: this.validatorsService.id_sucursal()})
     if(!this.formInput.valid) return;
     this.loading.set(true);
     const inputDetail = this.inputsService.detailShopping().map(prod=> ({
@@ -76,6 +83,9 @@ export class ModalSaveInputComponent implements OnInit {
     }
     this.inputsService.postNewInput(data).subscribe({
       next: (resp) => {
+        this.inputsService.showModalSaveInput = false;
+        this.inputsService.resetInput();
+        this.componentService.clearInputSearch$.next(true);
         Swal.fire({ 
           title: 'Éxito!', 
           text: `Compra registrada exitosamente`,
@@ -83,8 +93,6 @@ export class ModalSaveInputComponent implements OnInit {
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
-        this.inputsService.showModalSaveInput = false;
-        this.inputsService.resetInput();
         if(this.inputsService._inputConfig.printAfter) {
           this.inputsService.printPdfReport(resp.id_input);
         }
@@ -95,8 +103,8 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   editInput() {
+    this.formInput.patchValue({id_provider: this.providerSelect()?.id, id_storage: this.id_storage})
     this.formInput.markAllAsTouched();
-    this.formInput.patchValue({id_provider: this.providerSelect()?.id})
     if(!this.formInput.valid) return;
     this.loading.set(true);
     const inputDetail = this.inputsService.detailShopping().map(prod=> ({
@@ -112,6 +120,10 @@ export class ModalSaveInputComponent implements OnInit {
     }
     this.inputsService.putUpdateInput(this.inputsService.dataInputForEdit()!.id,data).subscribe({
       next: (resp) => {
+        this.inputsService.showModalSaveInput = false;
+        this.inputsService.isEdit = false;
+        this.inputsService.resetInput();
+        this.componentService.clearInputSearch$.next(true);
         Swal.fire({ 
           title: 'Éxito!', 
           text: `Compra Modificada exitosamente`,
@@ -119,9 +131,6 @@ export class ModalSaveInputComponent implements OnInit {
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
-        this.inputsService.showModalSaveInput = false;
-        this.inputsService.isEdit = false;
-        this.inputsService.resetInput();
         if(this.inputsService._inputConfig.printAfter) {
           this.inputsService.printPdfReport(resp.id_input);
         }
@@ -180,11 +189,6 @@ export class ModalSaveInputComponent implements OnInit {
   }
   
   onShowModal() {
-    //default storage
-    const storages = this.validatorsService.storages();
-    if(storages.length == 1){
-      this.formInput.patchValue({id_storage:storages[0].id});
-    }
     this.formInput.patchValue({
       sumas: this.totalSummary(),
       total: this.totalSummary()

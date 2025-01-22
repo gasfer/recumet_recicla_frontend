@@ -22,6 +22,7 @@ export class DataviewProductsComponent implements OnInit {
   @Input() isViewPrice: boolean = false;
   @Input() id_sucursal: string = '';
   @Input() id_storage : string = '';
+  @Input() isInput : boolean = false;
   products          = signal<Product[]>([]);
   categories        = signal<{name:string,code:string}[]>([]);
   productsService   = inject(ProductsService);

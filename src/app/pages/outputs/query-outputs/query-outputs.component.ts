@@ -200,8 +200,8 @@ export class QueryOutputsComponent {
             },
             { 
               label:'',icon:'fas fa-edit', 
-              tooltip: 'Editar',
-              disabled: this.validatorsService.withPermission('VENTAS','update'),
+              tooltip: this.validatorsService.hasDaysPassedSinceEdit(output.createdAt,7) ? 'La fecha límite de edición ha sido superada.' : 'Editar',
+              disabled:  !this.validatorsService.hasDaysPassedSinceEdit(output.createdAt,7) ? this.validatorsService.withPermission('VENTAS','update') : false,
               class:'p-button-rounded p-button-warning p-button-sm  ms-1',
               eventClick: () => {
                 this.outputService.resetOutput();

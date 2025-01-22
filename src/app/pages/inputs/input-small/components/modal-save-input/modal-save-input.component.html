@@ -30,26 +30,6 @@
                             {{ 'Selecciona un proveedor' }}
                         </small> 
                     </div>
-                    <!-- <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                         
-                    </div> -->
-                </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Area / Almacén ingreso stock<span class="text-danger">*</span></label>
-                        <p-dropdown [options]="validatorsService.storages()" 
-                          placeholder="Selecciona un almacén" 
-                          optionLabel="name"
-                          optionValue="id"
-                          appendTo="body" [filter]="true" filterBy="name"
-                          [virtualScrollItemSize]="38" [lazy]="true"
-                          formControlName="id_storage" 
-                          [class.ng-dirty]="validatorsService.inputValid('id_storage',formInput)"
-                        ></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('id_storage',formInput)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("id_storage",formInput) }}
-                        </small>
-                    </div>
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Pesaje<span class="text-danger">*</span></label>
                         <p-dropdown [options]="scalas()" 

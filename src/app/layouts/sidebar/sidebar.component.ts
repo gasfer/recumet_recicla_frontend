@@ -230,14 +230,14 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges{
         subItems: [
             {
               id: 28,
-              name: 'KARDEX FÍSICO',
+              name: 'KARDEX',
               action: 'view',
               label: 'MENUITEMS.KARDEXFISICO.TEXT',
               link: '/inventories/kardex-fisico',
             },
             {
               id: 30,
-              name: 'KARDEX HISTÓRICO',
+              name: 'KARDEX',
               action: 'view',
               label: 'MENUITEMS.KARDEXHISTORICO.TEXT',
               link: '/inventories/kardex',
