@@ -147,7 +147,7 @@ export class AccountsPayableComponent implements OnInit {
   }
 
   getAllProviders() {
-    this.providersService.getAllAndSearch(1,1000,true).subscribe({
+    this.providersService.getAllAndSearch(1,10000,true).subscribe({
       next: (resp)=> {
         this.providers.set([]);
         resp.providers.data.forEach(provider => {

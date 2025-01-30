@@ -182,7 +182,7 @@ export class QueryCajaComponent implements OnInit{
   }
 
   getAllUsers() {
-    this.usersService.getAllAndSearch(1,1000,true).subscribe({
+    this.usersService.getAllAndSearch(1,10000,true).subscribe({
       next: (resp)=> {
         this.users.set([]);
         resp.users.data.forEach(user => {

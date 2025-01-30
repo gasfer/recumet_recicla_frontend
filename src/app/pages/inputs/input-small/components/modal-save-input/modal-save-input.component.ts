@@ -158,14 +158,14 @@ export class ModalSaveInputComponent implements OnInit {
 
 
   getAllScalas() {
-    this.scalesService.getAllAndSearch(1,1000,true).subscribe({
+    this.scalesService.getAllAndSearch(1,10000,true).subscribe({
       next: (resp) => this.scalas.set(resp.scales.data),
       error: () => this.scalas.set([])
     });
   }
 
   getAllBanks() {
-    this.bankService.getAllAndSearch(1,1000,true).subscribe({
+    this.bankService.getAllAndSearch(1,10000,true).subscribe({
       next: (resp) => this.banks.set(resp.banks.data),
       error: () => this.banks.set([])
     });

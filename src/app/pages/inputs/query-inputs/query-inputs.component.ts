@@ -158,14 +158,14 @@ export class QueryInputsComponent implements OnInit {
   }
 
   getAllProviders() {
-    this.providersService.getAllAndSearch(1,1000,true).subscribe({
+    this.providersService.getAllAndSearch(1,100000,true,'','','full_names','ASC').subscribe({
       next: (resp)=> {
         this.providers.set([]);
         resp.providers.data.forEach(provider => {
           this.providers.update((providers) => [
             ...providers,
             {
-              name: `${provider.full_names} - ${provider.number_document ?? ''}`,
+              name: `${provider.type?.code} - ${provider.full_names} - ${provider.number_document ?? ''}`,
               code: provider.id.toString(),
             },
           ]);

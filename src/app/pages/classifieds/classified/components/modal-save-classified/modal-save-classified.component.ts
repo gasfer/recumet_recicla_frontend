@@ -90,7 +90,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
 
 
   getAllScales() {
-    this.scalesService.getAllAndSearch(1,1000,true).subscribe({
+    this.scalesService.getAllAndSearch(1,10000,true).subscribe({
       next: (resp) => this.scales.set(resp.scales.data),
       error: () => this.scales.set([])
     });

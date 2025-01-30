@@ -92,7 +92,7 @@ export class ListCostsProductComponent implements OnInit {
 
   getAllCategories() {
     this.categories.set([]);
-    this.categoriesService.getAllAndSearch(1,1000,true).subscribe(resp => {
+    this.categoriesService.getAllAndSearch(1,10000,true).subscribe(resp => {
       const formattedCategory = resp.categories.data.map(category => ({
         name: category.name,
         code: category.id!.toString()
