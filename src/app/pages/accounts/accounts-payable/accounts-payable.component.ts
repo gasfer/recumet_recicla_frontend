@@ -51,25 +51,26 @@ export class AccountsPayableComponent implements OnInit {
     {name: 'RANGO', code: 'RANGE'},
   ]);
   cols  = signal<ColsTable[]>([
-    { field: 'input.cod', header: 'COMPRA' , style:'min-width:100px;max-width:100px;', tooltip: true},
+    { field: 'input.cod', header: 'COMPRA' , style:'min-width:100px;max-width:100px;', tooltip: true , footer:'TOTAL'},
+    { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
+    { field: 'input.date_voucher', header: 'FECHA REGISTRO' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: 'input.type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true, 
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'success',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
     },
-    { field: 'date_credit', header: 'FECHA CREDITO' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
-    { field: 'monto_abonado', header: 'MONTO ABONADO' , style:'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
+    { field: 'input.registry_number', header: 'NUMERO' , style:'min-width:80px;max-width:120px;', tooltip: true, isText: true},
+    { field: 'monto_abonado', header: 'A CUENTA' , style:'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
     },
-    { field: 'monto_restante', header: 'MONTO RESTANTE' , style:'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
+    { field: 'monto_restante', header: 'SALDO' , style:'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
     },
     { field: 'total', header: 'TOTAL' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true, 
       tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
       tagColor: (val:number)=> 'primary',
-      tagIcon: (val:number)=>  ''
+      tagIcon: (val:number)=>  '',
     },
-    { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: 'options', header: 'OPCIONES', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }
   ]);
   searchFor   = signal<SearchFor[]>([
@@ -147,7 +148,7 @@ export class AccountsPayableComponent implements OnInit {
   }
 
   getAllProviders() {
-    this.providersService.getAllAndSearch(1,10000,true).subscribe({
+    this.providersService.getAllAndSearch(1,10000,true,'','','full_names','ASC').subscribe({
       next: (resp)=> {
         this.providers.set([]);
         resp.providers.data.forEach(provider => {
@@ -230,6 +231,13 @@ export class AccountsPayableComponent implements OnInit {
             },
           ] ;
         });
+        const total_abonados = resp.accountsPayable?.totals?.total_abonados ?? 0;
+        const total_restante = resp.accountsPayable?.totals?.total_restante ?? 0;
+        const total_account = resp.accountsPayable?.totals?.total_account ?? 0;
+        this.cols()[5].footer =  this.pipeNumber.transform(total_abonados,this.decimal()) ?? '0';
+        this.cols()[6].footer =  this.pipeNumber.transform(total_restante,this.decimal()) ?? '0';
+        this.cols()[7].footer =  this.pipeNumber.transform(total_account,this.decimal()) ?? '0';
+       
       },
       complete: () => {
         this.loading.set(false);

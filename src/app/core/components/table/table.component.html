@@ -125,6 +125,16 @@
     </td>
 </tr>
 </ng-template>
+<ng-template pTemplate="footer" let-rowData let-columns>
+    <tr  *ngIf="!loading">
+        @for (col of columns; track $index) {
+            <td  ngClass="tdwith"
+            [style]="col.style"
+            style="text-align: left; white-space:normal"
+            >{{col.footer}}</td>
+        }
+    </tr>
+</ng-template>
 </p-table>
 <app-table-loading *ngIf="loading" [cols]="cols" [customPagination]="customPagination" [includeSearch]="includeSearch"></app-table-loading>
 

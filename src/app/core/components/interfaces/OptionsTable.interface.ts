@@ -12,6 +12,7 @@ export interface ColsTable {
     field?:      string | string[];
     field2?:     string | string[];
     link?:     string;
+    footer?:     string;
     header:     string;
     style?:      string;
     tooltip?:   boolean;

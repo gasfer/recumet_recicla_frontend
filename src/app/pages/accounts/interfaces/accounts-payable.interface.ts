@@ -14,8 +14,14 @@ export interface AccountsPayable {
     from:         number;
     to:           number;
     data:         AccountPayable[];
+    totals:    Totals;
 }
 
+interface Totals {
+    total_abonados: number,
+    total_restante: number,
+    total_account: number,
+}
 export interface AccountPayable {
     id:                    number;
     cod:                   string;

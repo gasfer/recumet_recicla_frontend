@@ -10,6 +10,7 @@ import { ColsTable } from 'src/app/core/components/interfaces/OptionsTable.inter
 import { Product } from '../interfaces/products.interface';
 import { ProductsService } from '../services/products.service';
 import Swal from 'sweetalert2';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-kardex',
@@ -40,6 +41,9 @@ export class KardexComponent implements OnInit{
   txtSearchProduct      = signal('');
   suggestedProducts     = signal<Product[]>([]);
   productSelect         = signal<Product|undefined>(undefined);
+  pipeNumber        = new DecimalPipe('en-US');
+  decimalLength     = signal(this.validatorsService.decimalLength());
+  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   paramsSearch      = signal<FormSearchKardex>({
     filterBy:'MONTH',
     date1: '',
@@ -111,10 +115,18 @@ export class KardexComponent implements OnInit{
     { field: `detalle`, header: 'DETALLE' , style:'min-width:180px;max-width:180px;', tooltip: true, isText:true  },
     { field: `product.name`, header: 'PRODUCTO' , style:'min-width:180px;max-width:180px;', tooltip: true, isText:true  },
     { field: `product.unit.name`, header: 'UND' , style:'min-width:80px;max-width:80px;', tooltip: true, isText:true  },
-    { field: `quantity_inicial`, header: 'SALDO INICIAL' , style:'min-width:110px;max-width:120px;text-align: center;', tooltip: true,   },
-    { field: `quantity_input`, header: 'CANT ENTRADA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true  },
-    { field: `quantity_output`, header: 'CANT SALIDA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true  },
-    { field: `quantity_saldo`, header: 'CANT SALDO' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true  },
+    { field: `quantity_inicial`, header: 'SALDO INICIAL' , style:'min-width:110px;max-width:120px;text-align: center;', tooltip: true, 
+      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+    },
+    { field: `quantity_input`, header: 'CANT ENTRADA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
+      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+      },
+    { field: `quantity_output`, header: 'CANT SALIDA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
+      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+      },
+    { field: `quantity_saldo`, header: 'CANT SALDO' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
+      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+      },
     // { field: `sucursal.name`, header: 'SUCURSAL' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
     { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
   ]);

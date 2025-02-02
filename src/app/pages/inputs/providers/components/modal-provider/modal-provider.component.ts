@@ -81,7 +81,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
           code:resp.type?.code.toString(),
           id: resp.type?.id.toString(),
         },
-        mayorista: resp.mayorista,
+        mayorista: resp.mayorista ?? false,
         name_contact: resp.name_contact,
         companyContacts: resp.companyContacts,
         frequency: resp.frequency,
@@ -207,7 +207,6 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   resetForm() {
     this.providerForm.patchValue({
-      id: '',
       full_names: '',
       id_sector: '',
       number_document: null,

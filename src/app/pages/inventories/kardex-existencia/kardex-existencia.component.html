@@ -5,9 +5,6 @@
                 <h3 style="color: var(--bg-2665C);"><b>CONSULTA KARDEX DE EXISTENCIA "{{productSelect()?.name ?? '-'}}"</b></h3>
             </div>
             <div class="p-fluid grid mt-sm-3 mt-md-0 ps-md-4 pe-md-4">
-                <app-alert-notify title="Realiza tus consultas por los parámetros que sean necesarios,"
-                    subTitle="Se considera todos los campos que estén llenados para realizar la consulta"
-                    [subTitle2]="''" [required]="false"></app-alert-notify>
                 <div class="field col-12">
                     <div class="row mt-1">
                         <div class="col-12 col-sm-6">
@@ -67,14 +64,6 @@
                                     <small *ngIf="validatorsService.inputValid('id_storage',formReport)" class="p-error block">
                                         {{ validatorsService.inputValidMessage("id_storage",formReport) }}
                                     </small>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <label class="block mb-1">Proveedor</label>
-                                    <p-dropdown [options]="providers()" [showClear]="true" formControlName="id_provider"
-                                        optionLabel="name" optionValue="code" appendTo="body" [filter]="true"
-                                        filterBy="name" [virtualScrollItemSize]="38" [lazy]="true"
-                                        placeholder="SELECCIONA PROVEEDOR"
-                                        [class.ng-dirty]="validatorsService.inputValid('id_provider',formReport)"></p-dropdown>
                                 </div>
                             </div>
                         </div>

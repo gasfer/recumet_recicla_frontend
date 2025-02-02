@@ -19,6 +19,11 @@ export class ModalViewDetailsComponent implements OnInit, OnDestroy {
   
   ngOnInit(): void {
     this.viewDetailsSub$ = this.inputService.detailsSubs$.subscribe(input => {
+      let totalQuantity = 0;
+      input.detailsInput.forEach(resp => {
+        totalQuantity += Number(resp.quantity);
+      })
+      input.totalQuantity = totalQuantity;
       this.input.set(input);
     });
   }

@@ -82,7 +82,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     this.status.set(status);
     this.loadColsTableByType();
     const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
-    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider.id).subscribe({
+    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '').subscribe({
       next: (resp) => {
         this.providers.set(resp.providers);
         this.providers()!.data.forEach((provider) => {

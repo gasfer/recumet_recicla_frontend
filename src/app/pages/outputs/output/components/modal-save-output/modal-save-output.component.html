@@ -297,6 +297,7 @@
                         }">
                         <label class="block mb-0">Chofer<span class="text-danger">*</span></label>
                         <p-dropdown [options]="chauffeurs()" 
+                          [filter]="true" filterBy="name"
                           placeholder="Selecciona una opción" 
                           optionLabel="name"
                           appendTo="body"

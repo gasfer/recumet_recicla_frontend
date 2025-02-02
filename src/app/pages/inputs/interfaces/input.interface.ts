@@ -94,6 +94,7 @@ export interface Input {
     user:            User;
     detailsInput:    DetailsInput[];
     options?:        Options[];
+    totalQuantity:   number;
 }
 
 export interface DetailsInput {
