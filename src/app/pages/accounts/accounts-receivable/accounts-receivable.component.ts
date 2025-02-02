@@ -149,7 +149,7 @@ export class AccountsReceivableComponent implements OnInit {
   }
 
   getAllClients() {
-    this.clientsService.getAllAndSearch(1,10000,true).subscribe({
+    this.clientsService.getAllAndSearch(1,10000,true,'','','full_names','ASC').subscribe({
       next: (resp)=> {
         this.clients.set([]);
         resp.clients.data.forEach(client => {

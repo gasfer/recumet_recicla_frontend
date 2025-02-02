@@ -34,6 +34,12 @@ import { Router } from '@angular/router';
         max-width:none !important;
       }
     }
+
+    :host ::ng-deep #table .p-datatable tfoot {
+        position: sticky;
+        bottom: 0;
+        z-index: 2; /* Para mantenerlo visible */
+    }
   `]
 })
 export class TableComponent implements OnInit, OnDestroy, OnChanges {
@@ -54,7 +60,7 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   from: number = 0;
   to: number = 0;
   total: number = 0;
-  heightTable: string = '400px';
+  heightTable: string = '500px';
   debounced: Subject<string> = new Subject();
   txtTermino: UntypedFormControl = new UntypedFormControl();
   searchSelect: UntypedFormControl = new UntypedFormControl();
@@ -162,5 +168,9 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   returnLink(link:string,value:string) {
     const _link = link.replace('${value}', value);
     this.router.navigateByUrl(_link);
+  }
+
+  hasFooter(columns: ColsTable[]): boolean {
+    return columns?.some(col => col.footer);
   }
 }

@@ -56,10 +56,19 @@
                   </div>
                   <div class="col-12 col-sm-6">
                     <label class="block mb-1">Cliente</label>
-                    <p-dropdown [options]="clients()" [showClear]="true" formControlName="id_client" optionLabel="name"
-                      optionValue="code" appendTo="body" [filter]="true" filterBy="name" [virtualScrollItemSize]="38"
-                      [lazy]="true" placeholder="SELECCIONA CLIENTE"
-                      [class.ng-dirty]="validatorsService.inputValid('id_client',formReport)"></p-dropdown>
+                    <p-dropdown 
+                      [options]="clients()"
+                      [showClear]="true"
+                      formControlName="id_client"
+                      optionLabel="name"
+                      optionValue="code"
+                      appendTo="body"
+                      [filter]="true"
+                      filterBy="name"
+                      [virtualScroll]="true"
+                      [virtualScrollItemSize]="38"
+                      placeholder="SELECCIONA CLIENTE"
+                      [class.ng-dirty]="validatorsService.inputValid('id_client', formReport)"/>
                   </div>
                 </div>
               </div>

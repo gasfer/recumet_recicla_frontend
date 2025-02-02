@@ -57,19 +57,19 @@
                   <div class="col-12 col-sm-6">
                     <label class="block mb-1">Proveedor</label>
                     <p-dropdown 
-                      [options]="providers()"
-                      [showClear]="true"
-                      formControlName="id_provider"
-                      optionLabel="name"
-                      optionValue="code"
-                      appendTo="body"
-                      [filter]="true"
-                      filterBy="name"
-                      [virtualScroll]="true"
-                      [virtualScrollItemSize]="38"
-                      placeholder="SELECCIONA PROVEEDOR"
-                      [class.ng-dirty]="validatorsService.inputValid('id_provider', formReport)">
-                  </p-dropdown>
+                        [options]="providers()"
+                        [showClear]="true"
+                        formControlName="id_provider"
+                        optionLabel="name"
+                        optionValue="code"
+                        appendTo="body"
+                        [filter]="true"
+                        filterBy="name"
+                        [virtualScroll]="true"
+                        [virtualScrollItemSize]="38"
+                        placeholder="SELECCIONA PROVEEDOR"
+                        [class.ng-dirty]="validatorsService.inputValid('id_provider', formReport)">
+                    </p-dropdown>
                   </div>
                 </div>
               </div>

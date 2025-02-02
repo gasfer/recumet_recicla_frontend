@@ -126,12 +126,13 @@
 </tr>
 </ng-template>
 <ng-template pTemplate="footer" let-rowData let-columns>
-    <tr  *ngIf="!loading">
+    <tr  *ngIf="!loading && hasFooter(columns)">
         @for (col of columns; track $index) {
             <td  ngClass="tdwith"
-            [style]="col.style"
-            style="text-align: left; white-space:normal"
-            >{{col.footer}}</td>
+                [style]="col.style"
+                style="text-align: left; white-space:normal"
+                >{{col.footer}}
+            </td>
         }
     </tr>
 </ng-template>
