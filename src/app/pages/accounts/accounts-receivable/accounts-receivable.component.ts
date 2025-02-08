@@ -53,13 +53,19 @@ export class AccountsReceivableComponent implements OnInit {
     {name: 'RANGO', code: 'RANGE'},
   ]);
   cols  = signal<ColsTable[]>([
+    { field: 'status_account', header: 'ESTADO' , style:'min-width:60px;max-width:60px; text-align: center;', tooltip: true , footer:'TOTAL',
+      isTag:true,
+      tagValue: (val:string)=>  ' ',
+      tagColor: (val:string)=> val == 'PAGADO' ? 'primary' : 'success',
+      tagIcon: (val:string)=>  val == 'PAGADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
+    },
     { field: 'output.cod', header: 'VENTA' , style:'min-width:100px;max-width:100px;', tooltip: true},
     { field: 'output.type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true, 
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'success',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
     },
-    { field: 'date_credit', header: 'FECHA CREDITO' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
+    { field: 'output.date_output', header: 'FECHA REGISTRO' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: 'monto_abonado', header: 'MONTO ABONADO' , style:'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
     },
@@ -81,6 +87,14 @@ export class AccountsReceivableComponent implements OnInit {
               ]);
   
   searchItems = signal<MenuItem[]>([
+    { 
+      label: 'Todos', icon: 'fas fa-exchange-alt', 
+      iconStyle: { 'color': '#FF851B'},
+      command: () => {
+        this.paramsSearch().status_account = '';
+        this.getAllAndSearchAccountsReceivable(1,this.rows());
+      } 
+    },
     { 
       label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left', 
       iconStyle: { 'color': '#14A44D'},
@@ -106,7 +120,7 @@ export class AccountsReceivableComponent implements OnInit {
     id_sucursal: [''],
   });
   paramsSearch = signal<FormSearchAccountsReceivable>({
-    status_account:'PENDIENTE',
+    status_account:'',
     type_registry: '',
     id_sucursal: '',
     id_client: '',
@@ -116,15 +130,15 @@ export class AccountsReceivableComponent implements OnInit {
   });
   buttonItems: MenuItem[] = [
     {
-      label: 'Excel',
+      label: 'Lista avanzada',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D'},
       command: () => { this.printExcelReport(); }
     },
   ];
   id_account_receivable: number = 0;
-  fieldSort = signal('');
-  order     = signal('');
+  fieldSort = signal('output.date_output');
+  order     = signal('DESC');
   idClient  = signal<number|undefined>(undefined);
   @ViewChild(TableComponent) tableComponent!: TableComponent;
 
@@ -185,12 +199,21 @@ export class AccountsReceivableComponent implements OnInit {
         this.accountsReceivable()!.data.forEach((accountReceivable) => {
           accountReceivable.options = accountReceivable.status_account == 'PENDIENTE'  ? [
             { 
-              label:'',icon:'fa-solid fa-comments-dollar', 
+              label:'',icon:'fa-solid fa-comment-dollar', 
               tooltip: 'Abonar',
               class:'p-button-rounded  p-button-warning p-button-sm',
               eventClick: () => {
                 this.accountsReceivableService.detailsSubs$.next(accountReceivable);
                 this.accountsReceivableService.showModalNewAbono = true;
+              }
+            },
+            { 
+              label:'',icon:'fa-solid fa-comments-dollar', 
+              tooltip: 'Abono multiple',
+              class:'p-button-rounded  p-button-secondary p-button-sm  ms-1',
+              eventClick: () => {
+                this.accountsReceivableService.detailsSubs$.next(accountReceivable);
+                this.accountsReceivableService.showModalAccountsClient = true;
               }
             },
             { 
@@ -232,6 +255,12 @@ export class AccountsReceivableComponent implements OnInit {
             },
           ] ;
         });
+        const total_abonados = resp.accountsReceivable?.totals?.total_abonados ?? 0;
+        const total_restante = resp.accountsReceivable?.totals?.total_restante ?? 0;
+        const total_account = resp.accountsReceivable?.totals?.total_account ?? 0;
+        this.cols()[4].footer =  this.pipeNumber.transform(total_abonados,this.decimal()) ?? '0';
+        this.cols()[5].footer =  this.pipeNumber.transform(total_restante,this.decimal()) ?? '0';
+        this.cols()[6].footer =  this.pipeNumber.transform(total_account,this.decimal()) ?? '0';
       },
       complete: () => {
         this.loading.set(false);

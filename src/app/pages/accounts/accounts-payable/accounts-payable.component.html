@@ -80,7 +80,7 @@
       <div class="mb-2 mt-sm-3 mt-md-0 ps-md-5 pe-md-5 me-3 bg-transparent text-end">
         <p-button (click)="!loading() ? this.getAllAndSearchAccountsPayable(1,rows()) : null" styleClass="p-button-rounded p-button-sm" label="Buscar"
           icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
-        <p-splitButton *ngIf="this.validatorsService.withPermission('CUENTAS POR PAGAR','reports')," icon="fas fa-print" label="Imprimir" [model]="this.buttonItems"
+        <p-splitButton *ngIf="this.validatorsService.withPermission('CUENTAS POR PAGAR','reports')," icon="fas fa-print" label="Lista desglosada" [model]="this.buttonItems"
           [menuStyle]="{'width':'10em'}"
           [size]="'small'"
           [rounded]="true"
@@ -95,10 +95,11 @@
         [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
   </div>
-  <app-table  [cols]="cols()"  (customSort$)="customSort($event)" [searchTxt]="txtSearch()"
+  <app-table  [cols]="cols()"  (customSort$)="customSort($event)" [searchTxt]="txtSearch()" [sortOrder]="'DESC'" [sortField]="'input.date_voucher'"
     [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
     [data]="accountsPayable()" [loading]="loading()">
   </app-table>
   <app-modal-view-abonos-account-payable></app-modal-view-abonos-account-payable>
   <app-modal-new-abono-account-payable></app-modal-new-abono-account-payable>
+  <app-modal-new-abonos-multiple-payable></app-modal-new-abonos-multiple-payable>
   

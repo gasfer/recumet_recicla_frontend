@@ -26,7 +26,7 @@
                     </tr>
                     <tr>
                         <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">MONTO CREDITO</td>
-                        <td colspan="3" width="80%">{{accountReceivable()?.total}}</td>
+                        <td colspan="3" width="80%">{{accountReceivable()?.total  | number:decimal()}}</td>
                     </tr>
                 </tbody>
             </table>     
@@ -45,6 +45,8 @@
 						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Total abonado</th>
 						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Restante</th>
 						<th style="background-color: var(--bg-primary)" class="text-white"> Abonado por</th>
+                        <th style="background-color: var(--bg-primary)" class="text-white"> Concepto</th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Pago</th>
 						<th style="background-color: var(--bg-primary);min-width:80px;max-width:80px" class="text-white"> Opción</th>
 					</tr>
 				</thead>
@@ -55,6 +57,8 @@
                         <td style="min-width:130px;">{{abono.total_abonado    | number:decimal()}}</td>
                         <td style="min-width:130px;">{{abono.restante_credito | number:decimal()}}</td>
                         <td [pTooltip]="abono.user.full_names" >{{abono.user.full_names | slice:0:23}}</td>
+                        <td [pTooltip]="abono.comments" >{{abono.comments}}</td>
+                        <td [pTooltip]="abono.type_payment" >{{abono.type_payment }}</td>
                         <td>
                             <button 
                                 pButton label="" 

@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { AccountPayable, FormSearchAccountsPayables, GetAllAccountsPayable, NewAbonoAccountPayable, ResponseNewAbono } from '../interfaces/accounts-payable.interface';
 import { Observable, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
+import { FormPayMultiple, GetAllAccountsPayableForProvider } from '../interfaces/accounts-payable-provider.interface';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -14,6 +15,7 @@ export class AccountsPayableService {
   detailsSubs$: EventEmitter<AccountPayable> = new EventEmitter<AccountPayable>();
   showModalDetailsAccountPayable: boolean = false;
   showModalNewAbono: boolean = false;
+  showModalAccountsProvider: boolean = false;
   reloadAccountsPayable$: Subject<number> = new Subject();
 
   getAllAndSearchAccountsPayable(page: number, limit: number,params:FormSearchAccountsPayables, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllAccountsPayable>{
@@ -33,6 +35,11 @@ export class AccountsPayableService {
   postNewAbonoAccountPayable(data:NewAbonoAccountPayable): Observable<ResponseNewAbono> {
     const url = `${base_url}/accounts_payable/new-abono`;
     return this.http.post<ResponseNewAbono>(url, data);
+  }
+
+  postNewAbonoMultipleAccountPayable(data:FormPayMultiple) {
+    const url = `${base_url}/accounts_payable/payMultiProvider`;
+    return this.http.post(url, data);
   }
 
   deleteAbonoAccountPayable(id_abono_account_payable: number) {
@@ -58,6 +65,11 @@ export class AccountsPayableService {
               }),
               responseType: 'blob',
             });
+  }
+
+  getAccountsPayableForProvider(id_provider:number): Observable<GetAllAccountsPayableForProvider> {
+    const url = `${base_url}/accounts_payable/forProvider?id_provider=${id_provider}`;
+    return this.http.get<GetAllAccountsPayableForProvider>(url);
   }
 
   //* IMPRIMIR BOLETAS
