@@ -39,7 +39,6 @@ export class KardexExistenciaComponent implements OnInit{
   type                  = signal('');
   query                 = signal('');
   kardexes              = signal<Kardexes|undefined>(undefined);
-  loadingSearchProduct  = signal(false);
   suggestedProducts     = signal<Product[]>([]);
   productSelect         = signal<Product|undefined>(undefined);
   pipeNumber            = new DecimalPipe('en-US');
@@ -114,9 +113,15 @@ export class KardexExistenciaComponent implements OnInit{
       tagIcon: (val:number)=>  'fa-solid fa-file'
     },
     { field: `detallePrimary`,field2: 'detalle', header: 'DETALLE' , style:'min-width:180px;max-width:200px;', tooltip: true, isDoubleValue:true  },
-    { field: `quantity_input`, header: 'ENTRADA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true  },
-    { field: `quantity_output`, header: 'SALIDA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true  },
-    { field: `quantity_saldo`, header: 'SALDO' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true  },
+    { field: `quantity_input`, header: 'ENTRADA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true,
+      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+      },
+    { field: `quantity_output`, header: 'SALIDA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
+      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+     },
+    { field: `quantity_saldo`, header: 'SALDO' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
+      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+     },
     
     { field: `cost_u_input`, header: 'P.U.' , style:'min-width:90px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
       tagValue: (val:string)=>  this.pipeNumber.transform( val != 'null' ? Number(val) : Number(0),this.decimal()),
@@ -194,12 +199,13 @@ export class KardexExistenciaComponent implements OnInit{
     return {cost_price,detallePrimary};
   }
 
-  findProduct(idProduct: string){
-    this.productService.getAllAndSearch(1,1000,true,'id',idProduct)
+  findProduct(idProduct: number){
+    this.loading.set(true);
+    this.productService.getOneProduct(idProduct)
         .subscribe({
           next: (resp) => {
-            if(resp.products.data[0]){
-              this.selectProduct(resp.products.data[0]);
+            if(resp.product){
+              this.selectProduct(resp.product);
               this.getAllAndSearchKardex(1,this.rows())
             } 
           },

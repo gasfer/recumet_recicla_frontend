@@ -116,7 +116,7 @@
       [activeItem]="searchItems()[0]"></p-tabMenu>
   </div>
 </form>
-<app-table  [cols]="cols()" (customSort$)="customSort($event)"
+<app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortField]="'date_voucher'" [sortOrder]="'DESC'"
   [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
   [data]="inputs()" [loading]="loading()">
 </app-table>

@@ -87,8 +87,12 @@ export interface Outputs {
     from:         number;
     to:           number;
     data:         Output[];
+    totals:        Totals;
 }
-
+interface Totals {
+    totalOutput: number,
+    totalQuantity: number,
+}
 export interface Output {
     id:                 number;
     cod:                string;
@@ -114,6 +118,7 @@ export interface Output {
     id_client:          null | number;
     id_scale:           number;
     id_sucursal:        number;
+    total_quantity:        number;
     status:             string;
     createdAt:          string;
     updatedAt:          string;
