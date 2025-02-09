@@ -2,11 +2,12 @@ import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, S
 import { ColsTable, SearchFor } from '../interfaces/OptionsTable.interface';
 import { Subject, debounceTime } from 'rxjs';
 import { UntypedFormControl } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Paginator } from 'primeng/paginator';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { ComponentsService } from '../../services/components.service';
 import { Router } from '@angular/router';
+import { ValidatorsService } from 'src/app/services/validators.service';
 
 @Component({
   selector: 'app-table',
@@ -57,6 +58,7 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   @Output() rows$: EventEmitter<{rows: number, page: number}> = new EventEmitter;
   @Output() search$: EventEmitter<{type:string, query:string}> = new EventEmitter;
   @Output() customSort$: EventEmitter<{field:string | string[], order:'ASC' | 'DESC'}> = new EventEmitter;
+  validatorsService = inject(ValidatorsService);
   from: number = 0;
   to: number = 0;
   total: number = 0;
@@ -65,6 +67,9 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   txtTermino: UntypedFormControl = new UntypedFormControl();
   searchSelect: UntypedFormControl = new UntypedFormControl();
   pipe = new DatePipe('en-US');
+  pipeNumber      = new DecimalPipe('en-US');
+  decimalLength     = signal(this.validatorsService.decimalLength());
+  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   first:number = 0;
   page: number = 0;
   stringSearch: string[] = [];
@@ -172,5 +177,16 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
 
   hasFooter(columns: ColsTable[]): boolean {
     return columns?.some(col => col.footer);
+  }
+
+  formatTooltip(value: any): string {
+    try {
+      if (!isNaN(Number(value))) {
+        return this.pipeNumber.transform(value,this.decimal()) || '';
+      }
+      return value;
+    } catch (error) {
+      return value;
+    }
   }
 }
