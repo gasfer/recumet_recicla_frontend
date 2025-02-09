@@ -116,7 +116,7 @@ export class QueryOutputsComponent {
   types_registry = computed(() => this.outputService.types_registry());
   types_output   = computed(() => this.outputService.types_output());
   formReport:UntypedFormGroup = this.fb.group({
-    filterBy: ['DAY'],
+    filterBy: ['MONTH'],
     dates: [new Date(), [Validators.required]],
     type_registry: [''],
     type_output: [],

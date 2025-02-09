@@ -22,6 +22,7 @@ import { MessagesModule } from 'primeng/messages';
 import { BadgeModule } from 'primeng/badge';
 import { CalendarModule } from 'primeng/calendar';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { AccordionModule } from 'primeng/accordion';
 @NgModule({
   declarations: [
   ],
@@ -50,7 +51,8 @@ import { SplitButtonModule } from 'primeng/splitbutton';
     MessagesModule,
     BadgeModule,
     CalendarModule,
-    SplitButtonModule
+    SplitButtonModule,
+    AccordionModule
   ]
 })
 export class PagesModule { }

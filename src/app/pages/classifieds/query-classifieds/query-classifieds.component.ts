@@ -72,7 +72,7 @@ export class QueryClassifiedsComponent implements OnInit {
   ]);
   types_registry = computed(() => this.classifiedService.types_registry());
   formReport:UntypedFormGroup = this.fb.group({
-    filterBy: ['DAY'],
+    filterBy: ['MONTH'],
     dates: [new Date(), [Validators.required]],
     type_registry: [''],
     id_sucursal: ['',[Validators.required]],
@@ -126,7 +126,7 @@ export class QueryClassifiedsComponent implements OnInit {
     id_storage: '',
     id_sucursal: '',
     status: 'ACTIVE',
-    filterBy:'DAY',
+    filterBy:'MONTH',
     date1: '',
     date2: ''
   });

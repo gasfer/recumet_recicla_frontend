@@ -60,7 +60,7 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   from: number = 0;
   to: number = 0;
   total: number = 0;
-  heightTable: string = '500px';
+  heightTable: string = '700px';
   debounced: Subject<string> = new Subject();
   txtTermino: UntypedFormControl = new UntypedFormControl();
   searchSelect: UntypedFormControl = new UntypedFormControl();
@@ -130,7 +130,7 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
     this.page = event.page+1;
     const rows = event.rows;
     this.rows = rows;
-    this.heightTable = rows === 50 ? '400px' : '600px';
+    this.heightTable = rows === 50 ? '700px' : '800px';
     this.rows$.emit({rows,page:this.page});
   }
 

@@ -87,7 +87,7 @@
         </div>
         <div *ngIf="col.isTag">
             <p-tag
-                [style]="{ 'background': col.tagColor(getRowData(rowData,col))}"
+                [style]="{ 'background': col.tagColor(getRowData(rowData,col)),'font-size':'10.5px' }"
                 styleClass="mr-2"
                 [rounded]="true"
                 [severity]="col?.tagColor(getRowData(rowData,col)) || 'primary'"
