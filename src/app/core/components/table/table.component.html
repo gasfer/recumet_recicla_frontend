@@ -46,7 +46,7 @@
         ngClass="tdwith"
         [style]="col.style"
         style="text-align: left; white-space:normal"
-        [pTooltip] ="col.tooltip ? col.tooltipMsg ? col.tooltipMsg : getRowData(rowData,col) : null" tooltipPosition="top">
+        [pTooltip] ="col.tooltip ? col.tooltipMsg ? col.tooltipMsg : formatTooltip(getRowData(rowData, col))  : null" tooltipPosition="top">
         <span class="p-column-title"><b>{{col.header}}</b></span>
         <div *ngIf="col.isArray">
             <button pButton label="Ver" (click)="op.toggle($event)" pRipple icon="fas fa-eye" class="p-button-rounded p-button-success p-button-sm"></button>
@@ -87,7 +87,7 @@
         </div>
         <div *ngIf="col.isTag">
             <p-tag
-                [style]="{ 'background': col.tagColor(getRowData(rowData,col))}"
+                [style]="{ 'background': col.tagColor(getRowData(rowData,col)),'font-size':'10.5px' }"
                 styleClass="mr-2"
                 [rounded]="true"
                 [severity]="col?.tagColor(getRowData(rowData,col)) || 'primary'"
@@ -109,7 +109,7 @@
             <p class="badge text-bg-light text-primary p-2 cursor-pointer" (click)="returnLink(col.link,getRowData2(rowData,col))"> {{getRowData(rowData,col)}}</p>
         </div>
         <div *ngIf="col.isDoubleValue">
-            <p class="m-0 p-0">
+            <p *ngIf="!col.isTag" class="m-0 p-0">
                 {{getRowData(rowData,col)}}
             </p>
             <div class="text-end">

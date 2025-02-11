@@ -9,6 +9,8 @@ import { ModalViewAbonosAccountPayableComponent } from './accounts-payable/compo
 import { ModalNewAbonoAccountPayableComponent } from './accounts-payable/components/modal-new-abono-account-payable/modal-new-abono-account-payable.component';
 import { ModalNewAbonoAccountReceivableComponent } from './accounts-receivable/components/modal-new-abono-account-receivable/modal-new-abono-account-receivable.component';
 import { ModalViewAbonosAccountReceivableComponent } from './accounts-receivable/components/modal-view-abonos-account-receivable/modal-view-abonos-account-receivable.component';
+import { ModalNewAbonosMultiplePayableComponent } from './accounts-payable/components/modal-new-abonos-multiple/modal-new-abonos-multiple-payable.component';
+import { ModalNewAbonosMultipleReceivableComponent } from './accounts-receivable/components/modal-new-abonos-multiple/modal-new-abonos-multiple-receivable.component';
 
 
 @NgModule({
@@ -19,6 +21,8 @@ import { ModalViewAbonosAccountReceivableComponent } from './accounts-receivable
     ModalNewAbonoAccountPayableComponent,
     ModalNewAbonoAccountReceivableComponent,
     ModalViewAbonosAccountReceivableComponent,
+    ModalNewAbonosMultiplePayableComponent,
+    ModalNewAbonosMultipleReceivableComponent,
   ],
   imports: [
     CommonModule,

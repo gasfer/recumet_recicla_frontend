@@ -40,6 +40,11 @@ export class ProductsService {
     return this.http.get<GetAllProducts>(url);
   }
 
+  getOneProduct(id_product:number): Observable<{ok:boolean, product: Product}>{
+    let url = `${base_url}/product/product?id_product=${id_product}`;
+    return this.http.get<{ok:boolean, product: Product}>(url);
+  }
+
   getAllAndSearchProviderProduct(page: number, limit: number,id_product:number, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllPaginateProviderProduct>{
     const id_sucursal = this.validatorsService.id_sucursal().toString();
     let url = '';

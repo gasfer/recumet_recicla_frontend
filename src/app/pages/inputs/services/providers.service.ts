@@ -71,4 +71,12 @@ export class ProvidersService {
     let url = `${base_url}/provider/types`;
     return this.http.get<GetAllTypesProvider>(url);
   }
+
+
+  getReportExcel(status:boolean, type: string = '', query?: string, field_sort:string = 'id',order:string = 'DESC',id_type_provider:string = '') {
+      const url = `${base_url}/provider/excel?field_sort=${field_sort}&order=${order}&type=${type}&query=${query}&status=${status}&id_type_provider=${id_type_provider}`;
+      return this.http.get(url,{
+                responseType: 'blob',
+              });
+    }
 }

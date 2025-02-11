@@ -51,7 +51,13 @@ export class AccountsPayableComponent implements OnInit {
     {name: 'RANGO', code: 'RANGE'},
   ]);
   cols  = signal<ColsTable[]>([
-    { field: 'input.cod', header: 'COMPRA' , style:'min-width:100px;max-width:100px;', tooltip: true , footer:'TOTAL'},
+    { field: 'status_account', header: 'ESTADO' , style:'min-width:60px;max-width:60px; text-align: center;', tooltip: true , footer:'TOTAL',
+      isTag:true,
+      tagValue: (val:string)=>  ' ',
+      tagColor: (val:string)=> val == 'PAGADO' ? 'primary' : 'success',
+      tagIcon: (val:string)=>  val == 'PAGADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
+    },
+    { field: 'input.cod', header: 'COMPRA' , style:'min-width:100px;max-width:100px;', tooltip: true },
     { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: 'input.date_voucher', header: 'FECHA REGISTRO' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: 'input.type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true, 
@@ -81,6 +87,14 @@ export class AccountsPayableComponent implements OnInit {
   
   searchItems = signal<MenuItem[]>([
     { 
+      label: 'Todos', icon: 'fas fa-exchange-alt', 
+      iconStyle: { 'color': '#FF851B'},
+      command: () => {
+        this.paramsSearch().status_account = '';
+        this.getAllAndSearchAccountsPayable(1,this.rows());
+      } 
+    },
+    { 
       label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left', 
       iconStyle: { 'color': '#14A44D'},
       command: () => {
@@ -105,7 +119,7 @@ export class AccountsPayableComponent implements OnInit {
     id_sucursal: [''],
   });
   paramsSearch = signal<FormSearchAccountsPayables>({
-    status_account:'PENDIENTE',
+    status_account:'',
     type_registry: '',
     id_sucursal: '',
     id_provider: '',
@@ -115,15 +129,15 @@ export class AccountsPayableComponent implements OnInit {
   });
   buttonItems: MenuItem[] = [
     {
-      label: 'Excel',
+      label: 'Lista avanzada',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D'},
       command: () => { this.printExcelReport(); }
     },
   ];
   id_account_payable: number = 0;
-  fieldSort = signal('');
-  order     = signal('');
+  fieldSort = signal('input.date_voucher');
+  order     = signal('DESC');
   idProveedor = signal<number|undefined>(undefined);
   txtSearch = signal('');
 
@@ -184,12 +198,21 @@ export class AccountsPayableComponent implements OnInit {
         this.accountsPayable()!.data.forEach((accountPayable) => {
           accountPayable.options = accountPayable.status_account == 'PENDIENTE'  ? [
             { 
-              label:'',icon:'fa-solid fa-comments-dollar', 
+              label:'',icon:'fa-solid fa-comment-dollar', 
               tooltip: 'Abonar',
               class:'p-button-rounded  p-button-warning p-button-sm',
               eventClick: () => {
                 this.accountsPayableService.detailsSubs$.next(accountPayable);
                 this.accountsPayableService.showModalNewAbono = true;
+              }
+            },
+            { 
+              label:'',icon:'fa-solid fa-comments-dollar', 
+              tooltip: 'Abono multiple',
+              class:'p-button-rounded  p-button-secondary p-button-sm  ms-1',
+              eventClick: () => {
+                this.accountsPayableService.detailsSubs$.next(accountPayable);
+                this.accountsPayableService.showModalAccountsProvider = true;
               }
             },
             { 
@@ -234,9 +257,9 @@ export class AccountsPayableComponent implements OnInit {
         const total_abonados = resp.accountsPayable?.totals?.total_abonados ?? 0;
         const total_restante = resp.accountsPayable?.totals?.total_restante ?? 0;
         const total_account = resp.accountsPayable?.totals?.total_account ?? 0;
-        this.cols()[5].footer =  this.pipeNumber.transform(total_abonados,this.decimal()) ?? '0';
-        this.cols()[6].footer =  this.pipeNumber.transform(total_restante,this.decimal()) ?? '0';
-        this.cols()[7].footer =  this.pipeNumber.transform(total_account,this.decimal()) ?? '0';
+        this.cols()[6].footer =  this.pipeNumber.transform(total_abonados,this.decimal()) ?? '0';
+        this.cols()[7].footer =  this.pipeNumber.transform(total_restante,this.decimal()) ?? '0';
+        this.cols()[8].footer =  this.pipeNumber.transform(total_account,this.decimal()) ?? '0';
        
       },
       complete: () => {

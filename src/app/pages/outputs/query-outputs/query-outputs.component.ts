@@ -38,7 +38,7 @@ export class QueryOutputsComponent {
     type_registry: '',
     type_output: '',
     id_client:'',
-    type_pay: 'CONTADO',
+    type_pay: '',
     id_storage: '',
     id_sucursal: '',
     status: 'ACTIVE',
@@ -69,6 +69,16 @@ export class QueryOutputsComponent {
     },
   ];
   searchItems = signal<MenuItem[]>([
+    { 
+      label: 'Todos', icon: 'fas fa-list',
+      iconStyle: { 'color': '#FF851B'},
+      command: () => {
+        this.cols()[0].isLink = false;
+        this.paramsSearch().type_pay = '';
+        this.paramsSearch().status = 'ACTIVE';
+        this.getAllAndSearchOutputs(1,this.rows());
+      }
+    },
     { 
       label: 'Al Contado', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
@@ -106,7 +116,7 @@ export class QueryOutputsComponent {
   types_registry = computed(() => this.outputService.types_registry());
   types_output   = computed(() => this.outputService.types_output());
   formReport:UntypedFormGroup = this.fb.group({
-    filterBy: ['DAY'],
+    filterBy: ['MONTH'],
     dates: [new Date(), [Validators.required]],
     type_registry: [''],
     type_output: [],
@@ -119,7 +129,7 @@ export class QueryOutputsComponent {
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   cols = signal<ColsTable[]>([
-    { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
+    { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true, footer:'TOTALES'},
     { field: 'voucher', header: 'TIPO V.' , style:'min-width:100px;max-width:100px;', tooltip: true,isTag: true, 
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'info',
@@ -130,23 +140,25 @@ export class QueryOutputsComponent {
       tagColor: (val:boolean)=> 'success',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
     },
-   
-    // { field: 'registry_number', header: 'N. DOC.' , style:'min-width:90px;max-width:100px;', tooltip: true},
-    { field: 'createdAt', header: 'FECHA V.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
+    { field: 'number_registry', header: 'NUMERO' , style:'min-width:80px;max-width:120px;', tooltip: true, isText: true},
+    { field: 'date_output', header: 'FECHA V.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: `client.full_names`, header: 'CLIENTE' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: `comments`, header: 'OBSERVACIONES' , style:'min-width:100px;max-width:250px;', tooltip: true, isText: true  },
+    { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
+      tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+      tagColor: (val:number)=> 'warning',
+      tagIcon: (val:number)=>  'fas fa-boxes-stacked'
+    },
     { field: `total`, header: 'TOTAL' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
       tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  'fa-solid fa-sack-dollar'
     },
-    // { field: `type_output`, header: 'TIPO' , style:'min-width:90px;max-width:90px;', tooltip: true, isTag: true, 
-    //   tagValue: (val:string)=>  val,
-    //   tagColor: (val:string)=>  val == 'CONTADO' ? 'primary' :'#14A44D',
-    //   tagIcon: (val:string)=>  val == 'CONTADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
-    // },
-    { field: 'user.full_names', header: 'USUARIO' , style:'min-width:100px;max-width:180px;', tooltip: true, isText: true},
-    { field: 'storage.name', header: 'ALMACÉN' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
+    { field: `type_output`, header: 'TIPO' , style:'min-width:90px;max-width:90px;', tooltip: true, isTag: true, 
+      tagValue: (val:string)=>  val,
+      tagColor: (val:string)=>  val == 'CONTADO' ? 'primary' :'success',
+      tagIcon: (val:string)=>  val == 'CONTADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
+    },
     { field: 'options', header: 'OPCIONES', style:'min-width:170px;max-width:170px', isButton:true }
   ]);
   searchFor = signal<SearchFor[]>([
@@ -264,6 +276,10 @@ export class QueryOutputsComponent {
             },
           ] ;
         });
+        const totalOutput = resp.outputs?.totals?.totalOutput ?? 0;
+        const totalQuantity = resp.outputs?.totals?.totalQuantity ?? 0;
+        this.cols()[7].footer =  this.pipeNumber.transform(totalQuantity,this.decimal()) ?? '0';
+        this.cols()[8].footer =  this.pipeNumber.transform(totalOutput,this.decimal()) ?? '0';
       },
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)

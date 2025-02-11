@@ -53,6 +53,9 @@ export interface AbonosAccountsPayable {
     id_user:            number;
     user:               User;
     status:             boolean;
+    comments:           string;
+    type_payment:       string;
+    account_output:     string;
     createdAt:          string;
     updatedAt:          string;
 }

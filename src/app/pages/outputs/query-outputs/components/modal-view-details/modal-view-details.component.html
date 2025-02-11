@@ -98,15 +98,15 @@
                             <h5 class="m-0 p-0">{{detail.product.name}}</h5>
                             <p style="font-size: 10px;" class="text-muted">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
                         </td>
-                        <td>{{detail.quantity}}</td>
+                        <td>{{detail.quantity | number:decimal()}}</td>
                         <td>{{detail.price | number:decimal()}}</td>
                         <td>{{detail.total | number:decimal()}}</td>
                     </tr>
 				</tbody>
 				<tfoot>
 					<tr>
-						<td></td>
-						<td></td>
+                        <td class="text-end table-active fw-bold">TOTAL KG</td>
+						<td>{{output()?.total_quantity | number:decimal()}}</td>
 						<td width="10%" class="table-active fw-bold">SUBTOTAL</td>
 						<td id="subtotal">{{output()?.sub_total | number:decimal()}}</td>
 					</tr>

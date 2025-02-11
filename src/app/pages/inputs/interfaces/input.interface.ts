@@ -60,8 +60,12 @@ export interface Inputs {
     from:         number;
     to:           number;
     data:         Input[];
+    totals:       Totals;
 }
-
+interface Totals {
+    totalInput: number,
+    totalQuantity: number,
+}
 export interface Input {
     id:              number;
     cod:             string;
