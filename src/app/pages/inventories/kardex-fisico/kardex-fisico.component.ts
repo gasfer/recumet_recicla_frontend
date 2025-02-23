@@ -35,7 +35,7 @@ export class KardexFisicoComponent {
   suggestedProducts     = signal<Product[]>([]);
   productSelect         = signal<Product|undefined>(undefined);
   paramsSearch      = signal<FormSearchKardex>({
-    filterBy:'MONTH',
+    filterBy:'YEAR',
     date1: '',
     date2: '',
     id_product: '',
@@ -71,11 +71,11 @@ export class KardexFisicoComponent {
     }
   ]);
   formReport:UntypedFormGroup = this.fb.group({
-    filterBy: ['MONTH'],
+    filterBy: ['YEAR'],
     dates: [new Date(), [Validators.required]],
     type_kardex: [''],
     id_sucursal: ['',[Validators.required]],
-    id_storage: [''],
+    id_storage: ['',[Validators.required]],
     id_provider: [''],
     id_product: ['']
   });
@@ -86,9 +86,9 @@ export class KardexFisicoComponent {
     { field: 'product.cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true, isLink:true, link:'/inventories/kardex-existencia?p=${value}', field2:'id_product'},
     { field: `product.name`, header: 'DETALLE' , style:'min-width:180px;max-width:180px;', tooltip: true, isText:true  },
     { field: `product.unit.siglas`, header: 'UND' , style:'min-width:80px;max-width:80px;', tooltip: true, isText:true  },
-    { field: `quantity_inicial`, header: 'SALDO INICIAL' , style:'min-width:110px;max-width:120px;text-align: center;', tooltip: true, 
-      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
-      },
+    // { field: `quantity_inicial`, header: 'SALDO INICIAL' , style:'min-width:110px;max-width:120px;text-align: center;', tooltip: true, 
+    //   isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+    //   },
     { field: `quantity_input`, header: 'ENTRADA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true, 
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
      },
@@ -106,6 +106,11 @@ export class KardexFisicoComponent {
   ngOnInit(): void {
     this.getAllProviders();
     this.getAllAndSearchKardex(1,this.rows());
+    const storagesList = this.validatorsService.storages();
+    if (storagesList.length > 0) {
+      this.formReport.patchValue({ id_storage: storagesList[0].id });
+      this.getAllAndSearchKardex(1,this.rows());
+    }
   }
 
   getAllAndSearchKardex(page: number, limit: number,type: string = '', query: string = '') {
@@ -276,7 +281,7 @@ export class KardexFisicoComponent {
 
   clearInputs() {
     this.formReport.patchValue({
-      filterBy: 'MONTH',
+      filterBy: 'YEAR',
       dates: new Date(),
       date_range: '',
       id_sucursal: '',

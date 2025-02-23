@@ -45,7 +45,7 @@ export class KardexComponent implements OnInit{
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   paramsSearch      = signal<FormSearchKardex>({
-    filterBy:'MONTH',
+    filterBy:'YEAR',
     date1: '',
     date2: '',
     id_product: '',
@@ -97,11 +97,11 @@ export class KardexComponent implements OnInit{
     },
   ]);
   formReport:UntypedFormGroup = this.fb.group({
-    filterBy: ['MONTH'],
+    filterBy: ['YEAR'],
     dates: [new Date(), [Validators.required]],
     type_kardex: [''],
     id_sucursal: ['',[Validators.required]],
-    id_storage: [''],
+    id_storage: ['',[Validators.required]],
     id_provider: [''],
     id_product: ['']
   });
@@ -130,12 +130,17 @@ export class KardexComponent implements OnInit{
     // { field: `sucursal.name`, header: 'SUCURSAL' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
     { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
   ]);
-  fieldSort = signal('id');
-  order     = signal('ASC');
+  fieldSort = signal('date');
+  order     = signal('DESC');
 
   ngOnInit(): void {
     this.getAllProviders();
     this.getAllAndSearchKardex(1,this.rows());
+    const storagesList = this.validatorsService.storages();
+    if (storagesList.length > 0) {
+      this.formReport.patchValue({ id_storage: storagesList[0].id });
+      this.getAllAndSearchKardex(1,this.rows());
+    }
   }
 
   getAllAndSearchKardex(page: number, limit: number,type: string = '', query: string = '') {
@@ -306,7 +311,7 @@ export class KardexComponent implements OnInit{
 
   clearInputs() {
     this.formReport.patchValue({
-      filterBy: 'MONTH',
+      filterBy: 'YEAR',
       dates: new Date(),
       date_range: '',
       id_sucursal: '',
