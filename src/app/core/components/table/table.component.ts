@@ -145,6 +145,9 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
     if(colField.isDate){
       valReturn =  colField.isNotDateAndHour ? this.pipe.transform(valReturn, 'dd/MM/yyyy')! : this.pipe.transform(valReturn, 'dd/MM/yyyy, HH:mm')!;
     }
+    if (colField.isTextArray) {
+      valReturn = valReturn?.join('\n');
+    }
     return valReturn;
   }
   getRowData2(rowData: any ,colField:any){

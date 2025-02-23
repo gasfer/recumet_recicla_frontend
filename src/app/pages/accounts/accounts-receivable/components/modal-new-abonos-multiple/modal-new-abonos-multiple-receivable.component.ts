@@ -7,6 +7,7 @@ import { BankService } from 'src/app/pages/managements/services/bank.service';
 import { AccountsReceivableService } from '../../../services/accounts-receivable.service';
 import { AccountsPayableClient } from '../../../interfaces/accounts-payable-client.interface';
 import Swal from 'sweetalert2';
+import { AbonosAccountReceivableAllService } from '../../../services/abonos-accounts-receivable-all.service';
 
 @Component({
   selector: 'app-modal-new-abonos-multiple-receivable',
@@ -15,7 +16,8 @@ import Swal from 'sweetalert2';
   ]
 })
 export class ModalNewAbonosMultipleReceivableComponent {
-  accountsPayableService = inject(AccountsReceivableService);
+  accountsPayableService            = inject(AccountsReceivableService);
+  AbonosAccountReceivableAllService = inject(AbonosAccountReceivableAllService);
   validatorsService = inject(ValidatorsService);
   fb = inject(FormBuilder);
   loading = signal(false);
@@ -33,6 +35,7 @@ export class ModalNewAbonosMultipleReceivableComponent {
     monto_abono: [0],
     type_payment: ['EFECTIVO', [Validators.required]],
     comments: [null, []],
+    id_sucursal: [null, [Validators.required]],
     account_input: [null, []],
     id_bank: [null, []],
   });
@@ -62,10 +65,11 @@ export class ModalNewAbonosMultipleReceivableComponent {
   }
 
   newAbono() {
+    this.abonoForm.patchValue({ id_sucursal: this.validatorsService.id_sucursal()});
     this.abonoForm.markAllAsTouched();
     if (!this.abonoForm.valid) return;
     this.loading.set(true);
-    this.accountsPayableService.postNewAbonoMultipleAccountReceivable(this.abonoForm.value).subscribe({
+    this.AbonosAccountReceivableAllService.postNewAbonoMultipleAccountReceivable(this.abonoForm.value).subscribe({
       next: (resp) => {
         this.loading.set(false);
         //si paga todo cerramos el modal de detalle

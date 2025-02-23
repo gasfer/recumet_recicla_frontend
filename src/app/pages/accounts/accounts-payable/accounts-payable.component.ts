@@ -11,6 +11,8 @@ import { Subscription, } from 'rxjs';
 import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { AbonosAccountPayableAllService } from '../services/abonos-accounts-payable-all.service';
+import { AccountsPayableAll } from '../interfaces/abonos-accounts-payable-all.interface';
 
 @Component({
   selector: 'app-accounts-payable',
@@ -31,6 +33,7 @@ export class AccountsPayableComponent implements OnInit {
   providersService       = inject(ProvidersService);
   accountsPayableService = inject(AccountsPayableService);
   activatedRoute         = inject( ActivatedRoute );
+  abonosAccountPayableAllService = inject( AbonosAccountPayableAllService );
 
   types_registry  = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
   providers       = signal<{name:string, code:string}[]>([]);
@@ -40,6 +43,7 @@ export class AccountsPayableComponent implements OnInit {
   type            = signal('');
   query           = signal('');
   accountsPayable = signal<AccountsPayable|undefined>(undefined);
+  abonosAccountsPayable = signal<AccountsPayableAll|undefined>(undefined);
   isReloadSub$!: Subscription;
   pipeNumber      = new DecimalPipe('en-US');
   decimalLength     = signal(this.validatorsService.decimalLength());
@@ -50,7 +54,7 @@ export class AccountsPayableComponent implements OnInit {
     {name: 'AÑO', code: 'YEAR'},
     {name: 'RANGO', code: 'RANGE'},
   ]);
-  cols  = signal<ColsTable[]>([
+  cols            = signal<ColsTable[]>([
     { field: 'status_account', header: 'ESTADO' , style:'min-width:60px;max-width:60px; text-align: center;', tooltip: true , footer:'TOTAL',
       isTag:true,
       tagValue: (val:string)=>  ' ',
@@ -79,17 +83,32 @@ export class AccountsPayableComponent implements OnInit {
     },
     { field: 'options', header: 'OPCIONES', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }
   ]);
-  searchFor   = signal<SearchFor[]>([
-                {name: 'COMPRA', code: 'input.cod'},
-                {name: 'TOTAL', code: 'total'},
-                {name: 'PROVEEDOR', code: 'provider.full_names'},
-              ]);
-  
+  colsAbonos      = signal<ColsTable[]>([
+    { field: 'date_abono', header: 'FECHA' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true, footer:'TOTALES'},
+    { field: `codes_input`, header: 'COMPRAS' , style:'min-width:150px;max-width:200px;', tooltip: true, isTextArray:true  },
+    { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
+    { field: 'type_payment', header: 'TIPO' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true, 
+      tagValue: (val:boolean)=>  val,
+      tagColor: (val:boolean)=> 'success',
+      tagIcon: (val:boolean)=>  ''
+    },
+    { field: 'monto_abono', header: 'PAGO' , style:'min-width:100px;max-width:130px;text-align: end;', tooltip: true, isTag: true, 
+      tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+      tagColor: (val:number)=> 'primary',
+      tagIcon: (val:number)=>  '',
+    },
+    { field: `comments`, header: 'CONCEPTO' , style:'min-width:150px;max-width:250px;', tooltip: true, isText:true  },
+    { field: 'options', header: 'OPCIONES', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }
+  ]);
+  isTableAbonos   = signal(false);
+  searchFor       = signal<SearchFor[]>([{name: 'COMPRA', code: 'input.cod'},]);
+  searchForAbonos = signal<SearchFor[]>([{name: 'COMPRA', code: 'codes_input'},]);
   searchItems = signal<MenuItem[]>([
     { 
       label: 'Todos', icon: 'fas fa-exchange-alt', 
       iconStyle: { 'color': '#FF851B'},
       command: () => {
+        this.isTableAbonos.set(false);
         this.paramsSearch().status_account = '';
         this.getAllAndSearchAccountsPayable(1,this.rows());
       } 
@@ -98,6 +117,7 @@ export class AccountsPayableComponent implements OnInit {
       label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left', 
       iconStyle: { 'color': '#14A44D'},
       command: () => {
+        this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PENDIENTE';
         this.getAllAndSearchAccountsPayable(1,this.rows());
       } 
@@ -106,8 +126,18 @@ export class AccountsPayableComponent implements OnInit {
       label: 'Finalizados', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
+        this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PAGADO';
         this.getAllAndSearchAccountsPayable(1,this.rows());
+      }
+    },
+    { 
+      label: 'Todos los pagos', icon: 'fas fa-cash-register',
+      iconStyle: { 'color': '#7D3C98'},
+      command: () => {
+        this.isTableAbonos.set(true);
+        this.paramsSearch().status_account = '';
+        this.getAllAndSearchAbonosPay(1,this.rows());
       }
     },
   ]);
@@ -132,12 +162,20 @@ export class AccountsPayableComponent implements OnInit {
       label: 'Lista avanzada',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D'},
-      command: () => { this.printExcelReport(); }
+      command: () => { 
+        if(this.isTableAbonos()){
+          this.printExcelReportAbonos();
+        } else {
+          this.printExcelReport();
+        } 
+      }
     },
   ];
   id_account_payable: number = 0;
   fieldSort = signal('input.date_voucher');
   order     = signal('DESC');
+  fieldSortAbonos = signal('date_abono');
+  orderAbonos     = signal('DESC');
   idProveedor = signal<number|undefined>(undefined);
   txtSearch = signal('');
 
@@ -275,6 +313,46 @@ export class AccountsPayableComponent implements OnInit {
     });
   }
 
+
+
+  getAllAndSearchAbonosPay(page: number, limit: number,type: string = '', query: string = '') {
+    this.formReport.get('id_sucursal')?.setValue(this.validatorsService.id_sucursal());
+    this.formReport.markAllAsTouched();
+    if(!this.formReport.valid) return;
+    this.formParamsByForm();
+    if(!query) {this.loading.set(true);} //not loading in search
+    this.abonosAccountPayableAllService.getAllAndSearchAbonosPayableAll(page,limit,this.paramsSearch(),type,query,this.fieldSortAbonos(),this.orderAbonos()).subscribe({
+      next: (resp) => {
+        this.abonosAccountsPayable.set(resp.accountsPayableAll);
+        this.abonosAccountsPayable()!.data.forEach((accountPayable) => {
+          accountPayable.options =  [
+            { 
+              label:'',icon:'fas fa-print', 
+              tooltip: 'Comprobante',
+              class:'p-button-rounded p-button-sm',
+              eventClick: () => {
+              }
+            },
+            { 
+              label:'',icon:'fa-solid fa-trash-can', 
+              tooltip: 'Anular abono',
+              class:'p-button-rounded p-button-danger p-button-sm ms-1',
+              eventClick: () => {
+               
+              }
+            },
+          ] ;
+        });
+        const total_abonados = resp.accountsPayableAll?.totals?.total_abonados ?? 0;
+        this.colsAbonos()[4].footer =  this.pipeNumber.transform(total_abonados,this.decimal()) ?? '0';
+      },
+      complete: () => {
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
       const { filterBy, id_sucursal,id_provider,type_registry, id_product, dates} = this.formReport.value;
@@ -319,6 +397,32 @@ export class AccountsPayableComponent implements OnInit {
     });
   }
 
+  printPdfReportAbonos() {
+    this.formReport.markAllAsTouched();
+    if(!this.formReport.valid) return;
+    this.formParamsByForm();
+    Swal.fire({
+      title: 'Generando Reporte!',
+      html: `Con los parámetros seleccionados`,
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.abonosAccountPayableAllService.getReportAccountsPayableAbonosPdf(this.paramsSearch(),this.type(),this.query(),this.fieldSortAbonos(),this.orderAbonos()).subscribe({
+            next: (data) => {
+              const file = new Blob([data], { type: 'application/pdf' });
+              const fileURL = URL.createObjectURL(file);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+            },
+          });
+        });
+      },
+    });
+  }
+
   printExcelReport() {
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
@@ -330,6 +434,31 @@ export class AccountsPayableComponent implements OnInit {
         Swal.showLoading();
         new Promise((resolve, reject) => {
           this.accountsPayableService.getReportAccountsPayableExcel(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
+            next: (data) => {
+              const fileURL = window.URL.createObjectURL(data);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+            },
+          });
+        });
+      },
+    });
+  }
+
+  printExcelReportAbonos() {
+    this.formReport.markAllAsTouched();
+    if(!this.formReport.valid) return;
+    this.formParamsByForm();
+    Swal.fire({
+      title: 'Generando Reporte!',
+      html: `Con los parámetros seleccionados`,
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.abonosAccountPayableAllService.getReportAccountsPayableExcel(this.paramsSearch(),this.type(), this.query(),this.fieldSortAbonos(),this.orderAbonos()).subscribe({
             next: (data) => {
               const fileURL = window.URL.createObjectURL(data);
               window.open(fileURL);
@@ -366,19 +495,43 @@ export class AccountsPayableComponent implements OnInit {
     const {rows, page} = $rows;
     this.rows.set(rows);
     this.page.set(page);
-    this.getAllAndSearchAccountsPayable(this.page(),this.rows(),this.type(),this.query());
+    if(!this.isTableAbonos()){
+      this.getAllAndSearchAccountsPayable(this.page(),this.rows(),this.type(),this.query());
+    } else {
+      this.getAllAndSearchAbonosPay(this.page(),this.rows(),this.type(),this.query())
+    }
   }
 
   customSort($sort:any) {
     let {field, order} = $sort;
-    this.fieldSort.set(field);
-    this.order.set(order);
+    if(!this.isTableAbonos()) {
+      this.fieldSort.set(field);
+      this.order.set(order);
+    } else {
+      this.fieldSortAbonos.set(field);
+      this.orderAbonos.set(order);
+    }
   }
 
   search($query:any) {
     const {type, query} = $query;
     this.type.set(type);
     this.query.set(query);
-    this.getAllAndSearchAccountsPayable(1,this.rows(),this.type(),this.query());
+    if(!this.isTableAbonos()){
+      this.getAllAndSearchAccountsPayable(1,this.rows(),this.type(),this.query());
+    } else {
+      this.getAllAndSearchAbonosPay(1,this.rows(),this.type(),this.query());
+    }
   }
+
+
+  searchByFilters() {
+    if(!this.isTableAbonos()) {
+      this.getAllAndSearchAccountsPayable(1,this.rows());
+    } else {
+      this.getAllAndSearchAbonosPay(1,this.rows());
+    }
+  }
+
+  
 }
