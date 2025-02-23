@@ -30,9 +30,9 @@ export class AbonosAccountPayableAllService {
     });
   }
 
-  postNewAbonoMultipleAccountPayable(data: FormPayMultiple) {
+  postNewAbonoMultipleAccountPayable(data: FormPayMultiple) : Observable<{id_abono_accounts_payable:number}>{
     const url = `${base_url}/accounts_payable/payMultiProvider`;
-    return this.http.post(url, data);
+    return this.http.post<{id_abono_accounts_payable:number}>(url, data);
   }
 
 

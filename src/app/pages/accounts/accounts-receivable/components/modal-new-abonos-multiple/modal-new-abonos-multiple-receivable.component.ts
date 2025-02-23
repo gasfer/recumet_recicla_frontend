@@ -82,6 +82,7 @@ export class ModalNewAbonosMultipleReceivableComponent {
           customClass: { container: 'swal-alert' },
         });
         this.getAccountsForClient(this.abonoForm.get('id_client')?.value);
+        this.AbonosAccountReceivableAllService.printAbonoMultipleAccountPayablePdf(resp.id_abono_accounts_receivable)
       },
       error: (error) => {
         Swal.fire({

@@ -30,9 +30,9 @@ export class AbonosAccountReceivableAllService {
     });
   }
 
-  postNewAbonoMultipleAccountReceivable(data: FormPayMultiple) {
+  postNewAbonoMultipleAccountReceivable(data: FormPayMultiple): Observable<{id_abono_accounts_receivable:number}> {
     const url = `${base_url}/accounts_receivable/payMultiClient`;
-    return this.http.post(url, data);
+    return this.http.post<{id_abono_accounts_receivable:number}>(url, data);
   }
 
   getReportAccountsPayableAbonosPdf(params: FormSearchAccountsReceivable, type: string = '', query?: string, field_sort: string = 'id', order: string = 'DESC') {
