@@ -335,8 +335,14 @@ export class AccountsReceivableComponent implements OnInit {
             {
               label: '', icon: 'fas fa-print',
               tooltip: 'Comprobante',
+              disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR', 'reports'),
               class: 'p-button-rounded p-button-sm',
               eventClick: () => {
+                if(accountReceivable.from_pay_multiple){
+                  this.abonosAccountReceivableAllService.printAbonoMultipleAccountPayablePdf(accountReceivable.id);
+                } else {
+                  this.accountsReceivableService.printVoucherAbonoAccountReceivablePdf(accountReceivable.ids_abonos_receivables[0]);
+                }
               }
             },
             {

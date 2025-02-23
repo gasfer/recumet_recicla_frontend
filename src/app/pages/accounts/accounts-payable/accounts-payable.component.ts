@@ -329,8 +329,14 @@ export class AccountsPayableComponent implements OnInit {
             { 
               label:'',icon:'fas fa-print', 
               tooltip: 'Comprobante',
+              disabled: this.validatorsService.withPermission('CUENTAS POR PAGAR','reports'),
               class:'p-button-rounded p-button-sm',
               eventClick: () => {
+                if(accountPayable.from_pay_multiple){
+                  this.abonosAccountPayableAllService.printAbonoMultipleAccountPayablePdf(accountPayable.id);
+                } else {
+                  this.accountsPayableService.printVoucherAbonoAccountPayablePdf(accountPayable.ids_abonos_payables[0]);
+                }
               }
             },
             { 

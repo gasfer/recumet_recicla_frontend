@@ -5,6 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { FormPayMultiple } from '../interfaces/accounts-payable-provider.interface';
 import { FormSearchAbonosReceivables, GetAllAbonosReceivableAccountAll } from '../interfaces/abonos-accounts-receivable-all.interface';
 import { FormSearchAccountsReceivable } from '../interfaces/accounts-receivable.interface';
+import Swal from 'sweetalert2';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -61,6 +62,36 @@ export class AbonosAccountReceivableAllService {
         fromObject: { ...params }
       }),
       responseType: 'blob',
+    });
+  }
+
+
+  getPrintAbonoMultipleAccountReceivable(id_abono_account_receivable_multiple: Number) {
+    const url = `${base_url}/accounts_receivable/pdf/voucher-abono-multiple/${id_abono_account_receivable_multiple}`;
+    return this.http.get(url, {
+      responseType: 'blob',
+    });
+  }
+
+  printAbonoMultipleAccountPayablePdf(id_abono_account_receivable_multiple: number) {
+    Swal.fire({
+      title: 'Generando!',
+      html: `Espere un momento`,
+      customClass: { container: 'sweetalert2' },
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.getPrintAbonoMultipleAccountReceivable(id_abono_account_receivable_multiple).subscribe({
+            next: (data) => {
+              const file = new Blob([data], { type: 'application/pdf' });
+              const fileURL = URL.createObjectURL(file);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => Swal.close()
+          });
+        });
+      },
     });
   }
 
