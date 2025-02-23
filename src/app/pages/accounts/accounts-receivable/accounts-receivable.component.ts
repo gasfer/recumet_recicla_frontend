@@ -171,12 +171,12 @@ export class AccountsReceivableComponent implements OnInit {
       label: 'Lista avanzada',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D' },
-      command: () => { 
-        if(this.isTableAbonos()){
+      command: () => {
+        if (this.isTableAbonos()) {
           this.printExcelReportAbonos();
         } else {
           this.printExcelReport();
-        } 
+        }
       }
     },
   ];
@@ -204,7 +204,11 @@ export class AccountsReceivableComponent implements OnInit {
     this.isReloadSub$ = this.accountsReceivableService.reloadAccountsReceivable$
       .subscribe((id_account_payable: number) => {
         this.id_account_receivable = id_account_payable;
-        this.getAllAndSearchAccountsReceivable(1, this.rows());
+        if(!this.isTableAbonos()){
+          this.getAllAndSearchAccountsReceivable(1, this.rows());
+        } else {
+          this.getAllAndSearchAbonosPay(1,this.rows());
+        }
       });
   }
 
@@ -338,7 +342,7 @@ export class AccountsReceivableComponent implements OnInit {
               disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR', 'reports'),
               class: 'p-button-rounded p-button-sm',
               eventClick: () => {
-                if(accountReceivable.from_pay_multiple){
+                if (accountReceivable.from_pay_multiple) {
                   this.abonosAccountReceivableAllService.printAbonoMultipleAccountPayablePdf(accountReceivable.id);
                 } else {
                   this.accountsReceivableService.printVoucherAbonoAccountReceivablePdf(accountReceivable.ids_abonos_receivables[0]);
@@ -350,7 +354,8 @@ export class AccountsReceivableComponent implements OnInit {
               tooltip: 'Anular abono',
               class: 'p-button-rounded p-button-danger p-button-sm ms-1',
               eventClick: () => {
-
+                const idAbono = accountReceivable.from_pay_multiple ? accountReceivable.id: accountReceivable.ids_abonos_receivables[0];
+                this.deleteAbono(idAbono,Number(accountReceivable.monto_abono),accountReceivable.from_pay_multiple);
               }
             },
           ];
@@ -435,30 +440,30 @@ export class AccountsReceivableComponent implements OnInit {
     });
   }
 
-   printExcelReportAbonos() {
-      this.formReport.markAllAsTouched();
-      if(!this.formReport.valid) return;
-      this.formParamsByForm();
-      Swal.fire({
-        title: 'Generando Reporte!',
-        html: `Con los parámetros seleccionados`,
-        didOpen: () => {
-          Swal.showLoading();
-          new Promise((resolve, reject) => {
-            this.abonosAccountReceivableAllService.getReportAccountsPayableExcel(this.paramsSearch(),this.type(), this.query(),this.fieldSortAbonos(),this.orderAbonos()).subscribe({
-              next: (data) => {
-                const fileURL = window.URL.createObjectURL(data);
-                window.open(fileURL);
-                Swal.close();
-              },
-              error: (err) => {
-                Swal.close();
-              },
-            });
+  printExcelReportAbonos() {
+    this.formReport.markAllAsTouched();
+    if (!this.formReport.valid) return;
+    this.formParamsByForm();
+    Swal.fire({
+      title: 'Generando Reporte!',
+      html: `Con los parámetros seleccionados`,
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.abonosAccountReceivableAllService.getReportAccountsPayableExcel(this.paramsSearch(), this.type(), this.query(), this.fieldSortAbonos(), this.orderAbonos()).subscribe({
+            next: (data) => {
+              const fileURL = window.URL.createObjectURL(data);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+            },
           });
-        },
-      });
-    }
+        });
+      },
+    });
+  }
 
   printExcelReport() {
     this.formReport.markAllAsTouched();
@@ -542,5 +547,55 @@ export class AccountsReceivableComponent implements OnInit {
     } else {
       this.getAllAndSearchAbonosPay(1, this.rows());
     }
+  }
+
+  deleteAbono(id_abono: number, monto: number, multiple: boolean): void {
+    Swal.fire({
+      title: `¿Esta seguro de anular Abono?`,
+      text: `Esta apunto de anular el abono de: ${monto}`,
+      icon: `warning`,
+      confirmButtonText: `Si, Anular!`,
+      showLoaderOnConfirm: true,
+      showCancelButton: true,
+      backdrop: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Cancelar',
+      customClass: { container: 'sweetalert2' },
+      preConfirm: () => {
+        if (multiple) {
+          return new Promise((resolve, reject) => {
+            this.abonosAccountReceivableAllService.deleteAbonoAccountReceivableMultiple(id_abono).subscribe({
+              complete: () => resolve(true),
+              error: (err) => {
+                resolve(false);
+              }
+            });
+          });
+        } else {
+          return new Promise((resolve, reject) => {
+            this.accountsReceivableService.deleteAbonoAccountReceivable(id_abono).subscribe({
+              complete: () => resolve(true),
+              error: (err) => {
+                resolve(false);
+              }
+            });
+          });
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+      if (result.value) {
+        this.accountsReceivableService.reloadAccountsReceivable$.next(0);
+        Swal.fire({
+          title: 'Éxito!',
+          text: `El abono fue anulado correctamente`,
+          icon: 'success',
+          showClass: { popup: 'animated animate fadeInDown' },
+          customClass: { container: 'sweetalert2' },
+        });
+      }
+    });
   }
 }

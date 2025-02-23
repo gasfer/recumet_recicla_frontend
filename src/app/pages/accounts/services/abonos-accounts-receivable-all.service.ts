@@ -95,4 +95,9 @@ export class AbonosAccountReceivableAllService {
     });
   }
 
+  deleteAbonoAccountReceivableMultiple(id_abono_account_receivable_multiple: number) {
+    const url = `${base_url}/accounts_receivable/destroy-abono-multiple/${id_abono_account_receivable_multiple}`;
+    return this.http.delete(url);
+  }
+
 }

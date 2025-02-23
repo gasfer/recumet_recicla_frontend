@@ -1,4 +1,4 @@
-<p-dialog [header]="'Detalle cuenta por cobrar: '+ accountPayable()?.cod" [(visible)]="accountsPayableService.showModalDetailsAccountPayable" [modal]="true"
+<p-dialog [header]="'Detalle cuenta por pagar: '+ accountPayable()?.cod" [(visible)]="accountsPayableService.showModalDetailsAccountPayable" [modal]="true"
     [breakpoints]="{ '960px': '85vw', '576px': '95%' }" [style]="{ width: '60vw' }" [draggable]="false"
     [resizable]="false" [dismissableMask]="true">
     <form>
@@ -42,9 +42,9 @@
 					<tr>
 						<th style="background-color: var(--bg-primary);min-width:150px;max-width:150px" class="text-white"> Fecha abono </th>
 						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Monto abonado </th>
-						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Total abonado</th>
-						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Restante</th>
-						<th style="background-color: var(--bg-primary)" class="text-white"> Recibido por</th>
+						<!-- <th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Total abonado</th> -->
+						<!-- <th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Restante</th> -->
+						<th style="background-color: var(--bg-primary)" class="text-white"> Abonado por</th>
 						<th style="background-color: var(--bg-primary)" class="text-white"> Concepto</th>
 						<th style="background-color: var(--bg-primary)" class="text-white"> Pago</th>
 						<th style="background-color: var(--bg-primary);min-width:80px;max-width:80px" class="text-white"> Opción</th>
@@ -53,9 +53,9 @@
 				<tbody>
                     <tr *ngFor="let abono of accountPayable()?.abonosAccountsPayable" >
                         <td style="min-width:150px;max-width:150px">{{abono.date_abono | date:'dd/MM/yyyy, HH:mm:ss'}}</td>
-                        <td style="min-width:130px;">{{abono.monto_abono      | number:decimal()}}</td>
-                        <td style="min-width:130px;">{{abono.total_abonado    | number:decimal()}}</td>
-                        <td style="min-width:130px;">{{abono.restante_credito | number:decimal()}}</td>
+                        <td style="min-width:100px;">{{abono.monto_abono      | number:decimal()}}</td>
+                        <!-- <td style="min-width:130px;">{{abono.total_abonado    | number:decimal()}}</td> -->
+                        <!-- <td style="min-width:130px;">{{abono.restante_credito | number:decimal()}}</td> -->
                         <td [pTooltip]="abono.user.full_names" >{{abono.user.full_names | slice:0:23}}</td>
                         <td [pTooltip]="abono.comments" >{{abono.comments}}</td>
                         <td [pTooltip]="abono.type_payment" >{{abono.type_payment }}</td>
@@ -81,6 +81,8 @@
                     <tr>
                         <td width="10%" class="table-active fw-bold">TOTAL ABONADO</td>
 						<td id="subtotal">{{accountPayable()?.monto_abonado| number:decimal()}}</td>
+					</tr>
+                    <tr>
                         <td width="10%" class="table-active fw-bold">RESTANTE</td>
                         <td id="subtotal">{{accountPayable()?.monto_restante| number:decimal()}}</td>
 					</tr>

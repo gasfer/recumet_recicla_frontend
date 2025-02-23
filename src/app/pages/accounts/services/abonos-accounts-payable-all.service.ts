@@ -96,4 +96,9 @@ export class AbonosAccountPayableAllService {
     });
   }
 
+  deleteAbonoAccountPayableMultiple(id_abono_account_payable_multiple: number) {
+    const url = `${base_url}/accounts_payable/destroy-abono-multiple/${id_abono_account_payable_multiple}`;
+    return this.http.delete(url);
+  }
+
 }
