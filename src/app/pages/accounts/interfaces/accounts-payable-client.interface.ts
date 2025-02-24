@@ -39,6 +39,7 @@ interface Totals {
 
 export interface FormPayMultiple {
     id_provider: number;
+    id_sucursal: number;
     monto_abono: number;
     date_abono:  Date;
 }

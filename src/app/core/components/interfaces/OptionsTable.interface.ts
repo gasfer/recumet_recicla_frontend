@@ -26,6 +26,7 @@ export interface ColsTable {
     isButton?:  boolean;
     isImg?:     boolean;
     isText?:     boolean;
+    isTextArray?:     boolean;
     isDoubleValue?:  boolean;
     isLink?:     boolean;
     isValueUpdate?: boolean;

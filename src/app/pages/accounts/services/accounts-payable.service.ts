@@ -37,11 +37,6 @@ export class AccountsPayableService {
     return this.http.post<ResponseNewAbono>(url, data);
   }
 
-  postNewAbonoMultipleAccountPayable(data:FormPayMultiple) {
-    const url = `${base_url}/accounts_payable/payMultiProvider`;
-    return this.http.post(url, data);
-  }
-
   deleteAbonoAccountPayable(id_abono_account_payable: number) {
     const url = `${base_url}/accounts_payable/destroy-abono/${id_abono_account_payable}`;
     return this.http.delete(url);

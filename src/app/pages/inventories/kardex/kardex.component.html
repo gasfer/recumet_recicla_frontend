@@ -57,7 +57,6 @@
                                               placeholder="Selecciona un almacén" 
                                               optionLabel="name"
                                               optionValue="id"
-                                              [showClear]="true"
                                               appendTo="body" [filter]="true" filterBy="name"
                                               [virtualScrollItemSize]="38" [lazy]="true"
                                               formControlName="id_storage" 
@@ -138,7 +137,7 @@
             [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
 </form>
-<app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'"
+<app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'DESC'" [sortField]="'date'"
   [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)"
   [data]="kardexes()" [loading]="loading()">
 </app-table>

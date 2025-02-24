@@ -45,7 +45,7 @@ export class KardexExistenciaComponent implements OnInit{
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   paramsSearch      = signal<FormSearchKardex>({
-    filterBy:'MONTH',
+    filterBy:'YEAR',
     date1: '',
     date2: '',
     id_product: '',
@@ -97,7 +97,7 @@ export class KardexExistenciaComponent implements OnInit{
     },
   ]);
   formReport:UntypedFormGroup = this.fb.group({
-    filterBy: ['MONTH'],
+    filterBy: ['YEAR'],
     dates: [new Date(), [Validators.required]],
     type_kardex: [''],
     id_sucursal: ['',[Validators.required]],
@@ -348,7 +348,7 @@ export class KardexExistenciaComponent implements OnInit{
 
   clearInputs() {
     this.formReport.patchValue({
-      filterBy: 'MONTH',
+      filterBy: 'YEAR',
       dates: new Date(),
       date_range: '',
       id_sucursal: '',

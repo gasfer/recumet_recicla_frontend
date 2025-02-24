@@ -76,7 +76,7 @@ export class ModalStorageComponent implements OnInit, OnDestroy {
         this.storageService.showModal = false;
         Swal.fire({ 
           title: 'Éxito!', 
-          text: `Sucursal modificada correctamente`,
+          text: `Almacén modificada correctamente`,
           icon: 'success', 
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},

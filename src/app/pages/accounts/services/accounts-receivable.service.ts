@@ -37,10 +37,6 @@ export class AccountsReceivableService {
     return this.http.post<ResponseNewAbono>(url, data);
   }
 
-  postNewAbonoMultipleAccountReceivable(data:FormPayMultiple) {
-    const url = `${base_url}/accounts_receivable/payMultiClient`;
-    return this.http.post(url, data);
-  }
 
   deleteAbonoAccountReceivable(id_abono_account_receivable: number) {
     const url = `${base_url}/accounts_receivable/destroy-abono/${id_abono_account_receivable}`;

@@ -12,6 +12,8 @@ import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TableComponent } from 'src/app/core/components/table/table.component';
+import { AbonosAccountReceivableAllService } from '../services/abonos-accounts-receivable-all.service';
+import { AccountsReceivablesAll } from '../interfaces/abonos-accounts-receivable-all.interface';
 
 @Component({
   selector: 'app-accounts-receivable',
@@ -27,92 +29,128 @@ import { TableComponent } from 'src/app/core/components/table/table.component';
   ]
 })
 export class AccountsReceivableComponent implements OnInit {
-  fb                  = inject( FormBuilder );
-  validatorsService   = inject( ValidatorsService );
-  clientsService      = inject( ClientsService  );
-  activatedRoute      = inject( ActivatedRoute );
+  fb = inject(FormBuilder);
+  validatorsService = inject(ValidatorsService);
+  clientsService = inject(ClientsService);
+  activatedRoute = inject(ActivatedRoute);
   accountsReceivableService = inject(AccountsReceivableService);
+  abonosAccountReceivableAllService = inject(AbonosAccountReceivableAllService);
 
-  types_registry  = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
-  clients         = signal<{name:string, code:string}[]>([]);
-  loading         = signal(false);
-  rows            = signal(50);
-  page            = signal(1);
-  type            = signal('');
-  query           = signal('');
-  txtSearch       = signal('');
-  pipeNumber      = new DecimalPipe('en-US');
-  decimalLength     = signal(this.validatorsService.decimalLength());
-  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
-  accountsReceivable = signal<AccountsReceivable|undefined>(undefined);
+  types_registry = signal([{ name: 'FICHA', code: 'FICHA' }, { name: 'BOLETA', code: 'BOLETA' }]);
+  clients = signal<{ name: string, code: string }[]>([]);
+  loading = signal(false);
+  rows = signal(50);
+  page = signal(1);
+  type = signal('');
+  query = signal('');
+  txtSearch = signal('');
+  pipeNumber = new DecimalPipe('en-US');
+  decimalLength = signal(this.validatorsService.decimalLength());
+  decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+  accountsReceivable = signal<AccountsReceivable | undefined>(undefined);
+  abonosAccountsReceivables = signal<AccountsReceivablesAll | undefined>(undefined);
   isReloadSub$!: Subscription;
   types_filtrado = signal([
-    {name: 'DIA', code: 'DAY'},
-    {name: 'MES', code: 'MONTH'},
-    {name: 'AÑO', code: 'YEAR'},
-    {name: 'RANGO', code: 'RANGE'},
+    { name: 'DIA', code: 'DAY' },
+    { name: 'MES', code: 'MONTH' },
+    { name: 'AÑO', code: 'YEAR' },
+    { name: 'RANGO', code: 'RANGE' },
   ]);
-  cols  = signal<ColsTable[]>([
-    { field: 'status_account', header: 'ESTADO' , style:'min-width:60px;max-width:60px; text-align: center;', tooltip: true , footer:'TOTAL',
-      isTag:true,
-      tagValue: (val:string)=>  ' ',
-      tagColor: (val:string)=> val == 'PAGADO' ? 'primary' : 'success',
-      tagIcon: (val:string)=>  val == 'PAGADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
+  cols = signal<ColsTable[]>([
+    {
+      field: 'status_account', header: 'ESTADO', style: 'min-width:60px;max-width:60px; text-align: center;', tooltip: true, footer: 'TOTAL',
+      isTag: true,
+      tagValue: (val: string) => ' ',
+      tagColor: (val: string) => val == 'PAGADO' ? 'primary' : 'success',
+      tagIcon: (val: string) => val == 'PAGADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
     },
-    { field: 'output.cod', header: 'VENTA' , style:'min-width:100px;max-width:100px;', tooltip: true},
-    { field: 'output.type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true, 
-      tagValue: (val:boolean)=>  val,
-      tagColor: (val:boolean)=> 'success',
-      tagIcon: (val:boolean)=>  'fa-solid fa-file'
+    { field: 'output.cod', header: 'VENTA', style: 'min-width:100px;max-width:100px;', tooltip: true },
+    {
+      field: 'output.type_registry', header: 'TIPO DOC.', style: 'min-width:80px;max-width:80px;', tooltip: true, isTag: true,
+      tagValue: (val: boolean) => val,
+      tagColor: (val: boolean) => 'success',
+      tagIcon: (val: boolean) => 'fa-solid fa-file'
     },
-    { field: 'output.date_output', header: 'FECHA REGISTRO' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
-    { field: 'monto_abonado', header: 'MONTO ABONADO' , style:'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
-      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+    { field: 'output.date_output', header: 'FECHA REGISTRO', style: 'min-width:110px;max-width:110px;', tooltip: true, isDate: true },
+    {
+      field: 'monto_abonado', header: 'MONTO ABONADO', style: 'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
+      isValueUpdate: true, tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal()),
     },
-    { field: 'monto_restante', header: 'MONTO RESTANTE' , style:'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
-    isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+    {
+      field: 'monto_restante', header: 'MONTO RESTANTE', style: 'min-width:130px;max-width:130px;text-align: center;', tooltip: true,
+      isValueUpdate: true, tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal()),
     },
-    { field: 'total', header: 'TOTAL' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true, 
-      tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
-      tagColor: (val:number)=> 'primary',
-      tagIcon: (val:number)=>  ''
+    {
+      field: 'total', header: 'TOTAL', style: 'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
+      tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal()),
+      tagColor: (val: number) => 'primary',
+      tagIcon: (val: number) => ''
     },
-    { field: `client.full_names`, header: 'CLIENTE' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
-    { field: 'options', header: 'OPCIONES', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }
+    { field: `client.full_names`, header: 'CLIENTE', style: 'min-width:150px;max-width:200px;', tooltip: true, isText: true },
+    { field: 'options', header: 'OPCIONES', style: 'min-width:120px;max-width:120px', isButton: true, activeSortable: false }
   ]);
-  searchFor   = signal<SearchFor[]>([
-                {name: 'VENTA', code: 'output.cod'},
-                {name: 'TOTAL', code: 'total'},
-                {name: 'CLIENTE', code: 'client.full_names'},
-              ]);
-  
+  colsAbonos = signal<ColsTable[]>([
+    { field: 'date_abono', header: 'FECHA', style: 'min-width:110px;max-width:110px;', tooltip: true, isDate: true, footer: 'TOTALES' },
+    { field: 'codes_output', header: 'VENTAS', style: 'min-width:110px;max-width:110px;', tooltip: true, isTextArray: true },
+    { field: `client.full_names`, header: 'CLIENTE', style: 'min-width:150px;max-width:200px;', tooltip: true, isText: true },
+    {
+      field: 'type_payment', header: 'TIPO', style: 'min-width:80px;max-width:80px;', tooltip: true, isTag: true,
+      tagValue: (val: boolean) => val,
+      tagColor: (val: boolean) => 'success',
+      tagIcon: (val: boolean) => ''
+    },
+    {
+      field: 'monto_abono', header: 'PAGO', style: 'min-width:100px;max-width:130px;text-align: end;', tooltip: true, isTag: true,
+      tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal()),
+      tagColor: (val: number) => 'primary',
+      tagIcon: (val: number) => '',
+    },
+    { field: `comments`, header: 'CONCEPTO', style: 'min-width:150px;max-width:250px;', tooltip: true, isText: true },
+    { field: 'options', header: 'OPCIONES', style: 'min-width:120px;max-width:120px', isButton: true, activeSortable: false }
+  ]);
+  isTableAbonos = signal(false);
+  searchFor = signal<SearchFor[]>([{ name: 'VENTA', code: 'output.cod' },]);
+  searchForAbonos = signal<SearchFor[]>([{ name: 'VENTA', code: 'codes_output' },]);
+
   searchItems = signal<MenuItem[]>([
-    { 
-      label: 'Todos', icon: 'fas fa-exchange-alt', 
-      iconStyle: { 'color': '#FF851B'},
+    {
+      label: 'Todos', icon: 'fas fa-exchange-alt',
+      iconStyle: { 'color': '#FF851B' },
       command: () => {
+        this.isTableAbonos.set(false);
         this.paramsSearch().status_account = '';
-        this.getAllAndSearchAccountsReceivable(1,this.rows());
-      } 
+        this.getAllAndSearchAccountsReceivable(1, this.rows());
+      }
     },
-    { 
-      label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left', 
-      iconStyle: { 'color': '#14A44D'},
+    {
+      label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left',
+      iconStyle: { 'color': '#14A44D' },
       command: () => {
+        this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PENDIENTE';
-        this.getAllAndSearchAccountsReceivable(1,this.rows());
-      } 
+        this.getAllAndSearchAccountsReceivable(1, this.rows());
+      }
     },
-    { 
+    {
       label: 'Finalizados', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA'},
+      iconStyle: { 'color': '#3B71CA' },
       command: () => {
+        this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PAGADO';
-        this.getAllAndSearchAccountsReceivable(1,this.rows());
+        this.getAllAndSearchAccountsReceivable(1, this.rows());
+      }
+    },
+    {
+      label: 'Todos los pagos', icon: 'fas fa-cash-register',
+      iconStyle: { 'color': '#7D3C98' },
+      command: () => {
+        this.isTableAbonos.set(true);
+        this.paramsSearch().status_account = '';
+        this.getAllAndSearchAbonosPay(1, this.rows());
       }
     },
   ]);
-  formReport:UntypedFormGroup = this.fb.group({
+  formReport: UntypedFormGroup = this.fb.group({
     filterBy: ['YEAR'],
     dates: [new Date(), [Validators.required]],
     type_registry: [''],
@@ -120,11 +158,11 @@ export class AccountsReceivableComponent implements OnInit {
     id_sucursal: [''],
   });
   paramsSearch = signal<FormSearchAccountsReceivable>({
-    status_account:'',
+    status_account: '',
     type_registry: '',
     id_sucursal: '',
     id_client: '',
-    filterBy:'YEAR',
+    filterBy: 'YEAR',
     date1: moment().format('YYYY'),
     date2: '',
   });
@@ -132,39 +170,51 @@ export class AccountsReceivableComponent implements OnInit {
     {
       label: 'Lista avanzada',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
-      command: () => { this.printExcelReport(); }
+      iconStyle: { 'color': '#14A44D' },
+      command: () => {
+        if (this.isTableAbonos()) {
+          this.printExcelReportAbonos();
+        } else {
+          this.printExcelReport();
+        }
+      }
     },
   ];
   id_account_receivable: number = 0;
   fieldSort = signal('output.date_output');
-  order     = signal('DESC');
-  idClient  = signal<number|undefined>(undefined);
+  order = signal('DESC');
+  fieldSortAbonos = signal('date_abono');
+  orderAbonos = signal('DESC');
+  idClient = signal<number | undefined>(undefined);
   @ViewChild(TableComponent) tableComponent!: TableComponent;
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(params => {
-      const {c:id_client,v:id_venta} = params;
-      if(!id_client && !id_venta){
+      const { c: id_client, v: id_venta } = params;
+      if (!id_client && !id_venta) {
         this.getAllAndSearchAccountsReceivable(1, this.rows());
       }
-      if(id_venta){
+      if (id_venta) {
         this.txtSearch.set(id_venta);
-        this.getAllAndSearchAccountsReceivable(1, this.rows(),'output.cod',id_venta);
+        this.getAllAndSearchAccountsReceivable(1, this.rows(), 'output.cod', id_venta);
       }
       this.idClient.set(id_client);
     })
     this.getAllClients();
     this.isReloadSub$ = this.accountsReceivableService.reloadAccountsReceivable$
-        .subscribe((id_account_payable:number)=>{
-          this.id_account_receivable = id_account_payable;
+      .subscribe((id_account_payable: number) => {
+        this.id_account_receivable = id_account_payable;
+        if(!this.isTableAbonos()){
           this.getAllAndSearchAccountsReceivable(1, this.rows());
-        }); 
+        } else {
+          this.getAllAndSearchAbonosPay(1,this.rows());
+        }
+      });
   }
 
   getAllClients() {
-    this.clientsService.getAllAndSearch(1,10000,true,'','','full_names','ASC').subscribe({
-      next: (resp)=> {
+    this.clientsService.getAllAndSearch(1, 10000, true, '', '', 'full_names', 'ASC').subscribe({
+      next: (resp) => {
         this.clients.set([]);
         resp.clients.data.forEach(client => {
           this.clients.update((clients) => {
@@ -177,96 +227,96 @@ export class AccountsReceivableComponent implements OnInit {
             ];
           });
         })
-        if(this.idClient()){
-          this.formReport.patchValue({id_client: this.idClient() });
-          this.getAllAndSearchAccountsReceivable(1,this.rows());
+        if (this.idClient()) {
+          this.formReport.patchValue({ id_client: this.idClient() });
+          this.getAllAndSearchAccountsReceivable(1, this.rows());
           this.idClient.set(undefined);
         }
       },
-      error: (err)=> this.clients.set([])
+      error: (err) => this.clients.set([])
     });
   }
 
-  getAllAndSearchAccountsReceivable(page: number, limit: number,type: string = '', query: string = '') {
+  getAllAndSearchAccountsReceivable(page: number, limit: number, type: string = '', query: string = '') {
     this.formReport.get('id_sucursal')?.setValue(this.validatorsService.id_sucursal());
     this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
+    if (!this.formReport.valid) return;
     this.formParamsByForm();
-    if(!query) {this.loading.set(true);} //not loading in search
-    this.accountsReceivableService.getAllAndSearchAccountsReceivable(page,limit,this.paramsSearch(),type,query,this.fieldSort(),this.order()).subscribe({
+    if (!query) { this.loading.set(true); } //not loading in search
+    this.accountsReceivableService.getAllAndSearchAccountsReceivable(page, limit, this.paramsSearch(), type, query, this.fieldSort(), this.order()).subscribe({
       next: (resp) => {
         this.accountsReceivable.set(resp.accountsReceivable);
         this.accountsReceivable()!.data.forEach((accountReceivable) => {
-          accountReceivable.options = accountReceivable.status_account == 'PENDIENTE'  ? [
-            { 
-              label:'',icon:'fa-solid fa-comment-dollar', 
+          accountReceivable.options = accountReceivable.status_account == 'PENDIENTE' ? [
+            {
+              label: '', icon: 'fa-solid fa-comment-dollar',
               tooltip: 'Abonar',
-              class:'p-button-rounded  p-button-warning p-button-sm',
+              class: 'p-button-rounded  p-button-warning p-button-sm',
               eventClick: () => {
                 this.accountsReceivableService.detailsSubs$.next(accountReceivable);
                 this.accountsReceivableService.showModalNewAbono = true;
               }
             },
-            { 
-              label:'',icon:'fa-solid fa-comments-dollar', 
+            {
+              label: '', icon: 'fa-solid fa-comments-dollar',
               tooltip: 'Abono multiple',
-              class:'p-button-rounded  p-button-secondary p-button-sm  ms-1',
+              class: 'p-button-rounded  p-button-secondary p-button-sm  ms-1',
               eventClick: () => {
                 this.accountsReceivableService.detailsSubs$.next(accountReceivable);
                 this.accountsReceivableService.showModalAccountsClient = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label: '', icon: 'fas fa-eye',
               tooltip: 'Ver abonos',
-              class:'p-button-rounded p-button-success p-button-sm ms-1',
+              class: 'p-button-rounded p-button-success p-button-sm ms-1',
               eventClick: () => {
                 this.accountsReceivableService.detailsSubs$.next(accountReceivable);
                 this.accountsReceivableService.showModalDetailsAccountReceivable = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label: '', icon: 'fas fa-print',
               tooltip: 'Estado de cuenta',
-              disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR','reports'),
-              class:'p-button-rounded p-button-sm ms-1',
+              disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR', 'reports'),
+              class: 'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
                 this.accountsReceivableService.printAccountReceivablePdf(accountReceivable.id);
               }
             },
           ] : [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label: '', icon: 'fas fa-eye',
               tooltip: 'Ver abonos',
-              class:'p-button-rounded p-button-success p-button-sm',
+              class: 'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
                 this.accountsReceivableService.detailsSubs$.next(accountReceivable);
                 this.accountsReceivableService.showModalDetailsAccountReceivable = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label: '', icon: 'fas fa-print',
               tooltip: 'Estado de cuenta',
-              disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR','reports'),
-              class:'p-button-rounded p-button-sm ms-1',
+              disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR', 'reports'),
+              class: 'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
                 this.accountsReceivableService.printAccountReceivablePdf(accountReceivable.id);
               }
             },
-          ] ;
+          ];
         });
         const total_abonados = resp.accountsReceivable?.totals?.total_abonados ?? 0;
         const total_restante = resp.accountsReceivable?.totals?.total_restante ?? 0;
         const total_account = resp.accountsReceivable?.totals?.total_account ?? 0;
-        this.cols()[4].footer =  this.pipeNumber.transform(total_abonados,this.decimal()) ?? '0';
-        this.cols()[5].footer =  this.pipeNumber.transform(total_restante,this.decimal()) ?? '0';
-        this.cols()[6].footer =  this.pipeNumber.transform(total_account,this.decimal()) ?? '0';
+        this.cols()[4].footer = this.pipeNumber.transform(total_abonados, this.decimal()) ?? '0';
+        this.cols()[5].footer = this.pipeNumber.transform(total_restante, this.decimal()) ?? '0';
+        this.cols()[6].footer = this.pipeNumber.transform(total_account, this.decimal()) ?? '0';
       },
       complete: () => {
         this.loading.set(false);
         //solo si es un nuevo abono
         const find_account_payable = this.accountsReceivable()?.data.find((accountsReceivable) => accountsReceivable.id === this.id_account_receivable);
-        if(find_account_payable){
+        if (find_account_payable) {
           this.accountsReceivableService.detailsSubs$.next(find_account_payable!);
           this.id_account_receivable = 0;
         }
@@ -275,10 +325,55 @@ export class AccountsReceivableComponent implements OnInit {
     });
   }
 
+  getAllAndSearchAbonosPay(page: number, limit: number, type: string = '', query: string = '') {
+    this.formReport.get('id_sucursal')?.setValue(this.validatorsService.id_sucursal());
+    this.formReport.markAllAsTouched();
+    if (!this.formReport.valid) return;
+    this.formParamsByForm();
+    if (!query) { this.loading.set(true); } //not loading in search
+    this.abonosAccountReceivableAllService.getAllAndSearchAbonosReceivablesAll(page, limit, this.paramsSearch(), type, query, this.fieldSortAbonos(), this.orderAbonos()).subscribe({
+      next: (resp) => {
+        this.abonosAccountsReceivables.set(resp.accountsReceivablesAll);
+        this.abonosAccountsReceivables()!.data.forEach((accountReceivable) => {
+          accountReceivable.options = [
+            {
+              label: '', icon: 'fas fa-print',
+              tooltip: 'Comprobante',
+              disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR', 'reports'),
+              class: 'p-button-rounded p-button-sm',
+              eventClick: () => {
+                if (accountReceivable.from_pay_multiple) {
+                  this.abonosAccountReceivableAllService.printAbonoMultipleAccountPayablePdf(accountReceivable.id);
+                } else {
+                  this.accountsReceivableService.printVoucherAbonoAccountReceivablePdf(accountReceivable.ids_abonos_receivables[0]);
+                }
+              }
+            },
+            {
+              label: '', icon: 'fa-solid fa-trash-can',
+              tooltip: 'Anular abono',
+              class: 'p-button-rounded p-button-danger p-button-sm ms-1',
+              eventClick: () => {
+                const idAbono = accountReceivable.from_pay_multiple ? accountReceivable.id: accountReceivable.ids_abonos_receivables[0];
+                this.deleteAbono(idAbono,Number(accountReceivable.monto_abono),accountReceivable.from_pay_multiple);
+              }
+            },
+          ];
+        });
+        const total_abonados = resp.accountsReceivablesAll?.totals?.total_abonados ?? 0;
+        this.colsAbonos()[4].footer = this.pipeNumber.transform(total_abonados, this.decimal()) ?? '0';
+      },
+      complete: () => {
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
   formParamsByForm() {
-    this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal,id_client,type_registry, id_product, dates} = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+    this.paramsSearch.update((params) => {
+      const { filterBy, id_sucursal, id_client, type_registry, id_product, dates } = this.formReport.value;
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_registry: type_registry ? type_registry : '',
@@ -287,15 +382,15 @@ export class AccountsReceivableComponent implements OnInit {
         id_client: id_client ? id_client : '',
         status_account: params.status_account,
         filterBy: filterBy,
-        date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
-        date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
+        date1: filterBy == 'RANGE' ? moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
+        date2: filterBy == 'RANGE' ? dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
       }
     });
   }
 
   printPdfReport() {
     this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
+    if (!this.formReport.valid) return;
     this.formParamsByForm();
     Swal.fire({
       title: 'Generando Reporte!',
@@ -303,7 +398,7 @@ export class AccountsReceivableComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.accountsReceivableService.getReportAccountsReceivablePdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
+          this.accountsReceivableService.getReportAccountsReceivablePdf(this.paramsSearch(), this.fieldSort(), this.order()).subscribe({
             next: (data) => {
               const file = new Blob([data], { type: 'application/pdf' });
               const fileURL = URL.createObjectURL(file);
@@ -319,9 +414,9 @@ export class AccountsReceivableComponent implements OnInit {
     });
   }
 
-  printExcelReport() {
+  printPdfReportAbonos() {
     this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
+    if (!this.formReport.valid) return;
     this.formParamsByForm();
     Swal.fire({
       title: 'Generando Reporte!',
@@ -329,7 +424,58 @@ export class AccountsReceivableComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.accountsReceivableService.getReportAccountsReceivableExcel(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
+          this.abonosAccountReceivableAllService.getReportAccountsPayableAbonosPdf(this.paramsSearch(), this.type(), this.query(), this.fieldSortAbonos(), this.orderAbonos()).subscribe({
+            next: (data) => {
+              const file = new Blob([data], { type: 'application/pdf' });
+              const fileURL = URL.createObjectURL(file);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+            },
+          });
+        });
+      },
+    });
+  }
+
+  printExcelReportAbonos() {
+    this.formReport.markAllAsTouched();
+    if (!this.formReport.valid) return;
+    this.formParamsByForm();
+    Swal.fire({
+      title: 'Generando Reporte!',
+      html: `Con los parámetros seleccionados`,
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.abonosAccountReceivableAllService.getReportAccountsPayableExcel(this.paramsSearch(), this.type(), this.query(), this.fieldSortAbonos(), this.orderAbonos()).subscribe({
+            next: (data) => {
+              const fileURL = window.URL.createObjectURL(data);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+            },
+          });
+        });
+      },
+    });
+  }
+
+  printExcelReport() {
+    this.formReport.markAllAsTouched();
+    if (!this.formReport.valid) return;
+    this.formParamsByForm();
+    Swal.fire({
+      title: 'Generando Reporte!',
+      html: `Con los parámetros seleccionados`,
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.accountsReceivableService.getReportAccountsReceivableExcel(this.paramsSearch(), this.fieldSort(), this.order()).subscribe({
             next: (data) => {
               const fileURL = window.URL.createObjectURL(data);
               window.open(fileURL);
@@ -355,30 +501,101 @@ export class AccountsReceivableComponent implements OnInit {
 
   onChangeTypesFilter() {
     const type_filter = this.formReport.get('filterBy')?.value;
-    if(type_filter == 'RANGE'){
+    if (type_filter == 'RANGE') {
       this.formReport.get('dates')?.setValue([new Date()]);
     } else {
       this.formReport.get('dates')?.setValue(new Date());
     }
   }
 
-  paginate($rows:any) {
-    const {rows, page} = $rows;
+  paginate($rows: any) {
+    const { rows, page } = $rows;
     this.rows.set(rows);
     this.page.set(page);
-    this.getAllAndSearchAccountsReceivable(this.page(),this.rows(),this.type(),this.query());
+    if (!this.isTableAbonos()) {
+      this.getAllAndSearchAccountsReceivable(this.page(), this.rows(), this.type(), this.query());
+    } else {
+      this.getAllAndSearchAbonosPay(this.page(), this.rows(), this.type(), this.query())
+    }
   }
 
-  customSort($sort:any) {
-    let {field, order} = $sort;
-    this.fieldSort.set(field);
-    this.order.set(order);
+  customSort($sort: any) {
+    let { field, order } = $sort;
+    if (!this.isTableAbonos()) {
+      this.fieldSort.set(field);
+      this.order.set(order);
+    } else {
+      this.fieldSortAbonos.set(field);
+      this.orderAbonos.set(order);
+    }
   }
 
-  search($query:any) {
-    const {type, query} = $query;
+  search($query: any) {
+    const { type, query } = $query;
     this.type.set(type);
     this.query.set(query);
-    this.getAllAndSearchAccountsReceivable(1,this.rows(),this.type(),this.query());
+    if (!this.isTableAbonos()) {
+      this.getAllAndSearchAccountsReceivable(1, this.rows(), this.type(), this.query());
+    } else {
+      this.getAllAndSearchAbonosPay(1, this.rows(), this.type(), this.query());
+    }
+  }
+
+  searchByFilters() {
+    if (!this.isTableAbonos()) {
+      this.getAllAndSearchAccountsReceivable(1, this.rows());
+    } else {
+      this.getAllAndSearchAbonosPay(1, this.rows());
+    }
+  }
+
+  deleteAbono(id_abono: number, monto: number, multiple: boolean): void {
+    Swal.fire({
+      title: `¿Esta seguro de anular Abono?`,
+      text: `Esta apunto de anular el abono de: ${monto}`,
+      icon: `warning`,
+      confirmButtonText: `Si, Anular!`,
+      showLoaderOnConfirm: true,
+      showCancelButton: true,
+      backdrop: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Cancelar',
+      customClass: { container: 'sweetalert2' },
+      preConfirm: () => {
+        if (multiple) {
+          return new Promise((resolve, reject) => {
+            this.abonosAccountReceivableAllService.deleteAbonoAccountReceivableMultiple(id_abono).subscribe({
+              complete: () => resolve(true),
+              error: (err) => {
+                resolve(false);
+              }
+            });
+          });
+        } else {
+          return new Promise((resolve, reject) => {
+            this.accountsReceivableService.deleteAbonoAccountReceivable(id_abono).subscribe({
+              complete: () => resolve(true),
+              error: (err) => {
+                resolve(false);
+              }
+            });
+          });
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+      if (result.value) {
+        this.accountsReceivableService.reloadAccountsReceivable$.next(0);
+        Swal.fire({
+          title: 'Éxito!',
+          text: `El abono fue anulado correctamente`,
+          icon: 'success',
+          showClass: { popup: 'animated animate fadeInDown' },
+          customClass: { container: 'sweetalert2' },
+        });
+      }
+    });
   }
 }

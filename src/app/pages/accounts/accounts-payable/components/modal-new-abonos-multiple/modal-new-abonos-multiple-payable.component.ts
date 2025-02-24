@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { Bank } from 'src/app/pages/managements/interfaces/bank.interface';
 import { BankService } from 'src/app/pages/managements/services/bank.service';
 import { AccountsPayableProvider } from '../../../interfaces/accounts-payable-provider.interface';
+import { AbonosAccountPayableAllService } from '../../../services/abonos-accounts-payable-all.service';
 
 @Component({
   selector: 'app-modal-new-abonos-multiple-payable',
@@ -16,6 +17,7 @@ import { AccountsPayableProvider } from '../../../interfaces/accounts-payable-pr
 })
 export class ModalNewAbonosMultiplePayableComponent {
   accountsPayableService = inject(AccountsPayableService);
+  AbonosAccountPayableAllService = inject(AbonosAccountPayableAllService);
   validatorsService = inject(ValidatorsService);
   fb = inject(FormBuilder);
   loading = signal(false);
@@ -34,6 +36,7 @@ export class ModalNewAbonosMultiplePayableComponent {
     type_payment: ['EFECTIVO', [Validators.required]],
     comments: [null, []],
     account_output: [null, []],
+    id_sucursal: [null, [Validators.required]],
     id_bank: [null, []],
   });
 
@@ -62,10 +65,11 @@ export class ModalNewAbonosMultiplePayableComponent {
   }
 
   newAbono() {
+    this.abonoForm.patchValue({ id_sucursal: this.validatorsService.id_sucursal()});
     this.abonoForm.markAllAsTouched();
     if (!this.abonoForm.valid) return;
     this.loading.set(true);
-    this.accountsPayableService.postNewAbonoMultipleAccountPayable(this.abonoForm.value).subscribe({
+    this.AbonosAccountPayableAllService.postNewAbonoMultipleAccountPayable(this.abonoForm.value).subscribe({
       next: (resp) => {
         this.loading.set(false);
         //si paga todo cerramos el modal de detalle
@@ -78,6 +82,8 @@ export class ModalNewAbonosMultiplePayableComponent {
           customClass: { container: 'swal-alert' },
         });
         this.getAccountsForProvider(this.abonoForm.get('id_provider')?.value);
+        this.AbonosAccountPayableAllService.printAbonoMultipleAccountPayablePdf(resp.id_abono_accounts_payable)
+
       },
       error: (error) => {
         Swal.fire({
