@@ -42,9 +42,9 @@
 					<tr>
 						<th style="background-color: var(--bg-primary);min-width:150px;max-width:150px" class="text-white"> Fecha abono </th>
 						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Monto abonado </th>
-						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Total abonado</th>
-						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Restante</th>
-						<th style="background-color: var(--bg-primary)" class="text-white"> Abonado por</th>
+						<!-- <th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Total abonado</th> -->
+						<!-- <th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Restante</th> -->
+						<th style="background-color: var(--bg-primary)" class="text-white"> Recibido por</th>
                         <th style="background-color: var(--bg-primary)" class="text-white"> Concepto</th>
 						<th style="background-color: var(--bg-primary)" class="text-white"> Pago</th>
 						<th style="background-color: var(--bg-primary);min-width:80px;max-width:80px" class="text-white"> Opción</th>
@@ -54,8 +54,8 @@
                     <tr *ngFor="let abono of accountReceivable()?.abonosAccountsReceivable" >
                         <td style="min-width:150px;max-width:150px">{{abono.date_abono | date:'dd/MM/yyyy, HH:mm:ss'}}</td>
                         <td style="min-width:130px;">{{abono.monto_abono      | number:decimal()}}</td>
-                        <td style="min-width:130px;">{{abono.total_abonado    | number:decimal()}}</td>
-                        <td style="min-width:130px;">{{abono.restante_credito | number:decimal()}}</td>
+                        <!-- <td style="min-width:130px;">{{abono.total_abonado    | number:decimal()}}</td> -->
+                        <!-- <td style="min-width:130px;">{{abono.restante_credito | number:decimal()}}</td> -->
                         <td [pTooltip]="abono.user.full_names" >{{abono.user.full_names | slice:0:23}}</td>
                         <td [pTooltip]="abono.comments" >{{abono.comments}}</td>
                         <td [pTooltip]="abono.type_payment" >{{abono.type_payment }}</td>
@@ -81,6 +81,8 @@
                     <tr>
                         <td width="10%" class="table-active fw-bold">TOTAL ABONADO</td>
 						<td id="subtotal">{{accountReceivable()?.monto_abonado| number:decimal()}}</td>
+					</tr>
+                    <tr>
                         <td width="10%" class="table-active fw-bold">RESTANTE</td>
                         <td id="subtotal">{{accountReceivable()?.monto_restante| number:decimal()}}</td>
 					</tr>

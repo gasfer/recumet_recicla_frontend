@@ -105,6 +105,9 @@
                 {{getRowData(rowData,col)}}
             </p>
         </div>
+        <div *ngIf="col.isTextArray">
+            <p style="white-space: pre-line;">{{ getRowData(rowData, col) }}</p>
+        </div>
         <div *ngIf="col.isLink">
             <p class="badge text-bg-light text-primary p-2 cursor-pointer" (click)="returnLink(col.link,getRowData2(rowData,col))"> {{getRowData(rowData,col)}}</p>
         </div>
@@ -119,7 +122,7 @@
         <div *ngIf="col.isValueUpdate">
             {{col?.tagValue(getRowData(rowData,col))}}
         </div>
-        <div *ngIf="!col.isLink && !col.isDoubleValue && !col.isButton && !col.isArray && !col.isTag && !col.isImg && !col.isText && !col.isValueUpdate">
+        <div *ngIf="!col.isLink && !col.isDoubleValue && !col.isButton && !col.isArray && !col.isTag && !col.isImg && !col.isText && !col.isValueUpdate && !col.isTextArray">
             {{getRowData(rowData,col)}}
         </div>
     </td>
