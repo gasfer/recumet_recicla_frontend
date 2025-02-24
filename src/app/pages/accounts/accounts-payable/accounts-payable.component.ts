@@ -54,13 +54,13 @@ export class AccountsPayableComponent implements OnInit {
     { field: 'status_account', header: 'ESTADO' , style:'min-width:60px;max-width:60px; text-align: center;', tooltip: true , footer:'TOTAL',
       isTag:true,
       tagValue: (val:string)=>  ' ',
-      tagColor: (val:string)=> val == 'PAGADO' ? 'primary' : 'success',
+      tagColor: (val:string)=> val == 'PAGADO' ? 'success' : 'warning',
       tagIcon: (val:string)=>  val == 'PAGADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
     },
     { field: 'input.cod', header: 'COMPRA' , style:'min-width:100px;max-width:100px;', tooltip: true },
     { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: 'input.date_voucher', header: 'FECHA REGISTRO' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
-    { field: 'input.type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true, 
+    { field: 'input.type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true,
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'success',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
@@ -72,7 +72,7 @@ export class AccountsPayableComponent implements OnInit {
     { field: 'monto_restante', header: 'SALDO' , style:'min-width:100px;max-width:130px;text-align: end;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
     },
-    { field: 'total', header: 'TOTAL' , style:'min-width:100px;max-width:130px;text-align: end;', tooltip: true, isTag: true, 
+    { field: 'total', header: 'TOTAL' , style:'min-width:100px;max-width:130px;text-align: end;', tooltip: true, isTag: true,
       tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  '',
@@ -84,25 +84,25 @@ export class AccountsPayableComponent implements OnInit {
                 {name: 'TOTAL', code: 'total'},
                 {name: 'PROVEEDOR', code: 'provider.full_names'},
               ]);
-  
+
   searchItems = signal<MenuItem[]>([
-    { 
-      label: 'Todos', icon: 'fas fa-exchange-alt', 
+    {
+      label: 'Todos', icon: 'fas fa-exchange-alt',
       iconStyle: { 'color': '#FF851B'},
       command: () => {
         this.paramsSearch().status_account = '';
         this.getAllAndSearchAccountsPayable(1,this.rows());
-      } 
+      }
     },
-    { 
-      label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left', 
+    {
+      label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left',
       iconStyle: { 'color': '#14A44D'},
       command: () => {
         this.paramsSearch().status_account = 'PENDIENTE';
         this.getAllAndSearchAccountsPayable(1,this.rows());
-      } 
+      }
     },
-    { 
+    {
       label: 'Finalizados', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
@@ -158,7 +158,7 @@ export class AccountsPayableComponent implements OnInit {
         .subscribe((id_account_payable:number)=>{
           this.id_account_payable = id_account_payable;
           this.getAllAndSearchAccountsPayable(1, this.rows());
-        }); 
+        });
   }
 
   getAllProviders() {
@@ -197,8 +197,8 @@ export class AccountsPayableComponent implements OnInit {
         this.accountsPayable.set(resp.accountsPayable);
         this.accountsPayable()!.data.forEach((accountPayable) => {
           accountPayable.options = accountPayable.status_account == 'PENDIENTE'  ? [
-            { 
-              label:'',icon:'fa-solid fa-comment-dollar', 
+            {
+              label:'',icon:'fa-solid fa-comment-dollar',
               tooltip: 'Abonar',
               class:'p-button-rounded  p-button-warning p-button-sm',
               eventClick: () => {
@@ -206,8 +206,8 @@ export class AccountsPayableComponent implements OnInit {
                 this.accountsPayableService.showModalNewAbono = true;
               }
             },
-            { 
-              label:'',icon:'fa-solid fa-comments-dollar', 
+            {
+              label:'',icon:'fa-solid fa-comments-dollar',
               tooltip: 'Abono multiple',
               class:'p-button-rounded  p-button-secondary p-button-sm  ms-1',
               eventClick: () => {
@@ -215,8 +215,8 @@ export class AccountsPayableComponent implements OnInit {
                 this.accountsPayableService.showModalAccountsProvider = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver abonos',
               class:'p-button-rounded p-button-success p-button-sm ms-1',
               eventClick: () => {
@@ -224,8 +224,8 @@ export class AccountsPayableComponent implements OnInit {
                 this.accountsPayableService.showModalDetailsAccountPayable = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Estado de cuenta',
               disabled: this.validatorsService.withPermission('CUENTAS POR PAGAR','reports'),
               class:'p-button-rounded p-button-sm ms-1',
@@ -234,8 +234,8 @@ export class AccountsPayableComponent implements OnInit {
               }
             },
           ] : [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver abonos',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -243,8 +243,8 @@ export class AccountsPayableComponent implements OnInit {
                 this.accountsPayableService.showModalDetailsAccountPayable = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Estado de cuenta',
               disabled: this.validatorsService.withPermission('CUENTAS POR PAGAR','reports'),
               class:'p-button-rounded p-button-sm ms-1',
@@ -260,7 +260,7 @@ export class AccountsPayableComponent implements OnInit {
         this.cols()[6].footer =  this.pipeNumber.transform(total_abonados,this.decimal()) ?? '0';
         this.cols()[7].footer =  this.pipeNumber.transform(total_restante,this.decimal()) ?? '0';
         this.cols()[8].footer =  this.pipeNumber.transform(total_account,this.decimal()) ?? '0';
-       
+
       },
       complete: () => {
         this.loading.set(false);
@@ -278,7 +278,7 @@ export class AccountsPayableComponent implements OnInit {
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
       const { filterBy, id_sucursal,id_provider,type_registry, id_product, dates} = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_registry: type_registry ? type_registry : '',
