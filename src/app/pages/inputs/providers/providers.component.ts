@@ -15,11 +15,11 @@ import { DecimalPipe } from '@angular/common';
   templateUrl: './providers.component.html',
   styles: [`
       .title {
-        display: flex; 
-        justify-content: space-between; 
+        display: flex;
+        justify-content: space-between;
         align-items: center;
       }
-    
+
   `]
 })
 export class ProvidersComponent implements OnInit, OnDestroy {
@@ -29,7 +29,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       this.type.set('');
       this.getAllAndSearchProviders(1,this.rows(),true);
     }},
-    { label: 'Inactivos', icon: 'fa-solid fa-trash-can', 
+    { label: 'Inactivos', icon: 'fa-solid fa-trash-can',
       iconStyle: { 'color': '#DC4C64'},
       command: () => {
       this.type.set('');
@@ -64,6 +64,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     {name: 'AÑO', code: 'YEAR'},
     {name: 'RANGO', code: 'RANGE'},
   ]);
+
   providers = signal<Providers|undefined>(undefined);
   private providersService = inject(ProvidersService);
   validatorsService = inject(ValidatorsService);
@@ -83,7 +84,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.save$.unsubscribe();
   }
- 
+
 
   getAllAndSearchProviders(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
     if(!query) {this.loading.set(true);} //not loading in search
@@ -95,8 +96,8 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         this.providers.set(resp.providers);
         this.providers()!.data.forEach((provider) => {
           provider.options = provider.status  ? [
-            { 
-              label:'',icon:'fa-solid fa-comment-dollar', 
+            {
+              label:'',icon:'fa-solid fa-comment-dollar',
               tooltip: 'Cuentas por pagar',
               disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR','view'),
               class:'p-button-rounded  p-button-sm',
@@ -104,8 +105,8 @@ export class ProvidersComponent implements OnInit, OnDestroy {
                 this.router.navigateByUrl(`/accounts/accounts-payable?p=${provider.id}`)
               }
             },
-            { 
-              label:'',icon:'fas fa-edit', 
+            {
+              label:'',icon:'fas fa-edit',
               tooltip: 'Editar',
               disabled: this.validatorsService.withPermission('PROVEEDORES','update'),
               class:'p-button-rounded p-button-warning p-button-sm ms-1',
@@ -114,7 +115,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               }
             },
             {
-              label:'',icon:'fa-solid fa-trash-can', 
+              label:'',icon:'fa-solid fa-trash-can',
               tooltip: 'Inactivar',
               disabled: this.validatorsService.withPermission('PROVEEDORES','delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
@@ -170,10 +171,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       if(!result.isConfirmed) return;
       if(result.value) {
         this.getAllAndSearchProviders(1,this.rows(),!newStatus);
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Disponible en la sección de ${newStatus ? "Activos" : "Inactivos"}`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},
         });
@@ -253,8 +254,9 @@ export class ProvidersComponent implements OnInit, OnDestroy {
 
   getDefaultColumns() {
     return [
+      { field: 'category.name', header: 'CATEGORÍA', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
       { field: 'date_last_input', header: 'ULT. COMPRA', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true, isDate: true, isNotDateAndHour: true },
-      { field: 'total_products', header: 'COMPRAS [KG]', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true, field2: 'total_inputs', isDoubleValue: true, 
+      { field: 'total_products', header: 'COMPRAS [KG]', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true, field2: 'total_inputs', isDoubleValue: true,
         tagValue: (val: string) => val ? this.pipeNumber.transform(val, this.decimal()) : 0,
         tagColor: (val: string) => 'primary',
         tagIcon: (val: string) => '',
@@ -264,9 +266,8 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         tagColor: (val: string) => 'success',
         tagIcon: (val: string) => '',
       },
-      { field: 'sector.name', header: 'SECTOR', style:'min-width:150px;max-width:200px;', tooltip: true, isText: true },
-      { field: 'category.name', header: 'CATEGORÍA', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
-      { field: 'frequency', header: 'FRECUENCIA', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
+    //  { field: 'sector.name', header: 'SECTOR', style:'min-width:150px;max-width:200px;', tooltip: true, isText: true },
+    //  { field: 'frequency', header: 'FRECUENCIA', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
     ];
   }
 
@@ -282,7 +283,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
           { field: 'companyContacts', header: 'CONTACTO', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
           { field: 'name_contact', header: 'PERSONA NOMBRE', style:'min-width:150px;max-width:200px;', tooltip: true, isText: true },
           { field: 'cellphone_contact', header: 'PERSONA CELULAR', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
-          { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+         // { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
           { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px;', isButton: true }
         ];
       case 'B':
@@ -296,7 +297,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         return [...columns,
           { field: 'number_document', header: 'CI / NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
           { field: 'direction', header: type === 'C' ? 'ACOPIADORA MAYORISTA' : 'DIRECCIÓN ACOPIADORA MINORISTA', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
-          { field: 'mayorista', header: 'MAYOR.', style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
+          { field: 'mayorista', header: 'MAYOR.', style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
             tagValue: (val: boolean) => val ? 'SI' : 'NO',
             tagColor: (val: boolean) => val ? 'primary' : 'success',
             tagIcon: (val: boolean) => val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'
@@ -314,11 +315,11 @@ export class ProvidersComponent implements OnInit, OnDestroy {
           return [...columns,
             { field: 'full_names', header: 'EMPRESA - TALLER, NEGOCIO', style: 'min-width:150px;max-width:300px;', tooltip: true, isText: true },
             { field: 'number_document', header: 'CI / NIT', style: 'min-width:120px;max-width:120px;', tooltip: true, isText: true },
-            { field: 'direction', header: 'DIRECCIÓN - ACOPIADORA', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
+          //  { field: 'direction', header: 'DIRECCIÓN - ACOPIADORA', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
             { field: 'companyContacts', header: 'CONTACTO', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
             { field: 'name_contact', header: 'PERSONA NOMBRE', style: 'min-width:150px;max-width:200px;', tooltip: true, isText: true },
             { field: 'cellphone_contact', header: 'PERSONA CELULAR', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },
-            { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+           // { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },
             {
               field: 'mayorista', header: 'MAYOR.', style: 'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
               tagValue: (val: boolean) => val ? 'SI' : 'NO',
@@ -326,7 +327,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               tagIcon: (val: boolean) => val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'
             },
             { field: 'options', header: 'OPCIONES', style: 'min-width:130px;max-width:130px;', isButton: true }
-          ];  
+          ];
       default:
         return [];
     }

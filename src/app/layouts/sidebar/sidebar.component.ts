@@ -235,16 +235,16 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges{
               label: 'MENUITEMS.KARDEXFISICO.TEXT',
               link: '/inventories/kardex-fisico',
             },
-            {
+           /* {
               id: 30,
               name: 'KARDEX',
               action: 'view',
               label: 'MENUITEMS.KARDEXHISTORICO.TEXT',
               link: '/inventories/kardex',
-            },
+            },*/
         ]
       },
-     
+
       {
           id: 26,
           name: 'ADMINISTRACION_TITULO',
@@ -461,10 +461,10 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges{
   initialize(): void {
     const isAdmin = this.validatorsService.user()?.role == 'ADMINISTRADOR';
     if(!this.validatorsService.validateUserWithPermissions() && !isAdmin) {
-      Swal.fire({ 
-        title: 'Ops! No tienes permisos asignados', 
+      Swal.fire({
+        title: 'Ops! No tienes permisos asignados',
         text: `Indica al administrador que se te asigne`,
-        icon: 'warning', 
+        icon: 'warning',
         showClass: { popup: 'animated animate fadeInDown' },
         customClass: { container: 'swal-alert'},
       }).then(() => this.authService.logout());
@@ -486,7 +486,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges{
           subItem.view =  this.validatorsService.withPermission(subItem.name, subItem.action)
         } else {
           subItem.view = true;
-        }  
+        }
       });
     });
 
@@ -504,7 +504,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges{
     this.menuItems = this.menuItems.filter(item =>  item.view);
   }
 
-  filterTitle(name:string){ 
+  filterTitle(name:string){
     const salidas = this.menuItems.filter(resp => resp.name === name);
     const is_min_true = salidas.map(resp => resp.subItems.length > 0 ).some(resp => resp === true);
     this.menuItems.forEach(resp=> {

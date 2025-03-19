@@ -2,7 +2,7 @@
     <div class="card shadow mb-4 icon-box ">
         <div class="card-body">
             <div class="row text-center">
-                <h3 style="color: var(--bg-2665C);"><b>CONSULTA KARDEX DE EXISTENCIA "{{productSelect()?.name ?? '-'}}"</b></h3>
+                <h3 style="color: var(--bg-2665C);"><b>CONSULTA DETALLE KARDEX -</b> "{{productSelect()?.name ?? '-'}}"</h3>
             </div>
             <p-accordion [activeIndex]="1">
                 <p-accordionTab header="Filtros">
@@ -53,14 +53,14 @@
                                     <div class="row">
                                         <div class="col-12 col-sm-6">
                                             <label class="block mb-0">Area / Almacén</label>
-                                            <p-dropdown [options]="validatorsService.storages()" 
-                                              placeholder="Selecciona un almacén" 
+                                            <p-dropdown [options]="validatorsService.storages()"
+                                              placeholder="Selecciona un almacén"
                                               optionLabel="name"
                                               optionValue="id"
                                               [showClear]="true"
                                               appendTo="body" [filter]="true" filterBy="name"
                                               [virtualScrollItemSize]="38" [lazy]="true"
-                                              formControlName="id_storage" 
+                                              formControlName="id_storage"
                                               [class.ng-dirty]="validatorsService.inputValid('id_storage',formReport)"
                                             ></p-dropdown>
                                             <small *ngIf="validatorsService.inputValid('id_storage',formReport)" class="p-error block">
@@ -92,7 +92,7 @@
                         <p-splitButton *ngIf="validatorsService.withPermission('KARDEX','reports')" icon="fas fa-print" label="Imprimir" [model]="this.buttonItems" [menuStyle]="{'width':'8em'}"
                             [size]="'small'"
                             [rounded]="true"
-                            [severity]="'danger'"    
+                            [severity]="'danger'"
                             (onClick)="!loading() ? this.printPdfReport() : null" styleClass="ms-1">
                         </p-splitButton>
                         <p-button (click)="clearInputs()"
