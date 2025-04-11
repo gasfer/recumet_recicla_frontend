@@ -35,6 +35,7 @@ export class ModalSaveOutputComponent implements OnInit {
                               {name: 'COBOCE IRPA IRPA'},
                               {name: 'FANACIM'},
                               {name: 'ICE INGENIEROS'},
+                              {name: 'CIASA - SAN AURELIO'},
                             ]);
   types_destination = signal([{name: 'ARICA CHILE'},
                               {name: 'IQUIQUE CHILE'},
@@ -73,7 +74,7 @@ export class ModalSaveOutputComponent implements OnInit {
   clientSelect      = computed(() => this.outputService.clientSelect());
   totalSummary      = computed(() => this.outputService.detailSale().reduce( (sum, product) => Number(sum) + Number(product.import),0));
   types_output      = computed(() => this.outputService.types_output());
-  
+
   @Input({required: true}) id_sucursal : number | null = null;
   @Input({required: true}) id_storage : number | null = null;
   formOutput: UntypedFormGroup  = this.fb.group({
@@ -112,7 +113,7 @@ export class ModalSaveOutputComponent implements OnInit {
       number_contenedor: [null,[]],
     })
   });
-  
+
 
   ngOnInit(): void {
     this.getAllScales();
@@ -136,7 +137,7 @@ export class ModalSaveOutputComponent implements OnInit {
       price: prod.price_select!,
       total: prod.import,
       id_product: prod.id,
-      status: "ACTIVE" 
+      status: "ACTIVE"
     }));
     const { output_data, output_big} = this.formOutput.value;
     output_big.id_chauffeur = (this.formOutput.get('output_big.chauffeur')?.value)?.id;
@@ -147,10 +148,10 @@ export class ModalSaveOutputComponent implements OnInit {
     }
     this.outputService.postNewOutput(data).subscribe({
       next: (resp) => {
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Venta registrada exitosamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
@@ -182,7 +183,7 @@ export class ModalSaveOutputComponent implements OnInit {
       price: prod.price_select!,
       total: prod.import,
       id_product: prod.id,
-      status: "ACTIVE" 
+      status: "ACTIVE"
     }));
     const { output_data, output_big} = this.formOutput.value;
     output_big.id_chauffeur = (this.formOutput.get('output_big.chauffeur')?.value).id;
@@ -193,10 +194,10 @@ export class ModalSaveOutputComponent implements OnInit {
     }
     this.outputService.putUpdateOutput(this.outputService.dataOutputForEdit()!.id,data).subscribe({
       next: (resp) => {
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Venta Modificada exitosamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
@@ -234,7 +235,7 @@ export class ModalSaveOutputComponent implements OnInit {
     if(type_output != 'MENOR'){
       this.formOutput.get('output_big.chauffeur')?.setValidators([Validators.required]);
       this.formOutput.get('output_big.id_cargo_truck')?.setValidators([Validators.required]);
-      
+
     } else {
       this.formOutput.get('output_big.chauffeur')?.clearValidators();
       this.formOutput.get('output_big.id_cargo_truck')?.clearValidators();
@@ -306,7 +307,7 @@ export class ModalSaveOutputComponent implements OnInit {
       this.formOutput.get('output_data.on_account')?.setValue(total);
     }
   }
-  
+
   onShowModal() {
     this.formOutput.patchValue({
       output_data: {
@@ -319,8 +320,8 @@ export class ModalSaveOutputComponent implements OnInit {
       const on_account = output_edit?.accounts_receivable?.monto_abonado ?? 0;
       const abonos = output_edit?.accounts_receivable?.abonosAccountsReceivable;
       if(abonos && abonos.length > 1) {
-        //no podemos editar el monto abonado. asi que bloquear 
-        this.blockedOutputCredit.set(true);  
+        //no podemos editar el monto abonado. asi que bloquear
+        this.blockedOutputCredit.set(true);
       }
       const {trasport_company, ...chauffeur } = output_edit?.outputBig?.chauffeur || {};
       this.formOutput.patchValue({
@@ -360,7 +361,7 @@ export class ModalSaveOutputComponent implements OnInit {
           type_container: output_edit?.outputBig?.type_container,
           number_contenedor: output_edit?.outputBig?.number_contenedor,
         }
-      }); 
+      });
       this.selectCargoTrucks();
       this.formOutput.get('output_big.id_cargo_truck')?.setValue(output_edit?.outputBig?.id_cargo_truck);
       this.onChangeDescuento();

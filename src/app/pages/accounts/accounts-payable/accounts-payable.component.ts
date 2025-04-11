@@ -166,7 +166,7 @@ export class AccountsPayableComponent implements OnInit {
   });
   buttonItems: MenuItem[] = [
     {
-      label: 'Lista avanzada',
+      label: 'Lista pagos detallado',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D' },
       command: () => {

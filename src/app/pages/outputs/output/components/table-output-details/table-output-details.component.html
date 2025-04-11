@@ -28,8 +28,8 @@
                 <p-inputNumber
                     [style]="{'height': '38px'}"
                     [size]="5"
-                    locale="en-US" 
-                    mode="decimal" 
+                    locale="en-US"
+                    mode="decimal"
                     [minFractionDigits]="2"
                     [showButtons]="true"
                     decrementButtonClass="p-button-secondary"
@@ -40,14 +40,14 @@
                     [inputId]="product.id"
                     [(ngModel)] = "product.quantity"
                     (onInput)="updateQuantityProduct($event, product)">
-                </p-inputNumber>  
+                </p-inputNumber>
             </td>
             <td  class="text-center">
                 <p-inputNumber
                     [style]="{'height': '38px'}"
                     [size]="5"
-                    locale="en-US" 
-                    mode="decimal" 
+                    locale="en-US"
+                    mode="decimal"
                     [minFractionDigits]="decimalLength()"
                     [maxFractionDigits]="decimalLength()"
                     [showButtons]="true"
@@ -62,40 +62,40 @@
                     (onInput)="updatePriceProduct($event, product)"
                     [pTooltip]="returnPricesProduct(product)"
                     tooltipPosition="top">
-                </p-inputNumber>  
+                </p-inputNumber>
                 <!-- <select class="form-select cursor-pointer" style="min-width:90px"  [(ngModel)]="product.price_select" (change)="updatePriceProduct($event, product)">
                     <option *ngFor="let price of product.prices" value="{{price.price}}">{{price.price |  number: decimal()}}</option>
                 </select>   -->
             </td>
             <td style="min-width: 110px; max-width: 150px;">{{ product.import | number: decimal()}}</td>
             <td class="text-center" style="min-width: 60px; max-width: 60px;">
-                <p-button 
+                <p-button
                     (click)="deleteProductForDetailSale(product.id)"
-                    icon="fa-regular fa-trash-can"  
-                    styleClass="p-button-outlined p-button-sm p-button-danger p-button-rounded">
+                    icon="fa-regular fa-trash-can"
+                    styleClass="p-button-danger p-button-sm p-button-danger p-button-rounded">
                 </p-button>
             </td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
-        <tr> 
+        <tr>
             <th colspan="3" class="text-end text-white pt-1" style=" background-color: var(--bg-primary)"><h4>Total: &nbsp;</h4></th>
-            <th colspan="2" class="text-start text-white pt-1" style=" background-color: var(--bg-primary)"><h4>{{ totalSummary()  | number:decimal() }}</h4></th>         
+            <th colspan="2" class="text-start text-white pt-1" style=" background-color: var(--bg-primary)"><h4>{{ totalSummary()  | number:decimal() }}</h4></th>
         </tr>
         <tr>
             <td colspan="5" class="text-end bg-white">
-                <p-button 
+                <p-button
                     (click)="clearDetailSale()"
-                    icon="fa-solid fa-ban"  
+                    icon="fa-solid fa-ban"
                     label="Cancelar"
                     styleClass=" p-button-danger p-button-sm p-button-rounded">
                 </p-button>
-                <p-button  
-                    styleClass="ms-2 p-button-sm p-button-rounded" 
-                    label="Confirmar" 
+                <p-button
+                    styleClass="ms-2 p-button-sm p-button-primary p-button-rounded "
+                    label="Registrar Venta"
                     (click)="outputService.showModalSaveInput = true"
                     icon="fa-solid fa-floppy-disk">
-                </p-button> 
+                </p-button>
             </td>
         </tr>
     </ng-template>
