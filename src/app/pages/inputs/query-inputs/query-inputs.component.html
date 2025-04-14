@@ -28,7 +28,7 @@
                           selectionMode="range" dateFormat="dd/mm/yy" [readonlyInput]="true" inputId="range" placeholder="DD/MM/YYYY"
                           [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true">
                       </p-calendar>
-                      <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" formControlName="dates" 
+                      <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" formControlName="dates"
                           view="year" dateFormat="yy" inputId="yearpicker" [showIcon]="true" placeholder="YYYY"
                           [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
                       </p-calendar>
@@ -46,19 +46,19 @@
                   <div class="row">
                     <div class="col-12 col-sm-6">
                       <label class="block mb-1">Tipo Registro</label>
-                      <p-dropdown [options]="types_registry()" 
+                      <p-dropdown [options]="types_registry()"
                                   [showClear]="true"
-                                  placeholder="Selecciona una opción" 
+                                  placeholder="Selecciona una opción"
                                   optionLabel="name"
                                   optionValue="code"
                                   appendTo="body"
-                                  formControlName="type_registry" 
+                                  formControlName="type_registry"
                                   [class.ng-dirty]="validatorsService.inputValid('type_registry',formReport)"
                       ></p-dropdown>
                     </div>
                     <div class="col-12 col-sm-6">
                       <label class="block mb-1">Proveedor</label>
-                      <p-dropdown 
+                      <p-dropdown
                           [options]="providers()"
                           [showClear]="true"
                           formControlName="id_provider"
@@ -79,14 +79,14 @@
                   <div class="row">
                       <div class="col-12 col-sm-6">
                         <label class="block mb-0">Area / Almacén</label>
-                        <p-dropdown [options]="validatorsService.storages()" 
-                          placeholder="Selecciona un almacén" 
+                        <p-dropdown [options]="validatorsService.storages()"
+                          placeholder="Selecciona un almacén"
                           optionLabel="name"
                           optionValue="id"
                           [showClear]="true"
                           appendTo="body" [filter]="true" filterBy="name"
                           [virtualScrollItemSize]="38" [lazy]="true"
-                          formControlName="id_storage" 
+                          formControlName="id_storage"
                           [class.ng-dirty]="validatorsService.inputValid('id_storage',formReport)"
                         ></p-dropdown>
                         <small *ngIf="validatorsService.inputValid('id_storage',formReport)" class="p-error block">
@@ -101,8 +101,8 @@
           <div class="text-end">
             <p-button (click)="!loading() ? this.getAllAndSearchInputs(1,rows()) : null" styleClass="p-button-rounded p-button-sm" label="Buscar"
               icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
-            <p-splitButton *ngIf="validatorsService.withPermission('COMPRAS','reports')" icon="fas fa-print" label="Imprimir" [model]="this.buttonItems"
-              [menuStyle]="{'width':'10em'}"
+            <p-splitButton *ngIf="validatorsService.withPermission('COMPRAS','reports')" icon="fas fa-print" label="Compras totalizadas" [model]="this.buttonItems"
+              [menuStyle]="{'width':'20em'}"
               [size]="'small'"
               [rounded]="true"
               [severity]="'danger'"
@@ -116,7 +116,7 @@
         </p-accordionTab>
       </p-accordion>
     </div>
-   
+
     <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
       [activeItem]="searchItems()[0]"></p-tabMenu>
   </div>

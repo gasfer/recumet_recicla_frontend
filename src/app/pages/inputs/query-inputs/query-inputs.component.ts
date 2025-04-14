@@ -33,14 +33,19 @@ export class QueryInputsComponent implements OnInit {
   maxDate!: Date;
   buttonItems: MenuItem[] = [
     {
-      label: 'Excel',
+      label: 'Reporte Compras',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D'},
       command: () => { this.printExcelReport(); }
     },
     {
-      label: 'Resumen producto',
-      icon: 'fas fa-print',
+      label: 'Reporte Compras Detallado',
+      icon: 'fas fa-file-pdf',
+      iconStyle: { 'color': '#DC4C64'},
+      //command: () => { this.printPdfDetailsReport(); }
+    }, {
+      label: 'Resumen por producto',
+      icon: 'fas fa-file-pdf',
       iconStyle: { 'color': '#DC4C64'},
       command: () => { this.printPdfDetailsReport(); }
     },
@@ -52,7 +57,7 @@ export class QueryInputsComponent implements OnInit {
     },
   ];
   searchItems = signal<MenuItem[]>([
-    { 
+    {
       label: 'Todos', icon: 'fas fa-list',
       iconStyle: { 'color': '#FF851B'},
       command: () => {
@@ -62,7 +67,7 @@ export class QueryInputsComponent implements OnInit {
         this.getAllAndSearchInputs(1,this.rows());
       }
     },
-    { 
+    {
       label: 'Al Contado', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
@@ -72,8 +77,8 @@ export class QueryInputsComponent implements OnInit {
         this.getAllAndSearchInputs(1,this.rows());
       }
     },
-    { 
-      label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left', 
+    {
+      label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left',
       iconStyle: { 'color': '#14A44D'},
       command: () => {
         this.cols()[0].isLink = true;
@@ -83,17 +88,17 @@ export class QueryInputsComponent implements OnInit {
         this.paramsSearch().type_pay = 'CREDITO';
         this.paramsSearch().status = 'ACTIVE';
         this.getAllAndSearchInputs(1,this.rows());
-      } 
+      }
     },
-    { 
-      label: 'Anulados', icon: 'fa-solid fa-trash-can', 
+    {
+      label: 'Anulados', icon: 'fa-solid fa-trash-can',
       iconStyle: { 'color': '#DC4C64'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
         this.paramsSearch().status = 'INACTIVE';
         this.getAllAndSearchInputs(1,this.rows());
-      } 
+      }
     },
   ]);
   types_registry = computed(() => this.inputsService.types_registry());
@@ -111,7 +116,7 @@ export class QueryInputsComponent implements OnInit {
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   cols = signal<ColsTable[]>([
     { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true, footer:'TOTALES'},
-    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true, 
+    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true,
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'success',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
@@ -120,12 +125,12 @@ export class QueryInputsComponent implements OnInit {
     { field: 'date_voucher', header: 'FECHA CMP.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: `comments`, header: 'OBSERVACIONES' , style:'min-width:100px;max-width:250px;', tooltip: true, isText: true  },
-    { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
+    { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
       tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
       tagColor: (val:number)=> 'warning',
       tagIcon: (val:number)=>  'fas fa-boxes-stacked'
     },
-    { field: `total`, header: 'TOTAL' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
+    { field: `total`, header: 'TOTAL' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
       tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  'fa-solid fa-sack-dollar'
@@ -193,7 +198,7 @@ export class QueryInputsComponent implements OnInit {
       error: (err)=> this.providers.set([])
     });
   }
-  
+
   getAllAndSearchInputs(page: number, limit: number,type: string = '', query: string = '') {
     this.formReport.get('id_sucursal')?.setValue(this.validatorsService.id_sucursal());
     this.formReport.markAllAsTouched();
@@ -205,8 +210,8 @@ export class QueryInputsComponent implements OnInit {
         this.inputs.set(resp.inputs);
         this.inputs()!.data.forEach((input) => {
           input.options = input.status == 'ACTIVE'  ? [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -214,8 +219,8 @@ export class QueryInputsComponent implements OnInit {
                 this.inputsService.showModalDetailsInput = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-edit', 
+            {
+              label:'',icon:'fas fa-edit',
               tooltip: this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,7) ? 'La fecha límite de edición ha sido superada.' : 'Editar',
               disabled:  !this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,7) ? this.validatorsService.withPermission('COMPRAS','update') : false,
               class:'p-button-rounded p-button-warning p-button-sm  ms-1',
@@ -243,14 +248,14 @@ export class QueryInputsComponent implements OnInit {
                       prices: [],
                     },
                   ]);
-                }); 
+                });
                 this.inputsService.providerSelect.set(input.provider);
                 this.inputsService.dataInputForEdit.set(input);
                 this.router.navigateByUrl('/inputs/input-small');
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Imprimir',
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -258,7 +263,7 @@ export class QueryInputsComponent implements OnInit {
               }
             },
             {
-              label:'',icon:'fa-solid fa-trash-can', 
+              label:'',icon:'fa-solid fa-trash-can',
               tooltip: 'Anular',
               disabled: this.validatorsService.withPermission('COMPRAS','delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
@@ -267,8 +272,8 @@ export class QueryInputsComponent implements OnInit {
               }
             },
           ] : [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -286,7 +291,7 @@ export class QueryInputsComponent implements OnInit {
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)
     });
-    
+
   }
 
   anularInput(input: Input) {
@@ -318,10 +323,10 @@ export class QueryInputsComponent implements OnInit {
       if(!result.isConfirmed) return;
       if(result.value) {
         this.getAllAndSearchInputs(1,this.rows());
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `La compra fue anulada correctamente, Disponible en la sección de anulados`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},
         });
@@ -332,7 +337,7 @@ export class QueryInputsComponent implements OnInit {
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
       const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates} = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_registry: type_registry ? type_registry : '',
@@ -385,10 +390,10 @@ export class QueryInputsComponent implements OnInit {
       id_provider: '',
       date_range: '',
       type_pay: '',
-      status: 'ACTIVE',   
+      status: 'ACTIVE',
     });
   }
-  
+
   printPdfReport() {
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;

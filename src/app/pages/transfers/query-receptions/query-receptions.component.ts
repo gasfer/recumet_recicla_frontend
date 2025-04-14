@@ -48,17 +48,17 @@ export class QueryReceptionsComponent implements OnInit {
                 {name: 'OBS. ENVIÓ', code: 'observations_send'},
                 {name: 'OBS. RECEPCIÓN', code: 'observations_received'},
               ]);
-  
+
   searchItems = signal<MenuItem[]>([
-    { 
-      label: 'Recepciones Pendientes', icon: 'fa-solid fa-clock-rotate-left', 
+    {
+      label: 'Recepciones Pendientes', icon: 'fa-solid fa-clock-rotate-left',
       iconStyle: { 'color': '#14A44D'},
       command: () => {
         this.paramsSearch().status = 'PENDING';
         this.getAllAndSearchTransfers(1,this.rows());
-      } 
+      }
     },
-    { 
+    {
       label: 'Recepciones Aprobadas', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
@@ -112,8 +112,8 @@ export class QueryReceptionsComponent implements OnInit {
         this.transfers.set(resp.transfers);
         this.transfers()!.data.forEach((transfer) => {
           transfer.options = transfer.status == 'PENDING'  ? [
-            { 
-              label:'',icon:'fa-solid fa-thumbs-up', 
+            {
+              label:'',icon:'fa-solid fa-thumbs-up',
               tooltip: 'Aprobar',
               disabled: this.validatorsService.withPermission('RECEPCIONES','create'),
               class:'p-button-rounded p-button-secondary p-button-sm ms-1',
@@ -122,8 +122,8 @@ export class QueryReceptionsComponent implements OnInit {
                 this.transfersService.showModalConfirmationReception = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm ms-1',
               eventClick: () => {
@@ -131,8 +131,8 @@ export class QueryReceptionsComponent implements OnInit {
                 this.transfersService.showModalDetailsTransfer = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Imprimir boleta',
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-sm ms-1',
@@ -141,8 +141,8 @@ export class QueryReceptionsComponent implements OnInit {
               }
             }
           ] : [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm ms-1',
               eventClick: () => {
@@ -150,8 +150,8 @@ export class QueryReceptionsComponent implements OnInit {
                 this.transfersService.showModalDetailsTransfer = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Imprimir boleta',
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-sm ms-1',
@@ -170,7 +170,7 @@ export class QueryReceptionsComponent implements OnInit {
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
       const { filterBy, id_sucursal_send,id_sucursal_received, dates} = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         id_sucursal_received: id_sucursal_received,
@@ -283,7 +283,7 @@ export class QueryReceptionsComponent implements OnInit {
     this.cols.set([{ field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
       { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:150px;', tooltip: true, isDate: true},
       { field: 'user_send.full_names', header: 'USUARIO ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isText:true},
-      { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true, 
+      { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
         tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
         tagColor: (val:number)=> 'primary',
         tagIcon: (val:number)=>  ''
@@ -297,7 +297,7 @@ export class QueryReceptionsComponent implements OnInit {
     this.cols.set([{ field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
       { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
       { field: 'date_received', header: 'FECHA RECEPCIÓN' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
-      { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true, 
+      { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
         tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
         tagColor: (val:number)=> 'primary',
         tagIcon: (val:number)=>  ''
