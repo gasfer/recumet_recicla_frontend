@@ -25,7 +25,11 @@ export class JwtInterceptor implements HttpInterceptor {
   } 
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const reqClone = req.clone({ headers:  this.headerToken }); 
+    const encodedUrl = this.encodeUrlParams(req.url);
+    const reqClone = req.clone({
+      url: encodedUrl,
+      headers: this.headerToken
+    });
     if (req.context.get(NotUseJWT)) {
       return next.handle(req)
     }
@@ -35,5 +39,18 @@ export class JwtInterceptor implements HttpInterceptor {
         return throwError(() => err);
       }),
     )
+  }
+
+  private encodeUrlParams(url: string): string {
+    const urlParts = url.split('?');
+    if (urlParts.length > 1) {
+      const baseUrl = urlParts[0];
+      const queryParams = urlParts[1].split('&').map(param => {
+        const [key, value] = param.split('=');
+        return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+      }).join('&');
+      return `${baseUrl}?${queryParams}`;
+    }
+    return url; // Si no tiene parámetros, retorna la URL original
   }
 }
