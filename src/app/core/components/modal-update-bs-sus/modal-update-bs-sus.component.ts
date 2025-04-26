@@ -1,17 +1,19 @@
-import { Component, computed, EventEmitter, inject, Input, Output, signal, ViewChild } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { ComponentsService } from '../../services/components.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { CompaniesService } from 'src/app/pages/managements/services/companies.service';
 
 @Component({
   selector: 'app-modal-update-bs-sus',
   templateUrl: './modal-update-bs-sus.component.html',
   styles: []
 })
-export class ModalUpdateBsSusComponent {
+export class ModalUpdateBsSusComponent  {
   componentsService = inject(ComponentsService);
   validatorsService = inject(ValidatorsService);
   fb                = inject( FormBuilder );
+  companiesService  = inject(CompaniesService)
   user              = computed(() => {this.validatorsService.user()});
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
@@ -21,10 +23,9 @@ export class ModalUpdateBsSusComponent {
   @ViewChild("txtInputCambio") txtInputCambio: any;
 
   updateBsForm: FormGroup = this.fb.group({
-    actual_cambio: [6.96],
+    actual_cambio: [localStorage.getItem('actual_cambio') ? Number(localStorage.getItem('actual_cambio')) : 6.96],
     cambio: [this.cambio],
   });
-
 
   updateBsSus() {
     const newUpdate = this.newCambio();
@@ -34,7 +35,10 @@ export class ModalUpdateBsSusComponent {
 
   newCambio() : number {
     const cambio_actual = this.updateBsForm.get('actual_cambio')?.value;
-    const cambio        = this.updateBsForm.get('cambio')?.value;  
+    if(cambio_actual){
+      localStorage.setItem('actual_cambio', cambio_actual);
+    }
+    const cambio        = this.updateBsForm.get('cambio')?.value;
     const newUpdate     = Number(cambio_actual) * Number(cambio);
     this.previewCambio.set(newUpdate);
     return newUpdate;
@@ -42,6 +46,7 @@ export class ModalUpdateBsSusComponent {
 
   focusOnInput()  {
     this.updateBsForm.patchValue({
+      actual_cambio: localStorage.getItem('actual_cambio') ? Number(localStorage.getItem('actual_cambio')) : 6.96,
       cambio: this.cambio
     });
     this.txtInputCambio.input.nativeElement.focus();

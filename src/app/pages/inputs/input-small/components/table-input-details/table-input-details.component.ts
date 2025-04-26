@@ -68,14 +68,9 @@ export class TableInputDetailsComponent implements OnDestroy {
 
   showUpdateBs(cambio:number){
     if(this.product_temp()){
-      this.product_temp.update((product) => {
-        if (!product) return product;
-        return {
-          ...product,
-          costo: cambio,
-        };
-      });
-      this.inputsService.updateDetailShopping(this.product_temp()!, false);
+      const product = this.product_temp();
+      product!.costo = cambio;
+      this.inputsService.updateDetailShopping(product!, false);
       this.product_temp.set(undefined);
     }
   }
