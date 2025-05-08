@@ -37,13 +37,13 @@ export class ModalSaveInputComponent implements OnInit {
 
   formInput: UntypedFormGroup  = this.fb.group({
     id_provider: ['',[Validators.required]],
-    id_scales: ['',[Validators.required]],
+    id_scales: [1,[Validators.required]],
     id_sucursal: ['',[Validators.required]],
     id_storage: ['',[Validators.required]],
     date_voucher: [new Date(),[Validators.required]],
     registry_number: ['',[Validators.required]],
     discount: [0,[Validators.min(0),Validators.required]],
-    pay_to_credit: [false,[Validators.required]], //TRUE:CREDITO  FALSE:CONTADO
+    pay_to_credit: [true,[Validators.required]], //TRUE:CREDITO  FALSE:CONTADO
     on_account: [0,[Validators.min(0), Validators.required]],
     sumas: [0,[Validators.min(0), Validators.required]],
     total: [0,[Validators.min(0), Validators.required]],
@@ -51,7 +51,7 @@ export class ModalSaveInputComponent implements OnInit {
     comments: [null,[]],
     account_input: [null,[]],
     id_bank: [null,[]],
-    type_registry: ['',[Validators.required]],
+    type_registry: ['BOLETA',[Validators.required]],
     is_paid: [false,[Validators.required]], //si es con factura
     status: ['ACTIVE'],
   });
@@ -63,7 +63,7 @@ export class ModalSaveInputComponent implements OnInit {
 
   saveInput() {
     this.formInput.patchValue({
-      id_provider: this.providerSelect()?.id, 
+      id_provider: this.providerSelect()?.id,
       id_sucursal: this.validatorsService.id_sucursal(),
       id_storage: this.id_storage
     });
@@ -75,7 +75,7 @@ export class ModalSaveInputComponent implements OnInit {
       cost: prod.costo,
       total: prod.import,
       id_product: prod.id,
-      status: "ACTIVE" 
+      status: "ACTIVE"
     }));
     const data:NewInputForm = {
       input_data: this.formInput.value,
@@ -86,10 +86,10 @@ export class ModalSaveInputComponent implements OnInit {
         this.inputsService.showModalSaveInput = false;
         this.inputsService.resetInput();
         this.componentService.clearInputSearch$.next(true);
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Compra registrada exitosamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
@@ -112,7 +112,7 @@ export class ModalSaveInputComponent implements OnInit {
       cost: prod.costo,
       total: prod.import,
       id_product: prod.id,
-      status: "ACTIVE" 
+      status: "ACTIVE"
     }));
     const data:NewInputForm = {
       input_data: this.formInput.value,
@@ -124,10 +124,10 @@ export class ModalSaveInputComponent implements OnInit {
         this.inputsService.isEdit = false;
         this.inputsService.resetInput();
         this.componentService.clearInputSearch$.next(true);
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Compra Modificada exitosamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
@@ -187,7 +187,7 @@ export class ModalSaveInputComponent implements OnInit {
       this.formInput.get('on_account')?.setValue(total);
     }
   }
-  
+
   onShowModal() {
     this.formInput.patchValue({
       sumas: this.totalSummary(),
@@ -198,8 +198,8 @@ export class ModalSaveInputComponent implements OnInit {
       const on_account = input_edit?.accounts_payable?.monto_abonado;
       const abonos = input_edit?.accounts_payable?.abonosAccountsPayable;
       if(abonos && abonos.length > 1) {
-        //no podemos editar el monto abonado. asi que bloquear 
-        this.blockedInputCredit.set(true);  
+        //no podemos editar el monto abonado. asi que bloquear
+        this.blockedInputCredit.set(true);
       }
       this.formInput.patchValue({
         id_scales:input_edit?.id_scales,
@@ -217,8 +217,8 @@ export class ModalSaveInputComponent implements OnInit {
         type_registry:input_edit?.type_registry,
         is_paid: input_edit?.is_paid == 'true'? true : false,
         status:'ACTIVE'
-      });  
-      //this.setStoragesBySucursal(input_edit?.id_storage);  
+      });
+      //this.setStoragesBySucursal(input_edit?.id_storage);
       this.onChangeDescuento();
     }
   }
