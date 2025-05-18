@@ -221,8 +221,8 @@ export class QueryInputsComponent implements OnInit {
             },
             {
               label:'',icon:'fas fa-edit',
-              tooltip: this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,7) ? 'La fecha límite de edición ha sido superada.' : 'Editar',
-              disabled:  !this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,7) ? this.validatorsService.withPermission('COMPRAS','update') : false,
+              tooltip: this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,30) ? 'La fecha límite de edición ha sido superada.' : 'Editar',
+              disabled:  !this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,30) ? this.validatorsService.withPermission('COMPRAS','update') : false,
               class:'p-button-rounded p-button-warning p-button-sm  ms-1',
               eventClick: () => {
                 this.inputsService.resetInput();

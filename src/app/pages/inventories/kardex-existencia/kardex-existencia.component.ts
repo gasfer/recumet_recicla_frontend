@@ -107,43 +107,43 @@ export class KardexExistenciaComponent implements OnInit{
   });
   cols = signal<ColsTable[]>([
     { field: 'date', header: 'FECHA' , style:'min-width:90px;max-width:90px;', tooltip: true, isDate: true, isNotDateAndHour:true},
-    { field: `document`, header: 'N°' , style:'min-width:80px;max-width:100px;', tooltip: true,  isTag: true,
+    { field: `registry_number`, header: 'N°' , style:'min-width:80px;max-width:100px;', tooltip: true,  isTag: true,
       tagValue: (val:string)=>  val ? val : '-',
       tagColor: (val:number)=> 'success',
       tagIcon: (val:number)=>  'fa-solid fa-file'
     },
-    { field: `detallePrimary`,field2: 'detalle', header: 'DETALLE' , style:'min-width:180px;max-width:200px;', tooltip: true, isDoubleValue:true  },
+    { field: `detail`,field2: 'sub_detail', header: 'DETALLE' , style:'min-width:180px;max-width:200px;', tooltip: true, isDoubleValue:true  },
     { field: `quantity_input`, header: 'ENTRADA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
       },
     { field: `quantity_output`, header: 'SALIDA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
      },
-    { field: `quantity_saldo`, header: 'SALDO' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
+    { field: `saldo`, header: 'SALDO' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
      },
     
-    { field: `cost_u_input`, header: 'P.U.' , style:'min-width:90px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
+    { field: `cost_unitario`, header: 'P.U.' , style:'min-width:90px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
       tagValue: (val:string)=>  this.pipeNumber.transform( val != 'null' ? Number(val) : Number(0),this.decimal()),
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  'fa-solid fa-sack-dollar'
     },
     
-    { field: `cost_u_input`, header: 'ENTRADA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true,
+    { field: `cost_input`, header: 'ENTRADA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
     },
     
-    { field: `cost_u_output`, header: 'SALIDA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
+    { field: `cost_output`, header: 'SALIDA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
      },
-    { field: `cost_u_saldo`, header: 'SALDO' , style:'min-width:90px;max-width:100px;text-align: center;', tooltip: true,
+    { field: `cost_saldo`, header: 'SALDO' , style:'min-width:90px;max-width:100px;text-align: center;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
 
       },
     { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
   ]);
   fieldSort = signal('date');
-  order     = signal('ASC');
+  order     = signal('DESC');
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(params => {
@@ -163,41 +163,12 @@ export class KardexExistenciaComponent implements OnInit{
     this.kardexService.getAllAndSearchKardex(page,limit,this.paramsSearch(),type,query,this.fieldSort(),this.order()).subscribe({
       next: (resp) => {
         this.kardexes.set(resp.kardexes);
-        this.kardexes()?.data.map((resp) => {
-          const {cost_price,detallePrimary} = this.returnDetailsPrimary(resp);
-          resp.cost_price = cost_price; 
-          resp.detallePrimary = detallePrimary; 
-        })
       },
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)
     });
   }
 
-  returnDetailsPrimary(kardex:Kardex) :{cost_price:string,detallePrimary:string} {
-    let detallePrimary = '';
-    let cost_price ='';
-    if(kardex.type == 'INPUT') {
-      cost_price = `${kardex.cost_u_input}`;
-      if(kardex.detalle.includes('CLASIFICACIÓN')) {
-        detallePrimary = `${kardex.productClassified?.name ?? '-'}` 
-      } else if(kardex.detalle.includes('TRASLADO')){
-        detallePrimary = `${kardex.sucursalOriginDestination?.name ?? '-'}` 
-      } else {
-        detallePrimary = `${kardex.provider?.full_names ?? '-'}` 
-      }
-    } else {
-      cost_price = `${kardex.price_u_inicial}`;
-      if(kardex.detalle.includes('CLASIFICACIÓN')) {
-        detallePrimary = `${kardex.productClassified?.name ?? '-'}` 
-      } else if(kardex.detalle.includes('TRASLADO')){
-        detallePrimary = `${kardex.sucursalOriginDestination?.name ?? '-'}` 
-      } else {
-        detallePrimary = `${kardex?.client?.full_names ?? '-'}`;
-      }
-    }
-    return {cost_price,detallePrimary};
-  }
 
   findProduct(idProduct: number){
     this.loading.set(true);

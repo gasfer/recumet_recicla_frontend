@@ -107,7 +107,7 @@
             [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
 </form>
-<app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'"
+<app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'DESC'" [sortField]="'date'"
   [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)"
   [data]="kardexes()" [loading]="loading()">
     <tr >
