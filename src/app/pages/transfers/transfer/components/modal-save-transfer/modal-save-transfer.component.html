@@ -36,7 +36,24 @@
                     </div>
                 </div>
                 <div class="row mt-1">
-                    <div class="col-sm-12 col-12 mt-sm-0 mt-1">
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Fecha de Registro <span class="text-danger">*</span>
+                        </label>
+                        <p-calendar
+                            formControlName="date_send"
+                            appendTo="body"
+                            dateFormat="dd/mm/yy"
+                            [showIcon]="true"
+                            [showTime]="true" 
+                            [hourFormat]="'24'"
+                            [class.ng-dirty]="validatorsService.inputValid('date_send',formTransferData)">
+                        </p-calendar>
+                        <small *ngIf="validatorsService.inputValid('date_send',formTransferData)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("date_send",formTransferData) }}
+                        </small>
+                    </div>
+
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Observaciones de envió</label>
                         <textarea pInputTextarea
                             type="text"

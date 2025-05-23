@@ -97,7 +97,7 @@ export interface Output {
     id:                 number;
     cod:                string;
     voucher:            null | string;
-    date_output:        null | string;
+    date_output:        string;
     total:              string;
     type_voucher:       string;
     type_output:        string;

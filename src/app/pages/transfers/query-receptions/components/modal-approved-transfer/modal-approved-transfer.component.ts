@@ -22,6 +22,7 @@ export class ModalApprovedTransferComponent {
   approvedForm: FormGroup = this.fb.group({
     id_transfer: ['',[Validators.required]],
     id_storage_received: [ '', [Validators.required]],
+    date_received: [new Date(), [Validators.required]],
     observations_received: ['', [ Validators.max(500)]],
   });
 
@@ -43,7 +44,8 @@ export class ModalApprovedTransferComponent {
         this.transfersService.showModalConfirmationReception = false;
         this.resetModal();
         this.save$.next(true);
-      }
+      },
+      error: (err) => this.loading.set(false)
     })
     
   }
@@ -51,6 +53,7 @@ export class ModalApprovedTransferComponent {
   resetModal() {
     this.approvedForm.reset({
       id_transfer: '',
+      date_received: new Date(),
       id_storage_received: '',
       observations_received: '',
     })

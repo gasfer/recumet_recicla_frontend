@@ -79,6 +79,7 @@ export class ModalSaveOutputComponent implements OnInit {
   @Input({required: true}) id_storage : number | null = null;
   formOutput: UntypedFormGroup  = this.fb.group({
     output_data: this.fb.group({
+      date_output: [new Date(),[Validators.required]],
       voucher: ['MENOR',[Validators.required]],
       open_truck: [false,[Validators.required]],
       id_client: [null,[]],
@@ -329,6 +330,7 @@ export class ModalSaveOutputComponent implements OnInit {
           voucher: output_edit?.voucher,
           open_truck: output_edit?.outputBig?.poliza_seguro ? true : false,
           id_client: output_edit?.id_client,
+          date_output: new Date(output_edit!.date_output),
           id_scale: output_edit?.id_scale,
           id_sucursal: output_edit?.id_sucursal,
           id_storage: output_edit?.id_storage,
@@ -383,6 +385,7 @@ export class ModalSaveOutputComponent implements OnInit {
         number_registry: '',
         pay_to_credit: false,
         on_account: 0,
+        date_output: new Date(),
         sub_total: 0,
         discount: 0,
         total: 0,

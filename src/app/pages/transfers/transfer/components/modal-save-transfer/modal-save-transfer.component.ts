@@ -31,6 +31,7 @@ export class ModalSaveTransferComponent {
     total:[,[Validators.required]],
     id_sucursal_send:[,[Validators.required]],
     id_storage_send:[,[Validators.required]],
+    date_send:[new Date(),[Validators.required]],
     id_sucursal_received: [,[Validators.required]],
   });
   @Input({required: true}) id_sucursal_send : number | null = null;
@@ -90,6 +91,7 @@ export class ModalSaveTransferComponent {
     this.formTransferData.reset({
       observations_send: '',
       total:'',
+      date_send: new Date(),
       id_sucursal_send:'',
       id_storage_send:'',
       id_sucursal_received:''

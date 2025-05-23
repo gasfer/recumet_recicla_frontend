@@ -202,16 +202,37 @@
                     </div>
                 </div>
                 <div class="row mt-1">
+                    
                     <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Pago en<span class="text-danger">*</span>
-                        </label>
-                        <p-dropdown [options]="types_pay()" placeholder="Selecciona una opción" optionLabel="name"
-                            optionValue="name" appendTo="body" (onChange)="selectTypePay()" [virtualScrollItemSize]="38"
-                            [lazy]="true" formControlName="type_payment"
-                            [class.ng-dirty]="validatorsService.inputValid('output_data.type_payment',formOutput)"></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('output_data.type_payment',formOutput)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("output_data.type_payment",formOutput) }}
-                        </small>
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Fecha de Registro <span class="text-danger">*</span>
+                                </label>
+                                <p-calendar
+                                    formControlName="date_output"
+                                    appendTo="body"
+                                    dateFormat="dd/mm/yy"
+                                    [showIcon]="true"
+                                    [showTime]="true" 
+                                    [hourFormat]="'24'"
+                                    [class.ng-dirty]="validatorsService.inputValid('date_output',formOutput)">
+                                </p-calendar>
+                                <small *ngIf="validatorsService.inputValid('date_output',formOutput)" class="p-error block">
+                                    {{ validatorsService.inputValidMessage("date_output",formOutput) }}
+                                </small>
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <label class="block mb-0">Pago en<span class="text-danger">*</span>
+                                </label>
+                                <p-dropdown [options]="types_pay()" placeholder="Selecciona una opción" optionLabel="name"
+                                    optionValue="name" appendTo="body" (onChange)="selectTypePay()" [virtualScrollItemSize]="38"
+                                    [lazy]="true" formControlName="type_payment"
+                                    [class.ng-dirty]="validatorsService.inputValid('output_data.type_payment',formOutput)"></p-dropdown>
+                                <small *ngIf="validatorsService.inputValid('output_data.type_payment',formOutput)" class="p-error block">
+                                    {{ validatorsService.inputValidMessage("output_data.type_payment",formOutput) }}
+                                </small>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Observaciones</label>

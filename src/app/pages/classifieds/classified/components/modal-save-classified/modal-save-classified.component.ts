@@ -36,6 +36,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
     id_storage: ['',[Validators.required]],
     id_product: ['',[Validators.required]],
     cost_product: ['',[Validators.required]],
+    date_classified: [new Date(),[Validators.required]],
     quantity_product: ['',[Validators.required, Validators.min(0.1)]],
     type_registry: ['FICHA',[Validators.required]],
     number_registry: ['',[Validators.required]],
@@ -114,6 +115,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
       quantity_product: '',
       type_registry: 'FICHA',
       number_registry: '',
+      date_classified: new Date(),
       comments: null,
       status: 'ACTIVE',
     });
