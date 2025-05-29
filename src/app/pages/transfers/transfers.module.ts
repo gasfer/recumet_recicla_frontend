@@ -11,6 +11,7 @@ import { ModalConfigTransferComponent } from './transfer/components/modal-config
 import { ModalSaveTransferComponent } from './transfer/components/modal-save-transfer/modal-save-transfer.component';
 import { TableTransferDetailsComponent } from './transfer/components/table-transfer-details/table-transfer-details.component';
 import { ModalApprovedTransferComponent } from './query-receptions/components/modal-approved-transfer/modal-approved-transfer.component';
+import { ClassifiedsModule } from "../classifieds/classifieds.module";
 
 
 @NgModule({
@@ -27,7 +28,11 @@ import { ModalApprovedTransferComponent } from './query-receptions/components/mo
   imports: [
     CommonModule,
     TransfersRoutingModule,
-    PagesModule
+    PagesModule,
+    ClassifiedsModule
+],
+  exports: [
+    ModalViewDetailsComponent
   ]
 })
 export class TransfersModule { }

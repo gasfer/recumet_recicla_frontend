@@ -5,7 +5,7 @@ import { Input } from '../../../interfaces/input.interface';
 import { ValidatorsService } from 'src/app/services/validators.service';
 
 @Component({
-  selector: 'app-modal-view-details',
+  selector: 'app-modal-view-details-input',
   templateUrl: './modal-view-details.component.html',
   styles: []
 })

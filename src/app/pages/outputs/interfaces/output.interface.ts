@@ -1,4 +1,5 @@
 import { Options } from "src/app/core/components/interfaces/OptionsTable.interface";
+import { output } from '@angular/core';
 
 export interface OutputConfig {
     searchForCode: boolean, 
@@ -93,6 +94,11 @@ interface Totals {
     totalOutput: number,
     totalQuantity: number,
 }
+export interface GetOneOutput {
+    ok:     boolean;
+    output:  Output;
+}
+
 export interface Output {
     id:                 number;
     cod:                string;

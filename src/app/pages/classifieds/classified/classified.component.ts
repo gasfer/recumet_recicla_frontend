@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { Product } from '../../inventories/interfaces/products.interface';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-classified',
@@ -23,6 +24,7 @@ export class ClassifiedComponent implements OnInit {
   sucursalService   = inject( SucursalesService );
   authService       = inject( AuthService);
   validatorsService = inject(ValidatorsService);
+  router            = inject(Router);
 
   suggestedProducts           = signal<Product[]>([]);
   suggestedProductsClassified = signal<Product[]>([]);
@@ -88,7 +90,7 @@ export class ClassifiedComponent implements OnInit {
   }
 
   newProduct() {
-    this.productService.showModal = true;
+    this.router.navigateByUrl('/inventories/products');
   }
 
   suggestedProductClassifieds(txtSearchProduct: string){

@@ -1,3 +1,5 @@
+import { Options } from "src/app/core/components/interfaces/OptionsTable.interface";
+
 export interface GetAllKardexes {
     ok:       boolean;
     kardexes: Kardexes;
@@ -34,6 +36,8 @@ export interface Kardex {
     sucursal:        Sucursal;
     storage:         Storage;
     product:         Product;
+    options?:        Options[];
+    
 }
 
 export interface Product {

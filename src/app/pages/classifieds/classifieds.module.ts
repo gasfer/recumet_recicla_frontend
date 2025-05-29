@@ -26,8 +26,10 @@ import { AccordionModule } from 'primeng/accordion';
     CommonModule,
     ClassifiedsRoutingModule,
     PagesModule,
-    InventoriesModule,
     AccordionModule
+  ],
+  exports: [
+    ModalViewDetailsComponent
   ]
 })
 export class ClassifiedsModule { }

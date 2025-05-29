@@ -1,6 +1,6 @@
 import { EventEmitter, inject, Injectable, signal } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { FormSearchTransfers, GetAllTransfers, NewTransformForm, Transfer, TransferConfig, UpdateTransferToReceived } from '../interfaces/transfers.interface';
+import { FormSearchTransfers, GetAllTransfers, GetOneTransfer, NewTransformForm, Transfer, TransferConfig, UpdateTransferToReceived } from '../interfaces/transfers.interface';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import Swal from 'sweetalert2';
@@ -30,6 +30,11 @@ export class TransfersService {
   }
 
   constructor() { }
+
+  getTransferById(id_transfer:string): Observable<GetOneTransfer>{
+    let  url = `${base_url}/transfers/${id_transfer}`;
+    return this.http.get<GetOneTransfer>(url);
+  }
 
   getAllAndSearchTransfers(page: number, limit: number,params:FormSearchTransfers, type: string = '', query?: string, field_sort:string = 'id',order:string = 'DESC',): Observable<GetAllTransfers>{
     let url = '';

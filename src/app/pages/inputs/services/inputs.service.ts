@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, inject, signal } from '@angular/core';
-import { FormSearchInputs, GetAllInputs, Input, InputConfig, NewInputForm } from '../interfaces/input.interface';
+import { FormSearchInputs, GetAllInputs, GetOneInput, Input, InputConfig, NewInputForm } from '../interfaces/input.interface';
 import { Product } from '../../inventories/interfaces/products.interface';
 import { Provider } from '../interfaces/provider.interface';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -30,6 +30,11 @@ export class InputsService {
     viewCardProducts: localStorage.getItem('viewCardProducts') === 'true' ? true : false,
     printAfter: localStorage.getItem('printAfter') === 'false' ? false : true,
     viewMoneyButtons: localStorage?.getItem('viewMoneyButtons') === 'false' ? false : true,
+  }
+
+  getInputById(id_input:string): Observable<GetOneInput>{
+    let  url = `${base_url}/input/${id_input}`;
+    return this.http.get<GetOneInput>(url);
   }
 
   getAllAndSearchInputs(page: number, limit: number,params:FormSearchInputs, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC',): Observable<GetAllInputs>{

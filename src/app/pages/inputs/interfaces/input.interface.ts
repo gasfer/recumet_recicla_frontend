@@ -51,6 +51,10 @@ export interface GetAllInputs {
     inputs: Inputs;
 }
 
+export interface GetOneInput {
+    ok:     boolean;
+    input:  Input;
+}
 export interface Inputs {
     previousPage: null;
     currentPage:  number;

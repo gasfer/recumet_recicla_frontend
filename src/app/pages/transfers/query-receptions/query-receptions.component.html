@@ -81,5 +81,5 @@
   <app-table [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
     [data]="transfers()" [loading]="loading()" (customSort$)="customSort($event)">
   </app-table>
-  <app-modal-view-details></app-modal-view-details>
+  <app-modal-view-details-transfer></app-modal-view-details-transfer>
   <app-modal-approved-transfer [id_transfer]="id_transfer()" (save$)="this.getAllAndSearchTransfers(1,this.rows())"></app-modal-approved-transfer>

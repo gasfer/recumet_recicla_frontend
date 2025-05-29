@@ -1,5 +1,10 @@
 import { Options } from "src/app/core/components/interfaces/OptionsTable.interface";
 
+export interface GetOneTransfer {
+    ok:        boolean;
+    transfer: Transfer;
+}
+
 export interface GetAllTransfers {
     ok:        boolean;
     transfers: Transfers;

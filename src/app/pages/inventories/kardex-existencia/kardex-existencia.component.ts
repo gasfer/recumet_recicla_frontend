@@ -12,6 +12,10 @@ import { ProductsService } from '../services/products.service';
 import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { InputsService } from '../../inputs/services/inputs.service';
+import { OutputService } from '../../outputs/services/output.service';
+import { ClassifiedService } from '../../classifieds/services/classified.service';
+import { TransfersService } from '../../transfers/services/transfers.service';
 
 @Component({
   selector: 'app-kardex-existencia',
@@ -32,6 +36,10 @@ export class KardexExistenciaComponent implements OnInit{
   kardexService         = inject( KardexService );
   productService        = inject( ProductsService );
   activatedRoute        = inject( ActivatedRoute );
+  inputsService         = inject( InputsService );
+  outputService         = inject( OutputService );
+  classifiedService     = inject( ClassifiedService );
+  transfersService      = inject( TransfersService );
   providers             = signal<{name:string, code:string}[]>([]);
   loading               = signal(false);
   rows                  = signal(50);
@@ -141,6 +149,7 @@ export class KardexExistenciaComponent implements OnInit{
 
       },
     { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
+    { field: 'options', header: 'VER', style:'min-width:80px;max-width:80px', isButton:true }
   ]);
   fieldSort = signal('date');
   order     = signal('DESC');
@@ -163,6 +172,73 @@ export class KardexExistenciaComponent implements OnInit{
     this.kardexService.getAllAndSearchKardex(page,limit,this.paramsSearch(),type,query,this.fieldSort(),this.order()).subscribe({
       next: (resp) => {
         this.kardexes.set(resp.kardexes);
+         this.kardexes()!.data.forEach((kardex) => {
+          kardex.options =  [
+            {
+              label:'',icon:'fas fa-eye',
+              tooltip: 'Ver',
+              class:'p-button-rounded p-button-success p-button-sm',
+              eventClick: () => {
+                Swal.fire({
+                  title: 'Estamos cargando los datos',
+                  html: 'Un momento, por favor.',
+                  didOpen: () => {
+                    console.log(kardex);
+                    
+                    Swal.showLoading();
+                    new Promise((resolve, reject) => {
+                      switch (kardex.type_movement) {
+                        case 'INPUT':
+                            this.inputsService.getInputById(kardex.id_movement).subscribe({
+                              next: (resp) => {
+                                this.inputsService.detailsSubs$.next(resp.input);
+                                this.inputsService.showModalDetailsInput = true;
+                                Swal.close();
+                              },
+                              error: (err) => Swal.close()
+                            })
+                          break;
+                        case 'OUTPUT':
+                          this.outputService.getOutputById(kardex.id_movement).subscribe({
+                            next: (resp) => {
+                              this.outputService.detailsSubs$.next(resp.output);
+                              this.outputService.showModalDetailsInput = true;
+                              Swal.close();
+                            },
+                            error: (err) => Swal.close()
+                          });  
+                          break; 
+                        case 'CLASIFIED':   
+                          this.classifiedService.getClassifiedById(kardex.id_movement).subscribe({
+                            next: (resp) => {
+                              this.classifiedService.detailsSubs$.next(resp.classified);
+                              this.classifiedService.showModalDetailsClassified = true;
+                              Swal.close();
+                            },
+                            error: (err) => Swal.close()
+                          });
+                          break;
+                        case 'TRANSFER':   
+                          this.transfersService.getTransferById(kardex.id_movement).subscribe({
+                            next: (resp) => {
+                              this.transfersService.detailsSubs$.next(resp.transfer);
+                              this.transfersService.showModalDetailsTransfer = true;
+                              Swal.close();
+                            },
+                            error: (err) => Swal.close()
+                          });
+                          break;   
+                        default:
+                          break;
+                      }
+                    });
+                  },
+                });
+                
+              }
+            }
+          ]
+        });
       },
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)

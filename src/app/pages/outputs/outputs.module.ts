@@ -28,6 +28,9 @@ import { ModalViewDetailsComponent } from './query-outputs/components/modal-view
     CommonModule,
     OutputsRoutingModule,
     PagesModule
+  ],
+  exports: [
+    ModalViewDetailsComponent
   ]
 })
 export class OutputsModule { }

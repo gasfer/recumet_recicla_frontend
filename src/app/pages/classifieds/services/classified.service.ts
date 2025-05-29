@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, inject, signal } from '@angular/core';
 import { Product } from '../../inventories/interfaces/products.interface';
 import { OutputConfig } from '../../outputs/interfaces/output.interface';
-import { Classified, FormSearchClassified, GetAllClassifieds, NewClassifiedForm } from '../interfaces/classified.interface';
+import { Classified, FormSearchClassified, GetAllClassifieds, GetOneClassified, NewClassifiedForm } from '../interfaces/classified.interface';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -28,6 +28,11 @@ export class ClassifiedService {
   private http   = inject(HttpClient);
   detailsSubs$: EventEmitter<Classified> = new EventEmitter<Classified>();
 
+
+  getClassifiedById(id_classified:string): Observable<GetOneClassified>{
+    let  url = `${base_url}/classified/${id_classified}`;
+    return this.http.get<GetOneClassified>(url);
+  }
 
   getAllAndSearchClassifieds(page: number, limit: number,params:FormSearchClassified, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllClassifieds>{
     let url = '';

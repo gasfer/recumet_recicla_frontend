@@ -37,5 +37,8 @@ import { AccordionModule } from 'primeng/accordion';
     ChipModule,
     AccordionModule,
   ],
+  exports: [
+    ModalViewDetailsComponent
+  ]
 })
 export class InputsModule {}
