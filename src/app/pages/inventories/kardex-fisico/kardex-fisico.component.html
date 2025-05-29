@@ -138,9 +138,9 @@
             [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
 </form>
-<app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.cod'"
+<app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.category.name'"
   [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)"
-  [data]="kardexes()" [loading]="loading()">
+  [data]="kardexes()" [loading]="loading()" [groupRowsBy]="'product.category.name'">
   <tr >
     <th  colspan="3"></th>
     <th style="background-color: var(--bg-primary)"  colspan="5"  class="text-center text-white">FÍSICO</th>

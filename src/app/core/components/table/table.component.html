@@ -7,6 +7,8 @@
     sortMode="single" (onLazyLoad)="customSort($event)" [lazy]="isCustomSort" 
     currentPageReportTemplate="Mostrando del {first} al {last} total de {totalRecords}" 
     [rowsPerPageOptions]="[10, 50, 100, 200, 500]"
+    rowGroupMode="subheader" 
+    [groupRowsBy]="groupRowsBy" 
     [globalFilterFields]="stringSearch"> 
 <ng-template *ngIf="includeSearch" pTemplate="caption">
     <div class="text-center">
@@ -40,6 +42,15 @@
         </th>
     </tr>
 </ng-template>
+
+<ng-template *ngIf="groupRowsBy" pTemplate="groupheader" let-rowData let-columns="columns">
+  <tr *ngIf="!loading" pRowGroupHeader class="group-header-row">
+     <td [attr.colspan]="columns.length">
+    {{ getGroupValue(rowData) }}
+    </td>
+  </tr>
+</ng-template>
+
 <ng-template pTemplate="body" let-rowData let-columns="columns">
 <tr  *ngIf="!loading">
     <td *ngFor="let col of columns"

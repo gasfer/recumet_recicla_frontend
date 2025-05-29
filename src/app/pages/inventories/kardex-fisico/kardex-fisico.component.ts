@@ -100,7 +100,7 @@ export class KardexFisicoComponent {
      },
     { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
   ]);
-  fieldSort = signal('product.cod');
+  fieldSort = signal('product.category.name');
   order     = signal('ASC');
 
   ngOnInit(): void {

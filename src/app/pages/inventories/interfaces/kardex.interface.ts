@@ -1,4 +1,5 @@
 import { Options } from "src/app/core/components/interfaces/OptionsTable.interface";
+import { Category } from "./categories.interface";
 
 export interface GetAllKardexes {
     ok:       boolean;
@@ -48,6 +49,7 @@ export interface Product {
     inventariable: boolean;
     img:           null | string;
     unit:          Unit;
+    category:      Pick<Category, 'name'> ;
 }
 
 export interface Unit {

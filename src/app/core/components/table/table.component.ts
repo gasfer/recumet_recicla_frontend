@@ -41,12 +41,21 @@ import { ValidatorsService } from 'src/app/services/validators.service';
         bottom: 0;
         z-index: 2; /* Para mantenerlo visible */
     }
+
+    .group-header-row {
+      background-color: #e0f2fe; /* Azul claro */
+      font-weight: bold;
+      color: #1e3a8a; /* Azul oscuro para texto */
+      border-bottom: 1px solid #bae6fd; /* Línea inferior decorativa */
+      padding: 8px;
+    }
   `]
 })
 export class TableComponent implements OnInit, OnDestroy, OnChanges {
   @Input() cols: ColsTable[] = [];
   @Input() searchFor: SearchFor[] = []; 
   @Input() searchTxt: string = ''; 
+  @Input() groupRowsBy: string = ''; 
   @Input() data!: any;
   @Input() loading: boolean = true;
   @Input() isCustomSort: boolean = true;
@@ -191,5 +200,8 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
     } catch (error) {
       return value;
     }
+  }
+  getGroupValue(rowData: any): any {
+    return this.groupRowsBy.split('.').reduce((obj, key) => obj?.[key], rowData);
   }
 }
