@@ -114,7 +114,7 @@ export class KardexExistenciaComponent implements OnInit{
     id_product: ['']
   });
   cols = signal<ColsTable[]>([
-    { field: 'date', header: 'FECHA' , style:'min-width:90px;max-width:90px;', tooltip: true, isDate: true, isNotDateAndHour:true},
+    { field: 'date', header: 'FECHA' , style:'min-width:100px;max-width:100px;', tooltip: true, isDate: true},
     { field: `registry_number`, header: 'N°' , style:'min-width:80px;max-width:100px;', tooltip: true,  isTag: true,
       tagValue: (val:string)=>  val ? val : '-',
       tagColor: (val:number)=> 'success',
@@ -148,7 +148,7 @@ export class KardexExistenciaComponent implements OnInit{
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
 
       },
-    { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
+    // { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
     { field: 'options', header: 'VER', style:'min-width:80px;max-width:80px', isButton:true }
   ]);
   fieldSort = signal('date');
@@ -159,6 +159,10 @@ export class KardexExistenciaComponent implements OnInit{
       const {p:id_product} = params;
       this.findProduct(id_product);
     })
+    const storagesList = this.validatorsService.storages();
+    if (storagesList.length > 0) {
+      this.formReport.patchValue({ id_storage: storagesList[0].id });
+    }
     this.getAllProviders();
   }
 

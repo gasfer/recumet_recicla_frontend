@@ -98,7 +98,7 @@ export class KardexFisicoComponent {
     { field: `quantity_saldo`, header: 'SALDO' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true ,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
      },
-    { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
+    // { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
   ]);
   fieldSort = signal('product.category.name');
   order     = signal('ASC');
