@@ -33,7 +33,7 @@ export class InputsService {
   }
 
   getInputById(id_input:string): Observable<GetOneInput>{
-    let  url = `${base_url}/input/${id_input}`;
+    let  url = `${base_url}/input/find/${id_input}`;
     return this.http.get<GetOneInput>(url);
   }
 
