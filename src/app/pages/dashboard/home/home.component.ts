@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit {
     {
       class: 'card p-card', icon: 'fas fa-clipboard-list',
       view: this.validatorsService.withPermission('KARDEX','view'),
-      title: 'KARDEX', linkRedirect: '/inventories/kardex',
+      title: 'INVENTARIO', linkRedirect: '/inventories/kardex-fisico',
     },
 
   ]);
