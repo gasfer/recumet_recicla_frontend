@@ -36,7 +36,7 @@ export class OutputService {
   constructor() { }
 
   getOutputById(id_output:string): Observable<GetOneOutput>{
-    let  url = `${base_url}/output/${id_output}`;
+    let  url = `${base_url}/output/find/${id_output}`;
     return this.http.get<GetOneOutput>(url);
   }
 

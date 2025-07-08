@@ -32,7 +32,7 @@ export class TransfersService {
   constructor() { }
 
   getTransferById(id_transfer:string): Observable<GetOneTransfer>{
-    let  url = `${base_url}/transfers/${id_transfer}`;
+    let  url = `${base_url}/transfers/find/${id_transfer}`;
     return this.http.get<GetOneTransfer>(url);
   }
 
