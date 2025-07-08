@@ -30,7 +30,7 @@ export class ClassifiedService {
 
 
   getClassifiedById(id_classified:string): Observable<GetOneClassified>{
-    let  url = `${base_url}/classified/${id_classified}`;
+    let  url = `${base_url}/classified/find/${id_classified}`;
     return this.http.get<GetOneClassified>(url);
   }
 
