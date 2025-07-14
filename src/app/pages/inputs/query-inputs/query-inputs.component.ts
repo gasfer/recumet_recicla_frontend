@@ -143,8 +143,8 @@ export class QueryInputsComponent implements OnInit {
     { field: 'options', header: 'OPCIONES', style:'min-width:170px;max-width:170px', isButton:true }
   ]);
   searchFor = signal<SearchFor[]>([
-    {name: 'CÓDIGO', code: 'cod'},
     {name: 'NUMBER DOC.', code: 'registry_number'},
+    {name: 'CÓDIGO', code: 'cod'},
     {name: 'COMENTARIOS', code: 'comments'},
     {name: 'BALANZA', code: 'scale.name'},
     {name: 'USUARIO', code: 'user.full_names'},
