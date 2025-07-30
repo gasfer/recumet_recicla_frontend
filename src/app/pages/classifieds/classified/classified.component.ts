@@ -72,7 +72,7 @@ export class ClassifiedComponent implements OnInit {
   }
 
   selectProduct(product: Product) {
-    if(product.total_stock! < 1) {
+    if(product.total_stock! < 0.1) {
       Swal.fire({ 
         title: 'Ops, Stock insuficiente', 
         text: `${product.name} no tiene stock, prueba con otra sucursal o almacén.`,
