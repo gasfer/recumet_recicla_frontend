@@ -4,6 +4,8 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { Sucursal } from 'src/app/pages/managements/interfaces/sucursales.interface';
+import { SucursalesService } from 'src/app/pages/managements/services/sucursales.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +21,8 @@ export class LoginComponent implements OnInit {
   typeInputPassword = signal('password');
   loading           = signal(false);
   year              = signal(new Date().getFullYear()); 
+  sucursales  = signal<Sucursal[]>([]);
+  sucursalService   = inject(SucursalesService);
 
   loginForm: FormGroup = this.fb.group({
     email: [localStorage.getItem('email') || '', [ Validators.required, Validators.pattern(this.validatorsService.emailPattern())]],
@@ -27,7 +31,6 @@ export class LoginComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    localStorage.removeItem('id_sucursal');
   }
   
   login(): void {
@@ -44,8 +47,7 @@ export class LoginComponent implements OnInit {
           localStorage.removeItem('saveEmail');
         }
         this.loading.set(false);
-        Swal.fire('BIENVENIDO',resp.user.full_names,'success');
-        this.router.navigateByUrl('/');
+        this.getAllSucursales();
       },
       error:(err) =>{
         this.loading.set(false);
@@ -65,4 +67,50 @@ export class LoginComponent implements OnInit {
       this.typeInputPassword.set('password');
     }
   }
+
+  getAllSucursales() {
+      this.sucursalService.getAllAndSearch(1,100,true).subscribe({
+        next: (resp) => {
+          this.sucursales.set(resp.sucursales.data);
+          if(this.authService.getUser.role != 'ADMINISTRADOR'){
+            const sucursalesTemp = this.sucursales();
+            this.sucursales.set(sucursalesTemp.filter((sucursal: Sucursal) =>
+              this.authService.getUser?.assign_sucursales!.some((resp) => sucursal.id === resp.id_sucursal)
+            ));
+          }
+          //show set sucursal
+          const sucursales = this.sucursales();
+          const id_sucursal_old = localStorage.getItem('id_sucursal');
+          // Generar opciones con `selected` en la opción guardada
+          const htmlOptions = sucursales
+            .map(s => {
+              const selected = s.id?.toString() === id_sucursal_old ? 'selected' : '';
+              return `<option value="${s.id}" ${selected}>${s.name}</option>`;
+            })
+            .join('');
+          Swal.fire({
+            title: 'BIENVENIDO, Selecciona una sucursal',
+            icon: 'success',
+            html: `
+              <select id="sucursalSelect" class="swal2-input">
+                ${htmlOptions}
+              </select>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            preConfirm: () => {
+              const selectEl = document.getElementById('sucursalSelect') as HTMLSelectElement;
+              const selected = selectEl?.value;
+              return selected;
+            }
+          }).then(result => {
+            const selectedId = result.value;
+            const selectedSucursal = sucursales.find(s => s.id == selectedId);
+            localStorage.setItem('id_sucursal', selectedSucursal?.id!.toString() || '0');
+            this.validatorsService.reload_sucursal_storages$.next(true);
+            this.router.navigateByUrl('/');
+          });
+        },
+      });
+    }
 }
