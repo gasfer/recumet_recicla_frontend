@@ -80,7 +80,7 @@ export class InputsService {
         return details.map((prod) => {
           if (prod.id !== product.id) return prod;
           if (updateQuantity) {
-            prod.quantity = newQuantity ? product.quantity : prod.quantity + 1;
+            prod.quantity = newQuantity ? product.quantity : prod.quantity + (prod.set_quantity ??  1);
           }
           prod.import = prod.quantity * prod.costo;
           return prod;

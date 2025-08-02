@@ -36,31 +36,43 @@
                 </div>
             </div>
         </div>
-        <p-scrollPanel *ngIf="!loading()" [style]="{width: '100%', height: '400px'}">
+        <p-scrollPanel *ngIf="!loading()" [style]="{width: '100%', height: '450px'}">
             <div class="container mt-2">
                 <div class="row">
                     <div *ngFor="let product of products()"
                         class="col-12 col-sm-6 col-md-6 col-lg-4 animated animate zoomIn mt-0">
-                        <div class="card cardProduct" (click)="addListDetailPos(product)">
-                            <div class="image-container d-flex justify-content-center text-center container-fluid">
-                                <img class="card-img img-fluid" [src]="product.img | image:'products'"
-                                    alt="{{product.name}}">
-                            </div>
-                            <div class="card-img-overlay d-flex justify-content-end">
-                                <p-badge value="{{product.unit.siglas}}"></p-badge>
+                        <div class="card cardProduct" >
+                            <div (click)="addListDetailPos(product)">
+                                <div class="image-container d-flex justify-content-center text-center container-fluid">
+                                    <img class="card-img img-fluid" [src]="product.img | image:'products'"
+                                        alt="{{product.name}}">
+                                </div>
+                                <div class="card-img-overlay d-flex justify-content-end">
+                                    <p-badge value="{{product.unit.siglas}}"></p-badge>
+                                </div>
                             </div>
                             <div class="card-body mt-1 pt-1 m-2 p-2">
-                                <h6 class="m-0 p-0">{{ product.name}}</h6>
-                                <p class="card-text p-0"><b>{{ product.cod}} </b>- {{product.description | slice:0:150}}</p>
+                                <h6 (click)="addListDetailPos(product)" class="m-0 p-0">{{ product.name}}</h6>
+                                <p (click)="addListDetailPos(product)" class="card-text p-0"><b>{{ product.cod}} </b>- {{product.description | slice:0:150}}</p>
                                 <div class="buy">
-                                    <p-badge *ngIf="!isViewPrice" severity="success"
+                                    <p-badge (click)="addListDetailPos(product)" *ngIf="!isViewPrice" severity="success"
                                         value="Costo: {{ product.costo | number: decimal()}}"></p-badge>
-                                    <p-badge *ngIf="isViewPrice" severity="success"
+                                    <p-badge (click)="addListDetailPos(product)" *ngIf="isViewPrice" severity="success"
                                         value="Precio: {{ product.prices[0].price | number: decimal()}}"></p-badge>
-                                    <p-badge *ngIf="isViewQuantity"
+                                    <p-badge (click)="addListDetailPos(product)" *ngIf="isViewQuantity"
                                         value="Stock: {{product.total_stock  | number: decimal()}}"
                                         [severity]="product.total_stock === 0 ? 'danger' : 'primary'">
                                     </p-badge>
+                                    @if(typeFrom === 'INPUT') {
+                                        <div class="row mt-2">
+                                            <div class="col-1">
+                                                <p-button icon="fa-solid fa-arrow-left"  (click)="addListDetailPosQuantity(product)" [rounded]="true" [outlined]="true" severity="success" />
+                                            </div>
+                                            <div class="col ms-3 me-1">
+                                                <input type="number" [(ngModel)]="product.set_quantity" (keydown.enter)="addListDetailPosQuantity(product)"  min="0" max="99999999999" class="form-control form-control-sm mt-1">
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>

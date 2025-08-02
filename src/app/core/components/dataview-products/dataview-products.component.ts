@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
-import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { CategoriesService } from 'src/app/pages/inventories/services/categories.service';
 import { ProductsService } from 'src/app/pages/inventories/services/products.service';
@@ -23,6 +23,7 @@ export class DataviewProductsComponent implements OnInit {
   @Input() id_sucursal: string = '';
   @Input() id_storage : string = '';
   @Input() isInput : boolean = false;
+  @Input() typeFrom : ''|'INPUT' | 'OUTPUT' = '';
   products          = signal<Product[]>([]);
   categories        = signal<{name:string,code:string}[]>([]);
   productsService   = inject(ProductsService);
@@ -37,6 +38,7 @@ export class DataviewProductsComponent implements OnInit {
   decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
 
   @Output() onProductSelect: EventEmitter<Product> = new EventEmitter();
+  @Output() onProductSelectQuantity: EventEmitter<{product:Product,quantity: number}> = new EventEmitter();
   @Output() onProductByCod: EventEmitter<Product> = new EventEmitter();
 
   ngOnInit(): void {
@@ -105,6 +107,12 @@ export class DataviewProductsComponent implements OnInit {
   
 
   addListDetailPos(product: Product) {
+    product.set_quantity = 1;
+    this.onProductSelect.next(product);
+  }
+
+   addListDetailPosQuantity(product: Product) {
+    if(!product.set_quantity) product.set_quantity = 1;
     this.onProductSelect.next(product);
   }
 

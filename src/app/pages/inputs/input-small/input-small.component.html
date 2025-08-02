@@ -137,6 +137,7 @@
     
     <div *ngIf="inputsService._inputConfig.viewCardProducts" class="col-sm-12 col-md-5">
         <app-dataview-products  
+            [typeFrom]="'INPUT'"
             [isInput]="true"
             [isViewQuantity]="true" 
             [id_sucursal]="formReport.get('id_sucursal')?.value" 
