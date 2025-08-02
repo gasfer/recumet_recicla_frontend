@@ -88,8 +88,8 @@ export class InputsService {
       });
     } else {
       //primera agregación al carrito
-      product.quantity = 1;
-      product.import = product.costo;
+      product.quantity = product.set_quantity ??  1;
+      product.import = product.quantity * product.costo;
       this.detailShopping.update((details) => [
         ...details,
         product,
