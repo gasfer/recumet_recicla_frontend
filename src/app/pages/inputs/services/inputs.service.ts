@@ -21,7 +21,7 @@ export class InputsService {
   isEdit: boolean = false;
   editSubs$: EventEmitter<Input> = new EventEmitter<Input>();
   detailsSubs$: EventEmitter<Input> = new EventEmitter<Input>();
-  types_registry = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
+  types_registry = signal([{name: 'SIN FICHA', code: 'SIN FICHA'},{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
   private http   = inject(HttpClient);
 
   public _inputConfig : InputConfig = {

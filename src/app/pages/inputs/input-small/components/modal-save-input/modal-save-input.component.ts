@@ -41,7 +41,7 @@ export class ModalSaveInputComponent implements OnInit {
     id_sucursal: ['',[Validators.required]],
     id_storage: ['',[Validators.required]],
     date_voucher: [new Date(),[Validators.required]],
-    registry_number: ['',[Validators.required]],
+    registry_number: ['',[]],
     discount: [0,[Validators.min(0),Validators.required]],
     pay_to_credit: [true,[Validators.required]], //TRUE:CREDITO  FALSE:CONTADO
     on_account: [0,[Validators.min(0), Validators.required]],
@@ -241,7 +241,7 @@ export class ModalSaveInputComponent implements OnInit {
       comments: null,
       account_input: null,
       id_bank: null,
-      type_registry:'',
+      type_registry:'BOLETA',
 
       is_paid: false,
       status:'ACTIVE'
