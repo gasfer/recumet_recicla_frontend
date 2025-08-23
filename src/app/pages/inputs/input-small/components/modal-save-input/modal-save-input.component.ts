@@ -189,6 +189,7 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   onShowModal() {
+    Swal.close();
     this.formInput.patchValue({
       sumas: this.totalSummary(),
       total: this.totalSummary()
@@ -227,7 +228,7 @@ export class ModalSaveInputComponent implements OnInit {
   resetModal() {
     this.formInput.reset({
       id_provider: '',
-      id_scales: '',
+      id_scales: 1,
       id_sucursal: '',
       id_storage: '',
       date_voucher: new Date(),
@@ -237,7 +238,7 @@ export class ModalSaveInputComponent implements OnInit {
       on_account: 0,
       sumas: 0,
       total: 0,
-      pay_to_credit: false,
+      pay_to_credit: true,
       comments: null,
       account_input: null,
       id_bank: null,
