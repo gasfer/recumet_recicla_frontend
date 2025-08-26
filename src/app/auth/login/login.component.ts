@@ -105,6 +105,10 @@ export class LoginComponent implements OnInit {
             }
           }).then(result => {
             const selectedId = result.value;
+            if(!selectedId){
+              this.authService.logout();
+              return;
+            }
             const selectedSucursal = sucursales.find(s => s.id == selectedId);
             localStorage.setItem('id_sucursal', selectedSucursal?.id!.toString() || '0');
             this.validatorsService.reload_sucursal_storages$.next(true);
