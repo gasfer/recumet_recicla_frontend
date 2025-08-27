@@ -41,7 +41,7 @@ export class ModalSaveInputComponent implements OnInit {
     id_sucursal: ['',[Validators.required]],
     id_storage: ['',[Validators.required]],
     date_voucher: [new Date(),[Validators.required]],
-    registry_number: ['',[]],
+    registry_number: ['',[Validators.required]],
     discount: [0,[Validators.min(0),Validators.required]],
     pay_to_credit: [true,[Validators.required]], //TRUE:CREDITO  FALSE:CONTADO
     on_account: [0,[Validators.min(0), Validators.required]],
@@ -222,6 +222,17 @@ export class ModalSaveInputComponent implements OnInit {
       //this.setStoragesBySucursal(input_edit?.id_storage);
       this.onChangeDescuento();
     }
+  }
+
+  selectTypeRegistry() {
+    const type_registry = this.formInput.get('type_registry')?.value;
+    this.formInput.patchValue({registry_number: ''});
+    if(type_registry == 'SIN FICHA') {
+      this.formInput.get('registry_number')?.setValidators([]);
+    } else {
+      this.formInput.get('registry_number')?.setValidators([Validators.required]);
+    }
+    this.formInput.get('registry_number')?.updateValueAndValidity();
   }
 
 

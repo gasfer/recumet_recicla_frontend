@@ -97,6 +97,7 @@
                                   optionLabel="name"
                                   optionValue="code"
                                   appendTo="body"
+                                  (onChange)="selectTypeRegistry()"
                                   formControlName="type_registry"
                                   [class.ng-dirty]="validatorsService.inputValid('type_registry',formInput)"
                                 ></p-dropdown>
