@@ -12,7 +12,7 @@ import { Product } from 'src/app/pages/inventories/interfaces/products.interface
 export class TableTransferDetailsComponent  {
   transfersService     = inject( TransfersService );
   validatorsService    = inject( ValidatorsService );
-  totalSummary         = computed(() => this.transfersService.detailTransfer().reduce( (sum, product) => Number(sum) + Number(product.import),0));
+  totalSummary         = computed(() => this.transfersService.detailTransfer().reduce( (sum, product) => Number(sum) + Number(product.quantity),0));
   decimalLength        = signal(this.validatorsService.decimalLength());
   decimal              = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
 

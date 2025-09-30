@@ -15,7 +15,7 @@ export class ModalViewDetailsComponent implements OnInit, OnDestroy{
   transfer          = signal<Transfer|undefined>(undefined);
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
-  totalQuantityItems= computed(() => this.transfer()?.detailsTransfers.reduce( (sum, product) => Number(sum) + Number(product.cost),0));
+  totalQuantityItems= computed(() => this.transfer()?.detailsTransfers.reduce( (sum, product) => Number(sum) + Number(product.quantity),0));
 
   ngOnInit(): void {
     this.viewDetailsSub$ = this.transfersService.detailsSubs$.subscribe(transfer => {

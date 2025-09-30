@@ -20,17 +20,12 @@
                     </div>
                     <div class="col-sm-6 col-12">
                         <div class="row">
+                            
                             <div class="col-sm-6 col-12">
-                                <label class="block mb-0">Total</label><br>
-                                <p-tag [rounded]="true"
-                                    [icon]="'fa-solid fa-comments-dollar'"
-                                    value="{{totalSummary() | number:decimal()}}"></p-tag>
-                            </div>
-                            <div class="col-sm-6 col-12">
-                                <label class="block mb-0">Productos</label><br>
+                                <label class="block mb-0">Cantidad Productos</label><br>
                                 <p-tag [rounded]="true" [severity]="'success'"
                                     [icon]="'fa-solid fa-tag'"
-                                    value="{{totalItems()}}"></p-tag>
+                                    value="{{totalSummaryItems() | number:decimal() }}"></p-tag>
                             </div>
                         </div>
                     </div>
@@ -69,6 +64,57 @@
                             {{ validatorsService.inputValidMessage("observations_send",formTransferData) }}
                         </small>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                        <label class="block mb-0">Balanza:<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="scalas()"
+                        placeholder="Selecciona una opción"
+                        optionLabel="name"
+                        optionValue="id"
+                        appendTo="body"
+                        selected="1"
+                        formControlName="id_scales"
+                        [class.ng-dirty]="validatorsService.inputValid('id_scales',formTransferData)"
+                        ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('id_scales',formTransferData)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("id_scales",formTransferData) }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Tipo Pesaje<span class="text-danger">*</span></label>
+                        <p-dropdown [options]="types_registry()"
+                            placeholder="Selecciona una opción"
+                            optionLabel="name"
+                            optionValue="code"
+                            appendTo="body"
+                            formControlName="type_registry"
+                            [class.ng-dirty]="validatorsService.inputValid('type_registry',formTransferData)"
+                            (onChange)="selectTypeRegistry()"
+                            ></p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('type_registry',formTransferData)" class="p-error block">
+                            {{ validatorsService.inputValidMessage("type_registry",formTransferData) }}
+                        </small>
+                    </div>
+                    @if (formTransferData.get('type_registry')?.value != 'SIN FICHA') {
+                        <div class="col-sm-6 col-12 animated fadeInDown">
+                            <label class="block mb-0">Nro. Pesaje</label>
+                            <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                                formControlName="registry_number" placeholder="EJ. 0001"
+                                [pKeyFilter]="validatorsService.expRegValidInput"
+                                [class.ng-dirty]="validatorsService.inputValid('registry_number',formTransferData)"
+                            />
+                            <small *ngIf="validatorsService.inputValid('registry_number',formTransferData)" class="p-error block">
+                                {{ validatorsService.inputValidMessage("registry_number",formTransferData) }}
+                            </small>
+                        </div>
+                    } @else {
+                        <div class="col-sm-6 col-12 animated fadeInDown mt-2">
+                            <small class="block">
+                                {{ "El número se generará automáticamente al guardar el traslado." }}
+                            </small>
+                        </div>
+                    }
                 </div>
             </div> 
         </div> 

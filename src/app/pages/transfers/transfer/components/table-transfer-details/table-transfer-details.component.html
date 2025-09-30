@@ -11,16 +11,14 @@
 <p-table *ngIf="transfersService.detailTransfer().length !== 0" [value]="transfersService.detailTransfer()" styleClass="p-datatable-sm" responsiveLayout="scroll">
     <ng-template pTemplate="header">
         <tr>
-            <th class="text-white" style="min-width: 120px; max-width: 200px; background-color: var(--bg-primary)">Producto</th>
+            <th class="text-white" style="min-width: 120px; max-width: 300px; background-color: var(--bg-primary)">Producto</th>
             <th class="text-white text-center" style=" background-color: var(--bg-primary);">Cantidad</th>
-            <th class="text-white text-center" style=" background-color: var(--bg-primary)">Costo</th>
-            <th class="text-white" style="min-width: 110px; max-width: 150px; background-color: var(--bg-primary)">Importe</th>
             <th class="text-white text-center" style="min-width: 60px; max-width: 60px;  background-color: var(--bg-primary)">Quitar</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product>
         <tr>
-            <td style="min-width: 120px;  max-width: 200px; ">
+            <td style="min-width: 120px;  max-width: 300px; ">
                 <h5 class="m-0 p-0">{{product.name}}</h5>
                 <p style="font-size: 10px;" class="text-muted">{{product.description}} <br *ngIf="product.description"> <span class="text-black">{{product.cod}} / {{product.category.name}} / {{product.unit.name}}</span></p>
             </td>
@@ -42,8 +40,6 @@
                     (onInput)="updateQuantityProduct($event, product)">
                 </p-inputNumber>
             </td>
-            <td style="min-width: 110px; max-width: 150px; text-align: center;">{{ product.costo | number: decimal()}}</td>
-            <td style="min-width: 110px; max-width: 150px;">{{ product.import | number: decimal()}}</td>
             <td class="text-center" style="min-width: 60px; max-width: 60px;">
                 <p-button
                     (click)="deleteProductForDetailSale(product.id)"
@@ -55,11 +51,12 @@
     </ng-template>
     <ng-template pTemplate="footer">
         <tr>
-            <th colspan="3" class="text-end text-white pt-1" style=" background-color: var(--bg-primary)"><h4>Total: &nbsp;</h4></th>
-            <th colspan="2" class="text-start text-white pt-1" style=" background-color: var(--bg-primary)"><h4>{{ totalSummary()  | number:decimal() }}</h4></th>
+            <th colspan="1" class="text-end text-white pt-1" style=" background-color: var(--bg-primary)"><h4>Total: &nbsp;</h4></th>
+            <th colspan="1" class="text-center text-white pt-1" style=" background-color: var(--bg-primary)"><h4>{{ totalSummary()  | number:decimal() }}</h4></th>
+            <th colspan="1" style=" background-color: var(--bg-primary)"></th>
         </tr>
         <tr>
-            <td colspan="3" class="text-end bg-white">
+            <td colspan="2" class="text-end bg-white">
                 <p-button
                     (click)="clearDetailSale()"
                     icon="fa-solid fa-ban"  pTooltip="Cancelar Transferencia"

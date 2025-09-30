@@ -164,6 +164,8 @@ export class QueryTransfersComponent implements OnInit {
               }
             },
           ] ;
+          const totalQuantity = resp.transfers?.totals?.totalQuantity ?? 0;
+          this.cols()[3].footer =  this.pipeNumber.transform(totalQuantity,this.decimal()) ?? '0';
         });
       },
       complete: () => this.loading.set(false),
@@ -327,10 +329,10 @@ export class QueryTransfersComponent implements OnInit {
     this.cols.set([{ field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
       { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:150px;', tooltip: true, isDate: true},
       { field: 'user_send.full_names', header: 'USUARIO ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isText:true},
-      { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true, 
+      { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
         tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
-        tagColor: (val:number)=> 'primary',
-        tagIcon: (val:number)=>  ''
+        tagColor: (val:number)=> 'warning',
+        tagIcon: (val:number)=>  'fas fa-boxes-stacked'
       },
       { field: `sucursal_received.name`, header: 'SUCURSAL DESTINO' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
       { field: 'observations_send', header: 'OBSERVACIÓN ENVIÓ' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
@@ -341,10 +343,10 @@ export class QueryTransfersComponent implements OnInit {
     this.cols.set([{ field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
       { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
       { field: 'date_received', header: 'FECHA RECEPCIÓN' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
-      { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true, 
+      { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
         tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
-        tagColor: (val:number)=> 'primary',
-        tagIcon: (val:number)=>  ''
+        tagColor: (val:number)=> 'warning',
+        tagIcon: (val:number)=>  'fas fa-boxes-stacked'
       },
       { field: `sucursal_received.name`, header: 'SUCURSAL DESTINO' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
       { field: 'observations_send', header: 'OBS. ENVIÓ' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},

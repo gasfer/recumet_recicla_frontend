@@ -23,6 +23,7 @@ export class DataviewProductsComponent implements OnInit {
   @Input() id_sucursal: string = '';
   @Input() id_storage : string = '';
   @Input() isInput : boolean = false;
+  @Input() withStock : boolean = false;
   @Input() typeFrom : ''|'INPUT' | 'OUTPUT' = '';
   products          = signal<Product[]>([]);
   categories        = signal<{name:string,code:string}[]>([]);
@@ -73,7 +74,7 @@ export class DataviewProductsComponent implements OnInit {
 
   getAllAndSearchProducts(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
     if(!query) {this.loading.set(true);} //not loading in search
-    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage).subscribe({
+    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage,'name','ASC',this.withStock).subscribe({
       next: (resp) => {
         this.products.set(resp.products.data);
         this.total = resp.products.total;

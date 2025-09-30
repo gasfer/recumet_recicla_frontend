@@ -82,6 +82,7 @@
         <app-dataview-products 
             [isViewQuantity]="true" 
             [isViewPrice]="false"
+            [withStock]="true"
             [id_sucursal]="formReport.get('id_sucursal')?.value" 
             [id_storage]="formReport.get('id_storage')?.value" 
             (onProductSelect)="addItemCarByViewProduct($event)" 

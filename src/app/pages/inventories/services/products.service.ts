@@ -27,15 +27,15 @@ export class ProductsService {
   assignSucursalSubs: EventEmitter<Product> = new EventEmitter<Product>();
   viewProviderSubs  : EventEmitter<Product> = new EventEmitter<Product>();
 
-  getAllAndSearch(page: number, limit: number,status:boolean, type: string = '', query?: string,stock:boolean = false, id_sucursal:string = '', id_storage:string = '',field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllProducts>{
+  getAllAndSearch(page: number, limit: number,status:boolean, type: string = '', query?: string,stock:boolean = false, id_sucursal:string = '', id_storage:string = '',field_sort:string = 'id',order:string = 'DESC',withStock: boolean = false): Observable<GetAllProducts>{
     if(!id_sucursal){
       id_sucursal = this.validatorsService.id_sucursal().toString();
     }
     let url = '';
     if(type === ''){
-      url = `${base_url}/product?page=${page}&limit=${limit}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}`;
+      url = `${base_url}/product?page=${page}&limit=${limit}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}`;
     } else {
-      url = `${base_url}/product?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}`;
+      url = `${base_url}/product?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}`;
     }
     return this.http.get<GetAllProducts>(url);
   }

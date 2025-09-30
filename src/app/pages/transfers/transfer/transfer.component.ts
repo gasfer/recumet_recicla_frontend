@@ -55,7 +55,7 @@ export class TransferComponent implements OnInit {
     this.loadingSearchProduct.set(true);
     this.txtSearchProduct.set(txtSearchProduct);
     this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value)
+    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'name','ASC', true)
         .subscribe({
           next: (resp) => {
             this.suggestedProducts.set(resp.products.data);

@@ -144,7 +144,7 @@ export class TransfersService {
       });
     } else {
       //primera agregación al carrito
-      product.quantity = product.total_stock! > 1  ? 1 : product.total_stock!;
+      product.quantity = product.total_stock! > 1  ? Number(product.total_stock) : product.total_stock!;
       product.import = product.costo!;
       this.detailTransfer.update((detail) =>  [...detail, product] );
     }
