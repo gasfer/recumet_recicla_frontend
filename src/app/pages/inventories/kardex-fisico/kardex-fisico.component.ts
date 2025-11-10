@@ -61,7 +61,7 @@ export class KardexFisicoComponent {
     },
   ];
   searchItems = signal<MenuItem[]>([
-    { 
+    {
       label: 'ENTRADAS Y SALIDAS', icon: 'fa-solid fa-left-right',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
@@ -86,10 +86,10 @@ export class KardexFisicoComponent {
     { field: 'product.cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true, isLink:true, link:'/inventories/kardex-existencia?p=${value}', field2:'id_product'},
     { field: `product.name`, header: 'DETALLE' , style:'min-width:180px;max-width:180px;', tooltip: true, isText:true  },
     { field: `product.unit.siglas`, header: 'UND' , style:'min-width:80px;max-width:80px;', tooltip: true, isText:true  },
-    // { field: `quantity_inicial`, header: 'SALDO INICIAL' , style:'min-width:110px;max-width:120px;text-align: center;', tooltip: true, 
+    // { field: `quantity_inicial`, header: 'SALDO INICIAL' , style:'min-width:110px;max-width:120px;text-align: center;', tooltip: true,
     //   isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
     //   },
-    { field: `quantity_input`, header: 'ENTRADA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true, 
+    { field: `quantity_input`, header: 'ENTRADA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
      },
     { field: `quantity_output`, header: 'SALIDA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
@@ -101,7 +101,9 @@ export class KardexFisicoComponent {
     // { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
   ]);
   fieldSort = signal('product.category.name');
-  order     = signal('ASC');
+  order     = signal('desc');
+
+
 
   ngOnInit(): void {
     this.getAllProviders();
@@ -163,8 +165,8 @@ export class KardexFisicoComponent {
 
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal, id_provider, id_product ,id_storage, dates} = this.formReport.value;      
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+      const { filterBy, id_sucursal, id_provider, id_product ,id_storage, dates} = this.formReport.value;
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_kardex: params.type_kardex,
@@ -198,7 +200,7 @@ export class KardexFisicoComponent {
     this.query.set(query);
     this.getAllAndSearchKardex(1,this.rows(),this.type(),this.query());
   }
-  
+
 
   onChangeTypesFilter() {
     const type_filter = this.formReport.get('filterBy')?.value;
@@ -287,8 +289,8 @@ export class KardexFisicoComponent {
       id_sucursal: '',
       id_provider: '',
       type_kardex: '',
-      id_storage: '',  
-      id_product: '',  
+      id_storage: '',
+      id_product: '',
     });
   }
 }

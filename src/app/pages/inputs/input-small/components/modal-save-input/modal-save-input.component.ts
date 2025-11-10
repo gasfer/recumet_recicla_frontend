@@ -29,6 +29,34 @@ export class ModalSaveInputComponent implements OnInit {
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   scalas            = signal<Scale[]>([]);
   banks             = signal<Bank[]>([]);
+
+  // NUEVO: lista de fuentes de referencia (¿cómo nos conociste?)
+referralSources = signal([
+  { label: 'Redes Sociales (Facebook, TikTok, Instagram)', value: 'RRSS', icon: 'fa-brands fa-hashtag', color: '#3B82F6' },
+  { label: 'Página Web RECUMET', value: 'WEB', icon: 'fa-solid fa-globe', color: '#06B6D4' },
+  { label: 'Búsqueda en Google', value: 'GOOGLE', icon: 'fa-brands fa-google', color: '#EA4335' },
+  { label: 'Referido por amigo/Amiga', value: 'REFERIDO', icon: 'fa-solid fa-user-group', color: '#8B5CF6' },
+  { label: 'Cliente Antiguo', value: 'CLIENTE_ANTIGUO', icon: 'fa-solid fa-user-check', color: '#10B981' },
+  { label: 'Feria o Rueda de Negocios', value: 'FERIA', icon: 'fa-solid fa-handshake', color: '#F59E0B' }
+]);
+
+
+  // FUNCIONES DE APOYO PARA MOSTRAR ICONO Y COLOR SELECCIONADO
+  getReferralIcon() {
+    const value = this.formInput.get('referral_source')?.value;
+    return this.referralSources().find(item => item.value === value)?.icon || 'fa-solid fa-circle-question';
+  }
+
+  getReferralColor() {
+    const value = this.formInput.get('referral_source')?.value;
+    return this.referralSources().find(item => item.value === value)?.color || '#9CA3AF';
+  }
+
+  getReferralLabel() {
+    const value = this.formInput.get('referral_source')?.value;
+    return this.referralSources().find(item => item.value === value)?.label || 'Sin seleccionar';
+  }
+
   blockedInputCredit= signal(false);
   loading           = signal(false);
   providerSelect    = computed(() => this.inputsService.providerSelect());
@@ -54,6 +82,7 @@ export class ModalSaveInputComponent implements OnInit {
     type_registry: ['BOLETA',[Validators.required]],
     is_paid: [false,[Validators.required]], //si es con factura
     status: ['ACTIVE'],
+    referral_source: ['', Validators.required]
   });
 
   ngOnInit(): void {
@@ -259,4 +288,6 @@ export class ModalSaveInputComponent implements OnInit {
       status:'ACTIVE'
     });
   }
+
+
 }
