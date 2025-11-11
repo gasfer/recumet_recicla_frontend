@@ -31,7 +31,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
   @Input({required: true}) id_storage : number | null = null;
 
   formClassified: UntypedFormGroup  = this.fb.group({
-    id_scale: ['',[Validators.required]],
+    id_scale: [1,[Validators.required]],
     id_sucursal: ['',[Validators.required]],
     id_storage: ['',[Validators.required]],
     id_product: ['',[Validators.required]],
@@ -62,7 +62,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
       quantity: prod.quantity,
       cost: prod.costo,
       id_product: prod.id,
-      status: "ACTIVE" 
+      status: "ACTIVE"
     }));
     const data:NewClassifiedForm = {
       classified_data: this.formClassified.value,
@@ -70,10 +70,10 @@ export class ModalSaveClassifiedComponent implements OnInit {
     }
     this.classifiedService.postNewClassified(data).subscribe({
       next: (resp) => {
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Clasificación registrada exitosamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
