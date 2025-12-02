@@ -182,6 +182,14 @@
                         }}
                       </small>
                     </div>
+                    <div class="col-12 col-sm-6">
+                      <label class="block mb-0">¿Cómo nos conociste?</label>
+                      <p-dropdown [options]="referral_sources()" placeholder="Selecciona una referencia" optionLabel="name"
+                        optionValue="code" appendTo="body" [virtualScrollItemSize]="38" [lazy]="true"
+                        formControlName="referral_sources" [showClear]="true"
+                        [class.ng-dirty]="validatorsService.inputValid('referral_sources',formReport)">
+                      </p-dropdown>
+                    </div>
                   </div>
                 </div>
               </div>

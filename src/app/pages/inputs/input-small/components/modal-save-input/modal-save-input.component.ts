@@ -29,39 +29,20 @@ export class ModalSaveInputComponent implements OnInit {
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   scalas            = signal<Scale[]>([]);
   banks             = signal<Bank[]>([]);
-
-  // NUEVO: lista de fuentes de referencia (¿cómo nos conociste?)
-referralSources = signal([
-  { label: 'Redes Sociales (Facebook, TikTok, Instagram)', value: 'RRSS', icon: 'fa-brands fa-hashtag', color: '#3B82F6' },
-  { label: 'Página Web RECUMET', value: 'WEB', icon: 'fa-solid fa-globe', color: '#06B6D4' },
-  { label: 'Búsqueda en Google', value: 'GOOGLE', icon: 'fa-brands fa-google', color: '#EA4335' },
-  { label: 'Referido por amigo/Amiga', value: 'REFERIDO', icon: 'fa-solid fa-user-group', color: '#8B5CF6' },
-  { label: 'Cliente Antiguo', value: 'CLIENTE_ANTIGUO', icon: 'fa-solid fa-user-check', color: '#10B981' },
-  { label: 'Feria o Rueda de Negocios', value: 'FERIA', icon: 'fa-solid fa-handshake', color: '#F59E0B' }
-]);
-
-
-  // FUNCIONES DE APOYO PARA MOSTRAR ICONO Y COLOR SELECCIONADO
-  getReferralIcon() {
-    const value = this.formInput.get('referral_source')?.value;
-    return this.referralSources().find(item => item.value === value)?.icon || 'fa-solid fa-circle-question';
-  }
-
-  getReferralColor() {
-    const value = this.formInput.get('referral_source')?.value;
-    return this.referralSources().find(item => item.value === value)?.color || '#9CA3AF';
-  }
-
-  getReferralLabel() {
-    const value = this.formInput.get('referral_source')?.value;
-    return this.referralSources().find(item => item.value === value)?.label || 'Sin seleccionar';
-  }
-
   blockedInputCredit= signal(false);
   loading           = signal(false);
   providerSelect    = computed(() => this.inputsService.providerSelect());
   totalSummary      = computed(() => this.inputsService.detailShopping().reduce( (sum, product) => Number(sum) + Number(product.import),0));
   @Input({required: true}) id_storage : number | null = null;
+
+  referral_sources = signal([
+    { name: 'Redes Sociales (Facebook, TikTok, Instagram)', code: 'REDES SOCIALES' },
+    { name: 'Página Web RECUMET', code: 'PAGINA WEB RECUMET' },
+    { name: 'Búsqueda en Google', code: 'GOOGLE' },
+    { name: 'Referido por amigo/Amiga', code: 'REFERIDO POR AMIGO' },
+    { name: 'Cliente Antiguo', code: 'CLIENTE ANTIGUO' },
+    { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
+  ]);
 
   formInput: UntypedFormGroup  = this.fb.group({
     id_provider: ['',[Validators.required]],
@@ -82,7 +63,7 @@ referralSources = signal([
     type_registry: ['BOLETA',[Validators.required]],
     is_paid: [false,[Validators.required]], //si es con factura
     status: ['ACTIVE'],
-    referral_source: ['', Validators.required]
+    referral_sources: ['', Validators.required],
   });
 
   ngOnInit(): void {
@@ -246,7 +227,8 @@ referralSources = signal([
         id_bank: input_edit?.id_bank,
         type_registry:input_edit?.type_registry,
         is_paid: input_edit?.is_paid == 'true'? true : false,
-        status:'ACTIVE'
+        status:'ACTIVE',
+        referral_sources: input_edit?.referral_sources,
       });
       //this.setStoragesBySucursal(input_edit?.id_storage);
       this.onChangeDescuento();
@@ -283,9 +265,9 @@ referralSources = signal([
       account_input: null,
       id_bank: null,
       type_registry:'BOLETA',
-
       is_paid: false,
-      status:'ACTIVE'
+      status:'ACTIVE',
+      referral_sources: '',
     });
   }
 

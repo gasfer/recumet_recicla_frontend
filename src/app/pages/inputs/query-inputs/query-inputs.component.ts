@@ -110,7 +110,8 @@ export class QueryInputsComponent implements OnInit {
     id_storage: [''],
     id_provider: [''],
     type_pay: [''],
-    status: ['ACTIVE']
+    status: ['ACTIVE'],
+    referral_sources: [''],
   });
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
@@ -140,6 +141,7 @@ export class QueryInputsComponent implements OnInit {
       tagColor: (val:string)=> val == 'CONTADO' ? 'primary' : 'success',
       tagIcon: (val:string)=>  'fa-solid fa-sack-dollar'
     },
+    { field: `referral_sources`, header: 'REFERENCIA' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: 'options', header: 'OPCIONES', style:'min-width:170px;max-width:170px', isButton:true }
   ]);
   searchFor = signal<SearchFor[]>([
@@ -167,13 +169,23 @@ export class QueryInputsComponent implements OnInit {
     status: 'ACTIVE',
     filterBy:'MONTH',
     date1: '',
-    date2: ''
+    date2: '',
+    referral_sources: '',
   });
   types_filtrado = signal([
     {name: 'DIA', code: 'DAY'},
     {name: 'MES', code: 'MONTH'},
     {name: 'AÑO', code: 'YEAR'},
     {name: 'RANGO', code: 'RANGE'},
+  ]);
+
+  referral_sources = signal([
+    { name: 'Redes Sociales (Facebook, TikTok, Instagram)', code: 'REDES SOCIALES' },
+    { name: 'Página Web RECUMET', code: 'PAGINA WEB RECUMET' },
+    { name: 'Búsqueda en Google', code: 'GOOGLE' },
+    { name: 'Referido por amigo/Amiga', code: 'REFERIDO POR AMIGO' },
+    { name: 'Cliente Antiguo', code: 'CLIENTE ANTIGUO' },
+    { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
   ]);
 
   ngOnInit(): void {
@@ -336,7 +348,7 @@ export class QueryInputsComponent implements OnInit {
 
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates} = this.formReport.value;
+      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates, referral_sources} = this.formReport.value;
       const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
@@ -349,6 +361,7 @@ export class QueryInputsComponent implements OnInit {
         filterBy: filterBy,
         date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
+        referral_sources: referral_sources ? referral_sources : '',
       }
     });
   }
@@ -391,6 +404,7 @@ export class QueryInputsComponent implements OnInit {
       date_range: '',
       type_pay: '',
       status: 'ACTIVE',
+      referral_sources: '',
     });
   }
 

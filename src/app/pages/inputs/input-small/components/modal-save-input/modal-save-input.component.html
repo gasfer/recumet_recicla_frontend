@@ -231,26 +231,21 @@
       </div>
 
       <!-- FILA FINAL: ¿CÓMO NOS CONOCISTE? -->
-      <div class="row mt-3 border-top pt-3">
-        <div class="col-sm-6 col-12"> <label class="block mb-0"> <i class="fa-solid fa-handshake-angle mr-1"></i> ¿Cómo
-            nos conociste?<span class="text-danger">*</span> </label> <p-dropdown [options]="referralSources()"
-            placeholder="Selecciona cómo nos conociste" optionLabel="label" optionValue="value" appendTo="body"
-            formControlName="referral_source" [showClear]="true"
-            [class.ng-dirty]="validatorsService.inputValid('referral_source', formInput)"> <ng-template
-              pTemplate="selectedItem" let-selectedOption>
-              <div class="flex align-items-center gap-2" *ngIf="selectedOption"> <i [class]="selectedOption.icon"
-                  [style.color]="selectedOption.color"></i> <span>{{ selectedOption.label }}</span> </div>
-            </ng-template> <ng-template let-option pTemplate="item">
-              <div class="flex align-items-center gap-2"> <i [class]="option.icon" [style.color]="option.color"></i>
-                <span>{{ option.label }}</span> </div>
-            </ng-template> </p-dropdown> <small *ngIf="validatorsService.inputValid('referral_source', formInput)"
-            class="p-error block"> {{ validatorsService.inputValidMessage('referral_source', formInput) }} </small>
-        </div>
-        <div class="col-sm-6 col-12 mt-sm-0 mt-1" *ngIf="formInput.get('referral_source')?.value">
-          <div class="animated fadeInDown"> <label class="block mb-0"> <i class="fa-solid fa-circle-info mr-1"></i>
-              Canal seleccionado </label> <p-tag [rounded]="true" [icon]="getReferralIcon()"
-              [style]="{ background: getReferralColor(), fontSize: '1rem', padding: '0.5rem 1rem' }"
-              [value]="getReferralLabel()"></p-tag> </div>
+      <div class="row mt-3">
+        <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+          <label class="block mb-0">
+            <i class="fa-solid fa-handshake-angle mr-1"></i>
+            ¿Cómo nos conociste?
+            <span class="text-danger">*</span>
+          </label>
+          <p-dropdown [options]="referral_sources()" placeholder="Selecciona una referencia" optionLabel="name"
+            optionValue="code" appendTo="body" [virtualScrollItemSize]="38" [lazy]="true"
+            formControlName="referral_sources"
+            [class.ng-dirty]="validatorsService.inputValid('referral_sources',formInput)">
+          </p-dropdown>
+          <small *ngIf="validatorsService.inputValid('referral_sources',formInput)" class="p-error block">
+            {{ validatorsService.inputValidMessage("referral_sources",formInput) }}
+          </small>
         </div>
       </div>
     </div>
