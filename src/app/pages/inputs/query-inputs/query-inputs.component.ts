@@ -112,6 +112,7 @@ export class QueryInputsComponent implements OnInit {
     type_pay: [''],
     status: ['ACTIVE'],
     referral_sources: [''],
+    id_type_provider: [''],
   });
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
@@ -171,6 +172,7 @@ export class QueryInputsComponent implements OnInit {
     date1: '',
     date2: '',
     referral_sources: '',
+    id_type_provider: '',
   });
   types_filtrado = signal([
     {name: 'DIA', code: 'DAY'},
@@ -187,10 +189,12 @@ export class QueryInputsComponent implements OnInit {
     { name: 'Cliente Antiguo', code: 'CLIENTE ANTIGUO' },
     { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
   ]);
+  types = signal<{name:string, code:string}[]>([]);
 
   ngOnInit(): void {
     this.getAllProviders();
     this.getAllAndSearchInputs(1,this.rows());
+    this.getAllTypes();
   }
 
   getAllProviders() {
@@ -348,7 +352,7 @@ export class QueryInputsComponent implements OnInit {
 
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates, referral_sources} = this.formReport.value;
+      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates, referral_sources, id_type_provider} = this.formReport.value;
       const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
@@ -362,6 +366,7 @@ export class QueryInputsComponent implements OnInit {
         date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
         referral_sources: referral_sources ? referral_sources : '',
+        id_type_provider: id_type_provider ? id_type_provider : '',
       }
     });
   }
@@ -405,6 +410,7 @@ export class QueryInputsComponent implements OnInit {
       type_pay: '',
       status: 'ACTIVE',
       referral_sources: '',
+      id_type_provider: '',
     });
   }
 
@@ -509,6 +515,25 @@ export class QueryInputsComponent implements OnInit {
           });
         });
       },
+    });
+  }
+
+  getAllTypes() {
+    this.types.set([]);
+    this.providersService.getAllTypesProvider().subscribe(resp => {
+      const formattedType = resp.typesProvider.map(type => ({
+        name: type.name,
+        id: type.id!.toString(),
+        code: type.code,
+      })).sort((a, b) => a.name.localeCompare(b.name));
+      formattedType.unshift(
+        {code:'ALL', name:'TODOS',id: ''}
+      )
+      this.types.set(formattedType);
+      if(formattedType.length > 0) {
+        this.formReport.get('id_type_provider')?.setValue('');
+        this.getAllAndSearchInputs(1,this.rows());
+      }
     });
   }
 }

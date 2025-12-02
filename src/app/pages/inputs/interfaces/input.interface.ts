@@ -190,4 +190,5 @@ export interface FormSearchInputs {
     type_registry:    string;
     id_provider:      string;
     referral_sources: string
+    id_type_provider: string;
 }
