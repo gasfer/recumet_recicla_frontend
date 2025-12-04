@@ -119,38 +119,6 @@
                       ></p-dropdown>
                     </div>
                     <div class="col-12 col-sm-6">
-                      <label class="block mb-1">Proveedor</label>
-                      <p-dropdown
-                        [options]="providers()"
-                        [showClear]="true"
-                        formControlName="id_provider"
-                        optionLabel="name"
-                        optionValue="code"
-                        appendTo="body"
-                        [filter]="true"
-                        filterBy="name"
-                        [virtualScroll]="true"
-                        [virtualScrollItemSize]="38"
-                        placeholder="SELECCIONA PROVEEDOR"
-                        styleClass="w-full max-h-[400px] text-sm md:text-base"
-                        [panelStyle]="{
-                          'max-height': '400px',
-                          'overflow-y': 'auto'
-                        }"
-                        [class.ng-dirty]="
-                          validatorsService.inputValid(
-                            'id_provider',
-                            formReport
-                          )
-                        "
-                      >
-                      </p-dropdown>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="row">
-                    <div class="col-12 col-sm-4">
                       <label class="block mb-0">Area / Almacén</label>
                       <p-dropdown
                         [options]="validatorsService.storages()"
@@ -182,21 +150,82 @@
                         }}
                       </small>
                     </div>
-                    <div class="col-12 col-sm-4">
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="row">
+                    <div class="col-12 col-sm-3">
                       <label class="block mb-0">¿Cómo nos conociste?</label>
-                      <p-dropdown [options]="referral_sources()" placeholder="Selecciona una referencia" optionLabel="name"
-                        optionValue="code" appendTo="body" [virtualScrollItemSize]="38" [lazy]="true"
-                        formControlName="referral_sources" [showClear]="true"
-                        [class.ng-dirty]="validatorsService.inputValid('referral_sources',formReport)">
-                      </p-dropdown>
+                      <p-dropdown
+                        [options]="referral_sources()"
+                        placeholder="Selecciona una referencia"
+                        optionLabel="name"
+                        optionValue="code"
+                        formControlName="referral_sources"
+                        [showClear]="true"
+                      ></p-dropdown>
                     </div>
-                    <div class="col-12 col-sm-4">
+
+                    <div class="col-12 col-sm-3">
                       <label class="block mb-1">Tipo proveedor</label>
-                      <p-dropdown [options]="types()" placeholder="Selecciona una opción"
-                        optionLabel="name" appendTo="body" formControlName="id_type_provider"
-                        [disabled]="loading()" optionValue="id"
-                        [class.ng-dirty]="validatorsService.inputValid('id_type_provider',formReport)">
-                      </p-dropdown>
+                      <p-dropdown
+                        [options]="types()"
+                        placeholder="Selecciona una opción"
+                        optionLabel="name"
+                        optionValue="id"
+                        formControlName="id_type_provider"
+                      ></p-dropdown>
+                    </div>
+
+                    <div class="col-12 col-sm-3">
+                      <label class="block mb-1">Proveedor</label>
+                        <app-input-search  (onEnters)="suggestedsProvider($event)" (onDebounce)="suggestedsProvider($event)"
+                            [icon]="'fa-solid fa-magnifying-glass-arrow-right'"
+                            [placeholder]="'Busque un proveedor aquí....'"></app-input-search>
+                        <div style="position: absolute; z-index: 999; width: 96%;">
+                            <ul *ngIf="loadingSearchProvider()" class="list-group shadow">
+                                <li class="list-group-item list-group-item-action">
+                                    <span class='fw-bold'>Cargando....</span>
+                                </li>
+                            </ul>
+                            <ul class="list-group shadow cursor-pointer">
+                                <li *ngFor="let provider of suggestedProvider()"
+                                    class="list-group-item list-group-item-action" (click)="selectProvider(provider)">
+                                    <span class='fw-bold'>{{provider.type?.code}} - {{ provider.full_names}} - {{ provider.number_document}}</span>
+                                </li>
+                            </ul>
+                            <ul *ngIf="suggestedProvider().length == 0 && txtSearchProvider() && !loadingSearchProvider()" class="list-group shadow">
+                                <li class="list-group-item list-group-item-action">
+                                    <span class='fw-bold'> No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-3">
+                      <label class="block mb-1">Proveedor Seleccionado:</label>
+                      <div class="mt-1">
+                        <p-tag
+                          [rounded]="true"
+                          icon="fa-solid fa-tag"
+                          [severity]="providerSelect() ? 'info' : 'warning'"
+                          [value]="
+                            providerSelect()
+                              ? providerSelect()?.type?.code + ' - ' +
+                                providerSelect()?.full_names + ' - ' +
+                                (providerSelect()?.number_document ?? '')
+                              : 'SELECCIONE UN PROVEEDOR'">
+                          <p-badge
+                            *ngIf="providerSelect()"
+                            class="cursor-pointer"
+                            severity="danger"
+                            (click)="clearSelectProvider()"
+                            [value]="'X'"
+                            pTooltip="Quitar Proveedor"
+                            tooltipPosition="top"
+                          ></p-badge>
+                        </p-tag>
+                      </div>
                     </div>
                   </div>
                 </div>

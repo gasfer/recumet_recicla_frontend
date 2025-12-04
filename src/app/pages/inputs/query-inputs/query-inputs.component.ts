@@ -10,6 +10,7 @@ import { ProvidersService } from '../services/providers.service';
 import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { Provider } from '../interfaces/provider.interface';
 @Component({
   selector: 'app-query-inputs',
   templateUrl: './query-inputs.component.html',
@@ -190,29 +191,47 @@ export class QueryInputsComponent implements OnInit {
     { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
   ]);
   types = signal<{name:string, code:string}[]>([]);
+  txtSearchProvider      = signal('');
+  suggestedProvider      = signal<Provider[]>([]);
+  loadingSearchProvider  = signal(false);
+  providerSelect         = signal<Provider|undefined>(undefined);
 
   ngOnInit(): void {
-    this.getAllProviders();
     this.getAllAndSearchInputs(1,this.rows());
     this.getAllTypes();
   }
 
-  getAllProviders() {
-    this.providersService.getAllAndSearch(1,100000,true,'','','full_names','ASC').subscribe({
-      next: (resp)=> {
-        this.providers.set([]);
-        resp.providers.data.forEach(provider => {
-          this.providers.update((providers) => [
-            ...providers,
-            {
-              name: `${provider.type?.code} - ${provider.full_names} - ${provider.number_document ?? ''}`,
-              code: provider.id.toString(),
-            },
-          ]);
-        })
-      },
-      error: (err)=> this.providers.set([])
-    });
+  suggestedsProvider(txtSearchProvider: string){
+    if(txtSearchProvider.length==0) {
+      this.txtSearchProvider.set('');
+      this.suggestedProvider.set([]);
+      return;
+    }
+    this.loadingSearchProvider.set(true);
+    this.txtSearchProvider.set(txtSearchProvider);
+    this.suggestedProvider.set([]);
+    this.providersService.getAllAndSearch(1,100000,true,'pos',txtSearchProvider,'full_names','ASC')
+        .subscribe({
+          next: (resp) => {
+            this.suggestedProvider.set(resp.providers.data);
+            this.loadingSearchProvider.set(false);
+          },
+          error: (e) => {
+            this.loadingSearchProvider.set(false);
+          }
+        });
+  }
+
+  selectProvider(provider: Provider) {
+    this.suggestedProvider.set([]);
+    this.txtSearchProvider.set('');
+    this.providerSelect.set(provider);
+    this.formReport.get('id_provider')?.setValue(this.providerSelect()?.id);
+  }
+
+  clearSelectProvider() {
+    this.providerSelect.set(undefined);
+    this.formReport.get('id_provider')?.setValue(null);
   }
 
   getAllAndSearchInputs(page: number, limit: number,type: string = '', query: string = '') {
