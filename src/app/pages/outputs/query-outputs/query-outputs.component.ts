@@ -12,6 +12,7 @@ import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/Options
 import { FormSearchOutputs, Output, Outputs } from '../interfaces/output.interface';
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
+import { Client } from '../interfaces/client.interface';
 
 @Component({
   selector: 'app-query-outputs',
@@ -184,6 +185,10 @@ export class QueryOutputsComponent {
   ]);
   fieldSort = signal('');
   order     = signal('');
+  txtSearchClient      = signal('');
+  suggestedClient      = signal<Client[]>([]);
+  loadingSearchClient  = signal(false);
+  clientSelect         = signal<Client|undefined>(undefined);
 
   ngOnInit(): void {
     this.getAllAndSearchOutputs(1,this.rows());
@@ -490,5 +495,38 @@ export class QueryOutputsComponent {
         });
       },
     });
+  }
+
+  suggestedsClient(txtSearchClient: string){
+    if(txtSearchClient.length==0) {
+      this.txtSearchClient.set('');
+      this.suggestedClient.set([]);
+      return;
+    }
+    this.loadingSearchClient.set(true);
+    this.txtSearchClient.set(txtSearchClient);
+    this.suggestedClient.set([]);
+    this.clientsService.getAllAndSearch(1,10000,true,'pos',txtSearchClient,'full_names','ASC')
+      .subscribe({
+        next: (resp) => {
+          this.suggestedClient.set(resp.clients.data);
+          this.loadingSearchClient.set(false);
+        },
+        error: (e) => {
+          this.loadingSearchClient.set(false);
+        }
+      });
+  }
+
+  selectClient(client: Client) {
+    this.suggestedClient.set([]);
+    this.txtSearchClient.set('');
+    this.clientSelect.set(client);
+    this.formReport.get('id_client')?.setValue(this.clientSelect()?.id);
+  }
+
+  clearSelectClient() {
+    this.clientSelect.set(undefined);
+    this.formReport.get('id_client')?.setValue(null);
   }
 }

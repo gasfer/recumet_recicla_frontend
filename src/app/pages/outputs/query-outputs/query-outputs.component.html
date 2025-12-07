@@ -73,9 +73,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6">
+                                <div class="col-12">
                                     <div class="row">
-                                        <div class="col-12 col-sm-6">
+                                        <div class="col-12 col-sm-3">
                                             <label class="block mb-0">Area / Almacén</label>
                                             <p-dropdown [options]="validatorsService.storages()" placeholder="Selecciona un almacén"
                                                 optionLabel="name" optionValue="id" [showClear]="true" appendTo="body"
@@ -86,6 +86,54 @@
                                                 class="p-error block">
                                                 {{ validatorsService.inputValidMessage("id_storage",formReport) }}
                                             </small>
+                                        </div>
+                                        <div class="col-12 col-sm-3">
+                                          <label class="block mb-1">Cliente</label>
+                                            <app-input-search  (onEnters)="suggestedsClient($event)" (onDebounce)="suggestedsClient($event)"
+                                                [icon]="'fa-solid fa-magnifying-glass-arrow-right'"
+                                                [placeholder]="'Busque un cliente aquí....'"></app-input-search>
+                                            <div style="position: absolute; z-index: 999; width: 96%;">
+                                                <ul *ngIf="loadingSearchClient()" class="list-group shadow">
+                                                  <li class="list-group-item list-group-item-action">
+                                                      <span class='fw-bold'>Cargando....</span>
+                                                  </li>
+                                                </ul>
+                                                <ul class="list-group shadow cursor-pointer">
+                                                  <li *ngFor="let client of suggestedClient()"
+                                                      class="list-group-item list-group-item-action" (click)="selectClient(client)">
+                                                      <span class='fw-bold'>{{client.full_names}} - {{ client.number_document}}</span>
+                                                  </li>
+                                                </ul>
+                                                <ul *ngIf="suggestedClient().length == 0 && txtSearchClient() && !loadingSearchClient()" class="list-group shadow">
+                                                  <li class="list-group-item list-group-item-action">
+                                                      <span class='fw-bold'> No se encontró el cliente: "{{txtSearchClient() | uppercase}}"</span>
+                                                  </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-3">
+                                          <label class="block mb-1">Cliente Seleccionado:</label>
+                                          <div class="mt-1">
+                                            <p-tag
+                                              [rounded]="true"
+                                              icon="fa-solid fa-tag"
+                                              [severity]="clientSelect() ? 'info' : 'warning'"
+                                              [value]="
+                                                clientSelect()
+                                                  ? clientSelect()?.full_names + ' - ' +
+                                                    (clientSelect()?.number_document ?? '')
+                                                  : 'SELECCIONE UN CLIENTE'">
+                                              <p-badge
+                                                *ngIf="clientSelect()"
+                                                class="cursor-pointer"
+                                                severity="danger"
+                                                (click)="clearSelectClient()"
+                                                [value]="'X'"
+                                                pTooltip="Quitar Cliente"
+                                                tooltipPosition="top"
+                                              ></p-badge>
+                                            </p-tag>
+                                          </div>
                                         </div>
                                     </div>
                                 </div>
