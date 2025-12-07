@@ -229,10 +229,26 @@
           </div>
         </div>
       </div>
-
-      <!-- FILA FINAL: ¿CÓMO NOS CONOCISTE? -->
       <div class="row mt-3">
-        <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+        <div class="col-sm-4 col-12">
+          <div class="row">
+            <label class="block mb-0">¿Cliente antiguo?</label>
+            <div *ngIf="!blockedInputCredit()" class="col-4 mt-1">
+              <p-inputSwitch formControlName="old_customer" (onChange)="onOldCustomerChange()"></p-inputSwitch>
+            </div>
+            <div class="col-7 mt-1 ms-1">
+              <p-tag [rounded]="true" [icon]="formInput.get('old_customer')!.value
+                ? 'fa-solid fa-user-clock'
+                : 'fa-solid fa-user-plus'" [severity]="formInput.get('old_customer')!.value
+                ? 'success'
+                : 'info'" [value]="formInput.get('old_customer')!.value
+                ? 'SÍ'
+                : 'NO'"
+              ></p-tag>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4 col-12" *ngIf="!formInput.get('old_customer')!.value">
           <label class="block mb-0">
             <i class="fa-solid fa-handshake-angle mr-1"></i>
             ¿Cómo nos conociste?
@@ -246,6 +262,24 @@
           <small *ngIf="validatorsService.inputValid('referral_sources',formInput)" class="p-error block">
             {{ validatorsService.inputValidMessage("referral_sources",formInput) }}
           </small>
+        </div>
+        <div class="col-sm-4 col-12">
+          <div class="row">
+            <label class="block mb-0">¿Con recojo?</label>
+            <div *ngIf="!blockedInputCredit()" class="col-4 mt-1">
+              <p-inputSwitch formControlName="with_pickup"></p-inputSwitch>
+            </div>
+            <div class="col-7 mt-1 ms-1">
+              <p-tag [rounded]="true" [icon]="formInput.get('with_pickup')!.value
+                ? 'fa-solid fa-truck'
+                : 'fa-solid fa-money-bill'" [severity]="formInput.get('with_pickup')!.value
+                ? 'success'
+                : 'info'" [value]="formInput.get('with_pickup')!.value
+                ? 'SÍ'
+                : 'NO'">
+              </p-tag>
+            </div>
+          </div>
         </div>
       </div>
     </div>

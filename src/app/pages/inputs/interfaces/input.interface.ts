@@ -104,6 +104,8 @@ export interface Input {
     options?:        Options[];
     totalQuantity:   number;
     referral_sources: string;
+    old_customer:     boolean;
+    with_pickup:      boolean;
 }
 
 export interface DetailsInput {

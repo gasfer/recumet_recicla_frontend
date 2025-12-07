@@ -40,7 +40,6 @@ export class ModalSaveInputComponent implements OnInit {
     { name: 'Página Web RECUMET', code: 'PAGINA WEB RECUMET' },
     { name: 'Búsqueda en Google', code: 'GOOGLE' },
     { name: 'Referido por amigo/Amiga', code: 'REFERIDO POR AMIGO' },
-    { name: 'Cliente Antiguo', code: 'CLIENTE ANTIGUO' },
     { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
   ]);
 
@@ -63,12 +62,15 @@ export class ModalSaveInputComponent implements OnInit {
     type_registry: ['BOLETA',[Validators.required]],
     is_paid: [false,[Validators.required]], //si es con factura
     status: ['ACTIVE'],
-    referral_sources: ['', Validators.required],
+    referral_sources: ['', [Validators.required]],
+    old_customer: [false],
+    with_pickup: [false],
   });
 
   ngOnInit(): void {
     this.getAllScalas();
     this.getAllBanks();
+    this.onOldCustomerChange();
   }
 
   saveInput() {
@@ -229,9 +231,12 @@ export class ModalSaveInputComponent implements OnInit {
         is_paid: input_edit?.is_paid == 'true'? true : false,
         status:'ACTIVE',
         referral_sources: input_edit?.referral_sources,
+        old_customer: input_edit?.old_customer,
+        with_pickup: input_edit?.with_pickup,
       });
       //this.setStoragesBySucursal(input_edit?.id_storage);
       this.onChangeDescuento();
+      this.onOldCustomerChange();
     }
   }
 
@@ -268,7 +273,24 @@ export class ModalSaveInputComponent implements OnInit {
       is_paid: false,
       status:'ACTIVE',
       referral_sources: '',
+      old_customer: false,
+      with_pickup: false,
     });
+    setTimeout(() => { this.onOldCustomerChange() });
+  }
+
+
+  onOldCustomerChange(): void {
+    const isOldCustomer = this.formInput.get('old_customer')?.value;
+    const referralSourcesControl = this.formInput.get('referral_sources');
+
+    if (isOldCustomer) {
+      referralSourcesControl?.clearValidators();
+      referralSourcesControl?.setValue('');
+    } else {
+      referralSourcesControl?.setValidators([Validators.required]);
+    }
+    referralSourcesControl?.updateValueAndValidity();
   }
 
 

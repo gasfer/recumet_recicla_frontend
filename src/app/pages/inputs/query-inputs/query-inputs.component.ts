@@ -187,7 +187,6 @@ export class QueryInputsComponent implements OnInit {
     { name: 'Página Web RECUMET', code: 'PAGINA WEB RECUMET' },
     { name: 'Búsqueda en Google', code: 'GOOGLE' },
     { name: 'Referido por amigo/Amiga', code: 'REFERIDO POR AMIGO' },
-    { name: 'Cliente Antiguo', code: 'CLIENTE ANTIGUO' },
     { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
   ]);
   types = signal<{name:string, code:string}[]>([]);
