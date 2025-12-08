@@ -25,7 +25,7 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
   decimalLength           = signal(this.validatorsService.decimalLength());
   banks                   = signal<Bank[]>([]);
   bankService             = inject( BankService );
-  
+
   abonoForm: FormGroup = this.fb.group({
     id_account_payable: [],
     date_abono: [new Date(), [ Validators.required]],
@@ -34,6 +34,8 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
     comments: [null,[]],
     account_output: [null,[]],
     id_bank: [null,[]],
+    id_bank_origin: [null,[]],
+    account_origin: [null,[]],
   });
 
   ngOnInit(): void {
@@ -62,28 +64,28 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
         if(this.accountPayable()?.monto_restante == this.abonoForm.get('monto_abono')?.value) {
           this.accountsPayableService.showModalDetailsAccountPayable = false;
         }
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Abono nuevo agregado correctamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         }).then(() => this.accountsPayableService.printVoucherAbonoAccountPayablePdf(resp.abonosAccountsPayable.id));
       },
       error: (error) => {
-        Swal.fire({ 
-          title: 'Advertencia!', 
+        Swal.fire({
+          title: 'Advertencia!',
           text: error?.error?.errors[0]?.msg ? error?.error?.errors[0]?.msg : 'Los datos no son validos, Intenta nuevamente',
-          icon: 'warning', 
+          icon: 'warning',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
-        this.loading.set(false); 
+        this.loading.set(false);
       }
     });
   }
 
-  resetModal() { 
+  resetModal() {
     this.abonoForm.reset({
       id_account_payable: null,
       date_abono: new Date(),
@@ -92,24 +94,45 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
       account_output: null,
       type_payment: 'EFECTIVO',
       id_bank:null,
+      id_bank_origin: null,
+      account_origin: null,
     });
+    this.clearPaymentValidators();
   }
 
-
   selectTypePay() {
-    const type_pay = this.abonoForm.get('type_payment')?.value;
-    this.abonoForm.patchValue({
-      account_output: null, id_bank: null
-    });
-    if(type_pay != 'EFECTIVO') {
-      this.abonoForm.get('account_output')?.setValidators([Validators.required]);
-      this.abonoForm.get('id_bank')?.setValidators([Validators.required]);
-    } else {
-      this.abonoForm.get('account_output')?.clearValidators();
-      this.abonoForm.get('id_bank')?.clearValidators();
+    const type = this.abonoForm.get('type_payment')?.value;
+    this.clearPaymentValidators();
+
+    if (type == 'CHEQUE') {
+      this.setRequired('account_output');
+      this.setRequired('id_bank');
     }
-    this.abonoForm.get('account_output')?.updateValueAndValidity();
-    this.abonoForm.get('id_bank')?.updateValueAndValidity();
+
+    if (type == 'TRANSFERENCIA') {
+      this.setRequired('account_output');
+      this.setRequired('id_bank');
+      this.setRequired('id_bank_origin');
+      this.setRequired('account_origin');
+    }
+  }
+
+  setRequired(field: string) {
+    const control = this.abonoForm.get(field);
+    if (control) {
+      control.setValidators([Validators.required]);
+      control.updateValueAndValidity();
+    }
+  }
+
+  clearPaymentValidators() {
+    const fields = ['account_output', 'id_bank', 'id_bank_origin', 'account_origin'];
+
+    fields.forEach(f => {
+      const control = this.abonoForm.get(f);
+      control?.clearValidators();
+      control?.updateValueAndValidity();
+    });
   }
 
   getAllBanks() {

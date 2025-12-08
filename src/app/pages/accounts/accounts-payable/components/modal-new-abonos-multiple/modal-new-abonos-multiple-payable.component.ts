@@ -38,6 +38,8 @@ export class ModalNewAbonosMultiplePayableComponent {
     account_output: [null, []],
     id_sucursal: [null, [Validators.required]],
     id_bank: [null, []],
+    id_bank_origin: [null,[]],
+    account_origin: [null,[]],
   });
 
   ngOnInit(): void {
@@ -107,24 +109,45 @@ export class ModalNewAbonosMultiplePayableComponent {
       type_payment: 'EFECTIVO',
       account_output: null,
       id_bank: null,
+      id_bank_origin: null,
+      account_origin: null,
     });
+    this.clearPaymentValidators();
   }
 
-
   selectTypePay() {
-    const type_pay = this.abonoForm.get('type_payment')?.value;
-    this.abonoForm.patchValue({
-      account_output: null, id_bank: null
-    });
-    if (type_pay != 'EFECTIVO') {
-      this.abonoForm.get('account_output')?.setValidators([Validators.required]);
-      this.abonoForm.get('id_bank')?.setValidators([Validators.required]);
-    } else {
-      this.abonoForm.get('account_output')?.clearValidators();
-      this.abonoForm.get('id_bank')?.clearValidators();
+    const type = this.abonoForm.get('type_payment')?.value;
+    this.clearPaymentValidators();
+
+    if (type == 'CHEQUE') {
+      this.setRequired('account_output');
+      this.setRequired('id_bank');
     }
-    this.abonoForm.get('account_output')?.updateValueAndValidity();
-    this.abonoForm.get('id_bank')?.updateValueAndValidity();
+
+    if (type == 'TRANSFERENCIA') {
+      this.setRequired('account_output');
+      this.setRequired('id_bank');
+      this.setRequired('id_bank_origin');
+      this.setRequired('account_origin');
+    }
+  }
+
+  setRequired(field: string) {
+    const control = this.abonoForm.get(field);
+    if (control) {
+      control.setValidators([Validators.required]);
+      control.updateValueAndValidity();
+    }
+  }
+
+  clearPaymentValidators() {
+    const fields = ['account_output', 'id_bank', 'id_bank_origin', 'account_origin'];
+
+    fields.forEach(f => {
+      const control = this.abonoForm.get(f);
+      control?.clearValidators();
+      control?.updateValueAndValidity();
+    });
   }
 
   getAllBanks() {

@@ -100,9 +100,41 @@
                         </small>
                     </div>
                 </div>
+                <div *ngIf="abonoForm.get('type_payment')?.value == 'TRANSFERENCIA'" class="row mt-1  animated fadeInDown">
+                  <div class="col-sm-6 col-12">
+                      <label class="block mb-0">Banco origen<span class="text-danger">*</span>
+                      </label>
+                      <p-dropdown [options]="banks()"
+                        placeholder="Selecciona una opción"
+                        optionLabel="name"
+                        optionValue="id"
+                        appendTo="body"
+                        [virtualScrollItemSize]="38" [lazy]="true"
+                        formControlName="id_bank_origin"
+                        [class.ng-dirty]="validatorsService.inputValid('id_bank_origin',abonoForm)"
+                      ></p-dropdown>
+                      <small *ngIf="validatorsService.inputValid('id_bank_origin',abonoForm)" class="p-error block">
+                          {{ validatorsService.inputValidMessage("id_bank_origin",abonoForm) }}
+                      </small>
+                  </div>
+                  <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                      <label *ngIf="abonoForm.get('type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N. Cuenta origen<span class="text-danger">*</span></label>
+                      <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                          formControlName="account_origin" placeholder="EJ. "
+                          [class.ng-dirty]="validatorsService.inputValid('account_origin',abonoForm)"
+                      />
+                      <small *ngIf="validatorsService.inputValid('account_origin',abonoForm)" class="p-error block">
+                          {{ validatorsService.inputValidMessage("account_origin",abonoForm) }}
+                      </small>
+                  </div>
+                </div>
                 <div *ngIf="abonoForm.get('type_payment')?.value != 'EFECTIVO'" class="row mt-2  animated fadeInDown">
                     <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Banco<span class="text-danger">*</span>
+                        <label class="block mb-0">{{
+                          abonoForm.get('type_payment')?.value == 'CHEQUE'
+                            ? 'Banco'
+                            : 'Banco destino'
+                        }}<span class="text-danger">*</span>
                         </label>
                         <p-dropdown [options]="banks()" placeholder="Selecciona una opción" optionLabel="name"
                             optionValue="id" appendTo="body" [virtualScrollItemSize]="38" [lazy]="true"
@@ -116,7 +148,7 @@
                         <label *ngIf="abonoForm.get('type_payment')?.value == 'CHEQUE'" class="block mb-0">N.
                             Cheque</label>
                         <label *ngIf="abonoForm.get('type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N.
-                            Cuenta</label>
+                            Cuenta destino<span class="text-danger">*</span></label>
                         <input type="text" style="text-transform: uppercase" pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_output"
                             placeholder="EJ. "
