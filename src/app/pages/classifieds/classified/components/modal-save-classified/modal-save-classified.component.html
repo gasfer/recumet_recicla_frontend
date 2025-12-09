@@ -49,22 +49,31 @@
                                   appendTo="body"
                                   formControlName="type_registry"
                                   [class.ng-dirty]="validatorsService.inputValid('type_registry',formClassified)"
+                                  (onChange)="selectTypeRegistry()"
                                 ></p-dropdown>
                                 <small *ngIf="validatorsService.inputValid('type_registry',formClassified)" class="p-error block">
                                     {{ validatorsService.inputValidMessage("type_registry",formClassified) }}
                                 </small>
                             </div>
-                            <div class="col-sm-6 col-12">
-                                <label class="block mb-0">Nro.</label>
-                                <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                                    formControlName="number_registry" placeholder="EJ. 0001"
-                                    [pKeyFilter]="validatorsService.expRegValidInput"
-                                    [class.ng-dirty]="validatorsService.inputValid('number_registry',formClassified)"
-                                />
-                                <small *ngIf="validatorsService.inputValid('number_registry',formClassified)" class="p-error block">
-                                    {{ validatorsService.inputValidMessage("number_registry",formClassified) }}
+                            @if (formClassified.get('type_registry')?.value != 'SIN FICHA') {
+                              <div class="col-sm-6 col-12">
+                                  <label class="block mb-0">Nro.</label>
+                                  <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                                      formControlName="number_registry" placeholder="EJ. 0001"
+                                      [pKeyFilter]="validatorsService.expRegValidInput"
+                                      [class.ng-dirty]="validatorsService.inputValid('number_registry',formClassified)"
+                                  />
+                                  <small *ngIf="validatorsService.inputValid('number_registry',formClassified)" class="p-error block">
+                                      {{ validatorsService.inputValidMessage("number_registry",formClassified) }}
+                                  </small>
+                              </div>
+                            } @else {
+                              <div class="col-sm-6 col-12 animated fadeInDown mt-2">
+                                <small class="block">
+                                  {{ "El número se generará automáticamente al guardar el clasificado." }}
                                 </small>
-                            </div>
+                              </div>
+                              }
                         </div>
                     </div>
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">

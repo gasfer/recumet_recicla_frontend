@@ -14,7 +14,7 @@ const base_url = environment.base_url;
 export class ClassifiedService {
   detailSale        = signal<Product[]>([]);
   productSelect     = signal<Product|undefined>(undefined);
-  types_registry    = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
+  types_registry    = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'},{name: 'SIN FICHA', code: 'SIN FICHA'},]);
   showModalConfigClassified : boolean = false;
   showModalSaveClassified   : boolean = false;
   showModalDetailsClassified: boolean = false;
@@ -82,8 +82,8 @@ export class ClassifiedService {
   }
 
   resetClassified() {
-    this.detailSale.update((details)=>  details = []); 
-    this.productSelect.set(undefined); 
+    this.detailSale.update((details)=>  details = []);
+    this.productSelect.set(undefined);
   }
 
   //* Reportes */
@@ -141,7 +141,7 @@ export class ClassifiedService {
     return this.http.get(url,{
               responseType: 'blob',
             });
-  } 
+  }
 
   printPdfReport(id_classified:number) {
     Swal.fire({

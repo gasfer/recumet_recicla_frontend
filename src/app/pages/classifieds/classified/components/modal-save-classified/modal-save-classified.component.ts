@@ -120,4 +120,16 @@ export class ModalSaveClassifiedComponent implements OnInit {
       status: 'ACTIVE',
     });
   }
+
+  selectTypeRegistry() {
+    const type_registry = this.formClassified.get('type_registry')?.value;
+    this.formClassified.patchValue({number_registry: ''});
+    if(type_registry == 'SIN FICHA') {
+      this.formClassified.get('number_registry')?.setValidators([]);
+    } else {
+      this.formClassified.get('number_registry')?.setValidators([Validators.required]);
+    }
+    this.formClassified.get('number_registry')?.updateValueAndValidity();
+  }
+
 }
