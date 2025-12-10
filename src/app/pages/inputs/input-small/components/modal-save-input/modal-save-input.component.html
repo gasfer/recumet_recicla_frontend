@@ -233,7 +233,7 @@
         <div class="col-sm-4 col-12">
           <div class="row">
             <label class="block mb-0">¿Cliente antiguo?</label>
-            <div *ngIf="!blockedInputCredit()" class="col-4 mt-1">
+            <div class="col-4 mt-1">
               <p-inputSwitch formControlName="old_customer" (onChange)="onOldCustomerChange()"></p-inputSwitch>
             </div>
             <div class="col-7 mt-1 ms-1">
@@ -266,7 +266,7 @@
         <div class="col-sm-4 col-12">
           <div class="row">
             <label class="block mb-0">¿Con recojo?</label>
-            <div *ngIf="!blockedInputCredit()" class="col-4 mt-1">
+            <div class="col-4 mt-1">
               <p-inputSwitch formControlName="with_pickup"></p-inputSwitch>
             </div>
             <div class="col-7 mt-1 ms-1">

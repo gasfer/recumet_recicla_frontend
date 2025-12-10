@@ -114,6 +114,8 @@ export class QueryInputsComponent implements OnInit {
     status: ['ACTIVE'],
     referral_sources: [''],
     id_type_provider: [''],
+    old_customer: [''],
+    with_pickup: [''],
   });
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
@@ -138,12 +140,18 @@ export class QueryInputsComponent implements OnInit {
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  'fa-solid fa-sack-dollar'
     },
-    { field: 'type', header: 'TIPO' , style:'min-width:100px;max-width:180px;', tooltip: true, isTag: true,
+    { field: 'type', header: 'TIPO' , style:'min-width:80px;max-width:80px;', tooltip: true, isTag: true,
       tagValue: (val:string)=>  val,
       tagColor: (val:string)=> val == 'CONTADO' ? 'primary' : 'success',
       tagIcon: (val:string)=>  'fa-solid fa-sack-dollar'
     },
-    { field: `referral_sources`, header: 'REFERENCIA' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
+    { field: `old_customer`, header: 'ANTIGUO' , style:'min-width:80px;max-width:80px;', tooltip: true, isValueUpdate:true,
+      tagValue: (val:boolean)=> val ? 'SI' : 'NO',
+    },
+    { field: `referral_sources`, header: 'NOS CONOCIÓ' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
+    { field: `with_pickup`, header: 'RECOJO' , style:'min-width:80px;max-width:80px;', tooltip: true, isValueUpdate:true,
+      tagValue: (val:boolean)=> val ? 'SI' : 'NO',
+    },
     { field: 'options', header: 'OPCIONES', style:'min-width:170px;max-width:170px', isButton:true }
   ]);
   searchFor = signal<SearchFor[]>([
@@ -174,6 +182,8 @@ export class QueryInputsComponent implements OnInit {
     date2: '',
     referral_sources: '',
     id_type_provider: '',
+    old_customer: '',
+    with_pickup: '',
   });
   types_filtrado = signal([
     {name: 'DIA', code: 'DAY'},
@@ -181,14 +191,12 @@ export class QueryInputsComponent implements OnInit {
     {name: 'AÑO', code: 'YEAR'},
     {name: 'RANGO', code: 'RANGE'},
   ]);
-
-  referral_sources = signal([
-    { name: 'Redes Sociales (Facebook, TikTok, Instagram)', code: 'REDES SOCIALES' },
-    { name: 'Página Web RECUMET', code: 'PAGINA WEB RECUMET' },
-    { name: 'Búsqueda en Google', code: 'GOOGLE' },
-    { name: 'Referido por amigo/Amiga', code: 'REFERIDO POR AMIGO' },
-    { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
+  yes_no_type = signal([
+    {name: 'SI', code: 'SI'},
+    {name: 'NO', code: 'NO'},
   ]);
+
+  referral_sources = computed(this.inputsService.referral_sources);
   types = signal<{name:string, code:string}[]>([]);
   txtSearchProvider      = signal('');
   suggestedProvider      = signal<Provider[]>([]);
@@ -370,7 +378,7 @@ export class QueryInputsComponent implements OnInit {
 
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates, referral_sources, id_type_provider} = this.formReport.value;
+      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates, referral_sources, id_type_provider, old_customer, with_pickup} = this.formReport.value;
       const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
@@ -385,6 +393,8 @@ export class QueryInputsComponent implements OnInit {
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
         referral_sources: referral_sources ? referral_sources : '',
         id_type_provider: id_type_provider ? id_type_provider : '',
+        old_customer: old_customer ? old_customer : '',
+        with_pickup: with_pickup ? with_pickup : '',
       }
     });
   }
@@ -429,6 +439,8 @@ export class QueryInputsComponent implements OnInit {
       status: 'ACTIVE',
       referral_sources: '',
       id_type_provider: '',
+      old_customer: '',
+      with_pickup: '',  
     });
   }
 

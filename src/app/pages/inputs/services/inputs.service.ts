@@ -23,7 +23,14 @@ export class InputsService {
   detailsSubs$: EventEmitter<Input> = new EventEmitter<Input>();
   types_registry = signal([{name: 'SIN FICHA', code: 'SIN FICHA'},{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
   private http   = inject(HttpClient);
-
+  referral_sources = signal([
+    { name: 'Redes Sociales (Facebook, TikTok, Instagram)', code: 'REDES SOCIALES' },
+    { name: 'Página Web RECUMET', code: 'PAGINA WEB RECUMET' },
+    { name: 'Búsqueda en Google', code: 'GOOGLE' },
+    { name: 'Referido por amigo/Amiga', code: 'REFERIDO POR AMIGO' },
+    { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
+  ]);
+  
   public _inputConfig : InputConfig = {
     searchForCode: localStorage.getItem('searchForCode') === 'true' ? true : false,
     clearInputAfterProductSearch: localStorage.getItem('clearInputAfterProductSearch') === 'false' ? false : true,

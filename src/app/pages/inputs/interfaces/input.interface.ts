@@ -193,4 +193,6 @@ export interface FormSearchInputs {
     id_provider:      string;
     referral_sources: string
     id_type_provider: string;
+    old_customer: string;
+    with_pickup: string;
 }

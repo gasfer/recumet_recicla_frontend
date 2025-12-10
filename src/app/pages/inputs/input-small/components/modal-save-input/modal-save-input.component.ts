@@ -35,13 +35,7 @@ export class ModalSaveInputComponent implements OnInit {
   totalSummary      = computed(() => this.inputsService.detailShopping().reduce( (sum, product) => Number(sum) + Number(product.import),0));
   @Input({required: true}) id_storage : number | null = null;
 
-  referral_sources = signal([
-    { name: 'Redes Sociales (Facebook, TikTok, Instagram)', code: 'REDES SOCIALES' },
-    { name: 'Página Web RECUMET', code: 'PAGINA WEB RECUMET' },
-    { name: 'Búsqueda en Google', code: 'GOOGLE' },
-    { name: 'Referido por amigo/Amiga', code: 'REFERIDO POR AMIGO' },
-    { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
-  ]);
+  referral_sources = computed(this.inputsService.referral_sources);
 
   formInput: UntypedFormGroup  = this.fb.group({
     id_provider: ['',[Validators.required]],

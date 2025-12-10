@@ -228,6 +228,30 @@
                       </div>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col-12 col-sm-2">
+                      <label class="block mb-0">¿Cliente antiguo?</label>
+                      <p-dropdown
+                        [options]="yes_no_type()"
+                        placeholder="Seleccione"
+                        optionLabel="name"
+                        optionValue="code"
+                        formControlName="old_customer"
+                        [showClear]="true"
+                      ></p-dropdown>
+                    </div>
+                    <div class="col-12 col-sm-2">
+                      <label class="block mb-0">¿Con recojo?</label>
+                      <p-dropdown
+                        [options]="yes_no_type()"
+                        placeholder="Seleccione"
+                        optionLabel="name"
+                        optionValue="code"
+                        formControlName="with_pickup"
+                        [showClear]="true"
+                      ></p-dropdown>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
