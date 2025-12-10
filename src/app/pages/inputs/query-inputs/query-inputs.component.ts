@@ -43,7 +43,7 @@ export class QueryInputsComponent implements OnInit {
       label: 'Reporte Compras Detallado',
       icon: 'fas fa-file-pdf',
       iconStyle: { 'color': '#DC4C64'},
-      //command: () => { this.printPdfDetailsReport(); }
+      command: () => { this.printPdfDetailsCPPReport(); }
     }, {
       label: 'Resumen por producto',
       icon: 'fas fa-file-pdf',
@@ -507,6 +507,32 @@ export class QueryInputsComponent implements OnInit {
         Swal.showLoading();
         new Promise((resolve, reject) => {
           this.inputsService.getReportDetailsPdf(this.paramsSearch()).subscribe({
+            next: (data) => {
+              const file = new Blob([data], { type: 'application/pdf' });
+              const fileURL = URL.createObjectURL(file);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+            },
+          });
+        });
+      },
+    });
+  }
+
+   printPdfDetailsCPPReport() {
+    this.formReport.markAllAsTouched();
+    if(!this.formReport.valid) return;
+    this.formParamsByForm();
+    Swal.fire({
+      title: 'Generando Reporte!',
+      html: `Con los parámetros seleccionados`,
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.inputsService.getReportDetailsCPPPdf(this.paramsSearch()).subscribe({
             next: (data) => {
               const file = new Blob([data], { type: 'application/pdf' });
               const fileURL = URL.createObjectURL(file);

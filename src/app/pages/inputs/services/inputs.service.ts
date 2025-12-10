@@ -140,6 +140,17 @@ export class InputsService {
             });
   }
 
+  getReportDetailsCPPPdf(params:FormSearchInputs) {
+    const url = `${base_url}/input/pdf/details/cpp`;
+    return this.http.get<any>(url,{
+              params: new HttpParams({
+                fromObject: {
+                  ...params
+                }
+              }),
+              responseType: 'blob' as 'json'
+            });
+  }
   getReportDetailsExcel(params:FormSearchInputs) {
     const url = `${base_url}/input/excel/details`;
     return this.http.get(url,{
