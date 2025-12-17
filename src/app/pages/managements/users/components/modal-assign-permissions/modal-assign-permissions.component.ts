@@ -219,6 +219,64 @@ export class ModalAssignPermissionsComponent  implements OnInit, OnDestroy {
       reports: false,
       status: true
     },
+    {
+      id_user: null,
+      module: "BALANZA",
+      view: false,
+      create: false,
+      update: false,
+      delete: false,
+      reports: false,
+      status: true
+    },
+    {
+      id_user: null,
+      module: "BALANZA CAMIONEA",
+      view: false,
+      create: false,
+      update: false,
+      delete: false,
+      reports: false,
+      status: true
+    },
+    {
+      id_user: null,
+      module: "BALANZA MANUAL",
+      view: false,
+      create: false,
+      update: false,
+      delete: false,
+      reports: false,
+      status: true
+    },
+    {
+      id_user: null,
+      module: "SERVICIO BALANZA",
+      view: false,
+      create: false,
+      update: false,
+      delete: false,
+      reports: false,
+      status: true
+    }, {
+      id_user: null,
+      module: "TRANSPORTISTAS",
+      view: false,
+      create: false,
+      update: false,
+      delete: false,
+      reports: false,
+      status: true
+    }, {
+      id_user: null,
+      module: "CAMIONES",
+      view: false,
+      create: false,
+      update: false,
+      delete: false,
+      reports: false,
+      status: true
+    },
   ]);
 
   ngOnInit(): void {
@@ -235,8 +293,8 @@ export class ModalAssignPermissionsComponent  implements OnInit, OnDestroy {
             this.permissions()[targetIndex].update = permission.update;  // Nuevo valor que deseas asignar
             this.permissions()[targetIndex].delete = permission.delete;  // Nuevo valor que deseas asignar
             this.permissions()[targetIndex].reports = permission.reports;  // Nuevo valor que deseas asignar
-            //this.permissions()[targetIndex].status = permission.status; 
-          } 
+            //this.permissions()[targetIndex].status = permission.status;
+          }
       });
       this.permissions().forEach(permission => {
         this.addPermission(permission);
@@ -252,7 +310,7 @@ export class ModalAssignPermissionsComponent  implements OnInit, OnDestroy {
     this.permissionsForm = this.fb.group({
       permissions: this.fb.array([])
     });
-    this.permissions.update((resp) => 
+    this.permissions.update((resp) =>
       resp.map(permission => ({
         ...permission,
         view: false,
@@ -277,10 +335,10 @@ export class ModalAssignPermissionsComponent  implements OnInit, OnDestroy {
     this.userService.postAssignPermissions(permissions).subscribe({
       next: (resp) => {
         this.userService.showModalAssignPermissions = false;
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Asignación de permisos realizada correctamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
         });
         this.userService.save$.next(true);

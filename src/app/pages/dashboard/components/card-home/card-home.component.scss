@@ -24,11 +24,11 @@
     color: #012970;
   }
 
-  
 
- 
 
- 
+
+
+
 
   .card-icon {
     font-size: 20px;
@@ -90,7 +90,7 @@
   .icon-box::before {
     content: "";
     position: absolute;
-    background: #51A548;
+    background: #00B04E;
     right: -60px;
     top: -40px;
     width: 100px;
@@ -101,7 +101,7 @@
   }
 
   .icon-box:hover::before {
-    background: linear-gradient(60deg, #3e3f42 0%, #51A548 100% );
+    background: linear-gradient(60deg, #00B04E 0%, #00B04E 100% );
 
    /* background: linear-gradient(60deg, rgb(58, 183, 141) 0%, rgba(0,172,193,1) 100%); */
     right: 0;

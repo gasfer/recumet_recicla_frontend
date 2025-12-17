@@ -13,7 +13,7 @@
       "TABLES": "Tablas",
       "CHARTS": "Gráficos"
     },
-   
+
     "LOGIN": {
       "PROFILE": "Perfil",
       "MY_WALLET": "Mi billetera",
@@ -33,6 +33,39 @@
         "HISTORICO": "Histórico"
       }
     },
+   "BALANZA": {
+      "TEXT": "Balanza",
+
+      "CAMIONERA": {
+        "TEXT": "Balanza Camionera",
+        "REGISTRAR": "Registrar Pesaje Camionera",
+        "CONSULTAR": "Consultar Pesajes Camionera"
+      },
+
+      "MANUAL": {
+        "TEXT": "Balanza Manual",
+        "REGISTRAR": "Registrar Pesaje Manual",
+        "CONSULTAR": "Consultar Pesajes Manuales"
+      },
+
+      "SERVICIO": {
+        "TEXT": "Servicio de Balanza",
+        "REGISTRAR": "Registrar Servicio",
+        "CONSULTAR": "Consultar Servicios de Pesaje"
+      },
+
+      "TRANSPORTISTAS": {
+        "TEXT": "Transportistas",
+        "REGISTRAR": "Registrar Transportista",
+        "CONSULTAR": "Consultar Transportistas"
+      },
+
+      "CAMIONES": {
+        "TEXT": "Camiones",
+        "REGISTRAR": "Registrar Camión",
+        "CONSULTAR": "Consultar Camiones"
+      }
+    },
     "COMPRAS": { "TEXT": "Compras" },
     "ENTRADAS": {
       "TEXT": "Entradas",
@@ -43,6 +76,17 @@
         "CLASIFICADOS": "Clasificados"
       }
     },
+    "PROVEEDORES": {
+      "TEXT": "Proveedores",
+      "LIST": {
+        "LISTAR": "Listar Proveedores",
+        "AGENDAR": "Agendar Recojo",
+        "CERTIFICAR": "Certificar Proveedor",
+        "CUENTAS": "Cuentas del Proveedor",
+        "COMPRAS": "Compras del Proveedor"
+      }
+    },
+
     "CLASIFICADOS": {
       "TEXT": "Clasificados",
       "LIST": {
@@ -67,12 +111,12 @@
         "CONSULTARRECEPCIONES": "Consultar Recepción"
       }
     },
-    "INVENTARIO": {"TEXT": "Inventario"},
-    "KARDEX": {"TEXT": "Kardex"},
-    "KARDEXFISICO": {"TEXT": "Kardex Físico"},
-    "KARDEXHISTORICO": {"TEXT": "Kardex Histórico"},
-    "KARDEXEXISTENCIA": {"TEXT": "Kardex De Existencia"},
-    "ADMCAJA": {"TEXT": "Adm. Caja"},
+    "INVENTARIO": { "TEXT": "Inventario" },
+    "KARDEX": { "TEXT": "Kardex" },
+    "KARDEXFISICO": { "TEXT": "Kardex Físico" },
+    "KARDEXHISTORICO": { "TEXT": "Kardex Histórico" },
+    "KARDEXEXISTENCIA": { "TEXT": "Kardex De Existencia" },
+    "ADMCAJA": { "TEXT": "Adm. Caja" },
     "CAJA": {
       "TEXT": "Caja",
       "LIST": {
