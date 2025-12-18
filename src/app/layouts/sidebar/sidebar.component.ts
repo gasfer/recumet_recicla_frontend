@@ -116,504 +116,503 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() isCondensed = false;
   menu: any;
   data: any;
-  MENU: MenuItem[] = [
-    {
-      id: 1,
-      label: 'MENUITEMS.DASHBOARDS.TEXT',
-      isTitle: true,
-    },
-    {
-      id: 2,
-      label: 'MENUITEMS.DASHBOARDS.TEXT',
-      icon: 'fa-solid fa-chart-simple',
-      link: '/dashboard/home',
-    },
-    {
-  id: 50,
-  name: 'BALANZA',
-  label: 'MENUITEMS.BALANZA.TEXT',
-  icon: 'fa-solid fa-balance-scale', // Nivel 1
-  subItems: [
-    // 🚛 BALANZA CAMIONERA
-    {
-      id: 51,
-      name: 'BALANZA CAMIONERA',
-      label: 'MENUITEMS.BALANZA.CAMIONERA.TEXT',
-      icon: 'fa-solid fa-truck-fast', // Nivel 2
-      subItems: [
-        {
-          id: 52,
-          name: 'REGISTRAR PESАJE CAMIONERA',
-          action: 'create',
-          label: 'MENUITEMS.BALANZA.CAMIONERA.REGISTRAR',
-          link: '/scale/truck-scale/register',
-          icon: 'fa-solid fa-plus-circle', // Nivel 3
-        },
-        {
-          id: 53,
-          name: 'CONSULTAR PESАJES CAMIONERA',
-          action: 'view',
-          label: 'MENUITEMS.BALANZA.CAMIONERA.CONSULTAR',
-          link: '/scale/truck-scale/query',
-          icon: 'fa-solid fa-search', // Nivel 3
-        },
-      ],
-    },
+MENU: MenuItem[] = [
+  // 🚀 DASHBOARD
+  {
+    id: 1,
+    label: 'MENUITEMS.DASHBOARDS.TEXT',
+    isTitle: true,
+  },
+  {
+    id: 2,
+    label: 'MENUITEMS.DASHBOARDS.TEXT',
+    icon: 'fa-solid fa-chart-simple',
+    link: '/dashboard/home',
+  },
+/*
+  // ⚖️ BALANZA
+  {
+    id: 50,
+    name: 'BALANZA_TITULO',
+    label: 'MENUITEMS.BALANZA.TEXT',
+    isTitle: true,
+  },
+  {
+    id: 51,
+    name: 'BALANZA',
+    label: 'MENUITEMS.BALANZA.TEXT',
+    icon: 'fa-solid fa-balance-scale',
+    subItems: [
+      // BALANZA CAMIONERA
+      {
+        id: 52,
+        name: 'BALANZA CAMIONERA',
+        label: 'MENUITEMS.BALANZA.CAMIONERA.TEXT',
+        icon: 'fa-solid fa-truck-fast',
+        subItems: [
+          {
+            id: 53,
+            name: 'REGISTRAR PESАJE CAMIONERA',
+            action: 'create',
+            label: 'MENUITEMS.BALANZA.CAMIONERA.REGISTRAR',
+            link: '/scale/truck-scale/register',
+            icon: 'fa-solid fa-plus-circle',
+          },
+          {
+            id: 54,
+            name: 'CONSULTAR PESАJES CAMIONERA',
+            action: 'view',
+            label: 'MENUITEMS.BALANZA.CAMIONERA.CONSULTAR',
+            link: '/scale/truck-scale/query',
+            icon: 'fa-solid fa-search',
+          },
+        ],
+      },
+      // BALANZA MANUAL
+      {
+        id: 55,
+        name: 'BALANZA MANUAL',
+        label: 'MENUITEMS.BALANZA.MANUAL.TEXT',
+        icon: 'fa-solid fa-weight-scale',
+        subItems: [
+          {
+            id: 56,
+            name: 'REGISTRAR PESАJE MANUAL',
+            action: 'create',
+            label: 'MENUITEMS.BALANZA.MANUAL.REGISTRAR',
+            link: '/scale/manual-scale/register',
+            icon: 'fa-solid fa-clipboard-list',
+          },
+          {
+            id: 57,
+            name: 'CONSULTAR PESАJES MANUALES',
+            action: 'view',
+            label: 'MENUITEMS.BALANZA.MANUAL.CONSULTAR',
+            link: '/scale/manual-scale/query',
+            icon: 'fa-solid fa-chart-line',
+          },
+        ],
+      },
+      // SERVICIO DE BALANZA
+      {
+        id: 58,
+        name: 'SERVICIO DE BALANZA',
+        label: 'MENUITEMS.BALANZA.SERVICIO.TEXT',
+        icon: 'fa-solid fa-calculator',
+        subItems: [
+          {
+            id: 59,
+            name: 'REGISTRAR SERVICIO',
+            action: 'create',
+            label: 'MENUITEMS.BALANZA.SERVICIO.REGISTRAR',
+            link: '/scale/service/register',
+            icon: 'fa-solid fa-circle-plus',
+          },
+          {
+            id: 60,
+            name: 'CONSULTAR SERVICIOS DE PESАJE',
+            action: 'view',
+            label: 'MENUITEMS.BALANZA.SERVICIO.CONSULTAR',
+            link: '/scale/service/query',
+            icon: 'fa-solid fa-list-check',
+          },
+        ],
+      },
+      // TRANSPORTISTAS
+      {
+        id: 61,
+        name: 'TRANSPORTISTAS',
+        label: 'MENUITEMS.BALANZA.TRANSPORTISTAS.TEXT',
+        icon: 'fa-solid fa-user-tie',
+        subItems: [
+          {
+            id: 62,
+            name: 'REGISTRAR TRANSPORTISTA',
+            action: 'create',
+            label: 'MENUITEMS.BALANZA.TRANSPORTISTAS.REGISTRAR',
+            link: '/scale/drivers/register',
+            icon: 'fa-solid fa-user-plus',
+          },
+          {
+            id: 63,
+            name: 'CONSULTAR TRANSPORTISTAS',
+            action: 'view',
+            label: 'MENUITEMS.BALANZA.TRANSPORTISTAS.CONSULTAR',
+            link: '/scale/drivers/query',
+            icon: 'fa-solid fa-users-viewfinder',
+          },
+        ],
+      },
+      // CAMIONES
+      {
+        id: 64,
+        name: 'CAMIONES',
+        label: 'MENUITEMS.BALANZA.CAMIONES.TEXT',
+        icon: 'fa-solid fa-truck-pickup',
+        subItems: [
+          {
+            id: 65,
+            name: 'REGISTRAR CAMIÓN',
+            action: 'create',
+            label: 'MENUITEMS.BALANZA.CAMIONES.REGISTRAR',
+            link: '/scale/trucks/register',
+            icon: 'fa-solid fa-plus-square',
+          },
+          {
+            id: 66,
+            name: 'CONSULTAR CAMIONES',
+            action: 'view',
+            label: 'MENUITEMS.BALANZA.CAMIONES.CONSULTAR',
+            link: '/scale/trucks/query',
+            icon: 'fa-solid fa-list-ul',
+          },
+        ],
+      },
+    ],
+  },
+*/
+  // 🟢 ENTRADAS
+  {
+    id: 100,
+    name: 'ENTRADAS_TITULO',
+    label: 'MENUITEMS.ENTRADAS.TEXT',
+    isTitle: true,
+  },
+  {
+    id: 101,
+    name: 'ENTRADAS',
+    label: 'MENUITEMS.COMPRAS.TEXT',
+    icon: 'fa-solid fa-truck',
+    subItems: [
+          {
+        id: 151,
+        name: 'PROVEEDORES',
+        action: 'view',
+        label: 'MENUITEMS.ENTRADAS.LIST.PROVEEDORES',
+        link: '/inputs/providers',
+      },
+      {
+        id: 102,
+        name: 'COMPRAS',
+        action: 'create',
+        label: 'MENUITEMS.ENTRADAS.LIST.REALIZARCOMPRAS',
+        link: '/inputs/input-small',
+      },
+      {
+        id: 103,
+        name: 'COMPRAS',
+        action: 'view',
+        label: 'MENUITEMS.ENTRADAS.LIST.CONSULTARCOMPRAS',
+        link: '/inputs/query-inputs',
+      },
+    ],
+  },
+  {
+    id: 150,
+    name: 'PROVEEDORES',
+    label: 'MENUITEMS.PROVEEDORES.TEXT',
+    icon: 'fa-solid fa-users',
+    subItems: [
+      {
+        id: 151,
+        name: 'PROVEEDORE',
+        action: 'view',
+        label: 'MENUITEMS.ENTRADAS.LIST.PROVEEDORES',
+        link: '/inputs/providers',
+      },
+      {
+        id: 152,
+        name: 'RECOJO',
+        action: 'create',
+        label: 'MENUITEMS.PROVEEDORES.LIST.AGENDAR',
+        link: '/providers/schedule-pickup',
+      },
+      {
+        id: 153,
+        name: 'CERTIFICAR',
+        action: 'validate',
+        label: 'MENUITEMS.PROVEEDORES.LIST.CERTIFICAR',
+        link: '/providers/certify',
+      },
+      {
+        id: 154,
+        name: 'CUENTAS',
+        action: 'view',
+        label: 'MENUITEMS.PROVEEDORES.LIST.CUENTAS',
+        link: '/providers/accounts',
+      },
+      {
+        id: 155,
+        name: 'COMPRAS proveedor',
+        action: 'view',
+        label: 'MENUITEMS.PROVEEDORES.LIST.COMPRAS',
+        link: '/providers/purchases',
+      },
+    ],
+  },
+  {
+    id: 200,
+    name: 'ENTRADAS',
+    label: 'MENUITEMS.CLASIFICADOS.TEXT',
+    icon: 'fa-solid fa-boxes-packing',
+    subItems: [
+      {
+        id: 201,
+        name: 'CLASIFICADOS',
+        action: 'create',
+        label: 'MENUITEMS.CLASIFICADOS.LIST.REALIZARCLASIFICADOS',
+        link: '/classifieds/classified',
+      },
+      {
+        id: 202,
+        name: 'CLASIFICADOS',
+        action: 'view',
+        label: 'MENUITEMS.CLASIFICADOS.LIST.CONSULTARCLASIFICADOS',
+        link: '/classifieds/query-classifieds',
+      },
+    ],
+  },
 
-    // ⚖️ BALANZA MANUAL
-    {
-      id: 54,
-      name: 'BALANZA MANUAL',
-      label: 'MENUITEMS.BALANZA.MANUAL.TEXT',
-      icon: 'fa-solid fa-weight-scale', // Nivel 2
-      subItems: [
-        {
-          id: 55,
-          name: 'REGISTRAR PESАJE MANUAL',
-          action: 'create',
-          label: 'MENUITEMS.BALANZA.MANUAL.REGISTRAR',
-          link: '/scale/manual-scale/register',
-          icon: 'fa-solid fa-clipboard-list', // Nivel 3
-        },
-        {
-          id: 56,
-          name: 'CONSULTAR PESАJES MANUALES',
-          action: 'view',
-          label: 'MENUITEMS.BALANZA.MANUAL.CONSULTAR',
-          link: '/scale/manual-scale/query',
-          icon: 'fa-solid fa-chart-line', // Nivel 3
-        },
-      ],
-    },
+  // 🟡 SALIDAS
+  {
+    id: 250,
+    name: 'SALIDAS_TITULO',
+    label: 'MENUITEMS.SALIDAS.TEXT',
+    isTitle: true,
+  },
+  {
+    id: 251,
+    name: 'SALIDAS',
+    label: 'MENUITEMS.VENTAS.TEXT',
+    icon: 'fa-solid fa-cart-plus',
+    subItems: [
+      {
+        id: 252,
+        name: 'CLIENTES',
+        action: 'view',
+        label: 'MENUITEMS.SALIDAS.LIST.CLIENTES',
+        icon: 'bx-calendar',
+        link: '/outputs/clients',
+      },
+      {
+        id: 253,
+        name: 'VENTAS',
+        action: 'create',
+        label: 'MENUITEMS.SALIDAS.LIST.REALIZARVENTAS',
+        icon: 'bx-calendar',
+        link: '/outputs/output',
+      },
+      {
+        id: 254,
+        name: 'VENTAS',
+        action: 'view',
+        label: 'MENUITEMS.SALIDAS.LIST.CONSULTARVENTAS',
+        icon: 'bx-chat',
+        link: '/outputs/query-outputs',
+      },
+    ],
+  },
+  {
+    id: 255,
+    name: 'SALIDAS',
+    label: 'MENUITEMS.TRASLADOS.TEXT',
+    icon: 'fa-solid fa-truck-ramp-box',
+    subItems: [
+      {
+        id: 256,
+        name: 'TRASLADOS',
+        action: 'create',
+        label: 'MENUITEMS.TRASLADOS.LIST.REALIZARTRASLADOS',
+        icon: 'bx-calendar',
+        link: '/transfers/transfer',
+      },
+      {
+        id: 257,
+        name: 'TRASLADOS',
+        action: 'view',
+        label: 'MENUITEMS.TRASLADOS.LIST.CONSULTARTRASLADOS',
+        icon: 'bx-calendar',
+        link: '/transfers/query-transfers',
+      },
+      {
+        id: 258,
+        name: 'RECEPCIONES',
+        action: 'view',
+        label: 'MENUITEMS.TRASLADOS.LIST.CONSULTARRECEPCIONES',
+        icon: 'bx-chat',
+        link: '/transfers/query-receptions',
+      },
+    ],
+  },
 
-    // 🧮 SERVICIO DE BALANZA
-    {
-      id: 57,
-      name: 'SERVICIO DE BALANZA',
-      label: 'MENUITEMS.BALANZA.SERVICIO.TEXT',
-      icon: 'fa-solid fa-calculator', // Nivel 2
-      subItems: [
-        {
-          id: 58,
-          name: 'REGISTRAR SERVICIO',
-          action: 'create',
-          label: 'MENUITEMS.BALANZA.SERVICIO.REGISTRAR',
-          link: '/scale/service/register',
-          icon: 'fa-solid fa-circle-plus', // Nivel 3
-        },
-        {
-          id: 59,
-          name: 'CONSULTAR SERVICIOS DE PESАJE',
-          action: 'view',
-          label: 'MENUITEMS.BALANZA.SERVICIO.CONSULTAR',
-          link: '/scale/service/query',
-          icon: 'fa-solid fa-list-check', // Nivel 3
-        },
-      ],
-    },
+  // 🟠 CAJA
+  {
+    id: 300,
+    name: 'CAJA_TITULO',
+    label: 'MENUITEMS.ADMCAJA.TEXT',
+    isTitle: true,
+  },
+  {
+    id: 301,
+    name: 'CAJA',
+    label: 'MENUITEMS.CAJA.TEXT',
+    icon: 'fa-solid fa-vault',
+    subItems: [
+      {
+        id: 302,
+        name: 'CAJA',
+        action: 'create',
+        label: 'MENUITEMS.CAJA.LIST.ADMCAJA',
+        icon: 'bx-calendar',
+        link: '/caja/adm-caja',
+      },
+      {
+        id: 303,
+        name: 'CAJA',
+        action: 'view',
+        label: 'MENUITEMS.CAJA.LIST.COSULTARCAJA',
+        icon: 'bx-calendar',
+        link: '/caja/query-caja',
+      },
+    ],
+  },
+  {
+    id: 304,
+    name: 'CUENTAS',
+    label: 'MENUITEMS.CUENTAS.TEXT',
+    icon: 'fa-solid fa-comments-dollar',
+    subItems: [
+      {
+        id: 305,
+        name: 'CUENTAS POR PAGAR',
+        action: 'view',
+        label: 'MENUITEMS.CUENTAS.LIST.CUENTASPORPAGAR',
+        icon: 'bx-chat',
+        link: '/accounts/accounts-payable',
+      },
+      {
+        id: 306,
+        name: 'CUENTAS POR COBRAR',
+        action: 'view',
+        label: 'MENUITEMS.CUENTAS.LIST.CUENTASPORCOBRAR',
+        icon: 'bx-chat',
+        link: '/accounts/accounts-receivable',
+      },
+    ],
+  },
 
-    // 👤 TRANSPORTISTAS
-    {
-      id: 60,
-      name: 'TRANSPORTISTAS',
-      label: 'MENUITEMS.BALANZA.TRANSPORTISTAS.TEXT',
-      icon: 'fa-solid fa-user-tie', // Nivel 2
-      subItems: [
-        {
-          id: 61,
-          name: 'REGISTRAR TRANSPORTISTA',
-          action: 'create',
-          label: 'MENUITEMS.BALANZA.TRANSPORTISTAS.REGISTRAR',
-          link: '/scale/drivers/register',
-          icon: 'fa-solid fa-user-plus', // Nivel 3
-        },
-        {
-          id: 62,
-          name: 'CONSULTAR TRANSPORTISTAS',
-          action: 'view',
-          label: 'MENUITEMS.BALANZA.TRANSPORTISTAS.CONSULTAR',
-          link: '/scale/drivers/query',
-          icon: 'fa-solid fa-users-viewfinder', // Nivel 3
-        },
-      ],
-    },
+  // 📦 INVENTARIO
+  {
+    id: 350,
+    name: 'KARDEX',
+    action: 'view',
+    label: 'MENUITEMS.INVENTARIO.TEXT',
+    isTitle: true,
+  },
+  {
+    id: 351,
+    name: 'KARDEX',
+    label: 'MENUITEMS.KARDEX.TEXT',
+    icon: 'fa-solid fa-boxes-stacked',
+    subItems: [
+      {
+        id: 352,
+        name: 'KARDEX',
+        action: 'view',
+        label: 'MENUITEMS.KARDEXFISICO.TEXT',
+        link: '/inventories/kardex-fisico',
+      },
+    ],
+  },
 
-    // 🚚 CAMIONES
-    {
-      id: 63,
-      name: 'CAMIONES',
-      label: 'MENUITEMS.BALANZA.CAMIONES.TEXT',
-      icon: 'fa-solid fa-truck-pickup', // Nivel 2
-      subItems: [
-        {
-          id: 64,
-          name: 'REGISTRAR CAMIÓN',
-          action: 'create',
-          label: 'MENUITEMS.BALANZA.CAMIONES.REGISTRAR',
-          link: '/scale/trucks/register',
-          icon: 'fa-solid fa-plus-square', // Nivel 3
-        },
-        {
-          id: 65,
-          name: 'CONSULTAR CAMIONES',
-          action: 'view',
-          label: 'MENUITEMS.BALANZA.CAMIONES.CONSULTAR',
-          link: '/scale/trucks/query',
-          icon: 'fa-solid fa-list-ul', // Nivel 3
-        },
-      ],
-    },
-  ],
-},
-    {
-      id: 6,
-      isLayout: true,
-    },
-    {
-      id: 7,
-      name: 'ENTRADAS_TITULO',
-      label: 'MENUITEMS.ENTRADAS.TEXT',
-      isTitle: true,
-    },
-    // Menú principal: ENTRADAS
-    {
-      id: 8,
-      name: 'ENTRADAS',
-      label: 'MENUITEMS.COMPRAS.TEXT',
-      icon: 'fa-solid fa-truck',
-      subItems: [
-        {
-          id: 10,
-          name: 'COMPRAS',
-          action: 'create',
-          label: 'MENUITEMS.ENTRADAS.LIST.REALIZARCOMPRAS',
-          link: '/inputs/input-small',
-        },
-        {
-          id: 11,
-          name: 'COMPRAS',
-          action: 'view',
-          label: 'MENUITEMS.ENTRADAS.LIST.CONSULTARCOMPRAS',
-          link: '/inputs/query-inputs',
-        },
-      ],
-    },
+  // 🟣 ADMINISTRACIÓN
+  {
+    id: 400,
+    name: 'ADMINISTRACION_TITULO',
+    label: 'MENUITEMS.ADMINISTRACION.TEXT',
+    isTitle: true,
+  },
+  {
+    id: 401,
+    name: 'ADMINISTRACION',
+    label: 'MENUITEMS.ALMACEN.TEXT',
+    icon: 'fa-solid fa-warehouse',
+    subItems: [
+      {
+        id: 402,
+        name: 'UND MEDIDA',
+        action: 'view',
+        label: 'MENUITEMS.ALMACEN.LIST.UNIDADMEDIDA',
+        link: '/inventories/units',
+      },
+      {
+        id: 403,
+        name: 'BALANZAS',
+        action: 'view',
+        label: 'MENUITEMS.ALMACEN.LIST.BALANZAS',
+        link: '/inventories/scales',
+      },
+      {
+        id: 404,
+        name: 'CATEGORIAS',
+        action: 'view',
+        label: 'MENUITEMS.ALMACEN.LIST.CATEGORIAS',
+        link: '/inventories/categories',
+      },
+      {
+        id: 405,
+        name: 'PRODUCTOS',
+        action: 'view',
+        label: 'MENUITEMS.ALMACEN.LIST.PRODUCTOS',
+        link: '/inventories/products',
+      },
+    ],
+  },
+  {
+    id: 450,
+    name: 'ADMINISTRACION',
+    label: 'MENUITEMS.GESTION.TEXT',
+    icon: 'fa-solid fa-gears',
+    subItems: [
+      {
+        id: 451,
+        name: 'USUARIOS',
+        action: 'view',
+        label: 'MENUITEMS.GESTION.LIST.USUARIOS',
+        link: '/managements/users',
+      },
+      {
+        id: 452,
+        name: 'EMPRESA',
+        action: 'view',
+        label: 'MENUITEMS.GESTION.LIST.EMPRESA',
+        link: '/managements/company',
+      },
+      {
+        id: 453,
+        name: 'SUCURSALES',
+        action: 'view',
+        label: 'MENUITEMS.GESTION.LIST.SUCURSALES',
+        link: '/managements/sucursales',
+      },
+      {
+        id: 454,
+        name: 'ALMACENES',
+        action: 'view',
+        label: 'MENUITEMS.GESTION.LIST.ALMACENES',
+        link: '/managements/storages',
+      },
+      {
+        id: 455,
+        name: 'COMP. TRASPORTE',
+        action: 'view',
+        label: 'MENUITEMS.GESTION.LIST.TRASPORTES',
+        link: '/managements/trasport_company',
+      },
+    ],
+  },
+];
 
-    // 🆕 Menú principal: PROVEEDORES
-    {
-      id: 44,
-      name: 'PROVEEDORES',
-      label: 'MENUITEMS.PROVEEDORES.TEXT',
-      icon: 'fa-solid fa-users',
-      subItems: [
-        {
-          id: 45,
-          name: 'LISTAR PROVEEDORES',
-          action: 'view',
-          label: 'MENUITEMS.ENTRADAS.LIST.PROVEEDORES',
-          link: '/inputs/providers',
-        },
-        {
-          id: 46,
-          name: 'AGENDAR RECOJO',
-          action: 'create',
-          label: 'MENUITEMS.PROVEEDORES.LIST.AGENDAR',
-          link: '/providers/schedule-pickup',
-        },
-        {
-          id: 47,
-          name: 'CERTIFICAR PROVEEDOR',
-          action: 'validate',
-          label: 'MENUITEMS.PROVEEDORES.LIST.CERTIFICAR',
-          link: '/providers/certify',
-        },
-        {
-          id: 48,
-          name: 'CUENTAS DEL PROVEEDOR',
-          action: 'view',
-          label: 'MENUITEMS.PROVEEDORES.LIST.CUENTAS',
-          link: '/providers/accounts',
-        },
-        {
-          id: 49,
-          name: 'COMPRAS AL PROVEEDOR',
-          action: 'view',
-          label: 'MENUITEMS.PROVEEDORES.LIST.COMPRAS',
-          link: '/providers/purchases',
-        },
-      ],
-    },
-    {
-      id: 9,
-      name: 'ENTRADAS',
-      label: 'MENUITEMS.CLASIFICADOS.TEXT',
-      icon: 'fa-solid fa-boxes-packing',
-      subItems: [
-        {
-          id: 10,
-          name: 'CLASIFICADOS',
-          action: 'create',
-          label: 'MENUITEMS.CLASIFICADOS.LIST.REALIZARCLASIFICADOS',
-          link: '/classifieds/classified',
-        },
-        {
-          id: 11,
-          name: 'CLASIFICADOS',
-          action: 'view',
-          label: 'MENUITEMS.CLASIFICADOS.LIST.CONSULTARCLASIFICADOS',
-          link: '/classifieds/query-classifieds',
-        },
-      ],
-    },
-    {
-      id: 13,
-      name: 'SALIDAS_TITULO',
-      label: 'MENUITEMS.SALIDAS.TEXT',
-      isTitle: true,
-    },
-    {
-      id: 14,
-      name: 'SALIDAS',
-      label: 'MENUITEMS.VENTAS.TEXT',
-      icon: 'fa-solid fa-cart-plus',
-      subItems: [
-        {
-          id: 15,
-          name: 'CLIENTES',
-          action: 'view',
-          label: 'MENUITEMS.SALIDAS.LIST.CLIENTES',
-          icon: 'bx-calendar',
-          link: '/outputs/clients',
-        },
-        {
-          id: 16,
-          name: 'VENTAS',
-          action: 'create',
-          label: 'MENUITEMS.SALIDAS.LIST.REALIZARVENTAS',
-          icon: 'bx-calendar',
-          link: '/outputs/output',
-        },
-        {
-          id: 17,
-          name: 'VENTAS',
-          action: 'view',
-          label: 'MENUITEMS.SALIDAS.LIST.CONSULTARVENTAS',
-          icon: 'bx-chat',
-          link: '/outputs/query-outputs',
-        },
-      ],
-    },
-    {
-      id: 18,
-      name: 'SALIDAS',
-      label: 'MENUITEMS.TRASLADOS.TEXT',
-      icon: 'fa-solid fa-truck-ramp-box',
-      subItems: [
-        {
-          id: 19,
-          name: 'TRASLADOS',
-          action: 'create',
-          label: 'MENUITEMS.TRASLADOS.LIST.REALIZARTRASLADOS',
-          icon: 'bx-calendar',
-          link: '/transfers/transfer',
-        },
-        {
-          id: 20,
-          name: 'TRASLADOS',
-          action: 'view',
-          label: 'MENUITEMS.TRASLADOS.LIST.CONSULTARTRASLADOS',
-          icon: 'bx-calendar',
-          link: '/transfers/query-transfers',
-        },
-        {
-          id: 21,
-          name: 'RECEPCIONES',
-          action: 'view',
-          label: 'MENUITEMS.TRASLADOS.LIST.CONSULTARRECEPCIONES',
-          icon: 'bx-chat',
-          link: '/transfers/query-receptions',
-        },
-      ],
-    },
-    {
-      id: 22,
-      name: 'CAJA_TITULO',
-      label: 'MENUITEMS.ADMCAJA.TEXT',
-      isTitle: true,
-    },
-    {
-      id: 23,
-      name: 'CAJA',
-      label: 'MENUITEMS.CAJA.TEXT',
-      icon: 'fa-solid fa-vault',
-      subItems: [
-        {
-          id: 24,
-          name: 'CAJA',
-          action: 'create',
-          label: 'MENUITEMS.CAJA.LIST.ADMCAJA',
-          icon: 'bx-calendar',
-          link: '/caja/adm-caja',
-        },
-        {
-          id: 25,
-          name: 'CAJA',
-          action: 'view',
-          label: 'MENUITEMS.CAJA.LIST.COSULTARCAJA',
-          icon: 'bx-calendar',
-          link: '/caja/query-caja',
-        },
-      ],
-    },
-    {
-      id: 26,
-      name: 'CAJA',
-      label: 'MENUITEMS.CUENTAS.TEXT',
-      icon: 'fa-solid fa-comments-dollar',
-      subItems: [
-        {
-          id: 27,
-          name: 'CUENTAS POR PAGAR',
-          action: 'view',
-          label: 'MENUITEMS.CUENTAS.LIST.CUENTASPORPAGAR',
-          icon: 'bx-chat',
-          link: '/accounts/accounts-payable',
-        },
-        {
-          id: 28,
-          name: 'CUENTAS POR COBRAR',
-          action: 'view',
-          label: 'MENUITEMS.CUENTAS.LIST.CUENTASPORCOBRAR',
-          icon: 'bx-chat',
-          link: '/accounts/accounts-receivable',
-        },
-      ],
-    },
-    {
-      id: 29,
-      name: 'KARDEX',
-      action: 'view',
-      label: 'MENUITEMS.INVENTARIO.TEXT',
-      isTitle: true,
-    },
-    {
-      id: 30,
-      name: 'KARDEX',
-      label: 'MENUITEMS.KARDEX.TEXT',
-      icon: 'fa-solid fa-boxes-stacked',
-      subItems: [
-        {
-          id: 31,
-          name: 'KARDEX',
-          action: 'view',
-          label: 'MENUITEMS.KARDEXFISICO.TEXT',
-          link: '/inventories/kardex-fisico',
-        },
-        /* {
-              id: 30,
-              name: 'KARDEX',
-              action: 'view',
-              label: 'MENUITEMS.KARDEXHISTORICO.TEXT',
-              link: '/inventories/kardex',
-            },*/
-      ],
-    },
-
-    {
-      id: 32,
-      name: 'ADMINISTRACION_TITULO',
-      label: 'MENUITEMS.ADMINISTRACION.TEXT',
-      isTitle: true,
-    },
-    {
-      id: 33,
-      name: 'ADMINISTRACION',
-      label: 'MENUITEMS.ALMACEN.TEXT',
-      icon: 'fa-solid fa-warehouse',
-      subItems: [
-        {
-          id: 34,
-          name: 'UND MEDIDA',
-          action: 'view',
-          label: 'MENUITEMS.ALMACEN.LIST.UNIDADMEDIDA',
-          link: '/inventories/units',
-          parentId: 92,
-        },
-        {
-          id: 35,
-          name: 'BALANZAS',
-          action: 'view',
-          label: 'MENUITEMS.ALMACEN.LIST.BALANZAS',
-          link: '/inventories/scales',
-          parentId: 92,
-        },
-        {
-          id: 36,
-          name: 'CATEGORIAS',
-          action: 'view',
-          label: 'MENUITEMS.ALMACEN.LIST.CATEGORIAS',
-          link: '/inventories/categories',
-          parentId: 92,
-        },
-        {
-          id: 37,
-          name: 'PRODUCTOS',
-          action: 'view',
-          label: 'MENUITEMS.ALMACEN.LIST.PRODUCTOS',
-          link: '/inventories/products',
-          parentId: 92,
-        },
-      ],
-    },
-    {
-      id: 38,
-      name: 'ADMINISTRACION',
-      label: 'MENUITEMS.GESTION.TEXT',
-      icon: 'fa-solid fa-gears',
-      subItems: [
-        {
-          id: 39,
-          name: 'USUARIOS',
-          action: 'view',
-          label: 'MENUITEMS.GESTION.LIST.USUARIOS',
-          link: '/managements/users',
-          parentId: 92,
-        },
-        {
-          id: 40,
-          name: 'EMPRESA',
-          action: 'view',
-          label: 'MENUITEMS.GESTION.LIST.EMPRESA',
-          link: '/managements/company',
-          parentId: 92,
-        },
-        {
-          id: 41,
-          name: 'SUCURSALES',
-          action: 'view',
-          label: 'MENUITEMS.GESTION.LIST.SUCURSALES',
-          link: '/managements/sucursales',
-          parentId: 92,
-        },
-        {
-          id: 42,
-          name: 'ALMACENES',
-          action: 'view',
-          label: 'MENUITEMS.GESTION.LIST.ALMACENES',
-          link: '/managements/storages',
-          parentId: 92,
-        },
-        {
-          id: 43,
-          name: 'COMP. TRASPORTE',
-          action: 'view',
-          label: 'MENUITEMS.GESTION.LIST.TRASPORTES',
-          link: '/managements/trasport_company',
-          parentId: 92,
-        },
-      ],
-    },
-  ];
   menuItems: MenuItem[] = [];
 
   @ViewChild('sideMenu') sideMenu?: ElementRef;
