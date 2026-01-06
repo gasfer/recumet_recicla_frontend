@@ -79,31 +79,35 @@ export class KardexExistenciaComponent implements OnInit{
     },
   ];
   searchItems = signal<MenuItem[]>([
-    { 
-      label: 'ENTRADAS Y SALIDAS', icon: 'fa-solid fa-left-right',
-      iconStyle: { 'color': '#3B71CA'},
-      command: () => {
-        this.paramsSearch().type_kardex = '';
-        this.getAllAndSearchKardex(1,this.rows());
-      }
-    },
-    { 
-      label: 'ENTRADAS', icon: 'fa-solid fa-arrow-left', 
-      iconStyle: { 'color': '#14A44D'},
-      command: () => {
-        this.paramsSearch().type_kardex = 'INPUT';
-        this.getAllAndSearchKardex(1,this.rows());
-      } 
-    },
-    { 
-      label: 'SALIDAS', icon: 'fa-solid fa-arrow-right', 
-      iconStyle: { 'color': '#DC4C64'},
-      command: () => {
-        this.paramsSearch().type_kardex = 'OUTPUT';
-        this.getAllAndSearchKardex(1,this.rows());
-      } 
-    },
-  ]);
+  {
+    label: 'ENTRADAS Y SALIDAS',
+    icon: 'fa-solid fa-left-right',
+    iconStyle: { color: '#3B71CA' },
+    command: () => {
+      this.paramsSearch().type_kardex = '';
+      this.getAllAndSearchKardex(1, this.rows());
+    }
+  },
+  {
+    label: 'ENTRADAS',
+    icon: 'fa-solid fa-arrow-left',
+    iconStyle: { color: '#14A44D' },
+    command: () => {
+      this.paramsSearch().type_kardex = 'INPUT';
+      this.getAllAndSearchKardex(1, this.rows());
+    }
+  },
+  {
+    label: 'SALIDAS',
+    icon: 'fa-solid fa-arrow-right',
+    iconStyle: { color: '#DC4C64' },
+    command: () => {
+      this.paramsSearch().type_kardex = 'OUTPUT';
+      this.getAllAndSearchKardex(1, this.rows());
+    }
+  }
+]);
+
   formReport:UntypedFormGroup = this.fb.group({
     filterBy: ['YEAR'],
     dates: [new Date(), [Validators.required]],
@@ -130,17 +134,17 @@ export class KardexExistenciaComponent implements OnInit{
     { field: `saldo`, header: 'SALDO' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
      },
-    
+
     { field: `cost_unitario`, header: 'P.U.' , style:'min-width:90px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
       tagValue: (val:string)=>  this.pipeNumber.transform( val != 'null' ? Number(val) : Number(0),this.decimal()),
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  'fa-solid fa-sack-dollar'
     },
-    
+
     { field: `cost_input`, header: 'ENTRADA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
     },
-    
+
     { field: `cost_output`, header: 'SALIDA' , style:'min-width:90px;max-width:120px;text-align: center;', tooltip: true ,
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
      },
@@ -153,19 +157,26 @@ export class KardexExistenciaComponent implements OnInit{
   ]);
   fieldSort = signal('date');
   order     = signal('DESC');
+ngOnInit(): void {
+  this.activatedRoute.queryParams.subscribe(params => {
+    const { p: id_product } = params;
+    this.findProduct(id_product);
+  });
 
-  ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe(params => {
-      const {p:id_product} = params;
-      this.findProduct(id_product);
-    })
-    const storagesList = this.validatorsService.storages();
-    if (storagesList.length > 0) {
-      this.formReport.patchValue({ id_storage: storagesList[0].id });
-    }
-    this.getAllProviders();
+  // 👉 RANGO COMPLETO: inicio del sistema → hoy
+  this.formReport.patchValue({
+    filterBy: 'RANGE',
+    dates: [new Date('2020-01-01'), new Date()], // 🔥 ajusta si tu sistema inició en otra fecha
+    id_sucursal: this.validatorsService.id_sucursal()
+  });
+
+  const storagesList = this.validatorsService.storages();
+  if (storagesList.length > 0) {
+    this.formReport.patchValue({ id_storage: storagesList[0].id });
   }
 
+  this.getAllProviders();
+}
   getAllAndSearchKardex(page: number, limit: number,type: string = '', query: string = '') {
     if(!this.productSelect()) return;
     this.formReport.patchValue({id_sucursal:this.validatorsService.id_sucursal()});
@@ -174,76 +185,87 @@ export class KardexExistenciaComponent implements OnInit{
     this.formParamsByForm();
     if(!query) {this.loading.set(true);} //not loading in search
     this.kardexService.getAllAndSearchKardex(page,limit,this.paramsSearch(),type,query,this.fieldSort(),this.order()).subscribe({
-      next: (resp) => {
-        this.kardexes.set(resp.kardexes);
-         this.kardexes()!.data.forEach((kardex) => {
-          kardex.options =  [
-            {
-              label:'',icon:'fas fa-eye',
-              tooltip: 'Ver',
-              class:'p-button-rounded p-button-success p-button-sm',
-              eventClick: () => {
-                Swal.fire({
-                  title: 'Estamos cargando los datos',
-                  html: 'Un momento, por favor.',
-                  didOpen: () => {
-                    console.log(kardex);
-                    
-                    Swal.showLoading();
-                    new Promise((resolve, reject) => {
-                      switch (kardex.type_movement) {
-                        case 'INPUT':
-                            this.inputsService.getInputById(kardex.id_movement).subscribe({
-                              next: (resp) => {
-                                this.inputsService.detailsSubs$.next(resp.input);
-                                this.inputsService.showModalDetailsInput = true;
-                                Swal.close();
-                              },
-                              error: (err) => Swal.close()
-                            })
-                          break;
-                        case 'OUTPUT':
-                          this.outputService.getOutputById(kardex.id_movement).subscribe({
-                            next: (resp) => {
-                              this.outputService.detailsSubs$.next(resp.output);
-                              this.outputService.showModalDetailsInput = true;
-                              Swal.close();
-                            },
-                            error: (err) => Swal.close()
-                          });  
-                          break; 
-                        case 'CLASIFIED':   
-                          this.classifiedService.getClassifiedById(kardex.id_movement).subscribe({
-                            next: (resp) => {
-                              this.classifiedService.detailsSubs$.next(resp.classified);
-                              this.classifiedService.showModalDetailsClassified = true;
-                              Swal.close();
-                            },
-                            error: (err) => Swal.close()
-                          });
-                          break;
-                        case 'TRANSFER':   
-                          this.transfersService.getTransferById(kardex.id_movement).subscribe({
-                            next: (resp) => {
-                              this.transfersService.detailsSubs$.next(resp.transfer);
-                              this.transfersService.showModalDetailsTransfer = true;
-                              Swal.close();
-                            },
-                            error: (err) => Swal.close()
-                          });
-                          break;   
-                        default:
-                          break;
-                      }
-                    });
-                  },
-                });
-                
+    next: (resp) => {
+
+  // 🔥 1. Filtrar SOLO saldos distintos de cero
+  const kardexesFiltrados: Kardexes = {
+    ...resp.kardexes,
+    data: resp.kardexes.data.filter(
+      (kardex: Kardex) => Number(kardex.saldo) !== 0
+    )
+  };
+
+  // 🔥 2. Asignar datos ya filtrados
+  this.kardexes.set(kardexesFiltrados);
+
+  // 🔥 3. Mantener exactamente la misma lógica de opciones
+  this.kardexes()!.data.forEach((kardex) => {
+    kardex.options = [
+      {
+        label: '',
+        icon: 'fas fa-eye',
+        tooltip: 'Ver',
+        class: 'p-button-rounded p-button-success p-button-sm',
+        eventClick: () => {
+          Swal.fire({
+            title: 'Estamos cargando los datos',
+            html: 'Un momento, por favor.',
+            didOpen: () => {
+              console.log(kardex);
+              Swal.showLoading();
+
+              switch (kardex.type_movement) {
+                case 'INPUT':
+                  this.inputsService.getInputById(kardex.id_movement).subscribe({
+                    next: (resp) => {
+                      this.inputsService.detailsSubs$.next(resp.input);
+                      this.inputsService.showModalDetailsInput = true;
+                      Swal.close();
+                    },
+                    error: () => Swal.close()
+                  });
+                  break;
+
+                case 'OUTPUT':
+                  this.outputService.getOutputById(kardex.id_movement).subscribe({
+                    next: (resp) => {
+                      this.outputService.detailsSubs$.next(resp.output);
+                      this.outputService.showModalDetailsInput = true;
+                      Swal.close();
+                    },
+                    error: () => Swal.close()
+                  });
+                  break;
+
+                case 'CLASIFIED':
+                  this.classifiedService.getClassifiedById(kardex.id_movement).subscribe({
+                    next: (resp) => {
+                      this.classifiedService.detailsSubs$.next(resp.classified);
+                      this.classifiedService.showModalDetailsClassified = true;
+                      Swal.close();
+                    },
+                    error: () => Swal.close()
+                  });
+                  break;
+
+                case 'TRANSFER':
+                  this.transfersService.getTransferById(kardex.id_movement).subscribe({
+                    next: (resp) => {
+                      this.transfersService.detailsSubs$.next(resp.transfer);
+                      this.transfersService.showModalDetailsTransfer = true;
+                      Swal.close();
+                    },
+                    error: () => Swal.close()
+                  });
+                  break;
               }
             }
-          ]
-        });
-      },
+          });
+        }
+      }
+    ];
+  });
+},
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)
     });
@@ -258,7 +280,7 @@ export class KardexExistenciaComponent implements OnInit{
             if(resp.product){
               this.selectProduct(resp.product);
               this.getAllAndSearchKardex(1,this.rows())
-            } 
+            }
           },
         });
   }
@@ -276,8 +298,8 @@ export class KardexExistenciaComponent implements OnInit{
 
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal, id_provider, id_product ,id_storage, dates} = this.formReport.value;      
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+      const { filterBy, id_sucursal, id_provider, id_product ,id_storage, dates} = this.formReport.value;
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_kardex: params.type_kardex,
@@ -288,6 +310,7 @@ export class KardexExistenciaComponent implements OnInit{
         filterBy: filterBy,
         date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
+        include_zero: false
       }
     });
   }
@@ -314,7 +337,7 @@ export class KardexExistenciaComponent implements OnInit{
     this.query.set(query);
     this.getAllAndSearchKardex(1,this.rows(),this.type(),this.query());
   }
-  
+
 
   onChangeTypesFilter() {
     const type_filter = this.formReport.get('filterBy')?.value;
@@ -405,8 +428,8 @@ export class KardexExistenciaComponent implements OnInit{
       id_sucursal: '',
       id_provider: '',
       type_kardex: '',
-      id_storage: '',  
-      id_product: '',  
+      id_storage: '',
+      id_product: '',
     });
   }
 }

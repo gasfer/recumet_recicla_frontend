@@ -38,7 +38,7 @@ export interface Kardex {
     storage:         Storage;
     product:         Product;
     options?:        Options[];
-    
+
 }
 
 export interface Product {
@@ -82,4 +82,5 @@ export interface FormSearchKardex {
     id_storage:    string;
     id_provider:   string;
     id_product:    string;
+    include_zero?: boolean;
 }

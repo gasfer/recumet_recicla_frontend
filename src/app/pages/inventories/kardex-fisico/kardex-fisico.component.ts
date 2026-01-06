@@ -42,7 +42,8 @@ export class KardexFisicoComponent {
     id_provider: '',
     id_storage: '',
     id_sucursal: '',
-    type_kardex: ''
+    type_kardex: '',
+    include_zero: false
   });
   types_filtrado    = signal([
     {name: 'DIA', code: 'DAY'},
@@ -105,7 +106,7 @@ export class KardexFisicoComponent {
 
 
 
-  ngOnInit(): void {
+  /*ngOnInit(): void {
     this.getAllProviders();
     this.getAllAndSearchKardex(1,this.rows());
     const storagesList = this.validatorsService.storages();
@@ -114,20 +115,63 @@ export class KardexFisicoComponent {
       this.getAllAndSearchKardex(1,this.rows());
     }
   }
+*/
+
+ngOnInit(): void {
+  this.getAllProviders();
+
+  // 👉 Rango completo desde el inicio hasta hoy
+  this.formReport.patchValue({
+    filterBy: 'RANGE',
+    dates: [new Date('2025-01-01'), new Date()],
+    id_sucursal: this.validatorsService.id_sucursal()
+  });
+
+  const storagesList = this.validatorsService.storages();
+  if (storagesList.length > 0) {
+    this.formReport.patchValue({
+      id_storage: storagesList[0].id
+    });
+  }
+
+  // 👉 Cargar kardex histórico completo
+  this.getAllAndSearchKardex(1, this.rows());
+}
+
 
   getAllAndSearchKardex(page: number, limit: number,type: string = '', query: string = '') {
     this.formReport.patchValue({id_sucursal:this.validatorsService.id_sucursal()});
     this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
+    if (!this.formReport.valid) return;
     this.formParamsByForm();
-    if(!query) {this.loading.set(true);} //not loading in search
-    this.kardexService.getAllAndSearchKardexFisico(page,limit,this.paramsSearch(),type,query,this.fieldSort(),this.order()).subscribe({
-      next: (resp) => {
-        this.kardexes.set(resp.kardexes);
-      },
-      complete: () =>  this.loading.set(false),
-      error: () => this.loading.set(false)
-    });
+    if (!query) {
+      this.loading.set(true);
+    } //not loading in search
+    this.kardexService
+      .getAllAndSearchKardexFisico(
+        page,
+        limit,
+        this.paramsSearch(),
+        type,
+        query,
+        this.fieldSort(),
+        this.order()
+      )
+      .subscribe({
+        next: (resp) => {
+          // 🔥 Filtrar solo saldos distintos o mayores a 0
+          const filteredData = {
+            ...resp.kardexes,
+            data: resp.kardexes.data.filter(
+              (item: any) => Number(item.quantity_saldo) !== 0
+            ),
+          };
+
+          this.kardexes.set(filteredData);
+        },
+        complete: () => this.loading.set(false),
+        error: () => this.loading.set(false),
+      });
   }
 
   suggestedProduct(txtSearchProduct: string){
@@ -163,23 +207,42 @@ export class KardexFisicoComponent {
     this.formReport.get('id_product')?.setValue(null);
   }
 
-  formParamsByForm() {
-    this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal, id_provider, id_product ,id_storage, dates} = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
-      const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
-      return {
-        type_kardex: params.type_kardex,
-        id_sucursal: id_sucursal ? id_sucursal : '',
-        id_storage : id_storage ? id_storage : '',
-        id_provider: id_provider ? id_provider : '',
-        id_product : id_product ? id_product : '',
-        filterBy: filterBy,
-        date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
-        date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
-      }
-    });
-  }
+ formParamsByForm() {
+  // Helper para formatear con coma decimal
+  const formatDecimalComma = (value: number, decimals: number = 2): string => {
+    return new Intl.NumberFormat('es-ES', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }).format(Number(value ?? 0));
+  };
+
+  this.paramsSearch.update((params) => {
+    const { filterBy, id_sucursal, id_provider, id_product, id_storage, dates, quantity } = this.formReport.value;
+
+    const formatDate1 = filterBy === 'MONTH' ? 'MM' : filterBy === 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
+    const formatDate2 = filterBy === 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
+
+    return {
+      type_kardex: params.type_kardex,
+      id_sucursal: id_sucursal ? id_sucursal : '',
+      id_storage: id_storage ? id_storage : '',
+      id_provider: id_provider ? id_provider : '',
+      id_product: id_product ? id_product : '',
+      filterBy: filterBy,
+      date1: filterBy === 'RANGE'
+        ? moment(dates[0]).format(formatDate1)
+        : moment(dates).format(formatDate1),
+      date2: filterBy === 'RANGE'
+        ? dates[1] ? moment(dates[1]).format(formatDate1) : ''
+        : moment(dates).format(formatDate2),
+      include_zero: false,
+
+      // Ejemplo de número con coma decimal
+      quantity: quantity ? formatDecimalComma(quantity) : undefined
+    };
+  });
+}
+
 
   paginate($rows:any) {
     const {rows, page} = $rows;
