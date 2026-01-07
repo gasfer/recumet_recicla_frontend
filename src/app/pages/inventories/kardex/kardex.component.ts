@@ -10,7 +10,6 @@ import { ColsTable } from 'src/app/core/components/interfaces/OptionsTable.inter
 import { Product } from '../interfaces/products.interface';
 import { ProductsService } from '../services/products.service';
 import Swal from 'sweetalert2';
-import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-kardex',
@@ -26,14 +25,18 @@ import { DecimalPipe } from '@angular/common';
 })
 export class KardexComponent implements OnInit {
 
-  // Servicios inyectados
+  // =====================
+  // INYECCIÓN DE SERVICIOS
+  // =====================
   fb = inject(FormBuilder);
   validatorsService = inject(ValidatorsService);
   providersService = inject(ProvidersService);
   kardexService = inject(KardexService);
   productService = inject(ProductsService);
 
-  // Signals
+  // =========
+  // SIGNALS
+  // =========
   providers = signal<{ name: string; code: string }[]>([]);
   loading = signal(false);
   rows = signal(50);
@@ -41,12 +44,15 @@ export class KardexComponent implements OnInit {
   type = signal('');
   query = signal('');
   kardexes = signal<Kardexes | undefined>(undefined);
+
   loadingSearchProduct = signal(false);
   txtSearchProduct = signal('');
   suggestedProducts = signal<Product[]>([]);
   productSelect = signal<Product | undefined>(undefined);
+
   decimalLength = signal(this.validatorsService.decimalLength());
   decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+
   paramsSearch = signal<FormSearchKardex>({
     filterBy: 'YEAR',
     date1: '',
@@ -58,9 +64,22 @@ export class KardexComponent implements OnInit {
     type_kardex: ''
   });
 
-  // Pipe para números con coma decimal
-  pipeNumber = new DecimalPipe('es-ES');
+  // =========================
+  // FORMATO NUMÉRICO (ÚNICO)
+  // =========================
+  formatNumeric(value: any): string {
+    const num = Number(value);
+    if (value === null || value === undefined || isNaN(num)) return '0,00';
 
+    return num.toLocaleString('de-DE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  // =====================
+  // TIPOS DE FILTRO
+  // =====================
   types_filtrado = signal([
     { name: 'DIA', code: 'DAY' },
     { name: 'MES', code: 'MONTH' },
@@ -68,36 +87,41 @@ export class KardexComponent implements OnInit {
     { name: 'RANGO', code: 'RANGE' },
   ]);
 
-  // Botones
+  // =====================
+  // BOTONES
+  // =====================
   buttonItems: MenuItem[] = [
     {
       label: 'Excel',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D' },
+      iconStyle: { color: '#14A44D' },
       command: () => this.printExcelReport()
     },
   ];
 
   searchItems = signal<MenuItem[]>([
     {
-      label: 'ENTRADAS Y SALIDAS', icon: 'fa-solid fa-left-right',
-      iconStyle: { 'color': '#3B71CA' },
+      label: 'ENTRADAS Y SALIDAS',
+      icon: 'fa-solid fa-left-right',
+      iconStyle: { color: '#3B71CA' },
       command: () => {
         this.paramsSearch().type_kardex = '';
         this.getAllAndSearchKardex(1, this.rows());
       }
     },
     {
-      label: 'ENTRADAS', icon: 'fa-solid fa-arrow-left',
-      iconStyle: { 'color': '#14A44D' },
+      label: 'ENTRADAS',
+      icon: 'fa-solid fa-arrow-left',
+      iconStyle: { color: '#14A44D' },
       command: () => {
         this.paramsSearch().type_kardex = 'INPUT';
         this.getAllAndSearchKardex(1, this.rows());
       }
     },
     {
-      label: 'SALIDAS', icon: 'fa-solid fa-arrow-right',
-      iconStyle: { 'color': '#DC4C64' },
+      label: 'SALIDAS',
+      icon: 'fa-solid fa-arrow-right',
+      iconStyle: { color: '#DC4C64' },
       command: () => {
         this.paramsSearch().type_kardex = 'OUTPUT';
         this.getAllAndSearchKardex(1, this.rows());
@@ -105,7 +129,9 @@ export class KardexComponent implements OnInit {
     },
   ]);
 
-  // Formulario
+  // =====================
+  // FORMULARIO
+  // =====================
   formReport: UntypedFormGroup = this.fb.group({
     filterBy: ['YEAR'],
     dates: [new Date(), [Validators.required]],
@@ -116,82 +142,134 @@ export class KardexComponent implements OnInit {
     id_product: ['']
   });
 
-  // Columnas de la tabla
+  // =====================
+  // COLUMNAS DE LA TABLA
+  // =====================
   cols = signal<ColsTable[]>([
     {
-      field: 'type', header: 'TIPO', style: 'min-width:90px;max-width:90px;', tooltip: false, isTag: true,
-      tagValue: (val: string) => val == 'INPUT' ? 'ENTRADA' : 'SALIDA',
-      tagColor: (val: string) => val == 'INPUT' ? 'success' : 'danger',
-      tagIcon: (val: string) => val == 'INPUT' ? 'fa-solid fa-arrow-left' : 'fa-solid fa-arrow-right'
+      field: 'type',
+      header: 'TIPO',
+      style: 'min-width:90px;max-width:90px;text-align:center;',
+      tooltip: false,
+      isTag: true,
+      tagValue: (val: string) => val === 'INPUT' ? 'ENTRADA' : 'SALIDA',
+      tagColor: (val: string) => val === 'INPUT' ? 'success' : 'danger',
+      tagIcon: (val: string) =>
+        val === 'INPUT'
+          ? 'fa-solid fa-arrow-left'
+          : 'fa-solid fa-arrow-right'
     },
-    { field: 'date', header: 'FECHA', style: 'min-width:100px;max-width:100px;', tooltip: true, isDate: true },
-    { field: `detalle`, header: 'DETALLE', style: 'min-width:180px;max-width:180px;', tooltip: true, isText: true },
-    { field: `product.name`, header: 'PRODUCTO', style: 'min-width:180px;max-width:180px;', tooltip: true, isText: true },
-    { field: `product.unit.name`, header: 'UND', style: 'min-width:80px;max-width:80px;', tooltip: true, isText: true },
-    { field: `quantity_input`, header: 'CANT ENTRADA', style: 'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
+    {
+      field: 'date',
+      header: 'FECHA',
+      style: 'min-width:100px;max-width:100px;',
+      tooltip: true,
+      isDate: true
+    },
+    {
+      field: 'detalle',
+      header: 'DETALLE',
+      style: 'min-width:180px;max-width:180px;',
+      tooltip: true,
+      isText: true
+    },
+    {
+      field: 'product.name',
+      header: 'PRODUCTO',
+      style: 'min-width:180px;max-width:180px;',
+      tooltip: true,
+      isText: true
+    },
+    {
+      field: 'product.unit.name',
+      header: 'UND',
+      style: 'min-width:80px;max-width:80px;text-align:center;',
+      tooltip: true,
+      isText: true
+    },
+    {
+      field: 'quantity_input',
+      header: 'CANT ENTRADA',
+      style: 'min-width:110px;max-width:120px;text-align:right;',
+      tooltip: true,
       isValueUpdate: true,
-      tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal())
+      tagValue: (val: number) => this.formatNumeric(val)
     },
-    { field: `quantity_output`, header: 'CANT SALIDA', style: 'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
+    {
+      field: 'quantity_output',
+      header: 'CANT SALIDA',
+      style: 'min-width:110px;max-width:120px;text-align:right;',
+      tooltip: true,
       isValueUpdate: true,
-      tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal())
+      tagValue: (val: number) => this.formatNumeric(val)
     },
-    { field: `quantity_saldo`, header: 'CANT SALDO', style: 'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
+    {
+      field: 'quantity_saldo',
+      header: 'CANT SALDO',
+      style: 'min-width:110px;max-width:120px;text-align:right;',
+      tooltip: true,
       isValueUpdate: true,
-      tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal())
-    },
+      tagValue: (val: number) => this.formatNumeric(val)
+    }
   ]);
 
   fieldSort = signal('date');
-  order = signal('DESC');
+  order = signal<'ASC' | 'DESC'>('DESC');
 
+  // =====================
+  // CICLO DE VIDA
+  // =====================
   ngOnInit(): void {
     this.getAllProviders();
+
     const storagesList = this.validatorsService.storages();
     if (storagesList.length > 0) {
       this.formReport.patchValue({ id_storage: storagesList[0].id });
     }
+
     this.getAllAndSearchKardex(1, this.rows());
   }
 
+  // =====================
   // FUNCIONES PRINCIPALES
+  // =====================
   getAllAndSearchKardex(page: number, limit: number, type: string = '', query: string = '') {
     this.formReport.patchValue({ id_sucursal: this.validatorsService.id_sucursal() });
     this.formReport.markAllAsTouched();
     if (!this.formReport.valid) return;
+
     this.formParamsByForm();
     if (!query) this.loading.set(true);
-    this.kardexService.getAllAndSearchKardex(page, limit, this.paramsSearch(), type, query, this.fieldSort(), this.order()).subscribe({
-      next: (resp) => this.kardexes.set(resp.kardexes),
-      complete: () => this.loading.set(false),
-      error: () => this.loading.set(false)
-    });
+
+    this.kardexService
+      .getAllAndSearchKardex(page, limit, this.paramsSearch(), type, query, this.fieldSort(), this.order())
+      .subscribe({
+        next: (resp) => this.kardexes.set(resp.kardexes),
+        complete: () => this.loading.set(false),
+        error: () => this.loading.set(false)
+      });
   }
 
-  suggestedProduct(txtSearchProduct: string) {
-    if (txtSearchProduct.length == 0) {
-      this.txtSearchProduct.set('');
+  suggestedProduct(txt: string) {
+    if (!txt) {
       this.suggestedProducts.set([]);
       return;
     }
+
     this.loadingSearchProduct.set(true);
-    this.txtSearchProduct.set(txtSearchProduct);
-    this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1, 1000, true, 'pos', txtSearchProduct)
-      .subscribe({
-        next: (resp) => {
-          this.suggestedProducts.set(resp.products.data);
-          this.loadingSearchProduct.set(false);
-        },
-        error: () => this.loadingSearchProduct.set(false)
-      });
+    this.productService.getAllAndSearch(1, 1000, true, 'pos', txt).subscribe({
+      next: resp => {
+        this.suggestedProducts.set(resp.products.data);
+        this.loadingSearchProduct.set(false);
+      },
+      error: () => this.loadingSearchProduct.set(false)
+    });
   }
 
   selectProduct(product: Product) {
     this.suggestedProducts.set([]);
-    this.txtSearchProduct.set('');
     this.productSelect.set(product);
-    this.formReport.get('id_product')?.setValue(this.productSelect()?.id);
+    this.formReport.get('id_product')?.setValue(product.id);
   }
 
   clearSelectProduct() {
@@ -200,118 +278,118 @@ export class KardexComponent implements OnInit {
   }
 
   formParamsByForm() {
-    this.paramsSearch.update((params) => {
+    this.paramsSearch.update(params => {
       const { filterBy, id_sucursal, id_provider, id_product, id_storage, dates } = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
-      const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
+      const formatDate1 = filterBy === 'MONTH' ? 'MM' : filterBy === 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
+      const formatDate2 = filterBy === 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
+
       return {
-        type_kardex: params.type_kardex,
+        ...params,
+        filterBy,
         id_sucursal: id_sucursal ?? '',
         id_storage: id_storage ?? '',
         id_provider: id_provider ?? '',
         id_product: id_product ?? '',
-        filterBy,
-        date1: filterBy == 'RANGE' ? moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
-        date2: filterBy == 'RANGE' ? (dates[1] ? moment(dates[1]).format(formatDate1) : '') : moment(dates).format(formatDate2),
+        date1: filterBy === 'RANGE'
+          ? moment(dates[0]).format(formatDate1)
+          : moment(dates).format(formatDate1),
+        date2: filterBy === 'RANGE'
+          ? dates[1] ? moment(dates[1]).format(formatDate1) : ''
+          : moment(dates).format(formatDate2)
       };
     });
   }
 
-  paginate($rows: any) {
-    const { rows, page } = $rows;
-    this.rows.set(rows);
-    this.page.set(page);
+  paginate(e: any) {
+    this.rows.set(e.rows);
+    this.page.set(e.page);
     this.getAllAndSearchKardex(this.page(), this.rows(), this.type(), this.query());
   }
 
-  customSort($sort: any) {
-    const { field, order } = $sort;
-    this.fieldSort.set(field);
-    this.order.set(order);
+  customSort(e: any) {
+    this.fieldSort.set(e.field);
+    this.order.set(e.order);
   }
 
-  search($query: any) {
-    const { type, query } = $query;
-    this.type.set(type);
-    this.query.set(query);
+  search(e: any) {
+    this.type.set(e.type);
+    this.query.set(e.query);
     this.getAllAndSearchKardex(1, this.rows(), this.type(), this.query());
   }
 
   onChangeTypesFilter() {
-    const type_filter = this.formReport.get('filterBy')?.value;
-    if (type_filter == 'RANGE') this.formReport.get('dates')?.setValue([new Date()]);
-    else this.formReport.get('dates')?.setValue(new Date());
+    const type = this.formReport.get('filterBy')?.value;
+    this.formReport.get('dates')?.setValue(type === 'RANGE' ? [new Date()] : new Date());
   }
 
   getAllProviders() {
     this.providersService.getAllAndSearch(1, 10000, true).subscribe({
-      next: (resp) => {
-        this.providers.set([]);
-        resp.providers.data.forEach(provider => {
-          this.providers.update((providers) => [
-            ...providers,
-            { name: `${provider.full_names} - ${provider.number_document ?? ''}`, code: provider.id.toString() },
-          ]);
-        });
+      next: resp => {
+        this.providers.set(
+          resp.providers.data.map(p => ({
+            name: `${p.full_names} - ${p.number_document ?? ''}`,
+            code: p.id.toString()
+          }))
+        );
       },
       error: () => this.providers.set([])
     });
   }
 
+  // =====================
+  // REPORTES
+  // =====================
   printPdfReport() {
-    this.formReport.markAllAsTouched();
     if (!this.formReport.valid) return;
     this.formParamsByForm();
+
     Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
+      title: 'Generando Reporte',
       didOpen: () => {
         Swal.showLoading();
         this.kardexService.getReportPdf(this.paramsSearch(), this.fieldSort(), this.order()).subscribe({
-          next: (data) => {
-            const file = new Blob([data], { type: 'application/pdf' });
-            const fileURL = URL.createObjectURL(file);
+          next: data => {
+            const fileURL = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
             window.open(fileURL);
             Swal.close();
           },
-          error: () => Swal.close(),
+          error: () => Swal.close()
         });
-      },
+      }
     });
   }
 
   printExcelReport() {
-    this.formReport.markAllAsTouched();
     if (!this.formReport.valid) return;
     this.formParamsByForm();
+
     Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
+      title: 'Generando Reporte',
       didOpen: () => {
         Swal.showLoading();
         this.kardexService.getReportExcel(this.paramsSearch(), this.fieldSort(), this.order()).subscribe({
-          next: (data) => {
-            const file = new Blob([data], { type: 'application/vnd.ms-excel' });
-            const fileURL = URL.createObjectURL(file);
+          next: data => {
+            const fileURL = URL.createObjectURL(
+              new Blob([data], { type: 'application/vnd.ms-excel' })
+            );
             window.open(fileURL);
             Swal.close();
           },
-          error: () => Swal.close(),
+          error: () => Swal.close()
         });
-      },
+      }
     });
   }
 
   clearInputs() {
-    this.formReport.patchValue({
+    this.formReport.reset({
       filterBy: 'YEAR',
       dates: new Date(),
-      date_range: '',
       id_sucursal: '',
       id_provider: '',
       type_kardex: '',
       id_storage: '',
-      id_product: '',
+      id_product: ''
     });
   }
 }
