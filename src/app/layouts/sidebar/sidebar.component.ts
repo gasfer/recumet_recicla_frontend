@@ -501,29 +501,76 @@ MENU: MenuItem[] = [
     ],
   },
 
-  // 📦 INVENTARIO
-  {
-    id: 350,
-    name: 'KARDEX',
-    action: 'view',
-    label: 'MENUITEMS.INVENTARIO.TEXT',
-    isTitle: true,
-  },
-  {
-    id: 351,
-    name: 'KARDEX',
-    label: 'MENUITEMS.KARDEX.TEXT',
-    icon: 'fa-solid fa-boxes-stacked',
-    subItems: [
-      {
-        id: 352,
-        name: 'KARDEX',
-        action: 'view',
-        label: 'MENUITEMS.KARDEXFISICO.TEXT',
-        link: '/inventories/kardex-fisico',
-      },
-    ],
-  },
+// 📦 INVENTARIO
+{
+  id: 350,
+  name: 'INVENTARIO',
+  action: 'view',
+  label: 'MENUITEMS.INVENTARIO.TEXT',
+  isTitle: true,
+},
+{
+  id: 351,
+  name: 'INVENTARIO',
+  label: 'MENUITEMS.INVENTARIO.TEXT',
+  icon: 'fa-solid fa-boxes-stacked',
+  subItems: [
+    {
+      id: 352,
+      name: 'INSUMOS',
+      action: 'view',
+      label: 'Inventario Insumos',
+      link: '/inventories/insumos',
+    },
+    {
+      id: 353,
+      name: 'AF-MAQ',
+      action: 'view',
+      label: 'AF Maquinaria',
+      link: '/inventories/activos-fijos-maquinaria',
+    },
+    {
+      id: 354,
+      name: 'AF-VEH',
+      action: 'view',
+      label: 'AF Vehículos',
+      link: '/inventories/activos-fijos-vehiculos',
+    },
+    {
+      id: 355,
+      name: 'AF-MOB',
+      action: 'view',
+      label: 'AF Muebles y Oficina',
+      link: '/inventories/activos-fijos-muebles-oficina',
+    },
+  ],
+},
+
+// 📊 KARDEX
+{
+  id: 356,
+  name: 'KARDEX',
+  label: 'MENUITEMS.KARDEX.TEXT',
+  icon: 'fa-solid fa-warehouse',
+  subItems: [
+    {
+      id: 357,
+      name: 'KARDEX-FIS',
+      action: 'view',
+      label: 'Kardex Materia Prima',
+      link: '/inventories/kardex-fisico',
+    },
+       {
+      id: 359,
+      name: 'KARDEX-PT',
+      action: 'view',
+      label: 'Kardex Prod. Terminados',
+      link: '/inventories/kardex-productos-terminados',
+    },
+
+  ],
+},
+
 
   // 🟣 ADMINISTRACIÓN
   {
