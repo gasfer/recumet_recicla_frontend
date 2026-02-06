@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { MenuItem } from 'primeng/api';
+import { LazyLoadEvent, MenuItem } from 'primeng/api';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ProvidersService } from '../../inputs/services/providers.service';
 import { FormSearchKardex, Kardexes } from '../interfaces/kardex.interface';
@@ -11,31 +11,41 @@ import { Product } from '../interfaces/products.interface';
 import { ProductsService } from '../services/products.service';
 import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
+
 @Component({
   selector: 'app-kardex-fisico',
   templateUrl: './kardex-fisico.component.html',
-  styles: [
-  ]
+  styles: [],
 })
 export class KardexFisicoComponent {
-  fb                    = inject( FormBuilder);
-  validatorsService     = inject( ValidatorsService);
-  providersService      = inject( ProvidersService);
-  kardexService         = inject( KardexService );
-  productService        = inject( ProductsService );
-  providers             = signal<{name:string, code:string}[]>([]);
-  loading               = signal(false);
-  rows                  = signal(50);
-  page                  = signal(1);
-  type                  = signal('');
-  query                 = signal('');
-  kardexes              = signal<Kardexes|undefined>(undefined);
-  loadingSearchProduct  = signal(false);
-  txtSearchProduct      = signal('');
-  suggestedProducts     = signal<Product[]>([]);
-  productSelect         = signal<Product|undefined>(undefined);
-  paramsSearch      = signal<FormSearchKardex>({
-    filterBy:'YEAR',
+  fb = inject(FormBuilder);
+  validatorsService = inject(ValidatorsService);
+  providersService = inject(ProvidersService);
+  kardexService = inject(KardexService);
+  productService = inject(ProductsService);
+
+  providers = signal<{ name: string; code: string }[]>([]);
+  loading = signal(false);
+  rows = signal(50);
+  page = signal(1);
+  type = signal('');
+  query = signal('');
+  kardexes = signal<Kardexes | undefined>(undefined);
+
+  // Signals para el dropdown de productos (eliminadas las antiguas)
+  loadingSearchProduct = signal(false);
+  productSelect = signal<Product | undefined>(undefined);
+  dropdownProducts = signal<Product[]>([]);
+  totalProducts = signal(0);
+  dropdownPage = signal(1);
+  dropdownLimit = signal(50);
+  dropdownFilter = signal('');
+
+  // Propiedad para el ngModel del dropdown
+  productSelectValue: Product | null = null;
+
+  paramsSearch = signal<FormSearchKardex>({
+    filterBy: 'YEAR',
     date1: '',
     date2: '',
     id_product: '',
@@ -43,110 +53,239 @@ export class KardexFisicoComponent {
     id_storage: '',
     id_sucursal: '',
     type_kardex: '',
-    include_zero: false
+    include_zero: false,
   });
-  types_filtrado    = signal([
-    {name: 'DIA', code: 'DAY'},
-    {name: 'MES', code: 'MONTH'},
-    {name: 'AÑO', code: 'YEAR'},
-    {name: 'RANGO', code: 'RANGE'},
+
+
+  types_filtrado = signal([
+    { name: 'DIA', code: 'DAY' },
+    { name: 'MES', code: 'MONTH' },
+    { name: 'AÑO', code: 'YEAR' },
+    { name: 'RANGO', code: 'RANGE' },
   ]);
+
   buttonItems: MenuItem[] = [
     {
       label: 'Excel',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { color: '#14A44D' },
       command: () => {
         this.printExcelReport();
-      }
+      },
     },
   ];
+
   searchItems = signal<MenuItem[]>([
     {
-      label: 'ENTRADAS Y SALIDAS', icon: 'fa-solid fa-left-right',
-      iconStyle: { 'color': '#3B71CA'},
+      label: 'ENTRADAS Y SALIDAS',
+      icon: 'fa-solid fa-left-right',
+      iconStyle: { color: '#3B71CA' },
       command: () => {
         this.paramsSearch().type_kardex = '';
-        this.getAllAndSearchKardex(1,this.rows());
-      }
-    }
+        this.getAllAndSearchKardex(1, this.rows());
+      },
+    },
   ]);
-  formReport:UntypedFormGroup = this.fb.group({
+
+  formReport: UntypedFormGroup = this.fb.group({
     filterBy: ['YEAR'],
     dates: [new Date(), [Validators.required]],
     type_kardex: [''],
-    id_sucursal: ['',[Validators.required]],
-    id_storage: ['',[Validators.required]],
+    id_sucursal: ['', [Validators.required]],
+    id_storage: ['', [Validators.required]],
     id_provider: [''],
-    id_product: ['']
+    id_product: [''],
+    showZeroSaldo: [false] // Agregado si no existe
   });
-  pipeNumber            = new DecimalPipe('en-US');
-  decimalLength     = signal(this.validatorsService.decimalLength());
-  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+
+  pipeNumber = new DecimalPipe('en-US');
+  decimalLength = signal(this.validatorsService.decimalLength());
+  decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+
   cols = signal<ColsTable[]>([
-    { field: 'product.cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true, isLink:true, link:'/inventories/kardex-existencia?p=${value}', field2:'id_product'},
-    { field: `product.name`, header: 'DETALLE' , style:'min-width:180px;max-width:180px;', tooltip: true, isText:true  },
-    { field: `product.unit.siglas`, header: 'UND' , style:'min-width:80px;max-width:80px;', tooltip: true, isText:true  },
-    // { field: `quantity_inicial`, header: 'SALDO INICIAL' , style:'min-width:110px;max-width:120px;text-align: center;', tooltip: true,
-    //   isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
-    //   },
-    { field: `quantity_input`, header: 'ENTRADA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
-      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
-     },
-    { field: `quantity_output`, header: 'SALIDA' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true,
-      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
-      },
-    { field: `quantity_saldo`, header: 'SALDO' , style:'min-width:100px;max-width:120px;text-align: center;', tooltip: true ,
-      isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
-     },
-    // { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
+    {
+      field: 'product.cod',
+      header: 'CÓDIGO',
+      style: 'min-width:100px;max-width:100px;',
+      tooltip: true,
+      isLink: true,
+      link: '/inventories/kardex-existencia?p=${value}',
+      field2: 'id_product',
+    },
+    {
+      field: `product.name`,
+      header: 'DETALLE',
+      style: 'min-width:180px;max-width:180px;',
+      tooltip: true,
+      isText: true,
+    },
+    {
+      field: `product.unit.siglas`,
+      header: 'UND',
+      style: 'min-width:80px;max-width:80px;',
+      tooltip: true,
+      isText: true,
+    },
+    {
+      field: `quantity_input`,
+      header: 'ENTRADA',
+      style: 'min-width:100px;max-width:120px;text-align: center;',
+      tooltip: true,
+      isValueUpdate: true,
+      tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal()),
+    },
+    {
+      field: `quantity_output`,
+      header: 'SALIDA',
+      style: 'min-width:100px;max-width:120px;text-align: center;',
+      tooltip: true,
+      isValueUpdate: true,
+      tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal()),
+    },
+    {
+      field: `quantity_saldo`,
+      header: 'SALDO',
+      style: 'min-width:100px;max-width:120px;text-align: center;',
+      tooltip: true,
+      isValueUpdate: true,
+      tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal()),
+    },
   ]);
+
   fieldSort = signal('product.category.name');
-  order     = signal('desc');
+  order = signal('desc');
 
 
-
-  /*ngOnInit(): void {
+  ngOnInit(): void {
     this.getAllProviders();
-    this.getAllAndSearchKardex(1,this.rows());
+    this.loadDropdownProducts();
+
+    this.formReport.patchValue({
+      filterBy: 'RANGE',
+      dates: [new Date('2025-01-01'), new Date()],
+      id_sucursal: this.validatorsService.id_sucursal()
+    });
+
     const storagesList = this.validatorsService.storages();
     if (storagesList.length > 0) {
-      this.formReport.patchValue({ id_storage: storagesList[0].id });
-      this.getAllAndSearchKardex(1,this.rows());
+      this.formReport.patchValue({
+        id_storage: storagesList[0].id
+      });
     }
+
+    this.getAllAndSearchKardex(1, this.rows());
   }
-*/
 
-ngOnInit(): void {
-  this.getAllProviders();
 
-  // 👉 Rango completo desde el inicio hasta hoy
-  this.formReport.patchValue({
-    filterBy: 'RANGE',
-    dates: [new Date('2025-01-01'), new Date()],
-    id_sucursal: this.validatorsService.id_sucursal()
-  });
+  // === MÉTODOS PARA DROPDOWN DE PRODUCTOS ===
 
-  const storagesList = this.validatorsService.storages();
-  if (storagesList.length > 0) {
-    this.formReport.patchValue({
-      id_storage: storagesList[0].id
+// Método para cargar productos en el dropdown
+  loadDropdownProducts(reset: boolean = false): void {
+    if (reset) {
+      this.dropdownPage.set(1);
+      this.dropdownProducts.set([]);
+    }
+
+    this.loadingSearchProduct.set(true);
+
+    this.productService.getAllAndSearch(
+      this.dropdownPage(),
+      this.dropdownLimit(),
+      true,
+      'pos',
+      this.dropdownFilter()
+    ).subscribe({
+      next: (resp) => {
+        if (reset) {
+          this.dropdownProducts.set(resp.products.data);
+        } else {
+          this.dropdownProducts.update(products => [...products, ...resp.products.data]);
+        }
+        this.totalProducts.set(resp.products.total);
+        this.loadingSearchProduct.set(false);
+      },
+      error: (e) => {
+        this.loadingSearchProduct.set(false);
+      }
     });
   }
 
-  // 👉 Cargar kardex histórico completo
-  this.getAllAndSearchKardex(1, this.rows());
+
+
+  // Evento de filtro del dropdown
+  filterProduct(event: any): void {
+    this.dropdownFilter.set(event.filter);
+    this.loadDropdownProducts(true);
+  }
+
+  // Evento de scroll infinito (carga perezosa)
+  onLazyLoad(event: LazyLoadEvent): void {
+    // Verificar si necesitamos cargar más productos
+    if (this.dropdownProducts().length < this.totalProducts() &&
+        !this.loadingSearchProduct()) {
+      this.dropdownPage.update(page => page + 1);
+      this.loadDropdownProducts();
+    }
+  }
+
+ // Limpiar producto seleccionado - VERSIÓN MEJORADA
+clearSelectProduct(): void {
+  console.log('Limpiando producto seleccionado');
+
+  this.productSelect.set(undefined);
+  this.productSelectValue = null;
+  this.formReport.patchValue({
+    id_product: ''
+  });
+
+  console.log('✓ Producto limpiado, formValue:', this.formReport.get('id_product')?.value);
+
+  // Limpiar el dropdown y recargar
+  this.dropdownFilter.set('');
+  this.dropdownPage.set(1);
+  this.loadDropdownProducts(true);
 }
 
 
-  getAllAndSearchKardex(page: number, limit: number,type: string = '', query: string = '') {
-    this.formReport.patchValue({id_sucursal:this.validatorsService.id_sucursal()});
+// === MÉTODO PARA BUSCAR KARDEX - ASEGURAR QUE USA id_product ===
+
+  getAllAndSearchKardex(
+    page: number,
+    limit: number,
+    type: string = '',
+    query: string = '',
+  ): void {
+    // Asegurar que el id_sucursal está actualizado
+    this.formReport.patchValue({
+      id_sucursal: this.validatorsService.id_sucursal(),
+    });
+
     this.formReport.markAllAsTouched();
-    if (!this.formReport.valid) return;
+    if (!this.formReport.valid) {
+      console.error('Formulario inválido');
+      return;
+    }
+
+    // Extraer valores actuales del formulario para debug
+    const formValues = this.formReport.value;
+    console.log('Formulario valores:', {
+      id_product: formValues.id_product,
+      id_sucursal: formValues.id_sucursal,
+      id_storage: formValues.id_storage,
+      filterBy: formValues.filterBy,
+      dates: formValues.dates
+    });
+
+    // Actualizar paramsSearch con los valores actuales
     this.formParamsByForm();
+
+    // Debug de los parámetros enviados
+    console.log('Parámetros de búsqueda:', this.paramsSearch());
+
     if (!query) {
       this.loading.set(true);
-    } //not loading in search
+    }
+
     this.kardexService
       .getAllAndSearchKardexFisico(
         page,
@@ -155,130 +294,125 @@ ngOnInit(): void {
         type,
         query,
         this.fieldSort(),
-        this.order()
+        this.order(),
       )
       .subscribe({
         next: (resp) => {
-          // 🔥 Filtrar solo saldos distintos o mayores a 0
+          const showZeroSaldo = this.formReport.get('showZeroSaldo')?.value;
           const filteredData = {
             ...resp.kardexes,
-            data: resp.kardexes.data.filter(
-              (item: any) => Number(item.quantity_saldo) !== 0
-            ),
+            data: showZeroSaldo
+              ? resp.kardexes.data.filter(
+                  (item: any) => Number(item.quantity_saldo) <= 0,
+                )
+              : resp.kardexes.data.filter(
+                  (item: any) => Number(item.quantity_saldo) > 0,
+                ),
           };
-
           this.kardexes.set(filteredData);
+          console.log('Kardex cargado:', filteredData.data?.length, 'registros');
         },
         complete: () => this.loading.set(false),
-        error: () => this.loading.set(false),
+        error: (err) => {
+          console.error('Error cargando kardex:', err);
+          this.loading.set(false);
+        },
       });
   }
 
-  suggestedProduct(txtSearchProduct: string){
-    if(txtSearchProduct.length==0) {
-      this.txtSearchProduct.set('');
-      this.suggestedProducts.set([]);
-      return;
-    }
-    this.loadingSearchProduct.set(true);
-    this.txtSearchProduct.set(txtSearchProduct);
-    this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct)
-        .subscribe({
-          next: (resp) => {
-            this.suggestedProducts.set(resp.products.data);
-            this.loadingSearchProduct.set(false);
-          },
-          error: (e) => {
-            this.loadingSearchProduct.set(false);
-          }
-        });
+// === ACTUALIZAR formParamsByForm PARA ASEGURAR QUE id_product SE INCLUYA ===
+
+  formParamsByForm(): void {
+    this.paramsSearch.update((params) => {
+      const {
+        filterBy,
+        id_sucursal,
+        id_provider,
+        id_product,
+        id_storage,
+        dates,
+      } = this.formReport.value;
+
+      const formatDate1 =
+        filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
+      const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
+
+      const newParams = {
+        type_kardex: params.type_kardex,
+        id_sucursal: id_sucursal ? id_sucursal : '',
+        id_storage: id_storage ? id_storage : '',
+        id_provider: id_provider ? id_provider : '',
+        id_product: id_product ? id_product : '', // Esto debe tener el valor correcto
+        filterBy: filterBy,
+        date1:
+          filterBy == 'RANGE'
+            ? moment(dates[0]).format(formatDate1)
+            : moment(dates).format(formatDate1),
+        date2:
+          filterBy == 'RANGE'
+            ? dates[1]
+              ? moment(dates[1]).format(formatDate1)
+              : ''
+            : moment(dates).format(formatDate2),
+      };
+
+      console.log('Parámetros formados:', newParams); // Debug
+      return newParams;
+    });
   }
 
-  selectProduct(product: Product) {
-    this.suggestedProducts.set([]);
-    this.txtSearchProduct.set('');
+
+  // === CORREGIR clearInputs ===
+
+  clearInputs(): void {
+    this.formReport.patchValue({
+      filterBy: 'RANGE',
+      dates: [new Date('2025-01-01'), new Date()],
+      id_sucursal: this.validatorsService.id_sucursal(),
+      id_provider: '',
+      type_kardex: '',
+      id_storage: this.validatorsService.storages().length > 0
+        ? this.validatorsService.storages()[0].id
+        : '',
+      id_product: '', // Asegurar que se limpia
+      showZeroSaldo: false
+    });
+
+    this.clearSelectProduct();
+
+    // Forzar recarga sin filtros
+    setTimeout(() => {
+      this.getAllAndSearchKardex(1, this.rows());
+    }, 100);
+  }
+
+// Evento cuando se selecciona un producto - VERSIÓN MEJORADA
+onProductSelect(product: Product | null): void {
+  console.log('onProductSelect llamado con:', product);
+
+  if (product) {
     this.productSelect.set(product);
-    this.formReport.get('id_product')?.setValue(this.productSelect()?.id);
+    this.productSelectValue = product;
+    this.formReport.patchValue({
+      id_product: product.id
+    });
+    console.log('✓ Producto seleccionado:', {
+      id: product.id,
+      cod: product.cod,
+      name: product.name,
+      formValue: this.formReport.get('id_product')?.value
+    });
+  } else {
+    this.clearSelectProduct();
   }
-
-  clearSelectProduct() {
-    this.productSelect.set(undefined);
-    this.formReport.get('id_product')?.setValue(null);
-  }
-
- formParamsByForm() {
-  // Helper para formatear con coma decimal
-  const formatDecimalComma = (value: number, decimals: number = 2): string => {
-    return new Intl.NumberFormat('es-ES', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals
-    }).format(Number(value ?? 0));
-  };
-
-  this.paramsSearch.update((params) => {
-    const { filterBy, id_sucursal, id_provider, id_product, id_storage, dates, quantity } = this.formReport.value;
-
-    const formatDate1 = filterBy === 'MONTH' ? 'MM' : filterBy === 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
-    const formatDate2 = filterBy === 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
-
-    return {
-      type_kardex: params.type_kardex,
-      id_sucursal: id_sucursal ? id_sucursal : '',
-      id_storage: id_storage ? id_storage : '',
-      id_provider: id_provider ? id_provider : '',
-      id_product: id_product ? id_product : '',
-      filterBy: filterBy,
-      date1: filterBy === 'RANGE'
-        ? moment(dates[0]).format(formatDate1)
-        : moment(dates).format(formatDate1),
-      date2: filterBy === 'RANGE'
-        ? dates[1] ? moment(dates[1]).format(formatDate1) : ''
-        : moment(dates).format(formatDate2),
-      include_zero: false,
-
-      // Ejemplo de número con coma decimal
-      quantity: quantity ? formatDecimalComma(quantity) : undefined
-    };
-  });
 }
 
 
-  paginate($rows:any) {
-    const {rows, page} = $rows;
-    this.rows.set(rows);
-    this.page.set(page);
-    this.getAllAndSearchKardex(this.page(),this.rows(),this.type(),this.query())
-  }
-
-  customSort($sort:any) {
-    let {field, order} = $sort;
-    this.fieldSort.set(field);
-    this.order.set(order);
-  }
-
-  search($query:any) {
-    const {type, query} = $query;
-    this.type.set(type);
-    this.query.set(query);
-    this.getAllAndSearchKardex(1,this.rows(),this.type(),this.query());
-  }
-
-
-  onChangeTypesFilter() {
-    const type_filter = this.formReport.get('filterBy')?.value;
-    if(type_filter == 'RANGE'){
-      this.formReport.get('dates')?.setValue([new Date()]);
-    } else {
-      this.formReport.get('dates')?.setValue(new Date());
-    }
-  }
-
-  getAllProviders() {
-    this.providersService.getAllAndSearch(1,10000,true).subscribe({
-      next: (resp)=> {
+  getAllProviders(): void {
+    this.providersService.getAllAndSearch(1, 10000, true).subscribe({
+      next: (resp) => {
         this.providers.set([]);
-        resp.providers.data.forEach(provider => {
+        resp.providers.data.forEach((provider) => {
           this.providers.update((providers) => [
             ...providers,
             {
@@ -286,16 +420,49 @@ ngOnInit(): void {
               code: provider.id.toString(),
             },
           ]);
-        })
+        });
       },
-      error: (err)=> this.providers.set([])
+      error: (err) => this.providers.set([]),
     });
   }
 
+  onChangeTypesFilter(): void {
+    const type_filter = this.formReport.get('filterBy')?.value;
+    if (type_filter == 'RANGE') {
+      this.formReport.get('dates')?.setValue([new Date()]);
+    } else {
+      this.formReport.get('dates')?.setValue(new Date());
+    }
+  }
 
-  printPdfReport() {
+  paginate($rows: any): void {
+    const { rows, page } = $rows;
+    this.rows.set(rows);
+    this.page.set(page);
+    this.getAllAndSearchKardex(
+      this.page(),
+      this.rows(),
+      this.type(),
+      this.query(),
+    );
+  }
+
+  customSort($sort: any): void {
+    let { field, order } = $sort;
+    this.fieldSort.set(field);
+    this.order.set(order);
+  }
+
+  search($query: any): void {
+    const { type, query } = $query;
+    this.type.set(type);
+    this.query.set(query);
+    this.getAllAndSearchKardex(1, this.rows(), this.type(), this.query());
+  }
+
+  printPdfReport(): void {
     this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
+    if (!this.formReport.valid) return;
     this.formParamsByForm();
     Swal.fire({
       title: 'Generando Reporte!',
@@ -303,25 +470,31 @@ ngOnInit(): void {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.kardexService.getReportPdfFisico(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
-            error: (err) => {
-              Swal.close();
-            },
-          });
+          this.kardexService
+            .getReportPdfFisico(
+              this.paramsSearch(),
+              this.fieldSort(),
+              this.order(),
+            )
+            .subscribe({
+              next: (data) => {
+                const file = new Blob([data], { type: 'application/pdf' });
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL);
+                Swal.close();
+              },
+              error: (err) => {
+                Swal.close();
+              },
+            });
         });
       },
     });
   }
 
-  printExcelReport() {
+  printExcelReport(): void {
     this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
+    if (!this.formReport.valid) return;
     this.formParamsByForm();
     Swal.fire({
       title: 'Generando Reporte!',
@@ -329,31 +502,24 @@ ngOnInit(): void {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.kardexService.getReportExcelFisico(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
-            next: (data) => {
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
-              Swal.close();
-            },
-            error: (err) => {
-              Swal.close();
-            },
-          });
+          this.kardexService
+            .getReportExcelFisico(
+              this.paramsSearch(),
+              this.fieldSort(),
+              this.order(),
+            )
+            .subscribe({
+              next: (data) => {
+                const fileURL = window.URL.createObjectURL(data);
+                window.open(fileURL);
+                Swal.close();
+              },
+              error: (err) => {
+                Swal.close();
+              },
+            });
         });
       },
-    });
-  }
-
-  clearInputs() {
-    this.formReport.patchValue({
-      filterBy: 'YEAR',
-      dates: new Date(),
-      date_range: '',
-      id_sucursal: '',
-      id_provider: '',
-      type_kardex: '',
-      id_storage: '',
-      id_product: '',
     });
   }
 }

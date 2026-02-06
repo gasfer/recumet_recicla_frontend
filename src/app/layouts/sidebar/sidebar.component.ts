@@ -511,15 +511,15 @@ MENU: MenuItem[] = [
 },
 {
   id: 351,
-  name: 'INVENTARIO',
-  label: 'MENUITEMS.INVENTARIO.TEXT',
+  name: 'ACTIVOFIJO',
+  label: 'Inv. activo Fijo',
   icon: 'fa-solid fa-boxes-stacked',
   subItems: [
     {
       id: 352,
       name: 'INSUMOS',
       action: 'view',
-      label: 'Inventario Insumos',
+      label: 'Insumos y Consumibles',
       link: '/inventories/insumos',
     },
     {
@@ -550,22 +550,22 @@ MENU: MenuItem[] = [
 {
   id: 356,
   name: 'KARDEX',
-  label: 'MENUITEMS.KARDEX.TEXT',
+  label: 'MENUITEMS.INVENTARIO.TEXT',
   icon: 'fa-solid fa-warehouse',
   subItems: [
-    {
+     {
       id: 357,
       name: 'KARDEX-FIS',
       action: 'view',
-      label: 'Kardex Materia Prima',
+      label: '(MP)Materia Prima',
       link: '/inventories/kardex-fisico',
     },
-       {
+    {
       id: 359,
       name: 'KARDEX-PT',
       action: 'view',
-      label: 'Kardex Prod. Terminados',
-      link: '/inventories/kardex-productos-terminados',
+      label: '(PT)Productos Terminados',
+      link: '/inventories/kardex-fisico',
     },
 
   ],
