@@ -1,6 +1,6 @@
 //
 // _menu.scss
-// 
+//
 
 .metismenu {
     margin: 0;
@@ -133,7 +133,7 @@
                                 padding: .4rem 1.5rem .4rem 4.5rem;
                                 font-size: 13px;
 
-                                
+
                             }
                         }
                     }
@@ -149,7 +149,7 @@
     letter-spacing: .05em;
     pointer-events: none;
     cursor: default;
-    font-size: 11px;
+    font-size: 12px;
     text-transform: uppercase;
     color: $sidebar-menu-item-icon-color;
     font-weight: $font-weight-semibold;
@@ -259,7 +259,7 @@
                         padding: 15px 20px;
                         min-height: 55px;
                         transition: none;
-                        
+
                         &:hover,
                         &:active,
                         &:focus {
@@ -369,7 +369,7 @@ body[data-sidebar="dark"] {
     }
 
     #sidebar-menu {
-    
+
         ul {
             li {
                 a {
@@ -378,7 +378,7 @@ body[data-sidebar="dark"] {
                     i {
                         color: $sidebar-dark-menu-item-icon-color;
                     }
-    
+
                     &:hover {
                         color: $sidebar-dark-menu-item-hover-color;
 
@@ -414,7 +414,7 @@ body[data-sidebar="dark"] {
 
                 > ul {
                     > li {
-                        
+
                         &:hover {
                             > a {
                                 background: lighten($sidebar-dark-bg, 2%);
@@ -438,11 +438,11 @@ body[data-sidebar="dark"] {
                     ul{
                         background-color: $sidebar-dark-bg;
                     }
-                    
+
                 }
 
                 ul{
-                    
+
                     li{
                         &.mm-active .active{
                             color: $sidebar-dark-menu-item-active-color !important;
@@ -611,7 +611,7 @@ body[data-sidebar="colored"] {
 
                     &:hover {
                         color: $white;
-    
+
                         i {
                             color: $white;
                         }

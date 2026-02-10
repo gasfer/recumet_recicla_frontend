@@ -38,7 +38,7 @@ export interface Kardex {
     storage:         Storage;
     product:         Product;
     options?:        Options[];
-    
+
 }
 
 export interface Product {
@@ -72,15 +72,16 @@ export enum Type {
     Output = "OUTPUT",
 }
 
-
+// En kardex.interface.ts
 export interface FormSearchKardex {
-    filterBy:      string;
-    date1:         string;
-    date2:         string;
-    type_kardex:   string;
-    id_sucursal:   string;
-    id_storage:    string;
-    id_provider:   string;
-    id_product:    string;
-    include_zero?: boolean; //filtro cero
+  filterBy: string;
+  date1: string;
+  date2: string;
+  id_product: string;
+  id_provider: string;
+  id_storage: string;
+  id_sucursal: string;
+  type_kardex: string;
+  include_zero?: boolean;
+  category_ids?: number[]; // 🆕 Agregar este campo
 }

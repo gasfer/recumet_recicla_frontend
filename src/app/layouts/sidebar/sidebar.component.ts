@@ -500,76 +500,146 @@ MENU: MenuItem[] = [
       },
     ],
   },
-
-// 📦 INVENTARIO
+// 📦 INVENTARIOS
 {
   id: 350,
-  name: 'INVENTARIO',
-  action: 'view',
-  label: 'MENUITEMS.INVENTARIO.TEXT',
+  name: 'INVENTARIOS',
+  label: 'Inventarios',
   isTitle: true,
 },
-{
-  id: 351,
-  name: 'ACTIVOFIJO',
-  label: 'Inv. activo Fijo',
-  icon: 'fa-solid fa-boxes-stacked',
-  subItems: [
-    {
-      id: 352,
-      name: 'INSUMOS',
-      action: 'view',
-      label: 'Insumos y Consumibles',
-      link: '/inventories/insumos',
-    },
-    {
-      id: 353,
-      name: 'AF-MAQ',
-      action: 'view',
-      label: 'AF Maquinaria',
-      link: '/inventories/activos-fijos-maquinaria',
-    },
-    {
-      id: 354,
-      name: 'AF-VEH',
-      action: 'view',
-      label: 'AF Vehículos',
-      link: '/inventories/activos-fijos-vehiculos',
-    },
-    {
-      id: 355,
-      name: 'AF-MOB',
-      action: 'view',
-      label: 'AF Muebles y Oficina',
-      link: '/inventories/activos-fijos-muebles-oficina',
-    },
-  ],
-},
-
 // 📊 KARDEX
 {
   id: 356,
   name: 'KARDEX',
-  label: 'MENUITEMS.INVENTARIO.TEXT',
+  label: 'Kardex Productos',
   icon: 'fa-solid fa-warehouse',
   subItems: [
-     {
+    {
       id: 357,
-      name: 'KARDEX-FIS',
+      name: 'KARDEX-MP',
       action: 'view',
-      label: '(MP)Materia Prima',
-      link: '/inventories/kardex-fisico',
+      label: 'Materia Prima (MP)',
+      link: '/inventories/kardex-fisico/mp',
     },
     {
       id: 359,
       name: 'KARDEX-PT',
       action: 'view',
-      label: '(PT)Productos Terminados',
-      link: '/inventories/kardex-fisico',
+      label: 'Productos Terminados (PT)',
+      link: '/inventories/kardex-fisico/pt',
     },
-
+    {
+      id: 360,
+      name: 'KARDEX-AR',
+      action: 'view',
+      label: 'Artículos Reventa (AR)',
+      link: '/inventories/kardex-fisico/ar',
+    },
+    {
+      id: 361,  // ⚠️ Cambié el ID porque estaba duplicado
+      name: 'KARDEX-ALL',
+      action: 'view',
+      label: 'Todos los Productos',
+      link: '/inventories/kardex-fisico/all',
+    }
   ],
 },
+// 📦 ACTIVOS CORRIENTES
+{
+  id: 200,
+  name: 'AC',
+  label: 'Activos Corrientes',
+  icon: 'fa-solid fa-box',
+  subItems: [
+    {
+      id: 201,
+      name: 'AC-INS',
+      action: 'view',
+      label: 'Insumos Operativos',
+      link: '/inventories/ac-insumos',
+    },
+    {
+      id: 202,
+      name: 'AC-RP',
+      action: 'view',
+      label: 'Repuestos Mant.',
+      link: '/inventories/ac-repuestos',
+    },
+    {
+      id: 203,
+      name: 'AC-COMB',
+      action: 'view',
+      label: 'Combustibles',
+      link: '/inventories/ac-combustibles',
+    },
+  ],
+},
+// 🏗️ ACTIVOS FIJOS
+{
+  id: 300,
+  name: 'AF',
+  label: 'Activos No Corrientes',
+  icon: 'fa-solid fa-industry',
+  subItems: [
+    {
+      id: 301,
+      name: 'AF-MAQ',
+      action: 'view',
+      label: 'AF Maquinaria',
+      link: '/inventories/af-maquinaria',
+    },
+    {
+      id: 302,
+      name: 'AF-VEH',
+      action: 'view',
+      label: 'AF Vehículos',
+      link: '/inventories/af-vehiculos',
+    },
+    {
+      id: 303,
+      name: 'AF-EQP',
+      action: 'view',
+      label: 'AF Equipos',
+      link: '/inventories/af-equipos',
+    },
+    {
+      id: 304,
+      name: 'AF-HER',
+      action: 'view',
+      label: 'AF Herramientas',
+      link: '/inventories/af-herramientas',
+    },
+    {
+      id: 305,
+      name: 'AF-MOB',
+      action: 'view',
+      label: 'AF Mobiliario',
+      link: '/inventories/af-mobiliario',
+    },
+    {
+      id: 306,
+      name: 'AF-INF',
+      action: 'view',
+      label: 'AF Informática',
+      link: '/inventories/af-informatica',
+    },
+    {
+      id: 307,
+      name: 'AF-SEG',
+      action: 'view',
+      label: 'AF Seguridad',
+      link: '/inventories/af-seguridad',
+    },
+    {
+      id: 308,
+      name: 'AF-INS',
+      action: 'view',
+      label: 'AF Instalaciones',
+      link: '/inventories/af-instalaciones',
+    },
+  ],
+},
+
 
 
   // 🟣 ADMINISTRACIÓN

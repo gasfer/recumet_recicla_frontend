@@ -10,23 +10,64 @@ import { KardexExistenciaComponent } from './kardex-existencia/kardex-existencia
 import { ListCostsProductComponent } from './list-costs-product/list-costs-product.component';
 
 const routes: Routes = [
-  { path: 'products', component: ProductsComponent, 
+  { path: 'products', component: ProductsComponent,
     data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Productos' , active: true }], name: 'PRODUCTOS'} },
-  { path: 'categories', component: CategoriesComponent, 
+  { path: 'categories', component: CategoriesComponent,
     data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Categorías' , active: true }], name: 'CATEGORIAS'}},
-  { path: 'units', component: UnitsComponent, 
+  { path: 'units', component: UnitsComponent,
     data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Unidad de medida' , active: true }], name: 'UND MEDIDA'}},
-  { path: 'scales', component: ScalesComponent, 
+  { path: 'scales', component: ScalesComponent,
     data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Balanzas' , active: true }], name: 'BALANZAS'}},
-  { path: 'kardex', component: KardexComponent, 
+  { path: 'kardex', component: KardexComponent,
     data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Kardex' , active: true }], name: 'KARDEX'}},
-  { path: 'kardex-fisico', component: KardexFisicoComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Kardex Físico' , active: true }], name: 'KARDEX'}},
-  { path: 'kardex-existencia', component: KardexExistenciaComponent, 
+
+  // 📊 KARDEX FÍSICO - Rutas ESPECÍFICAS primero (más específicas)
+  {
+    path: 'kardex-fisico/mp',
+    component: KardexFisicoComponent,
+    data: {
+      categoryIds: [1, 2, 5, 13, 8, 6, 7],
+      title: '(MP) Materia Prima'
+    }
+  },
+  {
+    path: 'kardex-fisico/pt',
+    component: KardexFisicoComponent,
+    data: {
+      categoryIds: [4],
+      title: '(PT) Productos Terminados'
+    }
+  },
+  {
+    path: 'kardex-fisico/all',
+    component: KardexFisicoComponent,
+    data: {
+      categoryIds: [],
+      title: 'Todos los Productos'
+    }
+  },
+  {
+  path: 'kardex-fisico/ar',
+  component: KardexFisicoComponent,
+  data: {
+    categoryIds: [14],
+    title: '(AR) Artículos de Reventa'
+  }
+},
+  // 📊 KARDEX FÍSICO - Ruta GENERAL después (menos específica)
+  {
+    path: 'kardex-fisico',
+    redirectTo: 'kardex-fisico/all',
+    pathMatch: 'full'
+  },
+
+  { path: 'kardex-existencia', component: KardexExistenciaComponent,
     data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Kardex De Existencia' , active: true }], name: 'KARDEX'}},
-  { path: 'list-products-prices', component: ListCostsProductComponent, 
+  { path: 'list-products-prices', component: ListCostsProductComponent,
     data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Productos' }, { title: 'Listado de precios' , active: true }], name: 'LISTADO DE PRECIOS'}},
-  { path: '**', redirectTo: 'products'}
+
+  // 🎯 Ruta wildcard siempre al FINAL
+  { path: '**', redirectTo: 'products'},
 ];
 
 @NgModule({

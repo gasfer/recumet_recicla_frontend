@@ -2,10 +2,18 @@
   <div class="card shadow mb-4 icon-box ">
     <div class="card-body">
       <div class="row text-center">
-        <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE KARDEX FÍSICO</b></h3>
+        <!-- 🆕 Título dinámico -->
+        <h3 style="color: var(--bg-2665C);">
+          <b>INVENTARIO DE: {{pageTitle()}}</b>
+          <p-tag *ngIf="categoryIds().length > 0"
+                 severity="info"
+                 [value]="'Filtrado por ' + categoryIds().length + ' categoría(s)'"
+                 class="ms-2">
+          </p-tag>
+        </h3>
       </div>
       <p-accordion [activeIndex]="1">
-        <p-accordionTab header="Filtros">
+        <p-accordionTab header="Busqueda Avanzada">
           <div class="p-fluid">
 
             <!-- ===================== -->
@@ -76,14 +84,21 @@
             </div>
 
             <!-- ===================== -->
-            <!-- FILA 2 : RESTO -->
+            <!-- FILA 2 : PRODUCTO -->
             <!-- ===================== -->
             <div class="row mt-3">
               <div class="col-12 col-sm-6">
                 <div class="row mt-1">
                   <div class="col-12 col-sm-6">
-                    <label class="block mb-1">Producto</label>
+                    <label class="block mb-1">
+                      Producto
+                      <!-- 🆕 Indicador de filtro activo -->
+                      <span *ngIf="categoryIds().length > 0" class="text-muted ms-2" style="font-size: 0.85rem;">
+                        (Filtrado por categoría)
+                      </span>
+                    </label>
                     <p-dropdown [options]="dropdownProducts()" [(ngModel)]="productSelectValue"
+                      [ngModelOptions]="{standalone: true}"
                       (onChange)="onProductSelect($event.value)" [filter]="true"
                       filterBy="name,cod,description,category.name" [showClear]="true" [virtualScroll]="true"
                       [virtualScrollItemSize]="45" [lazy]="true" (onFilter)="filterProduct($event)"
@@ -108,8 +123,9 @@
                           <div>
                             <span class="fw-bold">{{product.cod}} - {{ product.name}}</span>
                             <br>
-                            <span class="text-muted fw-normal">{{product.description }} -
-                              {{product.category.name}} / {{product.unit.siglas}}</span>
+                            <span class="text-muted fw-normal">
+                              {{product.description }} - {{product.category.name}} / {{product.unit.siglas}}
+                            </span>
                           </div>
                         </div>
                       </ng-template>
@@ -122,6 +138,9 @@
                           </div>
                           <div *ngIf="!loadingSearchProduct() && dropdownFilter()" class="text-center">
                             <span>No se encontró el producto: "{{dropdownFilter() | uppercase}}"</span>
+                          </div>
+                          <div *ngIf="!loadingSearchProduct() && !dropdownFilter() && dropdownProducts().length === 0" class="text-center">
+                            <span>No hay productos en esta categoría</span>
                           </div>
                         </div>
                       </ng-template>
@@ -146,11 +165,9 @@
               </div>
             </div>
 
-
-
           </div>
 
-          <div class="text-end">
+          <div class="text-end mt-3">
             <p-button (click)="!loading() ? getAllAndSearchKardex(1,this.rows()) : null"
               styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
               [loading]="loading()">
@@ -174,6 +191,7 @@
       [activeItem]="searchItems()[0]"></p-tabMenu>
   </div>
 </form>
+
 <app-table [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.cod'"
   [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)" [data]="kardexes()"
   [loading]="loading()">
