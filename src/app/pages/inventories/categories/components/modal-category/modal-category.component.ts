@@ -29,7 +29,7 @@ export class ModalCategoryComponent implements OnInit, OnDestroy {
   types = [
     { label: 'MATERIA PRIMA', value: CategoryType.RAW_MATERIAL },
     { label: 'PRODUCTO TERMINADO', value: CategoryType.FINISHED_PRODUCT },
-    { label: 'ARTICULOS REVENTA', value: CategoryType.RESALE_ITEMS }
+    { label: 'ARTICULOS REVENTA', value: CategoryType.RESALE_ITEM }
   ];
 
   ngOnInit(): void {

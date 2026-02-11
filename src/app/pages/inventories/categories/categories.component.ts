@@ -27,7 +27,7 @@ export class CategoriesComponent implements OnInit, OnDestroy {
         switch (val) {
           case CategoryType.RAW_MATERIAL: return 'MATERIA PRIMA';
           case CategoryType.FINISHED_PRODUCT: return 'PRODUCTO TERMINADO';
-          case CategoryType.RESALE_ITEMS: return 'ARTICULOS REVENTA';
+          case CategoryType.RESALE_ITEM: return 'ARTICULOS REVENTA';
           default: return val;
         }
       }
@@ -53,7 +53,7 @@ export class CategoriesComponent implements OnInit, OnDestroy {
     { label: 'TODO', value: '' },
     { label: 'MATERIA PRIMA', value: CategoryType.RAW_MATERIAL },
     { label: 'PRODUCTO TERMINADO', value: CategoryType.FINISHED_PRODUCT },
-    { label: 'ARTICULOS REVENTA', value: CategoryType.RESALE_ITEMS }
+    { label: 'ARTICULOS REVENTA', value: CategoryType.RESALE_ITEM }
   ];
   categories = signal<Categories | undefined>(undefined);
   private categoriesService = inject(CategoriesService);

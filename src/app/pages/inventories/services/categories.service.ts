@@ -40,4 +40,9 @@ export class CategoriesService {
     const url = `${base_url}/category/destroyAndActive/${id}`;
     return this.http.put(url, { status });
   }
+
+  getCategorySelect(category_type: string = ''): Observable<any> {
+    const url = `${base_url}/category/select?category_type=${category_type}`;
+    return this.http.get<any>(url);
+  }
 }

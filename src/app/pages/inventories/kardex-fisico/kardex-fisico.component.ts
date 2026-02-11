@@ -1,6 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { LazyLoadEvent, MenuItem } from 'primeng/api';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ProvidersService } from '../../inputs/services/providers.service';
 import { FormSearchKardex, Kardexes } from '../interfaces/kardex.interface';
@@ -9,6 +12,8 @@ import * as moment from 'moment';
 import { ColsTable } from 'src/app/core/components/interfaces/OptionsTable.interface';
 import { Product } from '../interfaces/products.interface';
 import { ProductsService } from '../services/products.service';
+import { CategoriesService } from '../services/categories.service';
+import { Category, CategoryType } from '../interfaces/categories.interface';
 import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
 
@@ -23,6 +28,9 @@ export class KardexFisicoComponent {
   providersService = inject(ProvidersService);
   kardexService = inject(KardexService);
   productService = inject(ProductsService);
+  categoriesService = inject(CategoriesService);
+  activatedRoute = inject(ActivatedRoute);
+
 
   providers = signal<{ name: string; code: string }[]>([]);
   loading = signal(false);
@@ -34,15 +42,26 @@ export class KardexFisicoComponent {
 
   // Signals para el dropdown de productos (eliminadas las antiguas)
   loadingSearchProduct = signal(false);
-  productSelect = signal<Product | undefined>(undefined);
-  dropdownProducts = signal<Product[]>([]);
+  productSelect = signal<any>(undefined);
+  dropdownProducts = signal<{ id: number, name: string, cod: string }[]>([]);
   totalProducts = signal(0);
   dropdownPage = signal(1);
-  dropdownLimit = signal(50);
+  dropdownLimit = signal(20);
   dropdownFilter = signal('');
 
+  private searchSubject = new Subject<string>();
+
+  title = signal('CONSULTA DE KARDEX FÍSICO');
+
+  // Signals para categorías
+  dropdownCategories = signal<{ id: number, name: string }[]>([]);
+  selectedCategoryIds = signal<number[]>([]);
+  loadingCategories = signal(false);
+
+
   // Propiedad para el ngModel del dropdown
-  productSelectValue: Product | null = null;
+  productSelectValue: any = null;
+  selectedCategoryValues: number[] = [];
 
   paramsSearch = signal<FormSearchKardex>({
     filterBy: 'YEAR',
@@ -95,7 +114,8 @@ export class KardexFisicoComponent {
     id_storage: ['', [Validators.required]],
     id_provider: [''],
     id_product: [''],
-    showZeroSaldo: [false] // Agregado si no existe
+    showZeroSaldo: [false],
+    category_types: ['']
   });
 
   pipeNumber = new DecimalPipe('en-US');
@@ -158,7 +178,7 @@ export class KardexFisicoComponent {
 
   ngOnInit(): void {
     this.getAllProviders();
-    this.loadDropdownProducts();
+
 
     this.formReport.patchValue({
       filterBy: 'RANGE',
@@ -173,13 +193,33 @@ export class KardexFisicoComponent {
       });
     }
 
-    this.getAllAndSearchKardex(1, this.rows());
+    this.activatedRoute.data.subscribe((data: any) => {
+      this.title.set(data.title || 'CONSULTA DE KARDEX FÍSICO');
+      const categoryType = data.category_types || '';
+
+      this.formReport.patchValue({
+        category_types: categoryType
+      });
+
+      // Cargar categorías según el tipo de la ruta
+      this.loadCategories(categoryType);
+      this.getAllAndSearchKardex(1, this.rows());
+    });
+
+    // Configurar debounce para la búsqueda
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(filterValue => {
+      this.dropdownFilter.set(filterValue);
+      this.loadDropdownProducts(true);
+    });
   }
 
 
   // === MÉTODOS PARA DROPDOWN DE PRODUCTOS ===
 
-// Método para cargar productos en el dropdown
+  // Método para cargar productos en el dropdown
   loadDropdownProducts(reset: boolean = false): void {
     if (reset) {
       this.dropdownPage.set(1);
@@ -188,20 +228,23 @@ export class KardexFisicoComponent {
 
     this.loadingSearchProduct.set(true);
 
-    this.productService.getAllAndSearch(
-      this.dropdownPage(),
+    const categoryType = this.formReport.get('category_types')?.value || '';
+    const categoryIds = this.selectedCategoryIds().join(',');
+
+    this.productService.getSelectProducts(
+      this.dropdownFilter(),
       this.dropdownLimit(),
-      true,
-      'pos',
-      this.dropdownFilter()
+      categoryType,
+      categoryIds
     ).subscribe({
-      next: (resp) => {
+      next: (resp: any) => {
+        const products = resp.products || [];
         if (reset) {
-          this.dropdownProducts.set(resp.products.data);
+          this.dropdownProducts.set(products);
         } else {
-          this.dropdownProducts.update(products => [...products, ...resp.products.data]);
+          this.dropdownProducts.update(prev => [...prev, ...products]);
         }
-        this.totalProducts.set(resp.products.total);
+        this.totalProducts.set(products.length);
         this.loadingSearchProduct.set(false);
       },
       error: (e) => {
@@ -211,43 +254,79 @@ export class KardexFisicoComponent {
   }
 
 
+  // === MÉTODOS PARA CATEGORÍAS ===
+
+  loadCategories(categoryType: string): void {
+    this.loadingCategories.set(true);
+    this.selectedCategoryIds.set([]);
+    this.selectedCategoryValues = [];
+    this.dropdownProducts.set([]);
+    this.productSelectValue = null;
+    this.productSelect.set(undefined);
+
+    this.categoriesService.getCategorySelect(categoryType).subscribe({
+      next: (resp: any) => {
+        const categories = resp.categories || [];
+        this.dropdownCategories.set(categories);
+        this.loadingCategories.set(false);
+      },
+      error: () => {
+        this.loadingCategories.set(false);
+      }
+    });
+  }
+
+  onCategoryChange(selectedIds: number[]): void {
+    this.selectedCategoryIds.set(selectedIds);
+    this.selectedCategoryValues = [...selectedIds];
+    this.productSelectValue = null;
+    this.productSelect.set(undefined);
+    this.formReport.patchValue({ id_product: '' });
+
+    if (selectedIds.length > 0) {
+      this.loadDropdownProducts(true);
+    } else {
+      this.dropdownProducts.set([]);
+    }
+  }
+
 
   // Evento de filtro del dropdown
   filterProduct(event: any): void {
-    this.dropdownFilter.set(event.filter);
-    this.loadDropdownProducts(true);
+    const query = event.filter || '';
+    this.searchSubject.next(query);
   }
 
   // Evento de scroll infinito (carga perezosa)
   onLazyLoad(event: LazyLoadEvent): void {
     // Verificar si necesitamos cargar más productos
     if (this.dropdownProducts().length < this.totalProducts() &&
-        !this.loadingSearchProduct()) {
+      !this.loadingSearchProduct()) {
       this.dropdownPage.update(page => page + 1);
       this.loadDropdownProducts();
     }
   }
 
- // Limpiar producto seleccionado - VERSIÓN MEJORADA
-clearSelectProduct(): void {
-  console.log('Limpiando producto seleccionado');
+  // Limpiar producto seleccionado - VERSIÓN MEJORADA
+  clearSelectProduct(): void {
+    console.log('Limpiando producto seleccionado');
 
-  this.productSelect.set(undefined);
-  this.productSelectValue = null;
-  this.formReport.patchValue({
-    id_product: ''
-  });
+    this.productSelect.set(undefined);
+    this.productSelectValue = null;
+    this.formReport.patchValue({
+      id_product: ''
+    });
 
-  console.log('✓ Producto limpiado, formValue:', this.formReport.get('id_product')?.value);
+    console.log('✓ Producto limpiado, formValue:', this.formReport.get('id_product')?.value);
 
-  // Limpiar el dropdown y recargar
-  this.dropdownFilter.set('');
-  this.dropdownPage.set(1);
-  this.loadDropdownProducts(true);
-}
+    // Limpiar el dropdown y recargar
+    this.dropdownFilter.set('');
+    this.dropdownPage.set(1);
+    this.loadDropdownProducts(true);
+  }
 
 
-// === MÉTODO PARA BUSCAR KARDEX - ASEGURAR QUE USA id_product ===
+  // === MÉTODO PARA BUSCAR KARDEX - ASEGURAR QUE USA id_product ===
 
   getAllAndSearchKardex(
     page: number,
@@ -303,11 +382,11 @@ clearSelectProduct(): void {
             ...resp.kardexes,
             data: showZeroSaldo
               ? resp.kardexes.data.filter(
-                  (item: any) => Number(item.quantity_saldo) <= 0,
-                )
+                (item: any) => Number(item.quantity_saldo) <= 0,
+              )
               : resp.kardexes.data.filter(
-                  (item: any) => Number(item.quantity_saldo) > 0,
-                ),
+                (item: any) => Number(item.quantity_saldo) > 0,
+              ),
           };
           this.kardexes.set(filteredData);
           console.log('Kardex cargado:', filteredData.data?.length, 'registros');
@@ -320,7 +399,7 @@ clearSelectProduct(): void {
       });
   }
 
-// === ACTUALIZAR formParamsByForm PARA ASEGURAR QUE id_product SE INCLUYA ===
+  // === ACTUALIZAR formParamsByForm PARA ASEGURAR QUE id_product SE INCLUYA ===
 
   formParamsByForm(): void {
     this.paramsSearch.update((params) => {
@@ -331,6 +410,7 @@ clearSelectProduct(): void {
         id_product,
         id_storage,
         dates,
+        category_types
       } = this.formReport.value;
 
       const formatDate1 =
@@ -342,7 +422,8 @@ clearSelectProduct(): void {
         id_sucursal: id_sucursal ? id_sucursal : '',
         id_storage: id_storage ? id_storage : '',
         id_provider: id_provider ? id_provider : '',
-        id_product: id_product ? id_product : '', // Esto debe tener el valor correcto
+        id_product: id_product ? id_product : '',
+        category_types: category_types ? category_types : '',
         filterBy: filterBy,
         date1:
           filterBy == 'RANGE'
@@ -375,7 +456,8 @@ clearSelectProduct(): void {
         ? this.validatorsService.storages()[0].id
         : '',
       id_product: '', // Asegurar que se limpia
-      showZeroSaldo: false
+      showZeroSaldo: false,
+      category_types: ''
     });
 
     this.clearSelectProduct();
@@ -386,26 +468,20 @@ clearSelectProduct(): void {
     }, 100);
   }
 
-// Evento cuando se selecciona un producto - VERSIÓN MEJORADA
-onProductSelect(product: Product | null): void {
-  console.log('onProductSelect llamado con:', product);
-
-  if (product) {
-    this.productSelect.set(product);
-    this.productSelectValue = product;
-    this.formReport.patchValue({
-      id_product: product.id
-    });
-    console.log('✓ Producto seleccionado:', {
-      id: product.id,
-      cod: product.cod,
-      name: product.name,
-      formValue: this.formReport.get('id_product')?.value
-    });
-  } else {
-    this.clearSelectProduct();
+  // Evento cuando se selecciona un producto
+  onProductSelect(productId: number | null): void {
+    if (productId) {
+      const selected = this.dropdownProducts().find(p => p.id === productId);
+      if (selected) {
+        this.productSelect.set(selected);
+      }
+      this.formReport.patchValue({
+        id_product: productId
+      });
+    } else {
+      this.clearSelectProduct();
+    }
   }
-}
 
 
   getAllProviders(): void {
