@@ -11,33 +11,33 @@ const base_url = environment.base_url;
 export class CategoriesService {
   private http = inject(HttpClient);
   isEdit: boolean = false;
-  showModal : boolean = false;
+  showModal: boolean = false;
   save$: Subject<boolean> = new Subject();
   editSubs: EventEmitter<Category> = new EventEmitter<Category>();
 
-  getAllAndSearch(page: number, limit: number,status:boolean, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllCategories>{
+  getAllAndSearch(page: number, limit: number, status: boolean, type: string = '', query?: string, category_type: string = '', field_sort: string = 'id', order: string = 'DESC'): Observable<GetAllCategories> {
     let url = '';
-    if(type === ''){
-      url = `${base_url}/category?page=${page}&limit=${limit}&status=${status}&field_sort=${field_sort}&order=${order}`;
+    if (type === '') {
+      url = `${base_url}/category?page=${page}&limit=${limit}&status=${status}&category_type=${category_type}&field_sort=${field_sort}&order=${order}`;
     } else {
-      url = `${base_url}/category?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&field_sort=${field_sort}&order=${order}`;
+      url = `${base_url}/category?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&category_type=${category_type}&field_sort=${field_sort}&order=${order}`;
     }
     return this.http.get<GetAllCategories>(url);
   }
 
-  postNew(form:Category) {
-    const {id, ...body}= form;
+  postNew(form: Category) {
+    const { id, ...body } = form;
     const url = `${base_url}/category`;
     return this.http.post(url, body);
   }
 
-  putUpdate(form:Category) {
+  putUpdate(form: Category) {
     const url = `${base_url}/category/${form.id}`;
     return this.http.put(url, form);
   }
 
-  putInactiveOrActive(id:number,status:boolean) {
+  putInactiveOrActive(id: number, status: boolean) {
     const url = `${base_url}/category/destroyAndActive/${id}`;
-    return this.http.put(url, {status});
+    return this.http.put(url, { status });
   }
 }

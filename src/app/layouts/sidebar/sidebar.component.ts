@@ -571,6 +571,41 @@ MENU: MenuItem[] = [
   ],
 },
 
+  // todo aplicar aqui esta estructura pero se debe crear los componentes para cada vista
+  // {
+  //   path: 'kardex-fisico/mp',
+  //   component: KardexFisicoComponent,
+  //   data: {
+  //     categoryIds: [1, 2, 5, 13, 8, 6, 7],
+  //     title: '(MP) Materia Prima'
+  //   }
+  // },
+  // {
+  //   path: 'kardex-fisico/pt',
+  //   component: KardexFisicoComponent,
+  //   data: {
+  //     categoryIds: [4],
+  //     title: '(PT) Productos Terminados'
+  //   }
+  // },
+  // {
+  //   path: 'kardex-fisico/all',
+  //   component: KardexFisicoComponent,
+  //   data: {
+  //     categoryIds: [],
+  //     title: 'Todos los Productos'
+  //   }
+  // },
+  // {
+  //   path: 'kardex-fisico/ar',
+  //   component: KardexFisicoComponent,
+  //   data: {
+  //     categoryIds: [14],
+  //     title: '(AR) Artículos de Reventa'
+  //   }
+  // },
+
+
 
   // 🟣 ADMINISTRACIÓN
   {

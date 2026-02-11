@@ -4,6 +4,7 @@ import { CategoriesService } from '../../../services/categories.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
+import { CategoryType } from '../../../interfaces/categories.interface';
 
 @Component({
   selector: 'app-modal-category',
@@ -12,17 +13,24 @@ import Swal from 'sweetalert2';
   ]
 })
 export class ModalCategoryComponent implements OnInit, OnDestroy {
-  validatorsService = inject( ValidatorsService );
-  categoriesService = inject( CategoriesService );
-  fb                = inject( FormBuilder );
-  loading           = signal(false);
+  validatorsService = inject(ValidatorsService);
+  categoriesService = inject(CategoriesService);
+  fb = inject(FormBuilder);
+  loading = signal(false);
   isEditSub$!: Subscription;
   categoryForm: FormGroup = this.fb.group({
     id: [''],
-    name: [ '', [ Validators.required,Validators.minLength(2),Validators.maxLength(100),this.validatorsService.isSpacesInDynamicTxt]],
-    description: ['', [ Validators.required,Validators.minLength(2),Validators.maxLength(175),this.validatorsService.isSpacesInDynamicTxt]],
+    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100), this.validatorsService.isSpacesInDynamicTxt]],
+    description: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(175), this.validatorsService.isSpacesInDynamicTxt]],
+    type: ['', [Validators.required]],
     status: [true]
   });
+
+  types = [
+    { label: 'MATERIA PRIMA', value: CategoryType.RAW_MATERIAL },
+    { label: 'PRODUCTO TERMINADO', value: CategoryType.FINISHED_PRODUCT },
+    { label: 'ARTICULOS REVENTA', value: CategoryType.RESALE_ITEMS }
+  ];
 
   ngOnInit(): void {
     this.isEditSub$ = this.categoriesService.editSubs.subscribe(resp => {
@@ -30,6 +38,7 @@ export class ModalCategoryComponent implements OnInit, OnDestroy {
         id: resp.id,
         name: resp.name,
         description: resp.description,
+        type: resp.type,
         status: resp.status,
       });
     });
@@ -37,53 +46,54 @@ export class ModalCategoryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.isEditSub$.unsubscribe();
   }
-  
+
   newCategory() {
     this.categoryForm.markAllAsTouched();
-    if(!this.categoryForm.valid) return;
+    if (!this.categoryForm.valid) return;
     this.loading.set(true);
     this.categoriesService.postNew(this.categoryForm.value).subscribe({
       complete: () => {
         this.categoriesService.save$.next(true);
         this.loading.set(false);
         this.categoriesService.showModal = false;
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Categoría nueva agregada correctamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
-          customClass: { container: 'swal-alert'},
+          customClass: { container: 'swal-alert' },
         });
       },
-      error: () => this.loading.set(false) 
+      error: () => this.loading.set(false)
     });
   }
 
   editCategory() {
     this.categoryForm.markAllAsTouched();
-    if(!this.categoryForm.valid) return;
+    if (!this.categoryForm.valid) return;
     this.loading.set(true);
     this.categoriesService.putUpdate(this.categoryForm.value).subscribe({
       complete: () => {
         this.categoriesService.save$.next(true);
         this.loading.set(false);
         this.categoriesService.showModal = false;
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Categoría modificada correctamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
-          customClass: { container: 'swal-alert'},
+          customClass: { container: 'swal-alert' },
         });
       },
-      error: () => this.loading.set(false) 
+      error: () => this.loading.set(false)
     });
   }
 
-  resetModal() { 
+  resetModal() {
     this.categoryForm.reset({
       name: '',
       description: '',
+      type: '',
       status: true,
     });
   }
