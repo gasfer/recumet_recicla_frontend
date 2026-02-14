@@ -83,5 +83,6 @@ export interface FormSearchKardex {
     id_provider: string;
     id_product: string;
     category_types?: string;
+    category_ids?: string;
     include_zero?: boolean; //filtro cero
 }

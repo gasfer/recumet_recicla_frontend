@@ -435,6 +435,7 @@ export class KardexFisicoComponent {
               ? moment(dates[1]).format(formatDate1)
               : ''
             : moment(dates).format(formatDate2),
+        category_ids: this.selectedCategoryIds().join(','),
       };
 
       console.log('Parámetros formados:', newParams); // Debug
@@ -549,6 +550,8 @@ export class KardexFisicoComponent {
           this.kardexService
             .getReportPdfFisico(
               this.paramsSearch(),
+              this.type(),
+              this.query(),
               this.fieldSort(),
               this.order(),
             )
@@ -581,6 +584,8 @@ export class KardexFisicoComponent {
           this.kardexService
             .getReportExcelFisico(
               this.paramsSearch(),
+              this.type(),
+              this.query(),
               this.fieldSort(),
               this.order(),
             )
