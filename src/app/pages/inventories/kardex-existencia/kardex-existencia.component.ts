@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { MenuItem } from 'primeng/api';
+import { LazyLoadEvent, MenuItem } from 'primeng/api';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ProvidersService } from '../../inputs/services/providers.service';
 import { FormSearchKardex, Kardex, Kardexes } from '../interfaces/kardex.interface';
@@ -40,6 +40,7 @@ export class KardexExistenciaComponent implements OnInit{
   outputService         = inject( OutputService );
   classifiedService     = inject( ClassifiedService );
   transfersService      = inject( TransfersService );
+
   providers             = signal<{name:string, code:string}[]>([]);
   loading               = signal(false);
   rows                  = signal(50);
@@ -49,9 +50,20 @@ export class KardexExistenciaComponent implements OnInit{
   kardexes              = signal<Kardexes|undefined>(undefined);
   suggestedProducts     = signal<Product[]>([]);
   productSelect         = signal<Product|undefined>(undefined);
+
+  // 🆕 Signals para el dropdown de productos
+  loadingSearchProduct  = signal(false);
+  dropdownProducts      = signal<Product[]>([]);
+  totalProducts         = signal(0);
+  dropdownPage          = signal(1);
+  dropdownLimit         = signal(50);
+  dropdownFilter        = signal('');
+  productSelectValue: Product | null = null;
+
   pipeNumber            = new DecimalPipe('en-US');
-  decimalLength     = signal(this.validatorsService.decimalLength());
-  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+  decimalLength         = signal(this.validatorsService.decimalLength());
+  decimal               = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+
   paramsSearch      = signal<FormSearchKardex>({
     filterBy:'YEAR',
     date1: '',
@@ -62,12 +74,14 @@ export class KardexExistenciaComponent implements OnInit{
     id_sucursal: '',
     type_kardex: ''
   });
+
   types_filtrado    = signal([
     {name: 'DIA', code: 'DAY'},
     {name: 'MES', code: 'MONTH'},
     {name: 'AÑO', code: 'YEAR'},
     {name: 'RANGO', code: 'RANGE'},
   ]);
+
   buttonItems: MenuItem[] = [
     {
       label: 'Excel',
@@ -78,35 +92,33 @@ export class KardexExistenciaComponent implements OnInit{
       }
     },
   ];
+
   searchItems = signal<MenuItem[]>([
-  {
-    label: 'ENTRADAS Y SALIDAS',
-    icon: 'fa-solid fa-left-right',
-    iconStyle: { color: '#3B71CA' },
-    command: () => {
-      this.paramsSearch().type_kardex = '';
-      this.getAllAndSearchKardex(1, this.rows());
-    }
-  },
-  {
-    label: 'ENTRADAS',
-    icon: 'fa-solid fa-arrow-left',
-    iconStyle: { color: '#14A44D' },
-    command: () => {
-      this.paramsSearch().type_kardex = 'INPUT';
-      this.getAllAndSearchKardex(1, this.rows());
-    }
-  },
-  {
-    label: 'SALIDAS',
-    icon: 'fa-solid fa-arrow-right',
-    iconStyle: { color: '#DC4C64' },
-    command: () => {
-      this.paramsSearch().type_kardex = 'OUTPUT';
-      this.getAllAndSearchKardex(1, this.rows());
-    }
-  }
-]);
+    {
+      label: 'ENTRADAS Y SALIDAS', icon: 'fa-solid fa-left-right',
+      iconStyle: { 'color': '#3B71CA'},
+      command: () => {
+        this.paramsSearch().type_kardex = '';
+        this.getAllAndSearchKardex(1,this.rows());
+      }
+    },
+    {
+      label: 'ENTRADAS', icon: 'fa-solid fa-arrow-left',
+      iconStyle: { 'color': '#14A44D'},
+      command: () => {
+        this.paramsSearch().type_kardex = 'INPUT';
+        this.getAllAndSearchKardex(1,this.rows());
+      }
+    },
+    {
+      label: 'SALIDAS', icon: 'fa-solid fa-arrow-right',
+      iconStyle: { 'color': '#DC4C64'},
+      command: () => {
+        this.paramsSearch().type_kardex = 'OUTPUT';
+        this.getAllAndSearchKardex(1,this.rows());
+      }
+    },
+  ]);
 
   formReport:UntypedFormGroup = this.fb.group({
     filterBy: ['YEAR'],
@@ -117,6 +129,7 @@ export class KardexExistenciaComponent implements OnInit{
     id_provider: [''],
     id_product: ['']
   });
+
   cols = signal<ColsTable[]>([
     { field: 'date', header: 'FECHA' , style:'min-width:100px;max-width:100px;', tooltip: true, isDate: true},
     { field: `registry_number`, header: 'N°' , style:'min-width:80px;max-width:100px;', tooltip: true,  isTag: true,
@@ -152,125 +165,205 @@ export class KardexExistenciaComponent implements OnInit{
       isValueUpdate:true,tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
 
       },
-    // { field: `storage.name`, header: 'ALMACÉN' , style:'min-width:100px;max-width:120px;', tooltip: true, isText:true  },
     { field: 'options', header: 'VER', style:'min-width:80px;max-width:80px', isButton:true }
   ]);
+
   fieldSort = signal('date');
   order     = signal('DESC');
-ngOnInit(): void {
-  this.activatedRoute.queryParams.subscribe(params => {
-    const { p: id_product } = params;
-    this.findProduct(id_product);
-  });
 
-  // 👉 RANGO COMPLETO: inicio del sistema → hoy
-  this.formReport.patchValue({
-    filterBy: 'RANGE',
-    dates: [new Date('2020-01-01'), new Date()], // 🔥 ajusta si tu sistema inició en otra fecha
-    id_sucursal: this.validatorsService.id_sucursal()
-  });
+  ngOnInit(): void {
+    // 🆕 Cargar productos al iniciar
+    this.loadDropdownProducts();
 
-  const storagesList = this.validatorsService.storages();
-  if (storagesList.length > 0) {
-    this.formReport.patchValue({ id_storage: storagesList[0].id });
+    this.activatedRoute.queryParams.subscribe(params => {
+      const { p: id_product } = params;
+      if (id_product) {
+        this.findProduct(id_product);
+      }
+    });
+
+    this.formReport.patchValue({
+      filterBy: 'RANGE',
+      dates: [new Date('2020-01-01'), new Date()],
+      id_sucursal: this.validatorsService.id_sucursal()
+    });
+
+    const storagesList = this.validatorsService.storages();
+    if (storagesList.length > 0) {
+      this.formReport.patchValue({ id_storage: storagesList[0].id });
+    }
+
+    this.getAllProviders();
   }
 
-  this.getAllProviders();
-}
+  // 🆕 ===== MÉTODOS PARA DROPDOWN DE PRODUCTOS =====
+
+  loadDropdownProducts(reset: boolean = false): void {
+    if (reset) {
+      this.dropdownPage.set(1);
+      this.dropdownProducts.set([]);
+    }
+
+    this.loadingSearchProduct.set(true);
+
+    this.productService.getAllAndSearch(
+      this.dropdownPage(),
+      this.dropdownLimit(),
+      true,
+      'pos',
+      this.dropdownFilter()
+    ).subscribe({
+      next: (resp) => {
+        if (reset) {
+          this.dropdownProducts.set(resp.products.data);
+        } else {
+          this.dropdownProducts.update(products => [...products, ...resp.products.data]);
+        }
+        this.totalProducts.set(resp.products.total);
+        this.loadingSearchProduct.set(false);
+      },
+      error: (e) => {
+        this.loadingSearchProduct.set(false);
+      }
+    });
+  }
+
+  // 🆕 Evento cuando se selecciona un producto desde el dropdown
+  onProductSelect(product: Product | null): void {
+    console.log('onProductSelect llamado con:', product);
+
+    if (product) {
+      this.productSelect.set(product);
+      this.productSelectValue = product;
+      this.formReport.patchValue({
+        id_product: product.id
+      });
+
+      console.log('✓ Producto seleccionado:', {
+        id: product.id,
+        cod: product.cod,
+        name: product.name
+      });
+
+      // 🔥 Auto-buscar cuando se selecciona un producto
+      setTimeout(() => {
+        this.getAllAndSearchKardex(1, this.rows());
+      }, 100);
+    } else {
+      this.clearSelectProduct();
+    }
+  }
+
+  // 🆕 Evento de filtro del dropdown
+  filterProduct(event: any): void {
+    this.dropdownFilter.set(event.filter);
+    this.loadDropdownProducts(true);
+  }
+
+  // 🆕 Evento de scroll infinito (carga perezosa)
+  onLazyLoad(event: LazyLoadEvent): void {
+    if (this.dropdownProducts().length < this.totalProducts() &&
+        !this.loadingSearchProduct()) {
+      this.dropdownPage.update(page => page + 1);
+      this.loadDropdownProducts();
+    }
+  }
+
+  // ===== MÉTODOS EXISTENTES MODIFICADOS =====
+
   getAllAndSearchKardex(page: number, limit: number,type: string = '', query: string = '') {
-    if(!this.productSelect()) return;
+    if(!this.productSelect()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Seleccione un producto',
+        text: 'Debe seleccionar un producto para consultar el kardex',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     this.formReport.patchValue({id_sucursal:this.validatorsService.id_sucursal()});
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
     this.formParamsByForm();
-    if(!query) {this.loading.set(true);} //not loading in search
+
+    if(!query) {this.loading.set(true);}
+
     this.kardexService.getAllAndSearchKardex(page,limit,this.paramsSearch(),type,query,this.fieldSort(),this.order()).subscribe({
-    next: (resp) => {
+      next: (resp) => {
+        this.kardexes.set(resp.kardexes);
+        this.kardexes()!.data.forEach((kardex) => {
+          kardex.options =  [
+            {
+              label:'',icon:'fas fa-eye',
+              tooltip: 'Ver',
+              class:'p-button-rounded p-button-success p-button-sm',
+              eventClick: () => {
+                Swal.fire({
+                  title: 'Estamos cargando los datos',
+                  html: 'Un momento, por favor.',
+                  didOpen: () => {
+                    console.log(kardex);
 
-  // 🔥 1. Filtrar SOLO saldos distintos de cero
-  const kardexesFiltrados: Kardexes = {
-    ...resp.kardexes,
-    data: resp.kardexes.data.filter(
-      (kardex: Kardex) => Number(kardex.saldo) !== 0
-    )
-  };
+                    Swal.showLoading();
+                    new Promise((resolve, reject) => {
+                      switch (kardex.type_movement) {
+                        case 'INPUT':
+                            this.inputsService.getInputById(kardex.id_movement).subscribe({
+                              next: (resp) => {
+                                this.inputsService.detailsSubs$.next(resp.input);
+                                this.inputsService.showModalDetailsInput = true;
+                                Swal.close();
+                              },
+                              error: (err) => Swal.close()
+                            })
+                          break;
+                        case 'OUTPUT':
+                          this.outputService.getOutputById(kardex.id_movement).subscribe({
+                            next: (resp) => {
+                              this.outputService.detailsSubs$.next(resp.output);
+                              this.outputService.showModalDetailsInput = true;
+                              Swal.close();
+                            },
+                            error: (err) => Swal.close()
+                          });
+                          break;
+                        case 'CLASIFIED':
+                          this.classifiedService.getClassifiedById(kardex.id_movement).subscribe({
+                            next: (resp) => {
+                              this.classifiedService.detailsSubs$.next(resp.classified);
+                              this.classifiedService.showModalDetailsClassified = true;
+                              Swal.close();
+                            },
+                            error: (err) => Swal.close()
+                          });
+                          break;
+                        case 'TRANSFER':
+                          this.transfersService.getTransferById(kardex.id_movement).subscribe({
+                            next: (resp) => {
+                              this.transfersService.detailsSubs$.next(resp.transfer);
+                              this.transfersService.showModalDetailsTransfer = true;
+                              Swal.close();
+                            },
+                            error: (err) => Swal.close()
+                          });
+                          break;
+                        default:
+                          break;
+                      }
+                    });
+                  },
+                });
 
-  // 🔥 2. Asignar datos ya filtrados
-  this.kardexes.set(kardexesFiltrados);
-
-  // 🔥 3. Mantener exactamente la misma lógica de opciones
-  this.kardexes()!.data.forEach((kardex) => {
-    kardex.options = [
-      {
-        label: '',
-        icon: 'fas fa-eye',
-        tooltip: 'Ver',
-        class: 'p-button-rounded p-button-success p-button-sm',
-        eventClick: () => {
-          Swal.fire({
-            title: 'Estamos cargando los datos',
-            html: 'Un momento, por favor.',
-            didOpen: () => {
-              console.log(kardex);
-              Swal.showLoading();
-
-              switch (kardex.type_movement) {
-                case 'INPUT':
-                  this.inputsService.getInputById(kardex.id_movement).subscribe({
-                    next: (resp) => {
-                      this.inputsService.detailsSubs$.next(resp.input);
-                      this.inputsService.showModalDetailsInput = true;
-                      Swal.close();
-                    },
-                    error: () => Swal.close()
-                  });
-                  break;
-
-                case 'OUTPUT':
-                  this.outputService.getOutputById(kardex.id_movement).subscribe({
-                    next: (resp) => {
-                      this.outputService.detailsSubs$.next(resp.output);
-                      this.outputService.showModalDetailsInput = true;
-                      Swal.close();
-                    },
-                    error: () => Swal.close()
-                  });
-                  break;
-
-                case 'CLASIFIED':
-                  this.classifiedService.getClassifiedById(kardex.id_movement).subscribe({
-                    next: (resp) => {
-                      this.classifiedService.detailsSubs$.next(resp.classified);
-                      this.classifiedService.showModalDetailsClassified = true;
-                      Swal.close();
-                    },
-                    error: () => Swal.close()
-                  });
-                  break;
-
-                case 'TRANSFER':
-                  this.transfersService.getTransferById(kardex.id_movement).subscribe({
-                    next: (resp) => {
-                      this.transfersService.detailsSubs$.next(resp.transfer);
-                      this.transfersService.showModalDetailsTransfer = true;
-                      Swal.close();
-                    },
-                    error: () => Swal.close()
-                  });
-                  break;
               }
             }
-          });
-        }
-      }
-    ];
-  });
-},
+          ]
+        });
+      },
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)
     });
   }
-
 
   findProduct(idProduct: number){
     this.loading.set(true);
@@ -282,18 +375,38 @@ ngOnInit(): void {
               this.getAllAndSearchKardex(1,this.rows())
             }
           },
+          error: () => this.loading.set(false)
         });
   }
 
   selectProduct(product: Product) {
     this.suggestedProducts.set([]);
     this.productSelect.set(product);
-    this.formReport.get('id_product')?.setValue(this.productSelect()?.id);
+    this.productSelectValue = product; // 🆕 Actualizar para el dropdown
+    this.formReport.patchValue({
+      id_product: product.id
+    });
+    console.log('✓ Producto establecido:', product.cod, product.name);
   }
 
   clearSelectProduct() {
+    console.log('Limpiando producto seleccionado');
+
     this.productSelect.set(undefined);
-    this.formReport.get('id_product')?.setValue(null);
+    this.productSelectValue = null;
+    this.formReport.patchValue({
+      id_product: ''
+    });
+
+    // Limpiar kardex
+    this.kardexes.set(undefined);
+
+    console.log('✓ Producto limpiado');
+
+    // Recargar dropdown
+    this.dropdownFilter.set('');
+    this.dropdownPage.set(1);
+    this.loadDropdownProducts(true);
   }
 
   formParamsByForm() {
@@ -301,7 +414,8 @@ ngOnInit(): void {
       const { filterBy, id_sucursal, id_provider, id_product ,id_storage, dates} = this.formReport.value;
       const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
-      return {
+
+      const newParams = {
         type_kardex: params.type_kardex,
         id_sucursal: id_sucursal ? id_sucursal : '',
         id_storage : id_storage ? id_storage : '',
@@ -310,8 +424,10 @@ ngOnInit(): void {
         filterBy: filterBy,
         date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
-        include_zero: false
-      }
+      };
+
+      console.log('Parámetros formados:', newParams);
+      return newParams;
     });
   }
 
@@ -338,11 +454,10 @@ ngOnInit(): void {
     this.getAllAndSearchKardex(1,this.rows(),this.type(),this.query());
   }
 
-
   onChangeTypesFilter() {
     const type_filter = this.formReport.get('filterBy')?.value;
     if(type_filter == 'RANGE'){
-      this.formReport.get('dates')?.setValue([new Date()]);
+      this.formReport.get('dates')?.setValue([new Date('2020-01-01'), new Date()]);
     } else {
       this.formReport.get('dates')?.setValue(new Date());
     }
@@ -366,12 +481,21 @@ ngOnInit(): void {
     });
   }
 
-
   printPdfReport() {
-    if(!this.productSelect()) return;
+    if(!this.productSelect()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Seleccione un producto',
+        text: 'Debe seleccionar un producto para generar el reporte',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
     this.formParamsByForm();
+
     Swal.fire({
       title: 'Generando Reporte!',
       html: `Con los parámetros seleccionados`,
@@ -395,10 +519,20 @@ ngOnInit(): void {
   }
 
   printExcelReport() {
-    if(!this.productSelect()) return;
+    if(!this.productSelect()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Seleccione un producto',
+        text: 'Debe seleccionar un producto para generar el reporte',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
     this.formParamsByForm();
+
     Swal.fire({
       title: 'Generando Reporte!',
       html: `Con los parámetros seleccionados`,
@@ -422,14 +556,17 @@ ngOnInit(): void {
 
   clearInputs() {
     this.formReport.patchValue({
-      filterBy: 'YEAR',
-      dates: new Date(),
-      date_range: '',
-      id_sucursal: '',
+      filterBy: 'RANGE',
+      dates: [new Date('2020-01-01'), new Date()],
+      id_sucursal: this.validatorsService.id_sucursal(),
       id_provider: '',
       type_kardex: '',
-      id_storage: '',
+      id_storage: this.validatorsService.storages().length > 0
+        ? this.validatorsService.storages()[0].id
+        : '',
       id_product: '',
     });
+
+    this.clearSelectProduct();
   }
 }

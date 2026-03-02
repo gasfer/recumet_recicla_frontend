@@ -2,12 +2,13 @@
     <div class="card shadow mb-4 icon-box ">
         <div class="card-body">
             <div class="row text-center">
-                <h3 style="color: var(--bg-2665C);"><b>CONSULTA DETALLE KARDEX -</b> "{{productSelect()?.name ?? '-'}}"</h3>
+                <h3 style="color: var(--bg-2665C);"><b>CONSULTA DETALLE KARDEX -</b> "{{productSelect()?.name ?? 'SELECCIONE UN PRODUCTO'}}"</h3>
             </div>
             <p-accordion [activeIndex]="1">
                 <p-accordionTab header="Filtros">
                     <div class="p-fluid grid">
                         <div class="field col-12">
+                           <!-- FILTROS EXISTENTES -->
                             <div class="row mt-1">
                                 <div class="col-12 col-sm-6">
                                     <div class="row">
@@ -68,35 +69,120 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="row mt-1">
-                                        <div class="col-12 col-sm-6 mt-2">
-                                            <b>Producto Seleccionado:
-                                                <br>
-                                                <p-tag [rounded]="true" icon="fa-solid fa-tag"
-                                                    [severity]="productSelect() ? 'info' : 'warning'"
-                                                    [value]="productSelect() ? 'COD: ' + productSelect()?.cod+' / ' + productSelect()?.name : 'COD: 0 / SELECCIONE UN PRODUCTO'">
-                                                    &nbsp;
-                                                </p-tag>
-                                            </b>
+                            </div>
+
+                            <!-- 🆕 FILA PARA DROPDOWN DE PRODUCTOS -->
+                            <div class="row mt-3">
+                                <div class="col-12 col-md-8">
+                                    <div class="row">
+                                        <div class="col-12 col-md-8">
+                                            <label class="block mb-1">Producto <span class="text-danger">*</span></label>
+                                            <p-dropdown
+                                                [options]="dropdownProducts()"
+                                                [(ngModel)]="productSelectValue"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (onChange)="onProductSelect($event.value)"
+                                                [filter]="true"
+                                                filterBy="name,cod,description,category.name"
+                                                [showClear]="true"
+                                                [virtualScroll]="true"
+                                                [virtualScrollItemSize]="45"
+                                                [lazy]="true"
+                                                (onFilter)="filterProduct($event)"
+                                                (onLazyLoad)="onLazyLoad($event)"
+                                                [loading]="loadingSearchProduct()"
+                                                placeholder="Busque un producto aquí..."
+                                                [style]="{'width':'100%'}"
+                                                appendTo="body"
+                                                optionLabel="name"
+                                                [scrollHeight]="'450px'"
+                                                [panelStyle]="{'max-height': '500px', 'min-width': '450px'}">
+
+                                                <ng-template pTemplate="selectedItem">
+                                                    <div *ngIf="productSelect()" class="flex align-items-center gap-2">
+                                                        <div>
+                                                            <span class="fw-bold">{{productSelect()?.cod}} - {{productSelect()?.name}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div *ngIf="!productSelect()">
+                                                        <span class="text-muted">Seleccione un producto...</span>
+                                                    </div>
+                                                </ng-template>
+
+                                                <ng-template let-product pTemplate="item">
+                                                    <div class="flex align-items-center gap-2">
+                                                        <div>
+                                                            <span class="fw-bold">{{product.cod}} - {{ product.name}}</span>
+                                                            <br>
+                                                            <span class="text-muted fw-normal">{{product.description }} -
+                                                                {{product.category.name}} / {{product.unit.siglas}}</span>
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
+
+                                                <ng-template pTemplate="empty">
+                                                    <div class="p-3">
+                                                        <div *ngIf="loadingSearchProduct()" class="text-center">
+                                                            <i class="pi pi-spinner pi-spin mr-2"></i>
+                                                            <span>Cargando...</span>
+                                                        </div>
+                                                        <div *ngIf="!loadingSearchProduct() && dropdownFilter()" class="text-center">
+                                                            <span>No se encontró el producto: "{{dropdownFilter() | uppercase}}"</span>
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
+                                            </p-dropdown>
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2">
+                                            <b>Producto Seleccionado:</b>
+                                            <br>
+                                            <p-tag [rounded]="true" icon="fa-solid fa-tag"
+                                                [severity]="productSelect() ? 'info' : 'warning'"
+                                                [value]="productSelect() ? 'COD: ' + productSelect()?.cod : 'NO SELECCIONADO'">
+                                                <p-badge *ngIf="productSelect()"
+                                                    class="cursor-pointer"
+                                                    severity="danger"
+                                                    (click)="clearSelectProduct()"
+                                                    [value]="'X'"
+                                                    styleClass="mr-2"
+                                                    pTooltip="Quitar Producto"
+                                                    tooltipPosition="top">
+                                                </p-badge>
+                                                &nbsp;
+                                            </p-tag>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+
                         </div>
                     </div>
                     <div class="text-end">
-                        <p-button (click)="!loading() ? getAllAndSearchKardex(1,this.rows()) : null" styleClass="p-button-rounded p-button-sm" label="Buscar"
-                            icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
-                        <p-splitButton *ngIf="validatorsService.withPermission('KARDEX','reports')" icon="fas fa-print" label="Imprimir" [model]="this.buttonItems" [menuStyle]="{'width':'8em'}"
+                        <p-button (click)="!loading() ? getAllAndSearchKardex(1,this.rows()) : null"
+                            styleClass="p-button-rounded p-button-sm"
+                            label="Buscar"
+                            icon="fa-solid fa-magnifying-glass"
+                            [loading]="loading()">
+                        </p-button>
+                        <p-splitButton *ngIf="validatorsService.withPermission('KARDEX','reports')"
+                            icon="fas fa-print"
+                            label="Imprimir"
+                            [model]="this.buttonItems"
+                            [menuStyle]="{'width':'8em'}"
                             [size]="'small'"
                             [rounded]="true"
                             [severity]="'danger'"
-                            (onClick)="!loading() ? this.printPdfReport() : null" styleClass="ms-1">
+                            (onClick)="!loading() ? this.printPdfReport() : null"
+                            styleClass="ms-1">
                         </p-splitButton>
                         <p-button (click)="clearInputs()"
-                            styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
-                            label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
+                            styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
+                            icon="fas fa-broom"
+                            label="Limpiar"
+                            [pTooltip]="'Limpiar Campos'"
+                            [loading]="loading()">
                         </p-button>
                     </div>
                 </p-accordionTab>
@@ -106,6 +192,7 @@
             [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
 </form>
+
 <app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'DESC'" [sortField]="'date'"
   [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)"
   [data]="kardexes()" [loading]="loading()">
@@ -113,11 +200,11 @@
         <th  colspan="3"></th>
         <th style="background-color: var(--bg-primary)"  colspan="3"  class="text-center text-white">FÍSICO</th>
         <th  colspan="1"></th>
-        <th style="background-color: var(--bg-primary)" colspan="3" class="text-center text-white"  style="background-color: var(--bg-primary)"
-       >VALORADO</th>
+        <th style="background-color: var(--bg-primary)" colspan="3" class="text-center text-white">VALORADO</th>
         <th  colspan="1"></th>
     </tr>
 </app-table>
+
 <app-modal-view-details-input></app-modal-view-details-input>
 <app-modal-view-details-output></app-modal-view-details-output>
 <app-modal-view-details-classified></app-modal-view-details-classified>
