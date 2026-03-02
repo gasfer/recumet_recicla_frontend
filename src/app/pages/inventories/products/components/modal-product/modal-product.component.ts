@@ -308,11 +308,27 @@ export class ModalProductComponent implements OnInit, OnDestroy, AfterViewInit {
         img.onload = () => {
           URL.revokeObjectURL(objectUrl);
           const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
+
+          // Redimensionar si es necesario (máximo 1024px)
+          let width = img.width;
+          let height = img.height;
+          const maxDimension = 1024;
+
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height *= maxDimension / width;
+              width = maxDimension;
+            } else {
+              width *= maxDimension / height;
+              height = maxDimension;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
           const ctx = canvas.getContext('2d');
           if (ctx) {
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(img, 0, 0, width, height);
             canvas.toBlob((blob) => {
               if (blob) {
                 const currentName = imageFile.name;
@@ -320,7 +336,7 @@ export class ModalProductComponent implements OnInit, OnDestroy, AfterViewInit {
                 const newFileName = currentName.replace(extension, '.webp');
                 this.imagenProd = new File([blob], newFileName, { type: 'image/webp' });
               }
-            }, 'image/webp', 0.95); // Alta calidad ya que el peso ya se redujo
+            }, 'image/webp', 0.7); // Reducir calidad a 0.7 para obtener tamaños en KB
           }
         };
         img.src = objectUrl;
