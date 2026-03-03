@@ -81,91 +81,49 @@ export class ModalSaveInputComponent implements OnInit {
     this.onOldCustomerChange();
   }
 
-saveInput() {
-  this.formInput.patchValue({
-    id_provider: this.providerSelect()?.id,
-    id_sucursal: this.validatorsService.id_sucursal(),
-    id_storage: this.id_storage,
-  });
+  saveInput() {
+    this.formInput.patchValue({
+      id_provider: this.providerSelect()?.id,
+      id_sucursal: this.validatorsService.id_sucursal(),
+      id_storage: this.id_storage,
+    });
 
-  this.formInput.markAllAsTouched();
+    this.formInput.markAllAsTouched();
+    if (!this.formInput.valid) return;
 
-  if (!this.formInput.valid) return;
+    this.loading.set(true);
 
-  this.loading.set(true);
+    const inputDetail = this.inputsService.detailShopping().map((prod) => ({
+      quantity: prod.quantity,
+      cost: prod.costo,
+      total: prod.import,
+      id_product: prod.id,
+      status: 'ACTIVE',
+    }));
 
-  const inputDetail = this.inputsService.detailShopping().map((prod) => ({
-    quantity: prod.quantity,
-    cost: prod.costo,
-    total: prod.import,
-    id_product: prod.id,
-    status: 'ACTIVE',
-  }));
+    // ✅ Usar getRawValue() para incluir campos deshabilitados
+    const inputData = { ...this.formInput.getRawValue() };
 
-  const inputData = { ...this.formInput.value };
-  delete inputData.registry_number;
+    // ✅ Solo eliminar registry_number si es SIN FICHA (el backend lo genera)
+    if (inputData.type_registry === 'SIN FICHA') {
+      delete inputData.registry_number;
+    }
 
-  const data: NewInputForm = {
-    input_data: inputData,
-    input_details: inputDetail,
-  };
+    const data: NewInputForm = {
+      input_data: inputData,
+      input_details: inputDetail,
+    };
 
-  this.inputsService.postNewInput(data).subscribe({
-    next: (resp) => {
-      this.inputsService.showModalSaveInput = false;
-      this.inputsService.resetInput();
-      this.componentService.clearInputSearch$.next(true);
-
-      Swal.fire({
-        title: 'Éxito!',
-        text: 'Compra registrada exitosamente',
-        icon: 'success',
-        showClass: { popup: 'animated animate fadeInDown' },
-        customClass: { container: 'swal-alert' },
-      }).then(() => { // <-- Añadimos .then()
-        if (this.inputsService._inputConfig.printAfter && this.canPrintAfterSave()) {
-          this.inputsService.printPdfReport(resp.id_input);
-        }
-      });
-    },
-    complete: () => this.loading.set(false),
-    error: (err) => this.loading.set(false),
-  });
-}
-  editInput() {
-  this.formInput.patchValue({
-    id_provider: this.providerSelect()?.id,
-    id_storage: this.id_storage,
-  });
-  this.formInput.markAllAsTouched();
-  if (!this.formInput.valid) return;
-  this.loading.set(true);
-  const inputDetail = this.inputsService.detailShopping().map((prod) => ({
-    quantity: prod.quantity,
-    cost: prod.costo,
-    total: prod.import,
-    id_product: prod.id,
-    status: 'ACTIVE',
-  }));
-  const inputData = { ...this.formInput.value };
-  delete inputData.registry_number;
-
-  const data: NewInputForm = {
-    input_data: inputData,
-    input_details: inputDetail,
-  };
-
-  this.inputsService
-    .putUpdateInput(this.inputsService.dataInputForEdit()!.id, data)
-    .subscribe({
+    this.inputsService.postNewInput(data).subscribe({
       next: (resp) => {
         this.inputsService.showModalSaveInput = false;
         this.inputsService.isEdit = false;
         this.inputsService.resetInput();
         this.componentService.clearInputSearch$.next(true);
+
         Swal.fire({
           title: 'Éxito!',
-          text: `Compra Modificada exitosamente`,
+          text: `Compra Registrada exitosamente`,
           icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert' },
@@ -178,9 +136,60 @@ saveInput() {
         }
       },
       complete: () => this.loading.set(false),
-      error: () => this.loading.set(false),
+      error: (err) => this.loading.set(false),
     });
-}
+  }
+  editInput() {
+    this.formInput.patchValue({
+      id_provider: this.providerSelect()?.id,
+      id_storage: this.id_storage,
+    });
+    this.formInput.markAllAsTouched();
+    if (!this.formInput.valid) return;
+    this.loading.set(true);
+    const inputDetail = this.inputsService.detailShopping().map((prod) => ({
+      quantity: prod.quantity,
+      cost: prod.costo,
+      total: prod.import,
+      id_product: prod.id,
+      status: 'ACTIVE',
+    }));
+    const inputData = { ...this.formInput.getRawValue() };
+    if (inputData.type_registry === 'SIN FICHA') {
+      delete inputData.registry_number;
+    }
+
+    const data: NewInputForm = {
+      input_data: inputData,
+      input_details: inputDetail,
+    };
+
+    this.inputsService
+      .putUpdateInput(this.inputsService.dataInputForEdit()!.id, data)
+      .subscribe({
+        next: (resp) => {
+          this.inputsService.showModalSaveInput = false;
+          this.inputsService.isEdit = false;
+          this.inputsService.resetInput();
+          this.componentService.clearInputSearch$.next(true);
+          Swal.fire({
+            title: 'Éxito!',
+            text: `Compra Modificada exitosamente`,
+            icon: 'success',
+            showClass: { popup: 'animated animate fadeInDown' },
+            customClass: { container: 'swal-alert' },
+          });
+          if (
+            this.inputsService._inputConfig.printAfter &&
+            this.canPrintAfterSave()
+          ) {
+            this.inputsService.printPdfReport(resp.id_input);
+          }
+        },
+        complete: () => this.loading.set(false),
+        error: () => this.loading.set(false),
+      });
+  }
 
   canPrintAfterSave(): boolean {
     const typeRegistry = this.formInput.get('type_registry')?.value;
@@ -246,6 +255,7 @@ saveInput() {
       sumas: this.totalSummary(),
       total: this.totalSummary(),
     });
+    this.selectTypeRegistry();
     if (this.inputsService.isEdit) {
       const input_edit = this.inputsService.dataInputForEdit();
       const on_account = input_edit?.accounts_payable?.monto_abonado;
@@ -281,10 +291,17 @@ saveInput() {
   }
 
   selectTypeRegistry() {
-    // solo limpiamos el campo visualmente
+    const typeRegistry = this.formInput.get('type_registry')?.value;
     this.formInput.patchValue({ registry_number: '' });
-  }
 
+    if (typeRegistry === 'SIN FICHA') {
+      // ✅ El backend genera el número → deshabilitar (no es necesario ingresarlo)
+      this.formInput.get('registry_number')?.disable();
+    } else {
+      // ✅ FICHA o BOLETA → el usuario debe ingresarlo
+      this.formInput.get('registry_number')?.enable();
+    }
+  }
   resetModal() {
     this.formInput.reset({
       id_provider: '',
@@ -292,10 +309,7 @@ saveInput() {
       id_sucursal: '',
       id_storage: '',
       date_voucher: new Date(),
-
-      // 🔒 solo visual
       registry_number: '',
-
       discount: 0,
       type_payment: 'EFECTIVO',
       on_account: 0,
@@ -313,12 +327,11 @@ saveInput() {
       with_pickup: false,
     });
 
-    // asegurar estado visual
-    this.formInput.get('registry_number')?.disable();
+    // ✅ BOLETA por defecto → habilitar registry_number
+    this.formInput.get('registry_number')?.enable();
 
     this.blockedInputCredit.set(false);
 
-    // re-aplicar reglas dinámicas
     setTimeout(() => {
       this.onOldCustomerChange();
       this.selectTypePay();

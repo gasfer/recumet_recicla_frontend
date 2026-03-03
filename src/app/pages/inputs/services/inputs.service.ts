@@ -29,8 +29,9 @@ export class InputsService {
     { name: 'Búsqueda en Google', code: 'GOOGLE' },
     { name: 'Referido por amigo/Amiga', code: 'REFERIDO POR AMIGO' },
     { name: 'Feria o Rueda de Negocios', code: 'FERIA' },
+    { name: 'Seguimiento Comercial (Llamadas periódicas)', code: 'SEGUIMIENTO COMERCIAL' }
   ]);
-  
+
   public _inputConfig : InputConfig = {
     searchForCode: localStorage.getItem('searchForCode') === 'true' ? true : false,
     clearInputAfterProductSearch: localStorage.getItem('clearInputAfterProductSearch') === 'false' ? false : true,
@@ -69,15 +70,15 @@ export class InputsService {
     const url = `${base_url}/input/${id_input}`;
     return this.http.put<{ok:string,msg:string,id_input:number}>(url, data);
   }
-  
+
   deleteInput(id_input: number) {
     const url = `${base_url}/input/anular/${id_input}`;
     return this.http.delete(url);
   }
 
   resetInput() {
-    this.detailShopping.update((details)=>  details = []); 
-    this.providerSelect.set(undefined); 
+    this.detailShopping.update((details)=>  details = []);
+    this.providerSelect.set(undefined);
   }
 
   updateDetailShopping(product: Product, updateQuantity: boolean = true, newQuantity: boolean = false) {
@@ -169,26 +170,36 @@ export class InputsService {
     return this.http.get(url,{
               responseType: 'blob',
             });
-  } 
-
-  printPdfReport(id_input:number) {
-    Swal.fire({
-      title: 'Generando Boleta!',
-      html: `Estamos generando la boleta`,
-      didOpen: () => {
-        Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.getPrintVoucherInput(id_input).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
-            error: (err) => Swal.close()
-          });
-        });
-      },
-    });
   }
+
+ printPdfReport(id_input: number) {
+  Swal.fire({
+    title: 'Generando Boleta!',
+    html: `Estamos generando la boleta`,
+    didOpen: () => {
+      Swal.showLoading();
+      new Promise((resolve, reject) => {
+        this.getPrintVoucherInput(id_input).subscribe({
+          next: (data) => {
+            const file = new Blob([data], { type: 'application/pdf' });
+            const fileURL = URL.createObjectURL(file);
+
+            // ✅ Abrir en iframe oculto y lanzar print() automáticamente
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = fileURL;
+            document.body.appendChild(iframe);
+
+            iframe.onload = () => {
+              iframe.contentWindow?.focus();
+              iframe.contentWindow?.print();
+              Swal.close();
+            };
+          },
+          error: () => Swal.close()
+        });
+      });
+    },
+  });
+}
 }
