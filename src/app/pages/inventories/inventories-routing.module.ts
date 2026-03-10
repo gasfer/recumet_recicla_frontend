@@ -32,19 +32,19 @@ const routes: Routes = [
   },
   {
     path: 'kardex-fisico/mp', component: KardexFisicoComponent,
-    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'RAW_MATERIAL', title: '(MP) Materia Prima' }
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'RAW_MATERIAL', title: 'KARDEX Materia Prima (MP)' }
   },
   {
     path: 'kardex-fisico/pt', component: KardexFisicoComponent,
-    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'FINISHED_PRODUCT', title: '(PT) Productos Terminados' }
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'FINISHED_PRODUCT', title: 'KARDEX Productos Terminados(PT)' }
   },
   {
     path: 'kardex-fisico/ar', component: KardexFisicoComponent,
-    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'RESALE_ITEM', title: '(AR) Artículos de Reventa' }
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'RESALE_ITEM', title: 'KARDEX Artículos de Reventa (AR)' }
   },
   {
     path: 'kardex-fisico/all', component: KardexFisicoComponent,
-    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: '', title: 'Todos los Productos' }
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: '', title: 'KARDEX de todos los Productos' }
   },
   {
     path: 'kardex-existencia', component: KardexExistenciaComponent,

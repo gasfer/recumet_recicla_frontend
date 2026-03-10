@@ -19,7 +19,7 @@
           "options": {
             "allowedCommonJsDependencies": [
               "sweetalert2",
-              "can-use-dom" 
+              "can-use-dom"
             ],
             "outputPath": "dist/frontend_recumet",
             "index": "src/index.html",

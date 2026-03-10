@@ -178,7 +178,7 @@ export class KardexFisicoComponent {
 
   ngOnInit(): void {
     this.getAllProviders();
-
+this.loadDropdownProducts(true);
 
     this.formReport.patchValue({
       filterBy: 'RANGE',
@@ -220,38 +220,48 @@ export class KardexFisicoComponent {
   // === MÉTODOS PARA DROPDOWN DE PRODUCTOS ===
 
   // Método para cargar productos en el dropdown
-  loadDropdownProducts(reset: boolean = false): void {
-    if (reset) {
-      this.dropdownPage.set(1);
-      this.dropdownProducts.set([]);
-    }
+loadDropdownProducts(reset: boolean = false): void {
 
-    this.loadingSearchProduct.set(true);
-
-    const categoryType = this.formReport.get('category_types')?.value || '';
-    const categoryIds = this.selectedCategoryIds().join(',');
-
-    this.productService.getSelectProducts(
-      this.dropdownFilter(),
-      this.dropdownLimit(),
-      categoryType,
-      categoryIds
-    ).subscribe({
-      next: (resp: any) => {
-        const products = resp.products || [];
-        if (reset) {
-          this.dropdownProducts.set(products);
-        } else {
-          this.dropdownProducts.update(prev => [...prev, ...products]);
-        }
-        this.totalProducts.set(products.length);
-        this.loadingSearchProduct.set(false);
-      },
-      error: (e) => {
-        this.loadingSearchProduct.set(false);
-      }
-    });
+  if (reset) {
+    this.dropdownPage.set(1);
+    this.dropdownProducts.set([]);
   }
+
+  this.loadingSearchProduct.set(true);
+
+  const categoryType = this.formReport.get('category_types')?.value || '';
+
+  const categoryIds =
+    this.selectedCategoryIds().length > 0
+      ? this.selectedCategoryIds().join(',')
+      : '';
+
+  this.productService.getSelectProducts(
+    this.dropdownFilter(),
+    this.dropdownLimit(),
+    categoryType,
+    categoryIds
+  ).subscribe({
+    next: (resp: any) => {
+
+      const products = resp.products || [];
+
+      if (reset) {
+        this.dropdownProducts.set(products);
+      } else {
+        this.dropdownProducts.update(prev => [...prev, ...products]);
+      }
+
+      this.totalProducts.set(products.length);
+      this.loadingSearchProduct.set(false);
+
+    },
+    error: () => {
+      this.loadingSearchProduct.set(false);
+    }
+  });
+
+}
 
 
   // === MÉTODOS PARA CATEGORÍAS ===
@@ -276,19 +286,17 @@ export class KardexFisicoComponent {
     });
   }
 
-  onCategoryChange(selectedIds: number[]): void {
-    this.selectedCategoryIds.set(selectedIds);
-    this.selectedCategoryValues = [...selectedIds];
-    this.productSelectValue = null;
-    this.productSelect.set(undefined);
-    this.formReport.patchValue({ id_product: '' });
+ onCategoryChange(selectedIds: number[]): void {
 
-    if (selectedIds.length > 0) {
-      this.loadDropdownProducts(true);
-    } else {
-      this.dropdownProducts.set([]);
-    }
-  }
+  this.selectedCategoryIds.set(selectedIds);
+  this.selectedCategoryValues = [...selectedIds];
+
+  // NO limpiar producto seleccionado
+  // porque ambos filtros deben poder coexistir
+
+  this.loadDropdownProducts(true);
+
+}
 
 
   // Evento de filtro del dropdown
@@ -435,7 +443,10 @@ export class KardexFisicoComponent {
               ? moment(dates[1]).format(formatDate1)
               : ''
             : moment(dates).format(formatDate2),
-        category_ids: this.selectedCategoryIds().join(','),
+        category_ids:
+  this.selectedCategoryIds().length > 0
+    ? this.selectedCategoryIds().join(',')
+    : '',
       };
 
       console.log('Parámetros formados:', newParams); // Debug

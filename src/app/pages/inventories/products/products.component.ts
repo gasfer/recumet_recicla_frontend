@@ -12,8 +12,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
-  styles: [
-  ]
+  styleUrls: ['./products.css']
 })
 export class ProductsComponent implements OnInit, OnDestroy {
   validatorsService     = inject( ValidatorsService);
@@ -23,10 +22,27 @@ export class ProductsComponent implements OnInit, OnDestroy {
   pipeNumber        = new DecimalPipe('en-US');
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
-  searchItems = signal<MenuItem[]>([
-    { label: 'Activos',   icon: 'fa-solid fa-circle-check' ,command: () => {this.type.set('');this.getAllAndSearchProducts(1,this.rows(),true);}},
-    { label: 'Inactivos', icon: 'fa-solid fa-trash-can', command: () => {this.type.set('');this.getAllAndSearchProducts(1,this.rows(),false)} },
-  ]);
+  activeMenu = signal<MenuItem | undefined>(undefined);
+searchItems = signal<MenuItem[]>([
+  {
+    label: 'Activos',
+    icon: 'fa-solid fa-circle-check',
+    command: () => {
+      this.activeMenu.set(this.searchItems()[0]);
+      this.type.set('');
+      this.getAllAndSearchProducts(1,this.rows(),true);
+    }
+  },
+  {
+    label: 'Inactivos',
+    icon: 'fa-solid fa-trash-can',
+    command: () => {
+      this.activeMenu.set(this.searchItems()[1]);
+      this.type.set('');
+      this.getAllAndSearchProducts(1,this.rows(),false);
+    }
+  }
+]);
   cols = signal<ColsTable[]>([
     { field: 'cod', header: 'COD' , style:'min-width:90px;max-width:90px;', tooltip: true, isLink:true,link:'/inventories/kardex-existencia?p=${value}', field2:'id', tooltipMsg: 'Ver kardex'},
     { field: 'img', header: 'IMAGEN' , style:'min-width:100px;max-width:100px;', tooltip: false, isImg: true, typeImg: 'products'},
@@ -40,19 +56,19 @@ export class ProductsComponent implements OnInit, OnDestroy {
      },
     { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:150px;max-width:150px;',tooltip: true ,isText: true  },
     { field: `unit.siglas`, header: 'UNIDAD' , style:'min-width:90px;max-width:90px;',tooltip: true ,isText: true  },
-    { field: `prices`, header: 'PRECIOS' , style:'min-width:80px;max-width:80px;',isArray: true, activeSortable:false, 
+    { field: `prices`, header: 'PRECIOS' , style:'min-width:80px;max-width:80px;',isArray: true, activeSortable:false,
       colsChild: [{field: 'name', header: 'NOMBRE'}, {field: 'price', header: 'PRECIO'}, {field: 'profit_margin', header: 'MARGEN %'}]
     },
-    { field: `stocks`, header: 'STOCK' , style:'min-width:80px;max-width:80px;',isArray: true, activeSortable:false, 
+    { field: `stocks`, header: 'STOCK' , style:'min-width:80px;max-width:80px;',isArray: true, activeSortable:false,
       colsChild: [{field: 'stock', header: 'STOCK'}, {field: 'sucursal.name', header: 'SUCURSAL'}, {field: 'storage.name', header: 'ALMACÉN'}]
     },
-    { 
+    {
       field: 'options', header: 'OPCIONES', style:'min-width:210px;max-width:210px', isButton:true, activeSortable:false
     }
   ]);
   searchFor = signal<SearchFor[]>([
     {name: 'NOMBRE', code: 'name'},
-    {name: 'COD', code: 'cod'},   
+    {name: 'COD', code: 'cod'},
     {name: 'DESCRIPCION', code: 'description'},
     {name: 'COSTO', code: 'costo'},
     {name: 'CATEGORÍA', code: 'category.name'},
@@ -76,80 +92,52 @@ export class ProductsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.save$.unsubscribe();
   }
- 
 
-  getAllAndSearchProducts(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
-    if(!query) {this.loading.set(true);} //not loading in search
-    this.status.set(status);
-    this.productsService.getAllAndSearch(page,limit,status,type,query,false,'','',this.fieldSort(),this.order()).subscribe({
+getAllAndSearchProducts(
+  page: number,
+  limit: number,
+  status: boolean,
+  type: string = '',
+  query: string = ''
+) {
+
+  if (!query) {
+    this.loading.set(true);
+  }
+
+  this.status.set(status);
+
+  this.productsService
+    .getAllAndSearch(
+      page,
+      limit,
+      status,
+      type,
+      query,
+      false,
+      '',
+      '',
+      this.fieldSort(),
+      this.order()
+    )
+    .subscribe({
       next: (resp) => {
-        this.products.set(resp.products);
-        this.products()!.data.forEach((product) => {
-          product.options = product.status  ? [
-            { 
-              label:'',icon:'fa-solid fa-truck-arrow-right', 
-              tooltip: 'Proveedores',
-              disabled: true,
-              class:'p-button-rounded p-button-secondary p-button-sm ms-1',
-              eventClick: () => {
-                this.productsService.showModalProvider = true;
-                this.productsService.viewProviderSubs.emit(product);
-              }
-            },
-            { 
-              label:'',icon:'fa-solid fa-tags', 
-              tooltip: 'Precios',
-              class:'p-button-rounded p-button-success p-button-sm ms-1',
-              eventClick: () => {
-                this.productsService.showModalPrices = true;
-                this.productsService.pricesSubs.emit(product);
-              }
-            },
-            { 
-              label:'',icon:'fa-solid fa-warehouse', 
-              tooltip: 'Asignar de sucursales',
-              disabled: true,
-              class:'p-button-rounded p-button-info p-button-sm ms-1',
-              eventClick: () => {
-                this.productsService.showModalSucursales = true;
-                this.productsService.assignSucursalSubs.emit(product);
-              }
-            },
-            { 
-              label:'',icon:'fas fa-edit', 
-              tooltip: 'Editar',
-              disabled: this.validatorsService.withPermission('PRODUCTOS','update'),
-              class:'p-button-rounded p-button-warning p-button-sm ms-1',
-              eventClick: () => {
-                this.editShowModal(product);
-              }
-            },
-            {
-              label:'',icon:'fa-solid fa-trash-can', 
-              tooltip: 'Inactivar',
-              disabled: this.validatorsService.withPermission('PRODUCTOS','delete'),
-              class:'p-button-rounded p-button-danger p-button-sm ms-1',
-              eventClick: () => {
-                this.updateStatus(product,false);
-              }
-            },
-          ] : [
-            {
-              label:'',icon:'fa-solid fa-circle-check',
-              tooltip: 'Activar',
-              disabled: this.validatorsService.withPermission('PRODUCTOS','delete'),
-              class:'p-button-rounded p-button-sm ms-1',
-              eventClick: () => {
-                this.updateStatus(product,true);
-              }
-            },
-          ] ;
+
+        const products = resp.products;
+
+        products.data.forEach(product => {
+          product.options = this.buildProductOptions(product);
         });
+
+        this.products.set(products);
+
       },
-      complete: () =>  this.loading.set(false),
+      complete: () => this.loading.set(false),
       error: () => this.loading.set(false)
     });
-  }
+
+}
+
 
   updateStatus(product: Product,newStatus: boolean) {
     const statusText = newStatus ? 'Activar' : 'Inactivar';
@@ -181,16 +169,90 @@ export class ProductsComponent implements OnInit, OnDestroy {
       if(!result.isConfirmed) return;
       if(result.value) {
         this.getAllAndSearchProducts(1,this.rows(),!newStatus);
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Disponible en la sección de ${newStatus ? "Activos" : "Inactivos"}`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},
         });
       }
     });
   }
+
+  private buildProductOptions(product: Product) {
+
+  if (!product.status) {
+    return [
+      {
+        label: '',
+        icon: 'fa-solid fa-circle-check',
+        tooltip: 'Activar',
+        disabled: this.validatorsService.withPermission('PRODUCTOS', 'delete'),
+        class: 'p-button-rounded p-button-sm ms-1',
+        eventClick: () => this.updateStatus(product, true)
+      }
+    ];
+  }
+
+  return [
+
+    {
+      label: '',
+      icon: 'fa-solid fa-truck-arrow-right',
+      tooltip: 'Proveedores',
+      disabled: true,
+      class: 'p-button-rounded p-button-secondary p-button-sm ms-1',
+      eventClick: () => {
+        this.productsService.showModalProvider = true;
+        this.productsService.viewProviderSubs.emit(product);
+      }
+    },
+
+    {
+      label: '',
+      icon: 'fa-solid fa-tags',
+      tooltip: 'Precios',
+      class: 'p-button-rounded p-button-success p-button-sm ms-1',
+      eventClick: () => {
+        this.productsService.showModalPrices = true;
+        this.productsService.pricesSubs.emit(product);
+      }
+    },
+
+    {
+      label: '',
+      icon: 'fa-solid fa-warehouse',
+      tooltip: 'Asignar sucursales',
+      disabled: true,
+      class: 'p-button-rounded p-button-info p-button-sm ms-1',
+      eventClick: () => {
+        this.productsService.showModalSucursales = true;
+        this.productsService.assignSucursalSubs.emit(product);
+      }
+    },
+
+    {
+      label: '',
+      icon: 'fas fa-edit',
+      tooltip: 'Editar',
+      disabled: this.validatorsService.withPermission('PRODUCTOS', 'update'),
+      class: 'p-button-rounded p-button-warning p-button-sm ms-1',
+      eventClick: () => this.editShowModal(product)
+    },
+
+    {
+      label: '',
+      icon: 'fa-solid fa-trash-can',
+      tooltip: 'Inactivar',
+      disabled: this.validatorsService.withPermission('PRODUCTOS', 'delete'),
+      class: 'p-button-rounded p-button-danger p-button-sm ms-1',
+      eventClick: () => this.updateStatus(product, false)
+    }
+
+  ];
+}
+
 
   paginate($rows:any) {
     const {rows, page} = $rows;
