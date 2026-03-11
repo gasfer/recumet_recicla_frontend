@@ -474,6 +474,14 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
           icon: 'bx-calendar',
           link: '/caja/query-caja',
         },
+           {
+          id: 303,
+          name: 'GASTOS',
+          action: 'view',
+          label: 'Gastos',
+          icon: 'bx-cash',
+          link: '/caja/query-caja',
+        },
       ],
     },
     {

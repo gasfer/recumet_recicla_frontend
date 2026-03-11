@@ -59,6 +59,7 @@ export class ModalAssignPermissionsComponent implements OnInit, OnDestroy {
         { id_user: null, module: "CAJA", view: false, create: false, update: false, delete: false, reports: false, status: true },
         { id_user: null, module: "CUENTAS POR PAGAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
         { id_user: null, module: "CUENTAS POR COBRAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+        { id_user: null, module: "GASTOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       ]
     },
     {

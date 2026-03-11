@@ -1,0 +1,337 @@
+/* ─── Contenedor form ───────────────────────────────────────────────────── */
+.form-gasto {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #f6f7f8;
+  padding: 0.25rem 0;
+}
+
+/* ─── Dialog ────────────────────────────────────────────────────────────── */
+:host ::ng-deep .p-dialog {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  overflow: hidden;
+}
+:host ::ng-deep .p-dialog .p-dialog-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.25rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+:host ::ng-deep .p-dialog .p-dialog-header-icon {
+  color: #64748b;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-header-icon:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background: #f6f7f8;
+  padding: 1rem 1.25rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ─── Tarjetas de sección ───────────────────────────────────────────────── */
+.seccion-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem 0.5rem;
+}
+
+.seccion-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.seccion-num {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #136dec;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.seccion-titulo {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* ─── Labels ────────────────────────────────────────────────────────────── */
+label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.3rem;
+}
+label i {
+  color: #64748b;
+  font-size: 0.75rem;
+  width: 14px;
+  text-align: center;
+}
+.req {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-left: 1px;
+}
+
+/* ─── Inputs ────────────────────────────────────────────────────────────── */
+:host ::ng-deep .p-inputtext {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #111827;
+  padding: 0.45rem 0.75rem;
+  background: #ffffff;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+:host ::ng-deep .p-inputtext:enabled:hover { border-color: #136dec; }
+:host ::ng-deep .p-inputtext:enabled:focus {
+  border-color: #136dec;
+  box-shadow: 0 0 0 3px rgba(19,109,236,0.15);
+  outline: none;
+}
+:host ::ng-deep .p-inputtext.ng-dirty.ng-invalid {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+}
+
+/* ─── Textarea ──────────────────────────────────────────────────────────── */
+:host ::ng-deep textarea.p-inputtextarea {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  padding: 0.45rem 0.75rem;
+  width: 100%;
+  min-height: 80px;
+  color: #111827;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+:host ::ng-deep textarea.p-inputtextarea:focus {
+  border-color: #136dec;
+  box-shadow: 0 0 0 3px rgba(19,109,236,0.15);
+  outline: none;
+}
+
+/* ─── Dropdown ──────────────────────────────────────────────────────────── */
+:host ::ng-deep .p-dropdown {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+:host ::ng-deep .p-dropdown:not(.p-disabled):hover { border-color: #136dec; }
+:host ::ng-deep .p-dropdown:not(.p-disabled).p-focus {
+  border-color: #136dec;
+  box-shadow: 0 0 0 3px rgba(19,109,236,0.15);
+}
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+  font-size: 0.875rem;
+  color: #111827;
+  padding: 0.42rem 0.75rem;
+}
+:host ::ng-deep .p-dropdown .p-dropdown-label.p-placeholder { color: #9ca3af; }
+:host ::ng-deep .p-dropdown.ng-dirty.ng-invalid { border-color: #ef4444; }
+:host ::ng-deep .p-dropdown-panel {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.85rem;
+  color: #111827;
+}
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item:hover {
+  background: #eff6ff;
+  color: #136dec;
+}
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item.p-highlight {
+  background: #136dec;
+  color: #ffffff;
+}
+
+/* ─── Calendar ──────────────────────────────────────────────────────────── */
+:host ::ng-deep .p-calendar { width: 100%; }
+:host ::ng-deep .p-calendar .p-inputtext {
+  border-radius: 8px 0 0 8px;
+  border-right: none;
+}
+:host ::ng-deep .p-calendar .p-datepicker-trigger {
+  border-radius: 0 8px 8px 0;
+  background: #136dec;
+  border: 1px solid #136dec;
+  color: #fff;
+  width: 2.2rem;
+  transition: background 0.15s;
+}
+:host ::ng-deep .p-calendar .p-datepicker-trigger:hover { background: #0f56c4; }
+
+/* ─── SelectButton ──────────────────────────────────────────────────────── */
+:host ::ng-deep .p-selectbutton { display: flex; width: 100%; }
+:host ::ng-deep .p-selectbutton .p-button {
+  flex: 1;
+  justify-content: center;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.42rem 0.5rem;
+  border-radius: 0;
+  transition: all 0.15s;
+}
+:host ::ng-deep .p-selectbutton .p-button:first-child { border-radius: 8px 0 0 8px; }
+:host ::ng-deep .p-selectbutton .p-button:last-child  {
+  border-radius: 0 8px 8px 0;
+  border-left: none;
+}
+:host ::ng-deep .p-selectbutton .p-button.p-highlight {
+  background: #136dec;
+  border-color: #136dec;
+  color: #ffffff;
+  font-weight: 600;
+}
+:host ::ng-deep .p-selectbutton .p-button:hover:not(.p-highlight) {
+  background: #eff6ff;
+  border-color: #136dec;
+  color: #136dec;
+}
+
+/* ─── InputNumber ───────────────────────────────────────────────────────── */
+:host ::ng-deep .p-inputnumber { width: 100%; }
+:host ::ng-deep .p-inputnumber-input {
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+:host ::ng-deep .p-inputnumber .p-button {
+  width: 2.2rem;
+  background: #136dec;
+  border-color: #136dec;
+  color: #fff;
+}
+:host ::ng-deep .p-inputnumber .p-button.p-button-secondary {
+  background: #6b7280;
+  border-color: #6b7280;
+  border-radius: 8px 0 0 8px;
+}
+:host ::ng-deep .p-inputnumber .p-button.p-button-primary { border-radius: 0 8px 8px 0; }
+:host ::ng-deep .p-inputnumber .p-button:hover { opacity: 0.87; }
+
+/* ─── FileUpload ────────────────────────────────────────────────────────── */
+:host ::ng-deep .p-fileupload-basic .p-button {
+  width: 100%;
+  justify-content: center;
+  border-radius: 8px;
+  border: 2px dashed #93c5fd;
+  background: #eff6ff;
+  color: #136dec;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.48rem 0.75rem;
+  transition: all 0.15s;
+}
+:host ::ng-deep .p-fileupload-basic .p-button:hover {
+  background: #dbeafe;
+  border-color: #136dec;
+}
+
+.hint {
+  font-size: 0.72rem;
+  color: #6b7280;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ─── Avatar inicial ────────────────────────────────────────────────────── */
+.avatar-ini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: #136dec;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ─── Errores ───────────────────────────────────────────────────────────── */
+.p-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 2px;
+  display: block;
+}
+
+/* ─── Botones footer ────────────────────────────────────────────────────── */
+:host ::ng-deep .btn-guardar.p-button {
+  border-radius: 9999px;
+  background: #136dec;
+  border-color: #136dec;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.55rem 1.75rem;
+  box-shadow: 0 4px 14px rgba(19,109,236,0.25);
+  transition: filter 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+:host ::ng-deep .btn-guardar.p-button:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(19,109,236,0.35);
+}
+:host ::ng-deep .btn-guardar.p-button:active { transform: scale(0.97); }
+
+:host ::ng-deep .btn-cancelar.p-button {
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.55rem 1.5rem;
+  transition: background 0.15s;
+}
+:host ::ng-deep .btn-cancelar.p-button:hover {
+  background: #f1f5f9;
+  border-color: #9ca3af;
+}
+
