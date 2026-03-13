@@ -141,23 +141,41 @@ export class ProductsService {
   }
 
   //export prices
+getReportProductCostExcel(
+  id_category: string,
+  id_sucursal: string,       // ✅ explícito
+  field_sort: string = 'id',
+  order: string = 'DESC',
+  type: string = '',
+  query: string = ''
+) {
+  if (id_category == null) id_category = '';
+  let url = `${base_url}/product/excel/costs?field_sort=${field_sort}&order=${order}&id_category=${id_category}&id_sucursal=${id_sucursal}`;
+  if (type && query) url += `&type=${type}&query=${query}`;
+  return this.http.get(url, { responseType: 'blob' });
+}
 
-  getReportProductCostExcel(id_category: string, field_sort: string = 'id', order: string = 'DESC') {
-    const id_sucursal = this.validatorsService.id_sucursal().toString();
-    if (id_category == null) id_category = '';
-    const url = `${base_url}/product/excel/costs?field_sort=${field_sort}&order=${order}&id_category=${id_category}&id_sucursal=${id_sucursal}`;
-    return this.http.get(url, {
-      responseType: 'blob',
-    });
-  }
+getReportProductCostPdf(
+  id_category: string,
+  id_sucursal: string,       // ✅ explícito
+  field_sort: string = 'id',
+  order: string = 'DESC',
+  type: string = '',
+  query: string = ''
+) {
+  if (id_category == null) id_category = '';
+  let url = `${base_url}/product/pdf/costs?field_sort=${field_sort}&order=${order}&id_category=${id_category}&id_sucursal=${id_sucursal}`;
+  if (type && query) url += `&type=${type}&query=${query}`;
+  return this.http.get(url, { responseType: 'blob' });
+}
+/*
+  getReportProductCost(id_category: string, format: 'excel' | 'pdf', field_sort: string = 'id', order: string = 'DESC') {
+  const id_sucursal = this.validatorsService.id_sucursal().toString();
+  if (id_category == null) id_category = '';
+  const url = `${base_url}/product/${format}/costs?field_sort=${field_sort}&order=${order}&id_category=${id_category}&id_sucursal=${id_sucursal}`;
+  return this.http.get(url, { responseType: 'blob' });
+}
 
-  getReportProductCostPdf(id_category: string, field_sort: string = 'id', order: string = 'DESC') {
-    const id_sucursal = this.validatorsService.id_sucursal().toString();
-    if (id_category == null) id_category = '';
-    const url = `${base_url}/product/pdf/costs?field_sort=${field_sort}&order=${order}&id_category=${id_category}&id_sucursal=${id_sucursal}`;
-    return this.http.get(url, {
-      responseType: 'blob',
-    });
-  }
+*/
 
 }
