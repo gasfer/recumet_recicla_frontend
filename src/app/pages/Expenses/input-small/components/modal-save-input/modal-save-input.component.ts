@@ -132,7 +132,7 @@ export class ModalSaveInputComponent implements OnInit {
           this.inputsService._inputConfig.printAfter &&
           this.canPrintAfterSave()
         ) {
-          this.inputsService.printPdfReport(resp.id_input);
+          this.inputsService.printPdfReportAuto(resp.id_input);
         }
       },
       complete: () => this.loading.set(false),
@@ -183,7 +183,7 @@ export class ModalSaveInputComponent implements OnInit {
             this.inputsService._inputConfig.printAfter &&
             this.canPrintAfterSave()
           ) {
-            this.inputsService.printPdfReport(resp.id_input);
+            this.inputsService.printPdfReportAuto(resp.id_input);
           }
         },
         complete: () => this.loading.set(false),

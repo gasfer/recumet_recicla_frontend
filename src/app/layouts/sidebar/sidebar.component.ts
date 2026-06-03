@@ -287,19 +287,33 @@ MENU: MenuItem[] = [
   label: 'MENUITEMS.CAJA.TEXT',
   icon: 'fa-solid fa-vault',
   subItems: [
-    { id: 102, name: 'CAJA', action: 'create', label: 'MENUITEMS.CAJA.LIST.ADMCAJA', link: '/caja/adm-caja' },
+    { id: 102, name: 'CAJA', action: 'create', label: 'Dashboard Caja', link: '/caja/adm-caja' },
     { id: 103, name: 'CAJA', action: 'view', label: 'Consultar Caja', link: '/caja/query-caja' },
+    { id: 104, name: 'CAJA', action: 'view', label: 'Gestion Gastos', link: '/caja/query-caja' },
+    { id: 104, name: 'CAJA', action: 'view', label: 'Transferencias(Mayor)', link: '/caja/query-caja' },
   ],
 },
 
 {
   id: 104,
-  name: 'GASTOS',
-  label: 'Gestión Gastos',
+  name: 'INGRESO',
+  label: 'Ingreso activos',
   icon: 'fa-solid fa-money-bill-transfer',
   subItems: [
-    { id: 105, name: 'GASTOS', action: 'view', label: 'Consultar Gastos', link: '/gastos/list-expenses' },
-    { id: 106, name: 'Personal', action: 'create', label: 'Registrar Personal', link: '/gastos/personal' },
+    { id: 105, name: 'Solicitud Compra', action: 'view', label: 'Consultar Gastos', link: '/gastos/list-expenses' },
+    { id: 106, name: 'Orden de compra', action: 'create', label: 'Registrar Personal', link: '/gastos/personal' },
+    { id: 106, name: 'Gestion compra', action: 'create', label: 'Registrar Personal', link: '/gastos/personal' },
+  ],
+},
+{
+  id: 104,
+  name: 'SALIDA',
+  label: 'Salida activos',
+  icon: 'fa-solid fa-money-bill-transfer',
+  subItems: [
+    { id: 105, name: 'Insumos Consumibles', action: 'view', label: 'Consultar Gastos', link: '/gastos/list-expenses' },
+    { id: 106, name: 'Herramientas', action: 'create', label: 'Registrar Personal', link: '/gastos/personal' },
+    { id: 106, name: 'gestion salidas', action: 'create', label: 'Registrar Personal', link: '/gastos/personal' },
   ],
 },
 

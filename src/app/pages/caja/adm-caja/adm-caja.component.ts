@@ -209,7 +209,7 @@ export class AdmCajaComponent implements OnInit, OnDestroy {
     });
   }
 
-  postOpenCaja(): void {
+  postOpenCaja(type: 'cash' | 'bank' = 'cash'): void {
     this.cajaService.showModalOpenCaja = true;
     this.cajaService.type_event = 'OPEN_CAJA';
   }
@@ -266,4 +266,42 @@ export class AdmCajaComponent implements OnInit, OnDestroy {
       datasets: [{ data: [0, 0], backgroundColor: ['#6ee7b7', '#fdba74'] }]
     };
   }
+
+// ── Nuevas propiedades estáticas del modal (solo UI) ──
+selectedCash = false;
+selectedBank = false;
+activeTab: 'cash' | 'bank' = 'cash';
+
+cashAmount = 0;
+cashObservacion = '';
+bankAmount = 0;
+numeroCuenta = '64645';
+estadoCuenta: 'activa' | 'inactiva' | 'pendiente' = 'activa';
+
+bancoOptions = [
+  { label: 'BNB — Banco Nacional Bolivia', value: 'bnb' },
+  { label: 'BCB — Banco Unión', value: 'bcb' },
+  { label: 'BCP — Banco Crédito', value: 'bcp' },
+];
+selectedBanco = this.bancoOptions[0];
+
+// Toggle selección de tarjetas
+toggleType(type: 'cash' | 'bank') {
+  if (type === 'cash') {
+    this.selectedCash = !this.selectedCash;
+    if (!this.selectedBank) this.activeTab = 'cash';
+  } else {
+    this.selectedBank = !this.selectedBank;
+    if (!this.selectedCash) this.activeTab = 'bank';
+    else this.activeTab = 'bank';
+  }
+}
+
+// Método combinado (llama al existente dos veces)
+postOpenCajaBoth() {
+  this.postOpenCaja('cash');
+  // El segundo se puede encadenar según tu lógica existente
+  this.postOpenCaja('bank');
+}
+
 }

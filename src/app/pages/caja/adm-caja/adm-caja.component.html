@@ -74,7 +74,17 @@
 
       <!-- TABLA RESUMEN -->
       <div class="caja-summary-table">
-
+<div class="cst-row cst-row--col-header">
+  <div class="cst-cell cst-cell--label"></div>
+  <div class="cst-cell cst-cell--val cst-cell--col-title">
+    <i class="fa-solid fa-money-bill-wave"></i>
+    <span>Efectivo / Caja</span>
+  </div>
+  <div class="cst-cell cst-cell--val cst-cell--col-title">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Banco / Transferencias</span>
+  </div>
+</div>
         <!-- ── SECCIÓN: INGRESOS ─────────────────────── -->
         <div class="cst-section-header">
           <i class="fa-solid fa-circle-plus"></i>
@@ -261,12 +271,12 @@
           <button class="caja-chart-tab"
                   [class.active]="chartMode === 'efectivo'"
                   (click)="switchMode('efectivo')">
-            <i class="fa-solid fa-money-bill-wave"></i> Efectivo
+            <i class="fa-solid fa-money-bill-wave"></i> Efectivo / Caja
           </button>
           <button class="caja-chart-tab"
                   [class.active]="chartMode === 'banco'"
                   (click)="switchMode('banco')">
-            <i class="fa-solid fa-building-columns"></i> Banco
+            <i class="fa-solid fa-building-columns"></i> Banco / Transferencias
           </button>
         </div>
 

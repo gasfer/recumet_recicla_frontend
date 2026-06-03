@@ -19,6 +19,7 @@
           "options": {
             "allowedCommonJsDependencies": [
               "sweetalert2",
+               "dropzone",
               "can-use-dom"
             ],
             "outputPath": "dist/frontend_recumet",

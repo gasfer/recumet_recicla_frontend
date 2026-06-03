@@ -242,7 +242,7 @@ export class QueryOutputsComponent {
                       price_select: Number(resp.price),
                       inventariable: resp.product.inventariable,
                       status: true,
-                      total_stock: Number(resp.quantity),
+                      total_stock: resp.product.total_stock ?? Number(resp.quantity),
                       prices: resp.product.prices,
                     },
                   ]);
