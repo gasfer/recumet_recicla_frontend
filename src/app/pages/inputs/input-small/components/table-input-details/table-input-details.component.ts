@@ -3,6 +3,7 @@ import { InputsService } from '../../../services/inputs.service';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ComponentsService } from 'src/app/core/services/components.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-table-input-details',
@@ -26,7 +27,7 @@ export class TableInputDetailsComponent implements OnDestroy {
   }
 
   updateQuantityProduct(event : any, product : Product){
-    let newQuantity = 0.1;
+    let newQuantity = 0;
     if(event.value > 99999999999999){
       event.value = 99999999999999;
     }
@@ -35,6 +36,20 @@ export class TableInputDetailsComponent implements OnDestroy {
     }
     product.quantity = newQuantity;
     this.inputsService.updateDetailShopping(product, true, true);  
+  }
+
+  confirmInput() {
+    const hasZeroQuantity = this.inputsService.detailShopping().some(product => !product.quantity || Number(product.quantity) <= 0);
+    if (hasZeroQuantity) {
+      Swal.fire({
+        title: 'Error de validación',
+        text: 'No se puede registrar compras con cantidad 0 o menor.',
+        icon: 'error',
+        customClass: { container: 'swal-alert' }
+      });
+      return;
+    }
+    this.inputsService.showModalSaveInput = true;
   }
 
   updateCostProduct(event : any, product : Product) {

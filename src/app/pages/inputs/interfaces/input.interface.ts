@@ -7,7 +7,9 @@ export interface InputConfig {
     viewCardProducts: boolean,
     printAfter: boolean,
     clearInputAfterProductSearch: boolean,
-    viewMoneyButtons: boolean
+    viewMoneyButtons: boolean,
+    printRoll?: boolean,
+    printHalfPage?: boolean
 }
 
 export interface NewInputForm {
@@ -35,6 +37,8 @@ export interface InputData {
     status:          string;
     pay_to_credit:   boolean;
     on_account:      number;
+    number_transaction?: string;
+    payment_voucher?: string;
 }
 
 export interface InputDetail {
@@ -106,6 +110,8 @@ export interface Input {
     referral_sources: string;
     old_customer:     boolean;
     with_pickup:      boolean;
+    number_transaction?: string;
+    payment_voucher?: string;
 }
 
 export interface DetailsInput {
