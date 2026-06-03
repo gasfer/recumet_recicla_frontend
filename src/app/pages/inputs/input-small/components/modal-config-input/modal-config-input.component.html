@@ -19,6 +19,14 @@
             <p-checkbox class="m-1" [binary]="true" formControlName="printSale" inputId="ImprimirF"></p-checkbox>
             <label class="cursor-pointer m-1" for="ImprimirF">Imprimir al finalizar compra</label>
         </div>
+        <div class="field-checkbox">
+            <p-checkbox class="m-1" [binary]="true" formControlName="printRoll" inputId="ImprimirR"></p-checkbox>
+            <label class="cursor-pointer m-1" for="ImprimirR">Impresión en rollo (Ticket)</label>
+        </div>
+        <div class="field-checkbox">
+            <p-checkbox class="m-1" [binary]="true" formControlName="printHalfPage" inputId="ImprimirM"></p-checkbox>
+            <label class="cursor-pointer m-1" for="ImprimirM">Impresión por media página (A5)</label>
+        </div>
       </div>
       <ng-template pTemplate="footer">
         <p-button (click)="saveConfig()" styleClass="p-button-sm p-button-rounded"

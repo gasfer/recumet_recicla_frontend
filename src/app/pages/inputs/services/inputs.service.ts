@@ -38,6 +38,8 @@ export class InputsService {
     viewCardProducts: localStorage.getItem('viewCardProducts') === 'true' ? true : false,
     printAfter: localStorage.getItem('printAfter') === 'false' ? false : true,
     viewMoneyButtons: localStorage?.getItem('viewMoneyButtons') === 'false' ? false : true,
+    printRoll: localStorage.getItem('printRoll') === 'true' ? true : false,
+    printHalfPage: localStorage.getItem('printHalfPage') === 'true' ? true : false,
   }
 
   getInputById(id_input:string): Observable<GetOneInput>{
@@ -166,7 +168,13 @@ export class InputsService {
 
   //* IMPRIMIR BOLETA
   getPrintVoucherInput(id_input:Number) {
-    const url = `${base_url}/input/pdf/voucher/${id_input}`;
+    let format = 'normal';
+    if (this._inputConfig.printRoll) {
+      format = 'rollo';
+    } else if (this._inputConfig.printHalfPage) {
+      format = 'media';
+    }
+    const url = `${base_url}/input/pdf/voucher/${id_input}?format=${format}`;
     return this.http.get(url,{
               responseType: 'blob',
             });
@@ -184,17 +192,25 @@ export class InputsService {
             const file = new Blob([data], { type: 'application/pdf' });
             const fileURL = URL.createObjectURL(file);
 
-            // ✅ Abrir en iframe oculto y lanzar print() automáticamente
+            // ✅ Abrir en iframe oculto y lanzar print() automáticamente (off-screen para evitar throttling y race conditions)
             const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = fileURL;
-            document.body.appendChild(iframe);
+            iframe.style.position = 'absolute';
+            iframe.style.width = '0px';
+            iframe.style.height = '0px';
+            iframe.style.border = 'none';
+            iframe.style.left = '-9999px';
 
             iframe.onload = () => {
               iframe.contentWindow?.focus();
               iframe.contentWindow?.print();
               Swal.close();
+              setTimeout(() => {
+                iframe.remove();
+              }, 1000);
             };
+
+            iframe.src = fileURL;
+            document.body.appendChild(iframe);
           },
           error: () => Swal.close()
         });
@@ -202,4 +218,11 @@ export class InputsService {
     },
   });
 }
+
+  uploadVoucher(idInput: number, file: File): Observable<any> {
+    const url = `${base_url}/input/upload/voucher?idInput=${idInput}`;
+    const formData = new FormData();
+    formData.append('voucher', file);
+    return this.http.put<any>(url, formData);
+  }
 }

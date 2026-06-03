@@ -33,6 +33,7 @@ export class ModalSaveInputComponent implements OnInit {
     { name: 'EFECTIVO', code: 'EFECTIVO' },
     { name: 'CHEQUE', code: 'CHEQUE' },
     { name: 'TRANSFERENCIA', code: 'TRANSFERENCIA' },
+    { name: 'QR', code: 'QR' },
   ]);
   types_registry = computed(() => this.inputsService.types_registry());
   decimalLength = signal(this.validatorsService.decimalLength());
@@ -41,6 +42,7 @@ export class ModalSaveInputComponent implements OnInit {
   banks = signal<Bank[]>([]);
   blockedInputCredit = signal(false);
   loading = signal(false);
+  voucherFile?: File;
   providerSelect = computed(() => this.inputsService.providerSelect());
   totalSummary = computed(() =>
     this.inputsService
@@ -67,6 +69,7 @@ export class ModalSaveInputComponent implements OnInit {
     comments: [null, []],
     account_input: [null, []],
     id_bank: [null, []],
+    number_transaction: [null, []],
     type_registry: ['BOLETA', [Validators.required]],
     is_paid: [false, [Validators.required]], //si es con factura
     status: ['ACTIVE'],
@@ -82,6 +85,17 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   saveInput() {
+    const hasZeroQuantity = this.inputsService.detailShopping().some(product => !product.quantity || Number(product.quantity) <= 0);
+    if (hasZeroQuantity) {
+      Swal.fire({
+        title: 'Error de validación',
+        text: 'No se puede registrar compras con cantidad 0 o menor.',
+        icon: 'error',
+        customClass: { container: 'swal-alert' }
+      });
+      return;
+    }
+
     this.formInput.patchValue({
       id_provider: this.providerSelect()?.id,
       id_sucursal: this.validatorsService.id_sucursal(),
@@ -116,30 +130,63 @@ export class ModalSaveInputComponent implements OnInit {
 
     this.inputsService.postNewInput(data).subscribe({
       next: (resp) => {
-        this.inputsService.showModalSaveInput = false;
-        this.inputsService.isEdit = false;
-        this.inputsService.resetInput();
-        this.componentService.clearInputSearch$.next(true);
-
-        Swal.fire({
-          title: 'Éxito!',
-          text: `Compra Registrada exitosamente`,
-          icon: 'success',
-          showClass: { popup: 'animated animate fadeInDown' },
-          customClass: { container: 'swal-alert' },
-        });
-        if (
-          this.inputsService._inputConfig.printAfter &&
-          this.canPrintAfterSave()
-        ) {
-          this.inputsService.printPdfReport(resp.id_input);
+        if (this.voucherFile) {
+          this.inputsService.uploadVoucher(resp.id_input, this.voucherFile).subscribe({
+            next: () => {
+              this.afterSaveInput(resp.id_input);
+            },
+            error: () => {
+              Swal.fire({
+                title: 'Aviso',
+                text: 'La compra se registró pero no se pudo subir el comprobante de pago.',
+                icon: 'info',
+                customClass: { container: 'swal-alert' },
+              });
+              this.afterSaveInput(resp.id_input);
+            }
+          });
+        } else {
+          this.afterSaveInput(resp.id_input);
         }
       },
       complete: () => this.loading.set(false),
       error: (err) => this.loading.set(false),
     });
   }
+
+  afterSaveInput(id_input: number) {
+    this.inputsService.showModalSaveInput = false;
+    this.inputsService.isEdit = false;
+    this.inputsService.resetInput();
+    this.componentService.clearInputSearch$.next(true);
+
+    Swal.fire({
+      title: 'Éxito!',
+      text: `Compra Registrada exitosamente`,
+      icon: 'success',
+      showClass: { popup: 'animated animate fadeInDown' },
+      customClass: { container: 'swal-alert' },
+    });
+    if (
+      this.inputsService._inputConfig.printAfter &&
+      this.canPrintAfterSave()
+    ) {
+      this.inputsService.printPdfReport(id_input);
+    }
+  }
+
   editInput() {
+    const hasZeroQuantity = this.inputsService.detailShopping().some(product => !product.quantity || Number(product.quantity) <= 0);
+    if (hasZeroQuantity) {
+      Swal.fire({
+        title: 'Error de validación',
+        text: 'No se puede registrar compras con cantidad 0 o menor.',
+        icon: 'error',
+        customClass: { container: 'swal-alert' }
+      });
+      return;
+    }
+
     this.formInput.patchValue({
       id_provider: this.providerSelect()?.id,
       id_storage: this.id_storage,
@@ -168,27 +215,48 @@ export class ModalSaveInputComponent implements OnInit {
       .putUpdateInput(this.inputsService.dataInputForEdit()!.id, data)
       .subscribe({
         next: (resp) => {
-          this.inputsService.showModalSaveInput = false;
-          this.inputsService.isEdit = false;
-          this.inputsService.resetInput();
-          this.componentService.clearInputSearch$.next(true);
-          Swal.fire({
-            title: 'Éxito!',
-            text: `Compra Modificada exitosamente`,
-            icon: 'success',
-            showClass: { popup: 'animated animate fadeInDown' },
-            customClass: { container: 'swal-alert' },
-          });
-          if (
-            this.inputsService._inputConfig.printAfter &&
-            this.canPrintAfterSave()
-          ) {
-            this.inputsService.printPdfReport(resp.id_input);
+          if (this.voucherFile) {
+            this.inputsService.uploadVoucher(resp.id_input, this.voucherFile).subscribe({
+              next: () => {
+                this.afterEditInput(resp.id_input);
+              },
+              error: () => {
+                Swal.fire({
+                  title: 'Aviso',
+                  text: 'La compra se modificó pero no se pudo subir el comprobante de pago.',
+                  icon: 'info',
+                  customClass: { container: 'swal-alert' },
+                });
+                this.afterEditInput(resp.id_input);
+              }
+            });
+          } else {
+            this.afterEditInput(resp.id_input);
           }
         },
         complete: () => this.loading.set(false),
         error: () => this.loading.set(false),
       });
+  }
+
+  afterEditInput(id_input: number) {
+    this.inputsService.showModalSaveInput = false;
+    this.inputsService.isEdit = false;
+    this.inputsService.resetInput();
+    this.componentService.clearInputSearch$.next(true);
+    Swal.fire({
+      title: 'Éxito!',
+      text: `Compra Modificada exitosamente`,
+      icon: 'success',
+      showClass: { popup: 'animated animate fadeInDown' },
+      customClass: { container: 'swal-alert' },
+    });
+    if (
+      this.inputsService._inputConfig.printAfter &&
+      this.canPrintAfterSave()
+    ) {
+      this.inputsService.printPdfReport(id_input);
+    }
   }
 
   canPrintAfterSave(): boolean {
@@ -203,11 +271,16 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   selectTypePay() {
-    const type_pay = this.formInput.get('type_payment')?.value;
     this.formInput.patchValue({
       account_input: null,
       id_bank: null,
+      number_transaction: null,
     });
+    this.updatePaymentValidators();
+  }
+
+  updatePaymentValidators() {
+    const type_pay = this.formInput.get('type_payment')?.value;
     if (type_pay != 'EFECTIVO') {
       this.formInput.get('account_input')?.setValidators([Validators.required]);
       this.formInput.get('id_bank')?.setValidators([Validators.required]);
@@ -215,8 +288,16 @@ export class ModalSaveInputComponent implements OnInit {
       this.formInput.get('account_input')?.clearValidators();
       this.formInput.get('id_bank')?.clearValidators();
     }
+
+    if (type_pay == 'TRANSFERENCIA' || type_pay == 'QR') {
+      this.formInput.get('number_transaction')?.setValidators([Validators.required]);
+    } else {
+      this.formInput.get('number_transaction')?.clearValidators();
+    }
+
     this.formInput.get('account_input')?.updateValueAndValidity();
     this.formInput.get('id_bank')?.updateValueAndValidity();
+    this.formInput.get('number_transaction')?.updateValueAndValidity();
   }
 
   getAllScalas() {
@@ -277,6 +358,7 @@ export class ModalSaveInputComponent implements OnInit {
         comments: input_edit?.comments,
         account_input: input_edit?.account_input,
         id_bank: input_edit?.id_bank,
+        number_transaction: input_edit?.number_transaction,
         type_registry: input_edit?.type_registry,
         is_paid: input_edit?.is_paid == 'true' ? true : false,
         status: 'ACTIVE',
@@ -287,6 +369,7 @@ export class ModalSaveInputComponent implements OnInit {
       //this.setStoragesBySucursal(input_edit?.id_storage);
       this.onChangeDescuento();
       this.onOldCustomerChange();
+      this.updatePaymentValidators();
     }
   }
 
@@ -319,6 +402,7 @@ export class ModalSaveInputComponent implements OnInit {
       comments: null,
       account_input: null,
       id_bank: null,
+      number_transaction: null,
       type_registry: 'BOLETA',
       is_paid: false,
       status: 'ACTIVE',
@@ -326,6 +410,8 @@ export class ModalSaveInputComponent implements OnInit {
       old_customer: false,
       with_pickup: false,
     });
+
+    this.voucherFile = undefined;
 
     // ✅ BOLETA por defecto → habilitar registry_number
     this.formInput.get('registry_number')?.enable();
@@ -349,5 +435,15 @@ export class ModalSaveInputComponent implements OnInit {
       referralSourcesControl?.setValidators([Validators.required]);
     }
     referralSourcesControl?.updateValueAndValidity();
+  }
+
+  onVoucherFileChange(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.voucherFile = event.target.files[0];
+    }
+  }
+
+  removeVoucherFile() {
+    this.voucherFile = undefined;
   }
 }
