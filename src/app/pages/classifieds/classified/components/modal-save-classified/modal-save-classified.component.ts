@@ -57,6 +57,19 @@ export class ModalSaveClassifiedComponent implements OnInit {
       cost_product: this.productSelect()?.costo,
     });
     if(!this.formClassified.valid) return;
+
+    const quantity = this.formClassified.get('quantity_product')?.value;
+    const stockAvailable = this.productSelect()?.total_stock ?? 0;
+    if (quantity > stockAvailable) {
+      Swal.fire({
+        title: 'Error de validación',
+        text: `El stock a reducir (${quantity}) no puede superar el stock disponible (${stockAvailable}).`,
+        icon: 'error',
+        customClass: { container: 'swal-alert' }
+      });
+      return;
+    }
+
     this.loading.set(true);
     const classifiedDetail = this.classifiedService.detailSale().map(prod=> ({
       quantity: prod.quantity,

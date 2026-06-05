@@ -110,6 +110,7 @@
       [data]="abonosAccountsPayable()" [loading]="loading()" (search$)="search($event)">
     </app-table>
   }
+  <input type="file" #mainFileInput style="display: none" (change)="onMainFileSelected($event)" accept="image/*,application/pdf">
   <app-modal-view-abonos-account-payable></app-modal-view-abonos-account-payable>
   <app-modal-new-abono-account-payable></app-modal-new-abono-account-payable>
   <app-modal-new-abonos-multiple-payable></app-modal-new-abonos-multiple-payable>

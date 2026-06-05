@@ -39,6 +39,15 @@ export class TableInputDetailsComponent implements OnDestroy {
   }
 
   confirmInput() {
+    if (!this.inputsService.providerSelect()) {
+      Swal.fire({
+        title: '',
+        text: 'Debe seleccionar un proveedor antes de continuar.',
+        icon: 'error',
+        customClass: { container: 'swal-alert' }
+      });
+      return;
+    }
     const hasZeroQuantity = this.inputsService.detailShopping().some(product => !product.quantity || Number(product.quantity) <= 0);
     if (hasZeroQuantity) {
       Swal.fire({

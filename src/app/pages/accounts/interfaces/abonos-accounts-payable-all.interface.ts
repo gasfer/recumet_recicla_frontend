@@ -35,6 +35,7 @@ export interface AccountPayableAll {
     id_bank:              null | number;
     id_sucursal:          number;
     from_pay_multiple:    boolean;
+    payment_voucher?:     string;
     createdAt:            Date;
     updatedAt:            Date;
     sucursal:             Sucursal;

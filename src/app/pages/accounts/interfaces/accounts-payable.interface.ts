@@ -56,6 +56,7 @@ export interface AbonosAccountsPayable {
     comments:           string;
     type_payment:       string;
     account_output:     string;
+    payment_voucher?:    string;
     createdAt:          string;
     updatedAt:          string;
 }
