@@ -368,6 +368,28 @@ import { ValidatorsService } from 'src/app/services/validators.service';
       .rc { flex-wrap: wrap; }
       .rc__actions { width: 100%; justify-content: flex-start; }
     }
+
+    /* Estilo premium para agrupamiento por categorías en modo Cards */
+    .group-header-row-cards {
+      background: #2d3748 !important;
+      color: #ffffff !important;
+      border: none !important;
+    }
+    .group-header-row-cards td {
+      background: #2d3748 !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+    .group-header-content-cards {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      font-weight: 700;
+      font-size: 13.5px;
+      letter-spacing: .75px;
+      text-transform: uppercase;
+    }
   `]
 })
 export class TableComponent implements OnInit, OnDestroy, OnChanges {
@@ -532,6 +554,26 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
     return this.groupRowsBy.split('.').reduce((obj, key) => obj?.[key], rowData);
   }
 
+  getGroupTotal(groupValue: any, colField: ColsTable): number {
+    if (!this.data || !this.data.data || !colField.field) return 0;
+    const fieldStr = Array.isArray(colField.field) ? colField.field[0] : colField.field;
+    return this.data.data
+      .filter((row: any) => this.getGroupValue(row) === groupValue)
+      .reduce((sum: number, row: any) => {
+        const val = fieldStr.split('.').reduce((o: any, x: any) =>
+          (typeof o == 'undefined' || o === null) ? o : o[x], row);
+        return sum + Number(val || 0);
+      }, 0);
+  }
+
+  formatGroupTotal(groupValue: any, col: ColsTable): string {
+    const total = this.getGroupTotal(groupValue, col);
+    if (col.tagValue) {
+      return col.tagValue(total);
+    }
+    return String(total);
+  }
+
   hasImgCol(): boolean { return this.cols.some(c => c.isImg); }
   hasButtonCol(): boolean { return this.cols.some(c => c.isButton); }
 
@@ -568,5 +610,15 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
 
   countDataCols(cols: ColsTable[]): number {
     return cols.filter(c => !c.isButton && !c.isImg && !c.isTag && !c.isArray).length;
+  }
+
+  getCategoryIcon(categoryName: any): string {
+    if (!categoryName) return 'fa-solid fa-folder';
+    const name = String(categoryName).toUpperCase();
+    if (name.includes('BASURA') || name.includes('RESIDUO')) return 'fa-solid fa-trash';
+    if (name.includes('EQUIPO') || name.includes('MAQUINARIA') || name.includes('HERRAMIENTA')) return 'fa-solid fa-screwdriver-wrench';
+    if (name.includes('METAL') || name.includes('ACERO') || name.includes('COBRE') || name.includes('ALUMINIO')) return 'fa-solid fa-cubes';
+    if (name.includes('MATERIA') || name.includes('PRIMA')) return 'fa-solid fa-boxes-stacked';
+    return 'fa-solid fa-folder';
   }
 }

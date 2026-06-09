@@ -183,6 +183,19 @@
       </tr>
     </ng-template>
 
+    <ng-template *ngIf="groupRowsBy" pTemplate="rowgroupfooter" let-rowData let-columns="columns">
+      <tr *ngIf="!loading" class="group-footer-row" style="background-color: #f8f9fa; font-weight: bold;">
+        <td *ngFor="let col of columns; let i = index" [style]="col.style" style="text-align:left; background-color: #f8f9fa; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6;">
+          <span *ngIf="i === 0">
+            TOTAL {{ getGroupValue(rowData) | uppercase }}
+          </span>
+          <span *ngIf="col.isValueUpdate">
+            {{ formatGroupTotal(getGroupValue(rowData), col) }}
+          </span>
+        </td>
+      </tr>
+    </ng-template>
+
     <ng-template pTemplate="footer" let-rowData let-columns>
       <tr *ngIf="!loading && hasFooter(columns)">
         @for (col of columns; track $index) {
@@ -228,6 +241,8 @@
       [lazy]="isCustomSort"
       currentPageReportTemplate="Mostrando del {first} al {last} total de {totalRecords}"
       [rowsPerPageOptions]="[10,50,100,200,500]"
+      rowGroupMode="subheader"
+      [groupRowsBy]="groupRowsBy"
       [globalFilterFields]="stringSearch">
 
     <ng-template *ngIf="includeSearch" pTemplate="caption">
@@ -247,6 +262,17 @@
 
     <ng-template pTemplate="header">
       <tr style="display:none"></tr>
+    </ng-template>
+
+    <ng-template *ngIf="groupRowsBy" pTemplate="groupheader" let-rowData let-columns="columns">
+      <tr *ngIf="!loading" pRowGroupHeader class="group-header-row-cards">
+        <td [attr.colspan]="columns.length">
+          <div class="group-header-content-cards">
+            <i [class]="getCategoryIcon(getGroupValue(rowData))"></i>
+            {{ getGroupValue(rowData) }}
+          </div>
+        </td>
+      </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-rowData let-columns="columns">
@@ -355,6 +381,24 @@
               </ng-container>
             </div>
 
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template *ngIf="groupRowsBy" pTemplate="rowgroupfooter" let-rowData let-columns="columns">
+      <tr *ngIf="!loading" class="group-footer-row-cards" style="background-color: #f8f9fa; font-weight: bold;">
+        <td [attr.colspan]="columns.length" style="padding: 12px 15px; background-color: #f8f9fa; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6;">
+          <div class="d-flex flex-wrap gap-4 justify-content-between align-items-center">
+            <span style="color: var(--primary-color);">TOTAL {{ getGroupValue(rowData) | uppercase }}</span>
+            <div class="d-flex gap-4">
+              <span *ngFor="let col of columns">
+                <span *ngIf="col.isValueUpdate">
+                  <span class="text-muted" style="font-size: 0.9em; margin-right: 5px;">{{ col.header }}:</span>
+                  <span style="color: #2d3748;">{{ formatGroupTotal(getGroupValue(rowData), col) }}</span>
+                </span>
+              </span>
+            </div>
           </div>
         </td>
       </tr>

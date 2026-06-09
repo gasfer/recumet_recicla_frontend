@@ -85,4 +85,5 @@ export interface FormSearchKardex {
     category_types?: string;
     category_ids?: string;
     include_zero?: boolean; //filtro cero
+    showZeroSaldo?: boolean;
 }

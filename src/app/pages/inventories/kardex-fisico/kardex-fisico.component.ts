@@ -418,7 +418,8 @@ loadDropdownProducts(reset: boolean = false): void {
         id_product,
         id_storage,
         dates,
-        category_types
+        category_types,
+        showZeroSaldo
       } = this.formReport.value;
 
       const formatDate1 =
@@ -433,6 +434,7 @@ loadDropdownProducts(reset: boolean = false): void {
         id_product: id_product ? id_product : '',
         category_types: category_types ? category_types : '',
         filterBy: filterBy,
+        showZeroSaldo: showZeroSaldo ?? false,
         date1:
           filterBy == 'RANGE'
             ? moment(dates[0]).format(formatDate1)
