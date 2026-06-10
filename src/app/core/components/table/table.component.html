@@ -86,8 +86,8 @@
       </tr>
     </ng-template>
 
-    <ng-template *ngIf="groupRowsBy" pTemplate="groupheader" let-rowData let-columns="columns">
-      <tr *ngIf="!loading" pRowGroupHeader class="group-header-row">
+    <ng-template pTemplate="groupheader" let-rowData let-columns="columns">
+      <tr *ngIf="groupRowsBy && !loading" pRowGroupHeader class="group-header-row">
         <td [attr.colspan]="columns.length">{{ getGroupValue(rowData) }}</td>
       </tr>
     </ng-template>
@@ -183,9 +183,9 @@
       </tr>
     </ng-template>
 
-    <ng-template *ngIf="groupRowsBy" pTemplate="rowgroupfooter" let-rowData let-columns="columns">
-      <tr *ngIf="!loading" class="group-footer-row" style="background-color: #f8f9fa; font-weight: bold;">
-        <td *ngFor="let col of columns; let i = index" [style]="col.style" style="text-align:left; background-color: #f8f9fa; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6;">
+    <ng-template pTemplate="groupfooter" let-rowData let-columns="columns">
+      <tr *ngIf="groupRowsBy && !loading" class="group-footer-row" style="background-color: #f8f9fa; font-weight: bold;">
+        <td *ngFor="let col of columns; let i = index" [style]="col.style" [style.text-align]="i === 0 ? 'left' : null" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6;">
           <span *ngIf="i === 0">
             TOTAL {{ getGroupValue(rowData) | uppercase }}
           </span>
@@ -264,8 +264,8 @@
       <tr style="display:none"></tr>
     </ng-template>
 
-    <ng-template *ngIf="groupRowsBy" pTemplate="groupheader" let-rowData let-columns="columns">
-      <tr *ngIf="!loading" pRowGroupHeader class="group-header-row-cards">
+    <ng-template pTemplate="groupheader" let-rowData let-columns="columns">
+      <tr *ngIf="groupRowsBy && !loading" pRowGroupHeader class="group-header-row-cards">
         <td [attr.colspan]="columns.length">
           <div class="group-header-content-cards">
             <i [class]="getCategoryIcon(getGroupValue(rowData))"></i>
@@ -386,8 +386,8 @@
       </tr>
     </ng-template>
 
-    <ng-template *ngIf="groupRowsBy" pTemplate="rowgroupfooter" let-rowData let-columns="columns">
-      <tr *ngIf="!loading" class="group-footer-row-cards" style="background-color: #f8f9fa; font-weight: bold;">
+    <ng-template pTemplate="groupfooter" let-rowData let-columns="columns">
+      <tr *ngIf="groupRowsBy && !loading" class="group-footer-row-cards" style="background-color: #f8f9fa; font-weight: bold;">
         <td [attr.colspan]="columns.length" style="padding: 12px 15px; background-color: #f8f9fa; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6;">
           <div class="d-flex flex-wrap gap-4 justify-content-between align-items-center">
             <span style="color: var(--primary-color);">TOTAL {{ getGroupValue(rowData) | uppercase }}</span>

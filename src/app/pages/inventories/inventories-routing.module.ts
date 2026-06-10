@@ -8,6 +8,7 @@ import { KardexComponent } from './kardex/kardex.component';
 import { KardexFisicoComponent } from './kardex-fisico/kardex-fisico.component';
 import { KardexExistenciaComponent } from './kardex-existencia/kardex-existencia.component';
 import { ListCostsProductComponent } from './list-costs-product/list-costs-product.component';
+import { TotalStockRecumetComponent } from './total-stock-recumet/total-stock-recumet.component';
 
 const routes: Routes = [
   {
@@ -53,6 +54,10 @@ const routes: Routes = [
   {
     path: 'list-products-prices', component: ListCostsProductComponent,
     data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Productos' }, { title: 'Listado de precios', active: true }], name: 'LISTADO DE PRECIOS' }
+  },
+  {
+    path: 'total-stock-recumet', component: TotalStockRecumetComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Total Stock Recumet', active: true }], name: 'KARDEX', title: 'Total Stock Recumet' }
   },
   { path: '**', redirectTo: 'products' }
 ];

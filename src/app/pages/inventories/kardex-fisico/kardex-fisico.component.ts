@@ -124,6 +124,13 @@ export class KardexFisicoComponent {
 
   cols = signal<ColsTable[]>([
     {
+      field: 'index',
+      header: 'Nº',
+      style: 'min-width:50px;max-width:50px;text-align: center;',
+      isIndex: true,
+      activeSortable: false,
+    },
+    {
       field: 'product.cod',
       header: 'CÓDIGO',
       style: 'min-width:100px;max-width:100px;',
@@ -178,7 +185,7 @@ export class KardexFisicoComponent {
 
   ngOnInit(): void {
     this.getAllProviders();
-this.loadDropdownProducts(true);
+    this.loadDropdownProducts(true);
 
     this.formReport.patchValue({
       filterBy: 'RANGE',
@@ -220,48 +227,48 @@ this.loadDropdownProducts(true);
   // === MÉTODOS PARA DROPDOWN DE PRODUCTOS ===
 
   // Método para cargar productos en el dropdown
-loadDropdownProducts(reset: boolean = false): void {
+  loadDropdownProducts(reset: boolean = false): void {
 
-  if (reset) {
-    this.dropdownPage.set(1);
-    this.dropdownProducts.set([]);
-  }
-
-  this.loadingSearchProduct.set(true);
-
-  const categoryType = this.formReport.get('category_types')?.value || '';
-
-  const categoryIds =
-    this.selectedCategoryIds().length > 0
-      ? this.selectedCategoryIds().join(',')
-      : '';
-
-  this.productService.getSelectProducts(
-    this.dropdownFilter(),
-    this.dropdownLimit(),
-    categoryType,
-    categoryIds
-  ).subscribe({
-    next: (resp: any) => {
-
-      const products = resp.products || [];
-
-      if (reset) {
-        this.dropdownProducts.set(products);
-      } else {
-        this.dropdownProducts.update(prev => [...prev, ...products]);
-      }
-
-      this.totalProducts.set(products.length);
-      this.loadingSearchProduct.set(false);
-
-    },
-    error: () => {
-      this.loadingSearchProduct.set(false);
+    if (reset) {
+      this.dropdownPage.set(1);
+      this.dropdownProducts.set([]);
     }
-  });
 
-}
+    this.loadingSearchProduct.set(true);
+
+    const categoryType = this.formReport.get('category_types')?.value || '';
+
+    const categoryIds =
+      this.selectedCategoryIds().length > 0
+        ? this.selectedCategoryIds().join(',')
+        : '';
+
+    this.productService.getSelectProducts(
+      this.dropdownFilter(),
+      this.dropdownLimit(),
+      categoryType,
+      categoryIds
+    ).subscribe({
+      next: (resp: any) => {
+
+        const products = resp.products || [];
+
+        if (reset) {
+          this.dropdownProducts.set(products);
+        } else {
+          this.dropdownProducts.update(prev => [...prev, ...products]);
+        }
+
+        this.totalProducts.set(products.length);
+        this.loadingSearchProduct.set(false);
+
+      },
+      error: () => {
+        this.loadingSearchProduct.set(false);
+      }
+    });
+
+  }
 
 
   // === MÉTODOS PARA CATEGORÍAS ===
@@ -286,17 +293,17 @@ loadDropdownProducts(reset: boolean = false): void {
     });
   }
 
- onCategoryChange(selectedIds: number[]): void {
+  onCategoryChange(selectedIds: number[]): void {
 
-  this.selectedCategoryIds.set(selectedIds);
-  this.selectedCategoryValues = [...selectedIds];
+    this.selectedCategoryIds.set(selectedIds);
+    this.selectedCategoryValues = [...selectedIds];
 
-  // NO limpiar producto seleccionado
-  // porque ambos filtros deben poder coexistir
+    // NO limpiar producto seleccionado
+    // porque ambos filtros deben poder coexistir
 
-  this.loadDropdownProducts(true);
+    this.loadDropdownProducts(true);
 
-}
+  }
 
 
   // Evento de filtro del dropdown
@@ -385,19 +392,34 @@ loadDropdownProducts(reset: boolean = false): void {
       )
       .subscribe({
         next: (resp) => {
-          const showZeroSaldo = this.formReport.get('showZeroSaldo')?.value;
-          const filteredData = {
-            ...resp.kardexes,
-            data: showZeroSaldo
-              ? resp.kardexes.data.filter(
-                (item: any) => Number(item.quantity_saldo) <= 0,
-              )
-              : resp.kardexes.data.filter(
-                (item: any) => Number(item.quantity_saldo) > 0,
-              ),
-          };
-          this.kardexes.set(filteredData);
-          console.log('Kardex cargado:', filteredData.data?.length, 'registros');
+          const startNum = ((page - 1) * Number(limit)) + 1;
+          resp.kardexes.data.forEach((item: any, idx: number) => {
+            item.index = startNum + idx;
+          });
+
+          this.kardexes.set(resp.kardexes);
+
+          // Update column footers with grand totals
+          const totals = resp.kardexes.totals;
+          if (totals) {
+            this.cols.update(cols => cols.map(col => {
+              if (col.field === 'product.cod') {
+                return { ...col, footer: 'TOTALES' };
+              }
+              if (col.field === 'quantity_input') {
+                return { ...col, footer: this.pipeNumber.transform(totals.quantity_input, this.decimal()) || '0.0000' };
+              }
+              if (col.field === 'quantity_output') {
+                return { ...col, footer: this.pipeNumber.transform(totals.quantity_output, this.decimal()) || '0.0000' };
+              }
+              if (col.field === 'quantity_saldo') {
+                return { ...col, footer: this.pipeNumber.transform(totals.quantity_saldo, this.decimal()) || '0.0000' };
+              }
+              return { ...col, footer: '' };
+            }));
+          }
+
+          console.log('Kardex cargado:', resp.kardexes.data?.length, 'registros');
         },
         complete: () => this.loading.set(false),
         error: (err) => {
@@ -446,9 +468,9 @@ loadDropdownProducts(reset: boolean = false): void {
               : ''
             : moment(dates).format(formatDate2),
         category_ids:
-  this.selectedCategoryIds().length > 0
-    ? this.selectedCategoryIds().join(',')
-    : '',
+          this.selectedCategoryIds().length > 0
+            ? this.selectedCategoryIds().join(',')
+            : '',
       };
 
       console.log('Parámetros formados:', newParams); // Debug

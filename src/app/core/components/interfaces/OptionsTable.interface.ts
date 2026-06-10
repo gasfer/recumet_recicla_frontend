@@ -39,6 +39,7 @@ export interface ColsTable {
     tagColorPersonalizado?:Function;
     tagValue?:Function;
     tagIcon?:Function;
+    isIndex?:   boolean;
 }
 
 export interface ColsChild {

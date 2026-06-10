@@ -405,9 +405,9 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   @Input() sortField: string = 'id';
   @Input() sortOrder: 'ASC' | 'DESC' = 'DESC';
   @Output() rows!: number;
-  @Output() rows$: EventEmitter<{rows: number, page: number}> = new EventEmitter;
-  @Output() search$: EventEmitter<{type:string, query:string}> = new EventEmitter;
-  @Output() customSort$: EventEmitter<{field:string | string[], order:'ASC' | 'DESC'}> = new EventEmitter;
+  @Output() rows$: EventEmitter<{ rows: number, page: number }> = new EventEmitter;
+  @Output() search$: EventEmitter<{ type: string, query: string }> = new EventEmitter;
+  @Output() customSort$: EventEmitter<{ field: string | string[], order: 'ASC' | 'DESC' }> = new EventEmitter;
 
   validatorsService = inject(ValidatorsService);
   from: number = 0;
@@ -555,6 +555,13 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   getGroupTotal(groupValue: any, colField: ColsTable): number {
+    if (this.data && this.data.categoryTotals && this.data.categoryTotals[groupValue]) {
+      const fieldStr = Array.isArray(colField.field) ? colField.field[0] : colField.field;
+      const fieldName = fieldStr ? fieldStr.split('.').pop() : undefined;
+      if (fieldName && this.data.categoryTotals[groupValue][fieldName] !== undefined) {
+        return Number(this.data.categoryTotals[groupValue][fieldName] || 0);
+      }
+    }
     if (!this.data || !this.data.data || !colField.field) return 0;
     const fieldStr = Array.isArray(colField.field) ? colField.field[0] : colField.field;
     return this.data.data
