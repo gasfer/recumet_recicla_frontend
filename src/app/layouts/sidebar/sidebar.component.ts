@@ -360,7 +360,7 @@ MENU: MenuItem[] = [
     { id: 128, name: 'KARDEX-PT', action: 'view', label: '(PT)Productos Terminados', link: '/inventories/kardex-fisico/pt' },
     { id: 129, name: 'KARDEX-AR', action: 'view', label: '(AR)Artículos de Reventa', link: '/inventories/kardex-fisico/ar' },
     { id: 130, name: 'KARDEX-ALL', action: 'view', label: 'Todos los Productos', link: '/inventories/kardex-fisico/all' },
-    { id: 131, name: 'KARDEX-ALL', action: 'view', label: 'Total Stock Recumet', link: '/inventories/total-stock-recumet' },
+    { id: 131, name: 'KARDEX-ALL-FILTRO', action: 'view', label: 'Total Stock Recumet', link: '/inventories/total-stock-recumet' },
   ],
 },
 

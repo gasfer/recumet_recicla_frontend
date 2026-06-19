@@ -117,9 +117,10 @@ permissionGroups = signal<PermissionGroup[]>([
     expanded: true,
     permissions: [
       { id_user: null, module: "KARDEX-FIS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      { id_user: null, module: "KARDEX PT", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      { id_user: null, module: "KARDEX AR", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      { id_user: null, module: "KARDEX TODOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "KARDEX-PT", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "KARDEX-AR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "KARDEX-ALL", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "KARDEX-ALL-FILTRO", view: false, create: false, update: false, delete: false, reports: false, status: true },
 
       { id_user: null, module: "INSUMOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "AF MAQUINARIA", view: false, create: false, update: false, delete: false, reports: false, status: true },

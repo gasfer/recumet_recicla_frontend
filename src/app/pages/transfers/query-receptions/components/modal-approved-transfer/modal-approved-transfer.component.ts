@@ -22,12 +22,17 @@ export class ModalApprovedTransferComponent {
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
 
   _id_transfer = 0;
-  @Input({required:true}) set id_transfer(val: number) {
-    this._id_transfer = val;
-    if (val) {
-      this.loadTransferDetails(val);
-    }
+
+ onDialogShow() {
+  if (this._id_transfer) {
+    this.loadTransferDetails(this._id_transfer);
   }
+}
+
+@Input({required:true}) set id_transfer(val: number) {
+  this._id_transfer = val;
+  // ya no llames loadTransferDetails aquí
+}
   get id_transfer() {
     return this._id_transfer;
   }
@@ -77,7 +82,7 @@ export class ModalApprovedTransferComponent {
       const sent = group.get('quantity_sent')?.value || 0;
       const received = group.get('quantity_received')?.value || 0;
       const obsControl = group.get('observation');
-      
+
       let requiresObservation = false;
       if (sent > 0) {
         const diffPct = ((received - sent) / sent) * 100;
@@ -117,12 +122,38 @@ export class ModalApprovedTransferComponent {
     }
     return 'text-success';
   }
+/********* */
+getTotalSent(): number {
+  return this.detailsFormArray.controls.reduce((sum, group) => {
+    return sum + (Number(group.get('quantity_sent')?.value) || 0);
+  }, 0);
+}
 
+getTotalReceived(): number {
+  return this.detailsFormArray.controls.reduce((sum, group) => {
+    return sum + (Number(group.get('quantity_received')?.value) || 0);
+  }, 0);
+}
+
+getTotalDiffPercentage(): number {
+  const totalSent = this.getTotalSent();
+  const totalReceived = this.getTotalReceived();
+  if (totalSent === 0) return 0;
+  return ((totalReceived - totalSent) / totalSent) * 100;
+}
+
+getTotalDiffClass(): string {
+  const diff = this.getTotalDiffPercentage();
+  if (diff < 0) return 'text-danger fw-bold';
+  if (diff > 0) return 'text-warning fw-bold';
+  return 'text-success fw-bold';
+}
+/******** */
   postApprovedTransfer() {
     this.approvedForm.markAllAsTouched();
     this.approvedForm.patchValue({id_transfer:this.id_transfer})
     this.checkObservationsRequirement();
-    
+
     if(!this.approvedForm.valid) return;
     this.loading.set(true);
 
@@ -142,10 +173,10 @@ export class ModalApprovedTransferComponent {
     this.transfersService.putTransferToReceived(payload).subscribe({
       next: () => {
         this.loading.set(false);
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Traslado recepcionado exitosamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
@@ -155,7 +186,7 @@ export class ModalApprovedTransferComponent {
       },
       error: (err) => this.loading.set(false)
     })
-    
+
   }
 
   resetModal() {
