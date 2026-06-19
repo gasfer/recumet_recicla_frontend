@@ -159,7 +159,6 @@
           </td>
         </tr>
 
-        <!-- Consolidated Grand Total Row -->
         <tr style="background: #f4f6fc;">
           <td class="py-3 text-start ps-4 font-weight-bold"
             style="font-weight: 800; color: #0f3d99; font-size: 1.05rem;">
@@ -176,7 +175,6 @@
               {{ pipeNumber.transform(kardexes()?.totals?.quantity_saldo_pt, decimal()) }}
             </div>
           </td>
-          <!-- Grand Total Cell with Dark Blue background -->
           <td class="py-3 pe-4 text-end text-white"
             style="background: #038b21 !important; font-weight: 800; font-size: 1.35rem; width: 250px; border: none !important;">
             {{ pipeNumber.transform(kardexes()?.totals?.quantity_saldo, decimal()) }}

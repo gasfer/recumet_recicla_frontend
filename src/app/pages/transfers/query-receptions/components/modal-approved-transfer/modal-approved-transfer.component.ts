@@ -1,8 +1,9 @@
 import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { TransfersService } from '../../../services/transfers.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import Swal from 'sweetalert2';
+import { Transfer } from '../../../interfaces/transfers.interface';
 
 @Component({
   selector: 'app-modal-approved-transfer',
@@ -16,22 +17,129 @@ export class ModalApprovedTransferComponent {
   fb                = inject( FormBuilder );
   loading           = signal( false );
 
-  @Input({required:true}) id_transfer = 0;
+  transfer          = signal<Transfer|undefined>(undefined);
+  decimalLength     = signal(this.validatorsService.decimalLength());
+  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+
+  _id_transfer = 0;
+  @Input({required:true}) set id_transfer(val: number) {
+    this._id_transfer = val;
+    if (val) {
+      this.loadTransferDetails(val);
+    }
+  }
+  get id_transfer() {
+    return this._id_transfer;
+  }
+
   @Output() save$ = new EventEmitter<boolean>();
 
   approvedForm: FormGroup = this.fb.group({
     id_transfer: ['',[Validators.required]],
     id_storage_received: [ '', [Validators.required]],
     date_received: [new Date(), [Validators.required]],
-    observations_received: ['', [ Validators.max(500)]],
+    observations_received: ['', [ Validators.maxLength(500)]],
+    details: this.fb.array([])
   });
+
+  get detailsFormArray(): FormArray {
+    return this.approvedForm.get('details') as FormArray;
+  }
+
+  loadTransferDetails(id: number) {
+    this.transfersService.getTransferById(id.toString()).subscribe({
+      next: (resp) => {
+        this.transfer.set(resp.transfer);
+        const detailsArray = this.detailsFormArray;
+        detailsArray.clear();
+        if (resp.transfer?.detailsTransfers) {
+          resp.transfer.detailsTransfers.forEach(detail => {
+            detailsArray.push(this.fb.group({
+              id_detail: [detail.id, [Validators.required]],
+              id_product: [detail.id_product],
+              product_name: [detail.product.name],
+              product_cod: [detail.product.cod],
+              quantity_sent: [Number(detail.quantity)],
+              quantity_received: [Number(detail.quantity), [Validators.required, Validators.min(0)]],
+              observation: ['', [Validators.maxLength(500)]]
+            }));
+          });
+        }
+        this.checkObservationsRequirement();
+      }
+    });
+  }
+
+  checkObservationsRequirement() {
+    const detailsArray = this.detailsFormArray;
+    for (let i = 0; i < detailsArray.length; i++) {
+      const group = detailsArray.at(i) as FormGroup;
+      const sent = group.get('quantity_sent')?.value || 0;
+      const received = group.get('quantity_received')?.value || 0;
+      const obsControl = group.get('observation');
+      
+      let requiresObservation = false;
+      if (sent > 0) {
+        const diffPct = ((received - sent) / sent) * 100;
+        if (Math.abs(diffPct) >= 1.0) {
+          requiresObservation = true;
+        }
+      }
+
+      if (requiresObservation) {
+        obsControl?.setValidators([Validators.required, Validators.maxLength(500)]);
+      } else {
+        obsControl?.setValidators([Validators.maxLength(500)]);
+      }
+      obsControl?.updateValueAndValidity();
+    }
+  }
+
+  isProductObservationRequired(group: any): boolean {
+    const sent = group.get('quantity_sent')?.value || 0;
+    const received = group.get('quantity_received')?.value || 0;
+    if (sent === 0) return false;
+    const diffPct = ((received - sent) / sent) * 100;
+    return Math.abs(diffPct) >= 1.0;
+  }
+
+  getDiffPercentage(group: any): number {
+    const sent = group.get('quantity_sent')?.value || 0;
+    const received = group.get('quantity_received')?.value || 0;
+    if (sent === 0) return 0;
+    return ((received - sent) / sent) * 100;
+  }
+
+  getDiffClass(group: any): string {
+    const pct = this.getDiffPercentage(group);
+    if (Math.abs(pct) >= 1.0) {
+      return 'text-danger fw-bold';
+    }
+    return 'text-success';
+  }
 
   postApprovedTransfer() {
     this.approvedForm.markAllAsTouched();
     this.approvedForm.patchValue({id_transfer:this.id_transfer})
+    this.checkObservationsRequirement();
+    
     if(!this.approvedForm.valid) return;
     this.loading.set(true);
-    this.transfersService.putTransferToReceived(this.approvedForm.value).subscribe({
+
+    const formValue = this.approvedForm.value;
+    const payload = {
+      id_transfer: formValue.id_transfer,
+      id_storage_received: formValue.id_storage_received,
+      date_received: formValue.date_received,
+      observations_received: formValue.observations_received,
+      details: formValue.details.map((d: any) => ({
+        id_detail: d.id_detail,
+        quantity_received: d.quantity_received,
+        observation: d.observation
+      }))
+    };
+
+    this.transfersService.putTransferToReceived(payload).subscribe({
       next: () => {
         this.loading.set(false);
         Swal.fire({ 
@@ -56,6 +164,10 @@ export class ModalApprovedTransferComponent {
       date_received: new Date(),
       id_storage_received: '',
       observations_received: '',
-    })
+    });
+    this.detailsFormArray.clear();
+    this.transfer.set(undefined);
   }
 }
+
+

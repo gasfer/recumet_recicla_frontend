@@ -1,5 +1,5 @@
 <p-dialog [header]="'Confirmación de recepción'" [(visible)]="transfersService.showModalConfirmationReception"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [modal]="true" [breakpoints]="{ '960px': '90vw', '576px': '95%' }" [style]="{ width: '65vw' }" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
     [dismissableMask]="true">
     <form [formGroup]="approvedForm">
@@ -41,8 +41,7 @@
                     </small>
                 </div>
                 <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                    <label class="block mb-0">Observaciones de recepción<span class="text-danger">*</span>
-                    </label>
+                    <label class="block mb-0">Observaciones de recepción</label>
                     <textarea pInputTextarea
                         type="text"
                         style="text-transform: uppercase"
@@ -57,6 +56,71 @@
                         {{ validatorsService.inputValidMessage("observations_received",approvedForm) }}
                     </small>
                 </div>
+            </div>
+        </div>
+
+        <div *ngIf="transfer()?.detailsTransfers" class="mt-3">
+            <p-tag styleClass="mb-2" severity="success" value="CONFIRMAR PESO DE PRODUCTOS QUE LLEGAN" [rounded]="true"></p-tag>
+            <div class="table-responsive">
+                <table class="table table-striped table-xxs table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th style="background-color: var(--bg-primary)" class="text-white">Producto</th>
+                            <th style="background-color: var(--bg-primary)" class="text-white text-center">Peso Enviado</th>
+                            <th style="background-color: var(--bg-primary)" class="text-white text-center" style="width: 140px;">Peso Recibido</th>
+                            <th style="background-color: var(--bg-primary)" class="text-white text-center" style="width: 220px;">Observación por producto</th>
+                            <th style="background-color: var(--bg-primary)" class="text-white text-center">Diferencia</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="details">
+                        <tr *ngFor="let group of detailsFormArray.controls; let i = index" [formGroupName]="i">
+                            <td>
+                                <h5 class="m-0 p-0 text-dark fw-semibold">{{ group.get('product_name')?.value }}</h5>
+                                <p style="font-size: 10px;" class="text-muted m-0">{{ group.get('product_cod')?.value }}</p>
+                            </td>
+                            <td class="text-center align-middle text-dark fw-medium">
+                                {{ group.get('quantity_sent')?.value | number: decimal() }}
+                            </td>
+                            <td class="text-center align-middle">
+                                <p-inputNumber
+                                    formControlName="quantity_received"
+                                    [style]="{'height': '38px', 'width': '100%'}"
+                                    locale="en-US" 
+                                    mode="decimal" 
+                                    [minFractionDigits]="2"
+                                    [maxFractionDigits]="2"
+                                    [showButtons]="true"
+                                    decrementButtonClass="p-button-secondary"
+                                    incrementButtonClass="p-button-primary"
+                                    placeholder="0.00"
+                                    [min]="0"
+                                    (onInput)="checkObservationsRequirement()"
+                                    [class.ng-dirty]="group.get('quantity_received')?.invalid"
+                                ></p-inputNumber>
+                            </td>
+                            <td class="text-center align-middle">
+                                <input 
+                                    type="text" 
+                                    pInputText
+                                    formControlName="observation"
+                                    style="text-transform: uppercase"
+                                    [pKeyFilter]="validatorsService.expRegValidInput"
+                                    class="p-inputtext-sm form-control"
+                                    [placeholder]="isProductObservationRequired(group) ? 'OBS. REQUERIDA *' : 'OBS. OPCIONAL'"
+                                    [class.ng-dirty]="group.get('observation')?.invalid"
+                                />
+                                <small *ngIf="group.get('observation')?.touched && group.get('observation')?.invalid" class="p-error block text-start">
+                                    Observación requerida
+                                </small>
+                            </td>
+                            <td class="text-center align-middle">
+                                <span [class]="getDiffClass(group)">
+                                    {{ getDiffPercentage(group) | number:'1.2-2' }}%
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </form>
