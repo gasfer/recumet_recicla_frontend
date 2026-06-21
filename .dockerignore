@@ -7,4 +7,3 @@ dist
 .editorconfig
 README.md
 Dockerfile
-nginx.conf
