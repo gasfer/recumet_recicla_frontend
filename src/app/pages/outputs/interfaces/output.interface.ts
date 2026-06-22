@@ -2,7 +2,7 @@ import { Options } from "src/app/core/components/interfaces/OptionsTable.interfa
 import { output } from '@angular/core';
 
 export interface OutputConfig {
-    searchForCode: boolean, 
+    searchForCode: boolean,
     viewCardProducts: boolean,
     printAfter: boolean,
     clearInputAfterProductSearch: boolean,
@@ -135,7 +135,7 @@ export interface Output {
     user:               User;
     bank:               Bank;
     detailsOutput:      DetailsOutput[];
-    outputBig:          OutputBig;    
+    outputBig:          OutputBig;
     accounts_receivable: AccountsReceivable;
     options?:           Options[];
 }
@@ -242,6 +242,7 @@ export interface Product {
     img:           string;
     category:      Category;
     unit:          Category;
+    total_stock?: number; // ✅ agregar esto
     prices: Price[];
 }
 

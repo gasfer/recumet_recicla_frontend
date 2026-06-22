@@ -44,6 +44,56 @@ export class KardexService {
     });
   }
 
+  getTotalStockRecumet(page: number, limit: number, params: FormSearchKardex, type: string = '', query?: string, field_sort: string = 'product.cod', order: string = 'ASC'): Observable<GetAllKardexes> {
+    let url = '';
+    if (type === '') {
+      url = `${base_url}/kardex/total-stock-recumet?page=${page}&limit=${limit}&field_sort=${field_sort}&order=${order}`;
+    } else {
+      url = `${base_url}/kardex/total-stock-recumet?page=${page}&limit=${limit}&type=${type}&query=${query}&field_sort=${field_sort}&order=${order}`;
+    }
+    return this.http.get<GetAllKardexes>(url, {
+      params: new HttpParams({
+        fromObject: {
+          ...params
+        }
+      })
+    });
+  }
+
+  getReportPdfTotalStock(params: FormSearchKardex, type: string = '', query?: string, field_sort: string = 'product.cod', order: string = 'ASC') {
+    let url = '';
+    if (type === '') {
+      url = `${base_url}/kardex/total-stock-recumet/pdf?field_sort=${field_sort}&order=${order}`;
+    } else {
+      url = `${base_url}/kardex/total-stock-recumet/pdf?type=${type}&query=${query}&field_sort=${field_sort}&order=${order}`;
+    }
+    return this.http.get<any>(url, {
+      params: new HttpParams({
+        fromObject: {
+          ...params
+        }
+      }),
+      responseType: 'blob' as 'json'
+    });
+  }
+
+  getReportExcelTotalStock(params: FormSearchKardex, type: string = '', query?: string, field_sort: string = 'product.cod', order: string = 'ASC') {
+    let url = '';
+    if (type === '') {
+      url = `${base_url}/kardex/total-stock-recumet/excel?field_sort=${field_sort}&order=${order}`;
+    } else {
+      url = `${base_url}/kardex/total-stock-recumet/excel?type=${type}&query=${query}&field_sort=${field_sort}&order=${order}`;
+    }
+    return this.http.get(url, {
+      params: new HttpParams({
+        fromObject: {
+          ...params
+        }
+      }),
+      responseType: 'blob',
+    });
+  }
+
   //* Reportes Detalles */
   getReportPdf(params: FormSearchKardex, field_sort: string = 'id', order: string = 'DESC') {
     const url = `${base_url}/kardex/pdf?field_sort=${field_sort}&order=${order}`;

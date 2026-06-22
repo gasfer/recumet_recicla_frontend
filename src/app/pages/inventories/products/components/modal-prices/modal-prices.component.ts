@@ -20,26 +20,29 @@ export class ModalPricesComponent implements OnInit, OnDestroy {
     { field: 'name', header: 'NOMBRE' , style:'min-width:150px;', tooltip: true},
     { field: `price`, header: 'PRECIO' , style:'min-width:100px;',tooltip: true  },
     { field: `profit_margin`, header: 'MARGE %' , style:'min-width:100px;',tooltip: true  },
-    { 
+    {
       field: 'options', header: 'OPCIONES', style:'min-width:80px;max-width:80px', isButton:true,
     }
   ]);
 
+  loading = signal(false);
   ngOnInit(): void {
     this.isPricesSub$ = this.productsService.pricesSubs.subscribe(resp => {
       this.product =  {...resp};
-      this.product.prices?.forEach(price => {
-        price.options = [
-          {
-            label:'Eliminar',icon:'fa-solid fa-trash-can', 
-            tooltip: 'Eliminar',
-            class:'p-button-rounded p-button-danger p-button-sm ms-1',
-            eventClick: () => {
-              this.deletePrice(price);
-            }
-          },
-        ]
-      });
+    const prices = this.product.prices?.map(price => ({
+  ...price,
+  options: [
+    {
+      label:'Eliminar',
+      icon:'fa-solid fa-trash-can',
+      tooltip:'Eliminar',
+      class:'p-button-rounded p-button-danger p-button-sm ms-1',
+      eventClick: () => this.deletePrice(price)
+    }
+  ]
+})) || [];
+
+this.prices.set({ data: prices, status: true });
       this.prices.set({data: this.product.prices!, status:true});
     });
   }
@@ -76,12 +79,17 @@ export class ModalPricesComponent implements OnInit, OnDestroy {
     }).then((result) => {
       if(!result.isConfirmed) return;
       if(result.value) {
-        this.prices().data = this.prices().data.filter(resp => resp.id != price.id);
+        const prices = this.prices().data.filter(resp => resp.id != price.id);
+
+this.prices.set({
+  ...this.prices(),
+  data: prices
+});
         this.productsService.save$.next(true);
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Se ha dado de baja al precio`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},
         });

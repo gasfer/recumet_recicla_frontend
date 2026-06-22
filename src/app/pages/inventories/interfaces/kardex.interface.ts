@@ -16,6 +16,28 @@ export interface Kardexes {
     from: number;
     to: number;
     data: Kardex[];
+    totals?: {
+        quantity_input: number;
+        quantity_output: number;
+        quantity_saldo: number;
+        quantity_saldo_mp?: number;
+        quantity_saldo_pt?: number;
+    };
+    categoryTotals?: {
+        [categoryName: string]: {
+            quantity_input: number;
+            quantity_output: number;
+            quantity_saldo: number;
+        }
+    };
+    sucursalTotals?: {
+        [sucursalId: string]: {
+            name: string;
+            quantity_saldo: number;
+            quantity_saldo_mp: number;
+            quantity_saldo_pt: number;
+        }
+    };
 }
 
 export interface Kardex {
@@ -79,10 +101,13 @@ export interface FormSearchKardex {
     date2: string;
     type_kardex: string;
     id_sucursal: string;
+    id_sucursales?: string;
     id_storage: string;
+    id_storages?: string;
     id_provider: string;
     id_product: string;
     category_types?: string;
     category_ids?: string;
     include_zero?: boolean; //filtro cero
+    showZeroSaldo?: boolean;
 }

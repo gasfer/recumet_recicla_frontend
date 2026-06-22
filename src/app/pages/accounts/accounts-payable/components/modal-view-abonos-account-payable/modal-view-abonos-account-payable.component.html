@@ -74,6 +74,28 @@
                                 pRipple icon="fa-solid fa-trash-can" 
                                 class="p-button-rounded p-button-danger p-button-sm ms-1">
                             </button>
+                            <input 
+                                type="file" 
+                                [id]="'file-upload-' + abono.id" 
+                                style="display: none" 
+                                (change)="onFileSelected($event, abono.id)" 
+                                accept="image/*,application/pdf">
+                            <button 
+                                *ngIf="(abono.type_payment === 'TRANSFERENCIA' || abono.type_payment === 'QR') && !abono.payment_voucher"
+                                pButton label="" 
+                                pTooltip ="Adjuntar comprobante" tooltipPosition="bottom"
+                                (click)="triggerFileUpload(abono.id)" 
+                                pRipple icon="fa-solid fa-file-arrow-up" 
+                                class="p-button-rounded p-button-warning p-button-sm ms-1">
+                            </button>
+                            <button 
+                                *ngIf="(abono.type_payment === 'TRANSFERENCIA' || abono.type_payment === 'QR') && abono.payment_voucher"
+                                pButton label="" 
+                                pTooltip ="Ver comprobante adjunto" tooltipPosition="bottom"
+                                (click)="viewAttachedVoucher(abono.payment_voucher)" 
+                                pRipple icon="fa-solid fa-file-invoice" 
+                                class="p-button-rounded p-button-info p-button-sm ms-1">
+                            </button>
                         </td>
                     </tr>
 				</tbody>

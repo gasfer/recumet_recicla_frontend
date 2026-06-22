@@ -1,60 +1,548 @@
-<p-dialog [header]="cajaService.type_movement == 'INGRESO' ? 'Nuevo ingreso' : 'Nuevo gasto'" [(visible)]="cajaService.showModalMovementCaja"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
-    [resizable]="false"  (onHide)="resetModal()"
+<p-dialog
+    [header]="cajaService.type_movement == 'INGRESO' ? 'Nuevo ingreso' : 'Registrar nuevo gasto'"
+    [(visible)]="cajaService.showModalMovementCaja"
+    [modal]="true"
+    [breakpoints]="{ '960px': '85vw', '576px': '98%' }"
+    [style]="{ width: '60vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="resetModal()"
     [dismissableMask]="true">
+
     <form [formGroup]="form">
         <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="field">
-                    <label class="block mb-0">Monto<span class="text-danger">*</span>
-                    </label>
-                    <p-inputNumber
-                        locale="en-US"
-                        mode="decimal"
-                        inputId="locale-us"
-                        formControlName="monto"
-                        [minFractionDigits]="decimalLength()"
-                        [maxFractionDigits]="decimalLength()"
-                        [showButtons]="true"
-                        buttonLayout="horizontal"
-                        spinnerMode="horizontal"
-                        decrementButtonClass="p-button-secondary"
-                        incrementButtonClass="p-button-primary"
-                        incrementButtonIcon="fa-solid fa-plus"
-                        decrementButtonIcon="fa-solid fa-minus"
-                        [min]="0"
-                        [max]="100000000"
-                        [class.ng-dirty]="validatorsService.inputValid('monto',form)" 
-                    >
-                    </p-inputNumber>
-                    <small *ngIf="validatorsService.inputValid('monto',form)" class="p-error block">
-                        {{ 'Monto no valido' }}
-                    </small> 
+
+        <div class="form-gasto">
+
+            <!-- ══ SECCIÓN 01: INFORMACIÓN GENERAL ══ -->
+            <section class="seccion-card">
+                <div class="seccion-header">
+                    <h3 class="seccion-titulo">Información General</h3>
                 </div>
+
+                <div class="form-grid">
+
+                    <!-- 1. FECHA -->
+                    <div class="field field-col-4">
+                        <label>
+                            <i class="fa-solid fa-calendar-days"></i> Fecha
+                            <span class="req">*</span>
+                        </label>
+                        <p-calendar
+                            formControlName="fecha"
+                            [showIcon]="true"
+                            dateFormat="dd/mm/yy"
+                            [maxDate]="today"
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('fecha', form)">
+                        </p-calendar>
+                        <small *ngIf="validatorsService.inputValid('fecha', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('fecha', form) }}
+                        </small>
+                    </div>
+
+             <!-- 2. RESPONSABLE -->
+<div class="field field-col-4">
+    <label>
+        <i class="fa-solid fa-user-tie"></i> Responsable
+        <span class="req">*</span>
+    </label>
+    <p-dropdown
+        formControlName="responsable"
+        [options]="usuariosOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Seleccionar..."
+        [filter]="true"
+        filterPlaceholder="Buscar usuario..."
+        [showClear]="true"
+        styleClass="w-full"
+        [class.ng-dirty]="validatorsService.inputValid('responsable', form)">
+        <ng-template pTemplate="item" let-item>
+            <div class="flex align-items-center gap-2">
+                <span class="avatar-ini">{{ item.label?.charAt(0) }}</span>
+                <span>{{ item.label }}</span>
             </div>
-            <div class="field mt-2">
-                <label class="block mb-0">Descripcion<span class="text-danger">*</span>
-                </label>
-                <textarea pInputTextarea
-                    type="text"
-                    style="text-transform: uppercase"
-                    pInputText
-                    [pKeyFilter]="validatorsService.expRegValidInput"
-                    formControlName="description"
-                    placeholder="EJ. ......"
-                    class="mt-1"
-                    [class.ng-dirty]="validatorsService.inputValid('description',form)"
-                ></textarea>
-                <small *ngIf="validatorsService.inputValid('description',form)" class="p-error block">
-                    {{ validatorsService.inputValidMessage("description",form) }}
-                </small>
-            </div>
+        </ng-template>
+    </p-dropdown>
+    <small *ngIf="validatorsService.inputValid('responsable', form)" class="p-error">
+        {{ validatorsService.inputValidMessage('responsable', form) }}
+    </small>
+</div>
+
+                    <!-- 3. MONTO -->
+                    <div class="field field-col-4">
+                        <label>
+                            <i class="fa-solid fa-dollar-sign"></i> Monto
+                            <span class="req">*</span>
+                        </label>
+                        <p-inputNumber
+                            locale="en-US"
+                            mode="decimal"
+                            formControlName="monto"
+                            [minFractionDigits]="decimalLength()"
+                            [maxFractionDigits]="decimalLength()"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            spinnerMode="horizontal"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-primary"
+                            incrementButtonIcon="fa-solid fa-plus"
+                            decrementButtonIcon="fa-solid fa-minus"
+                            [min]="0"
+                            [max]="100000000"
+                            [class.ng-dirty]="validatorsService.inputValid('monto', form)">
+                        </p-inputNumber>
+                        <small *ngIf="validatorsService.inputValid('monto', form)" class="p-error">
+                            Monto no válido
+                        </small>
+                    </div>
+
+                    <!-- 4. TIPO REGISTRO  →  controla Clasificación -->
+                    <div class="field field-col-4">
+                        <label>
+                            <i class="fa-solid fa-layer-group"></i> Tipo registro
+                            <span class="req">*</span>
+                        </label>
+                        <p-selectButton
+                            formControlName="tipoRegistro"
+                            [options]="tipoRegistroOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            (onChange)="onTipoRegistroChange($event)"
+                            styleClass="w-full select-btn-pago">
+                        </p-selectButton>
+                        <small *ngIf="validatorsService.inputValid('tipoRegistro', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('tipoRegistro', form) }}
+                        </small>
+                    </div>
+
+                    <!-- 5. CLASIFICACIÓN  →  depende de Tipo Registro, controla Tipo Uso -->
+                    <div class="field field-col-4">
+                        <label>
+                            <i class="fa-solid fa-tags"></i> Clasificación gasto
+                            <span class="req">*</span>
+                        </label>
+                        <p-dropdown
+                            formControlName="clasificacionGasto"
+                            [options]="clasificacionGastoOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Primero seleccione tipo..."
+                            [disabled]="!form.get('tipoRegistro')?.value"
+                            [filter]="true"
+                            [showClear]="true"
+                            styleClass="w-full"
+                            (onChange)="onClasificacionChange($event)"
+                            [class.ng-dirty]="validatorsService.inputValid('clasificacionGasto', form)">
+                            <ng-template pTemplate="item" let-item>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="fa-solid fa-circle" style="color:#136dec;width:10px"></i>
+                                    <span>{{ item.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('clasificacionGasto', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('clasificacionGasto', form) }}
+                        </small>
+                    </div>
+
+                    <!-- 6. TIPO USO  →  depende de Clasificación = LUBRICANTES -->
+                    <div class="field field-col-4" *ngIf="esLubricante">
+                        <label>
+                            <i class="fa-solid fa-oil-can"></i> Tipo de uso
+                            <span class="req">*</span>
+                        </label>
+                        <p-dropdown
+                            formControlName="tipoUso"
+                            [options]="tipoUsoOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Seleccionar..."
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('tipoUso', form)">
+                        </p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('tipoUso', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('tipoUso', form) }}
+                        </small>
+                    </div>
+
+                    <!-- 6b. ÁREA SOLICITANTE  →  INSUMOS_CONSUMIBLES -->
+                    <div class="field field-col-4" *ngIf="esInsumosConsumibles">
+                        <label>
+                            <i class="fa-solid fa-industry"></i> Área solicitante
+                            <span class="req">*</span>
+                        </label>
+                        <p-dropdown
+                            formControlName="areaSolicitante"
+                            [options]="areaSolicitanteOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Seleccionar área..."
+                            [showClear]="true"
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('areaSolicitante', form)">
+                            <ng-template pTemplate="item" let-item>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="fa-solid fa-circle-dot" style="color:#136dec;font-size:10px"></i>
+                                    <span>{{ item.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('areaSolicitante', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('areaSolicitante', form) }}
+                        </small>
+                    </div>
+
+                    <!-- 6c. SOLO VEHÍCULO  →  REPUESTOS_VEHICULOS -->
+                    <div class="field field-col-4" *ngIf="soloVehiculo">
+                        <label>
+                            <i class="fa-solid fa-car"></i> Vehículo
+                            <span class="req">*</span>
+                        </label>
+                        <p-dropdown
+                            formControlName="vehiculo"
+                            [options]="vehiculosOptions"
+                            optionLabel="nombre"
+                            optionValue="id"
+                            placeholder="Seleccionar vehículo..."
+                            [filter]="true"
+                            filterPlaceholder="Buscar..."
+                            [showClear]="true"
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('vehiculo', form)">
+                            <ng-template pTemplate="item" let-item>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="fa-solid {{item.icono}}" style="color:#136dec;width:16px"></i>
+                                    <span>{{ item.nombre }}</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('vehiculo', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('vehiculo', form) }}
+                        </small>
+                    </div>
+
+                    <!-- 6d. SOLO MAQUINARIA  →  REPUESTOS_MAQUINARIA -->
+                    <div class="field field-col-4" *ngIf="soloMaquinaria">
+                        <label>
+                            <i class="fa-solid fa-gears"></i> Maquinaria
+                            <span class="req">*</span>
+                        </label>
+                        <p-dropdown
+                            formControlName="maquinaria"
+                            [options]="maquinariasOptions"
+                            optionLabel="nombre"
+                            optionValue="id"
+                            placeholder="Seleccionar maquinaria..."
+                            [filter]="true"
+                            filterPlaceholder="Buscar..."
+                            [showClear]="true"
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('maquinaria', form)">
+                            <ng-template pTemplate="item" let-item>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="fa-solid fa-gears" style="color:#136dec;width:16px"></i>
+                                    <span>{{ item.nombre }}</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('maquinaria', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('maquinaria', form) }}
+                        </small>
+                    </div>
+
+                    <!-- 6e. EQUIPO UNIFICADO  →  MANT_PREVENTIVO | MANT_CORRECTIVO -->
+                    <div class="field field-col-4" *ngIf="esMantenimiento">
+                        <label>
+                            <i class="fa-solid fa-screwdriver-wrench"></i> Equipo / Vehículo
+                            <span class="req">*</span>
+                        </label>
+                        <p-dropdown
+                            formControlName="equipoAsignado"
+                            [options]="equipoUnificadoOptions"
+                            optionLabel="nombre"
+                            optionValue="id"
+                            optionDisabled="disabled"
+                            placeholder="Seleccionar equipo..."
+                            [filter]="true"
+                            filterPlaceholder="Buscar..."
+                            [showClear]="true"
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('equipoAsignado', form)">
+                            <ng-template pTemplate="item" let-item>
+                                <!-- Separador de grupo -->
+                                <div *ngIf="item.tipo === 'SEPARADOR'"
+                                     style="font-size:11px;font-weight:600;color:var(--text-color-secondary);
+                                            padding:4px 0;letter-spacing:.5px;pointer-events:none">
+                                    {{ item.nombre }}
+                                </div>
+                                <!-- Vehículo -->
+                                <div *ngIf="item.tipo === 'VEHICULO'" class="flex align-items-center gap-2">
+                                    <i class="fa-solid {{item.icono}}" style="color:#136dec;width:16px"></i>
+                                    <span>{{ item.nombre }}</span>
+                                    <span class="badge-tipo badge-vehiculo">Vehículo</span>
+                                </div>
+                                <!-- Maquinaria -->
+                                <div *ngIf="item.tipo === 'MAQUINARIA'" class="flex align-items-center gap-2">
+                                    <i class="fa-solid fa-gears" style="color:#e07d10;width:16px"></i>
+                                    <span>{{ item.nombre }}</span>
+                                    <span class="badge-tipo badge-maquinaria">Maquinaria</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('equipoAsignado', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('equipoAsignado', form) }}
+                        </small>
+                    </div>
+
+                    <!-- 7. TIPO DE PAGO  →  controla Cuenta Bancaria -->
+                    <div class="field field-col-4">
+                        <label>
+                            <i class="fa-solid fa-credit-card"></i> Tipo de pago
+                            <span class="req">*</span>
+                        </label>
+                        <p-selectButton
+                            formControlName="type_payment"
+                            [options]="tipoPagoOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            (onChange)="onTipoPagoChange($event)"
+                            styleClass="w-full select-btn-pago">
+                        </p-selectButton>
+                        <small *ngIf="validatorsService.inputValid('type_payment', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('type_payment', form) }}
+                        </small>
+                    </div>
+
+                    <!-- 8. CUENTA BANCARIA  →  depende de Tipo Pago = CUENTA_BANCARIA -->
+                    <div class="field field-col-4" *ngIf="esCuentaBancaria">
+                        <label>
+                            <i class="fa-solid fa-building-columns"></i> Cuenta bancaria
+                            <span class="req">*</span>
+                        </label>
+                        <p-dropdown
+                            formControlName="cuentaBancaria"
+                            [options]="cuentasBancarias"
+                            optionLabel="nombre"
+                            optionValue="id"
+                            placeholder="Seleccionar cuenta..."
+                            [filter]="true"
+                            [showClear]="true"
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('cuentaBancaria', form)">
+                        </p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('cuentaBancaria', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('cuentaBancaria', form) }}
+                        </small>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ══ SECCIÓN 02: PROVEEDOR ══ -->
+            <section class="seccion-card">
+                <div class="seccion-header">
+                    <h3 class="seccion-titulo">Datos del Proveedor</h3>
+                </div>
+
+                <div class="form-grid">
+
+                    <!-- NOMBRE PROVEEDOR -->
+                    <div class="field field-col-6">
+                        <label>
+                            <i class="fa-solid fa-store"></i> Nombre proveedor
+                        </label>
+                        <input
+                            pInputText
+                            type="text"
+                            formControlName="proveedorNombre"
+                            placeholder="Razón social"
+                            style="text-transform:uppercase"
+                            [pKeyFilter]="validatorsService.expRegValidInput"
+                            [class.ng-dirty]="validatorsService.inputValid('proveedorNombre', form)"
+                            class="input-full" />
+                        <small *ngIf="validatorsService.inputValid('proveedorNombre', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('proveedorNombre', form) }}
+                        </small>
+                    </div>
+
+                    <!-- NIT -->
+                    <div class="field field-col-3">
+                        <label>
+                            <i class="fa-solid fa-id-card"></i> NIT / CI
+                        </label>
+                        <input
+                            pInputText
+                            type="text"
+                            formControlName="proveedorNit"
+                            placeholder="12345678-9"
+                            [pKeyFilter]="'num'"
+                            [class.ng-dirty]="validatorsService.inputValid('proveedorNit', form)"
+                            class="input-full" />
+                        <small *ngIf="validatorsService.inputValid('proveedorNit', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('proveedorNit', form) }}
+                        </small>
+                    </div>
+
+                    <!-- TIPO COMPROBANTE -->
+                    <div class="field field-col-3">
+                        <label>
+                            <i class="fa-solid fa-receipt"></i> Tipo comprobante
+                            <span class="req">*</span>
+                        </label>
+                        <p-dropdown
+                            formControlName="tipoComprobante"
+                            [options]="tipoComprobanteOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Seleccionar..."
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('tipoComprobante', form)">
+                        </p-dropdown>
+                        <small *ngIf="validatorsService.inputValid('tipoComprobante', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('tipoComprobante', form) }}
+                        </small>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ══ SECCIÓN 03: DOCUMENTACIÓN ══ -->
+            <section class="seccion-card">
+                <div class="seccion-header">
+                    <h3 class="seccion-titulo">Documentación</h3>
+                </div>
+
+                <div class="form-grid">
+
+                    <!-- NÚMERO COMPROBANTE -->
+                    <div class="field field-col-4">
+                        <label>
+                            <i class="fa-solid fa-hashtag"></i> Número comprobante
+                        </label>
+                        <input
+                            pInputText
+                            type="text"
+                            formControlName="numeroFactura"
+                            placeholder="FAC-001"
+                            [class.ng-dirty]="validatorsService.inputValid('numeroFactura', form)"
+                            class="input-full" />
+                        <small *ngIf="validatorsService.inputValid('numeroFactura', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('numeroFactura', form) }}
+                        </small>
+                    </div>
+
+                    <!-- FECHA COMPROBANTE -->
+                    <div class="field field-col-4">
+                        <label>
+                            <i class="fa-solid fa-calendar-check"></i> Fecha comprobante
+                        </label>
+                        <p-calendar
+                            formControlName="fechaFactura"
+                            [showIcon]="true"
+                            dateFormat="dd/mm/yy"
+                            styleClass="w-full"
+                            [class.ng-dirty]="validatorsService.inputValid('fechaFactura', form)">
+                        </p-calendar>
+                        <small *ngIf="validatorsService.inputValid('fechaFactura', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('fechaFactura', form) }}
+                        </small>
+                    </div>
+
+                    <!-- ADJUNTAR -->
+                    <div class="field field-col-4">
+                        <label>
+                            <i class="fa-solid fa-upload"></i> Adjuntar comprobante
+                        </label>
+                        <p-fileUpload
+                            #fileUploader
+                            mode="basic"
+                            name="comprobante"
+                            chooseLabel="Seleccionar archivo"
+                            chooseIcon="fa-solid fa-paperclip"
+                            [auto]="false"
+                            accept="image/*,.pdf"
+                            [maxFileSize]="5000000"
+                            (onSelect)="onFileSelect($event)"
+                            styleClass="w-full btn-upload">
+                        </p-fileUpload>
+                        <small class="hint">
+                            <i class="fa-solid fa-circle-info"></i> PDF, JPG, PNG · máx. 5MB
+                        </small>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ══ SECCIÓN 04: DETALLES DEL GASTO ══ -->
+            <section class="seccion-card">
+                <div class="seccion-header">
+                    <h3 class="seccion-titulo">Detalles del Gasto</h3>
+                </div>
+
+                <div class="form-grid">
+
+                    <!-- CONCEPTO -->
+                    <div class="field field-col-12">
+                        <label>
+                            <i class="fa-solid fa-lightbulb"></i> Concepto gasto
+                            <span class="req">*</span>
+                        </label>
+                        <input
+                            pInputText
+                            type="text"
+                            formControlName="conceptoGasto"
+                            placeholder="Ej: COMPRA DE INSUMOS DE PAPELERÍA"
+                            style="text-transform:uppercase"
+                            [pKeyFilter]="validatorsService.expRegValidInput"
+                            [class.ng-dirty]="validatorsService.inputValid('conceptoGasto', form)"
+                            class="input-full" />
+                        <small *ngIf="validatorsService.inputValid('conceptoGasto', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('conceptoGasto', form) }}
+                        </small>
+                    </div>
+
+                    <!-- DESCRIPCIÓN -->
+                    <div class="field field-col-12">
+                        <label>
+                            <i class="fa-solid fa-align-left"></i> Descripción detallada
+                            <span class="req">*</span>
+                        </label>
+                        <textarea
+                            pInputTextarea
+                            [rows]="3"
+                            style="text-transform:uppercase; resize:vertical"
+                            [pKeyFilter]="validatorsService.expRegValidInput"
+                            formControlName="description"
+                            placeholder="PROPORCIONE INFORMACIÓN ADICIONAL SOBRE ESTE GASTO..."
+                            class="input-full"
+                            [class.ng-dirty]="validatorsService.inputValid('description', form)">
+                        </textarea>
+                        <small *ngIf="validatorsService.inputValid('description', form)" class="p-error">
+                            {{ validatorsService.inputValidMessage('description', form) }}
+                        </small>
+                    </div>
+
+                </div>
+            </section>
+
         </div>
     </form>
+
     <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ? newDetailCaja() : null" styleClass="p-button-sm p-button-rounded"
-            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
-        <p-button (click)="cajaService.showModalMovementCaja = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+        <p-button
+            (click)="!loading() ? newDetailCaja() : null"
+            styleClass="btn-guardar"
+            label="Guardar registro"
+            icon="fa-solid fa-floppy-disk"
+            [loading]="loading()">
+        </p-button>
+        <p-button
+            (click)="cajaService.showModalMovementCaja = false"
+            label="Cancelar"
+            icon="fa-solid fa-xmark"
+            styleClass="btn-cancelar">
+        </p-button>
     </ng-template>
 </p-dialog>

@@ -22,6 +22,7 @@ import { ModalProvidersProductComponent } from './products/components/modal-prov
 import { ListCostsProductComponent } from './list-costs-product/list-costs-product.component';
 import { PaginatorModule } from 'primeng/paginator';
 import { TableListCostsProductsComponent } from './list-costs-product/components/table-list-costs-products/table-list-costs-products.component';
+import { TotalStockRecumetComponent } from './total-stock-recumet/total-stock-recumet.component';
 import { InputsModule } from '../inputs/inputs.module';
 import { OutputsModule } from '../outputs/outputs.module';
 import { ClassifiedsModule } from '../classifieds/classifieds.module';
@@ -46,7 +47,8 @@ import { TransfersModule } from '../transfers/transfers.module';
     ModalAssignSucursalesProductsComponent,
     ModalProvidersProductComponent,
     ListCostsProductComponent,
-    TableListCostsProductsComponent
+    TableListCostsProductsComponent,
+    TotalStockRecumetComponent
   ],
   imports: [
     CommonModule,

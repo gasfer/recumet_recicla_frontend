@@ -1,0 +1,18 @@
+<p-dialog [header]="'Vista de sectores: '" [(visible)]="providersService.showModalSectors" [modal]="true"
+    [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '50vw' }" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true">
+    <div class="justify-content-between d-flex">
+        <h3 class="text-muted">Sectores</h3>
+        <p-button icon="fa-solid fa-circle-plus" (click)="providersService.showModalNewSector = true" pTooltip="Añadir Nuevo" tooltipPosition="left"
+            styleClass="p-button-primary p-button-rounded mb-1" label="Añadir"></p-button>
+    </div>
+    <app-table [cols]="cols()" (customSort$)="customSort($event)"
+        [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+        [data]="sectors()" [loading]="loading()">
+    </app-table>
+    <ng-template pTemplate="footer">
+        <p-button (click)="providersService.showModalSectors = false" label="Cerrar"
+            styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    </ng-template>
+</p-dialog>
+<app-modal-new-sector></app-modal-new-sector>

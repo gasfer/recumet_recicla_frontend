@@ -105,6 +105,11 @@ getAllAndSearch(
     return this.http.get<GetAllTypesProvider>(url);
   }
 
+  getProvidersAutocomplete(query: string = ''): Observable<{ ok: boolean, providers: Provider[] }> {
+    let params = new HttpParams().set('query', query);
+    return this.http.get<{ ok: boolean, providers: Provider[] }>(`${base_url}/provider/autocomplete`, { params });
+  }
+
 
   getReportExcel(status:boolean, type: string = '', query?: string, field_sort:string = 'id',order:string = 'DESC',id_type_provider:string = '') {
       const url = `${base_url}/provider/excel?field_sort=${field_sort}&order=${order}&type=${type}&query=${query}&status=${status}&id_type_provider=${id_type_provider}`;

@@ -56,6 +56,8 @@ interface Totals {
 export interface DetailsTransfer {
     id:          number;
     quantity:    string;
+    quantity_received: string | null;
+    observation: string | null;
     cost:        string;
     total:       string;
     id_transfer: number;
@@ -121,6 +123,14 @@ export interface UpdateTransferToReceived {
     id_transfer:           number;
     id_storage_received:   number;
     observations_received: string;
+    date_received?:        Date | string;
+    details?:              UpdateTransferDetailReceived[];
+}
+
+export interface UpdateTransferDetailReceived {
+    id_detail:             number;
+    quantity_received:     number;
+    observation?:          string;
 }
 
 //**form TransferConfig */

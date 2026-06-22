@@ -4,6 +4,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { Subscription } from 'rxjs';
 import { AccountPayable } from '../../../interfaces/accounts-payable.interface';
 import Swal from 'sweetalert2';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-modal-view-abonos-account-payable',
@@ -74,5 +75,56 @@ export class ModalViewAbonosAccountPayableComponent {
         });
       }
     });
+  }
+
+  triggerFileUpload(abonoId: number) {
+    const fileInput = document.getElementById('file-upload-' + abonoId) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
+
+  onFileSelected(event: any, abonoId: number) {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.uploadVoucher(abonoId, file);
+    }
+  }
+
+  uploadVoucher(abonoId: number, file: File) {
+    Swal.fire({
+      title: 'Subiendo comprobante...',
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      allowOutsideClick: false
+    });
+    
+    this.accountsPayableService.uploadVoucherAbono(abonoId, file, false).subscribe({
+      next: (resp) => {
+        Swal.fire({
+          title: 'Éxito!',
+          text: 'Comprobante subido correctamente.',
+          icon: 'success',
+          customClass: { container: 'swal-alert' }
+        });
+        
+        this.accountsPayableService.reloadAccountsPayable$.next(this.accountPayable()?.id || 0);
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err?.error?.errors?.[0]?.msg || 'No se pudo subir el comprobante.',
+          icon: 'error',
+          customClass: { container: 'swal-alert' }
+        });
+      }
+    });
+  }
+
+  viewAttachedVoucher(payment_voucher?: string) {
+    if (!payment_voucher) return;
+    const url = `${environment.base_url}/file/vouchers/${payment_voucher}`;
+    window.open(url, '_blank');
   }
 }

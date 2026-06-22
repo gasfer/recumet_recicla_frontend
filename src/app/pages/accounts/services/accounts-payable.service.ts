@@ -125,4 +125,11 @@ export class AccountsPayableService {
       },
     });
   }
+
+  uploadVoucherAbono(idAbono: number, file: File, isMultiple: boolean): Observable<any> {
+    const url = `${base_url}/accounts_payable/upload/voucher?idAbono=${idAbono}&isMultiple=${isMultiple}`;
+    const formData = new FormData();
+    formData.append('voucher', file);
+    return this.http.put<any>(url, formData);
+  }
 }

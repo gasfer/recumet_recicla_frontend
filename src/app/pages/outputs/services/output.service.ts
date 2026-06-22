@@ -18,7 +18,8 @@ export class OutputService {
   showModalSaveInput: boolean = false;
   showModalDetailsInput: boolean = false;
   isEdit: boolean = false;
-  types_registry = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
+  types_registry = signal([{name: 'SIN FICHA', code: 'SIN FICHA'},{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
+
   types_output   = signal([{name: 'MENOR'},{name: 'MAYOR. NACIONAL'},{name: 'MAYOR. EXTERIOR'}]);
 
   editSubs$: EventEmitter<Output> = new EventEmitter<Output>();
@@ -65,41 +66,51 @@ export class OutputService {
     const url = `${base_url}/output/${id_output}`;
     return this.http.put<{ok:string,msg:string,id_output:number}>(url, data);
   }
-  
+
   deleteOutput(id_output: number) {
     const url = `${base_url}/output/anular/${id_output}`;
     return this.http.delete(url);
   }
 
   resetOutput() {
-    this.detailSale.update((details)=>  details = []); 
-    this.clientSelect.set(undefined); 
+    this.detailSale.update((details)=>  details = []);
+    this.clientSelect.set(undefined);
   }
 
-  updateDetailSale(product: Product, updateQuantity: boolean = true, newQuantity: boolean = false) {
-    const productExist = this.detailSale().length > 0 ? this.detailSale().find((prod) => prod.id === product.id) : false;
-    if(productExist){
-      this.detailSale.update((details) => 
-        details.map((prod) => {
-          if (prod.id !== product.id) return prod;
-          if (updateQuantity) {
-            prod.quantity = newQuantity ? product.quantity : prod.quantity + 1;
-            if (prod.quantity > prod.total_stock!) {
-              prod.quantity = prod.total_stock!;
-            }
+updateDetailSale(product: Product, updateQuantity: boolean = true, newQuantity: boolean = false) {
+  const productExist = this.detailSale().find((prod) => prod.id === product.id);
+
+  if (productExist) {
+    this.detailSale.update((details) =>
+      details.map((prod) => {
+        if (prod.id !== product.id) return prod;
+
+        if (updateQuantity) {
+          prod.quantity = newQuantity
+            ? product.quantity
+            : prod.quantity + 1;
+
+          // ✅ Solo limitar stock si NO estamos en edición
+          const stock = prod.total_stock;
+          if (!this.isEdit && stock != null && stock > 0 && prod.quantity > stock) {
+            prod.quantity = stock;
           }
-          prod.import = prod.quantity * prod.price_select!;
-          return prod;
-        })
-      );
-    } else {
-      //primera agregación al carrito
-      product.quantity = product.total_stock! > 1  ? 1 : product.total_stock!;
-      product.price_select = Number(product.prices[0].price) ?? 0; //comments by use select price
-      product.import = product.price_select!;
-      this.detailSale.update((details) => [...details, product] );
-    }
+        }
+
+        prod.import = prod.quantity * prod.price_select!;
+        return { ...prod }; // ✅ nueva referencia para recalcular totalSummary
+      })
+    );
+  } else {
+    product.quantity = 1;
+    product.price_select = Number(product.prices[0]?.price) ?? 0;
+    product.import = product.quantity * product.price_select;
+    this.detailSale.update((details) => [...details, product]);
   }
+}
+
+
+
   //* Reportes */
   getReportPdf(params:FormSearchOutputs, field_sort:string = 'id',order:string = 'DESC',) {
     const url = `${base_url}/output/pdf?field_sort=${field_sort}&order=${order}`;
@@ -155,7 +166,7 @@ export class OutputService {
     return this.http.get(url,{
               responseType: 'blob',
             });
-  } 
+  }
 
   printPdfReport(id_output:number) {
     Swal.fire({

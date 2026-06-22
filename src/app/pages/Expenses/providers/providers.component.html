@@ -1,0 +1,49 @@
+<div [formGroup]="formReport">
+  <div class="card shadow mb-4 icon-box ">
+    <div class="card-body">
+      <div class="title mb-1">
+        <h3 style="color: var(--bg-2665C); text-align: center; flex: 1; margin-right: auto;">
+          <b>CONSULTA DE PROVEEDORES</b>
+        </h3>
+        <div *ngIf="validatorsService.withPermission('PROVEEDORES','create')" class="ms-1">
+          <p-button icon="fa-solid fa-circle-plus" (click)="showModal()" pTooltip="Añadir Nuevo" tooltipPosition="left"
+            [rounded]="true" label="Añadir"></p-button>
+        </div>
+      </div>
+      <p-accordion [activeIndex]="1">
+        <p-accordionTab header="Filtros">
+            <div class="field col-12">
+              <div class=" row mt-1">
+                <div class="p-fluid col-12 col-sm-6">
+                    <label class="block mb-1">Tipo proveedor</label>
+                    <p-dropdown [options]="types()" placeholder="Selecciona una opción"
+                      optionLabel="name" appendTo="body" formControlName="id_type_provider"
+                      [disabled]="loading()"
+                      (onChange)="!loading() ? this.getAllAndSearchProviders(1,rows(),true) : null"
+                      [class.ng-dirty]="validatorsService.inputValid('id_type_provider',formReport)"></p-dropdown>
+                </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  <div class="text-end">
+                    <p-button  *ngIf="validatorsService.withPermission('COMPRAS','reports')" (click)="!loading() ? this.printPdfReport() : null" 
+                    styleClass="p-button-rounded p-button-success p-button-sm" label="Exportar excel"
+                      icon="fas fa-file-excel" [loading]="loadingReport()"></p-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </p-accordionTab>
+      </p-accordion>
+    </div>
+    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+      [activeItem]="searchItems()[0]"></p-tabMenu>
+
+  </div>
+</div>
+<app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
+</app-table>
+<app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
+</app-table>
+
+<app-modal-provider></app-modal-provider>

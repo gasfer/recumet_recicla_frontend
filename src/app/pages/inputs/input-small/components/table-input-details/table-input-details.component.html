@@ -35,7 +35,7 @@
                     decrementButtonClass="p-button-secondary"
                     incrementButtonClass="p-button-primary"
                     placeholder="0"
-                    [min]="0.1"
+                    [min]="0"
                     [max]="99999999999999"
                     [inputId]="product.id"
                     [(ngModel)] = "product.quantity"
@@ -88,7 +88,7 @@
                 <p-button  
                     styleClass="p-button-sm p-button-rounded ms-2" 
                     label="Confirmar" 
-                    (click)="inputsService.showModalSaveInput = true"
+                    (click)="confirmInput()"
                     icon="fa-solid fa-floppy-disk">
                 </p-button> 
             </td>
