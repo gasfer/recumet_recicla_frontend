@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { Output } from '../../../interfaces/output.interface';
 
 @Component({
-  selector: 'app-modal-view-details',
+  selector: 'app-modal-view-details-output',
   templateUrl: './modal-view-details.component.html',
   styles: [
   ]

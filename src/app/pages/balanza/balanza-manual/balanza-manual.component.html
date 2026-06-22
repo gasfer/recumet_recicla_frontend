@@ -1,0 +1,227 @@
+<!-- ── HEADER CARD ── -->
+<div class="card bg-light m-0">
+  <div class="card-body shadow pt-2 pb-2">
+    <h4><i class="fa-solid fa-scale-balanced me-2"></i>BALANZA MANUAL</h4>
+    <p class="text-muted mb-0">Registro de pesaje manual de productos</p>
+  </div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="row mt-2 mb-1 g-2">
+  <div class="col-6 col-sm-4">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-clipboard-list fa-lg text-primary mb-1"></i>
+      <div class="fw-bold fs-5">{{ totalRegistros() }}</div>
+      <small class="text-muted">Registros Activos</small>
+    </div>
+  </div>
+  <div class="col-6 col-sm-4">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-weight-hanging fa-lg text-info mb-1"></i>
+      <div class="fw-bold fs-5">{{ totalKg() | number:'1.2-2' }} kg</div>
+      <small class="text-muted">Peso Total</small>
+    </div>
+  </div>
+  <div class="col-6 col-sm-4">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-money-bill-wave fa-lg text-success mb-1"></i>
+      <div class="fw-bold fs-5">Bs. {{ totalVenta() | number:'1.2-2' }}</div>
+      <small class="text-muted">Total Ventas</small>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN CARD ── -->
+<div class="row mt-1">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body shadow m-0 p-0">
+
+        <div class="row m-1 mt-0">
+          <div class="col-12">
+            <p-messages severity="info">
+              <ng-template pTemplate>
+                <b>PESAJES MANUALES &nbsp;<i class="fa-solid fa-scale-balanced"></i></b>
+                <i class="fa-solid fa-clipboard-list ms-5 p-text-secondary"
+                   pBadge style="font-size:1.2rem"
+                   value="{{ totalRegistros() }}"></i>
+              </ng-template>
+            </p-messages>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end px-2 pb-2">
+          <button pButton icon="pi pi-plus" label="Nuevo Pesaje"
+                  class="p-button-sm" (click)="openNew()"></button>
+        </div>
+
+        <p-table
+          [value]="pesajes()"
+          [loading]="loading()"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+          [rowHover]="true"
+          [paginator]="true"
+          [rows]="10">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Ticket</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Producto</th>
+              <th class="text-end">Peso</th>
+              <th>Unidad</th>
+              <th class="text-end">Peso (kg)</th>
+              <th class="text-end">Precio</th>
+              <th class="text-end">Total Bs.</th>
+              <th>Operador</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-p>
+            <tr [ngClass]="{'opacity-50 text-decoration-line-through': p.estado === 'ANULADO'}">
+              <td><span class="badge bg-secondary font-monospace">{{ p.nroTicket }}</span></td>
+              <td>{{ p.fecha | date:'dd/MM/yyyy' }}</td>
+              <td>{{ p.cliente }}</td>
+              <td>{{ p.producto }}</td>
+              <td class="text-end">{{ p.peso | number:'1.2-2' }}</td>
+              <td><span class="badge bg-light text-dark border">{{ p.unidad }}</span></td>
+              <td class="text-end">{{ p.pesoKg | number:'1.3-3' }}</td>
+              <td class="text-end">{{ p.precio | number:'1.2-2' }}</td>
+              <td class="text-end"><b>{{ p.total | number:'1.2-2' }}</b></td>
+              <td>{{ p.operador }}</td>
+              <td class="text-center">
+                <p-tag [value]="p.estado"
+                       [severity]="p.estado === 'ACTIVO' ? 'success' : 'danger'"></p-tag>
+              </td>
+              <td class="text-center">
+                <button pButton icon="pi pi-pencil"
+                        class="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Editar" tooltipPosition="top"
+                        (click)="openEdit(p)"
+                        [disabled]="p.estado === 'ANULADO'"></button>
+                <button pButton icon="pi pi-ban"
+                        class="p-button-rounded p-button-text p-button-danger p-button-sm"
+                        pTooltip="Anular" tooltipPosition="top"
+                        (click)="confirmAnular(p)"
+                        [disabled]="p.estado === 'ANULADO'"></button>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="12" class="text-center py-4">Sin registros de pesaje manual</td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DIALOG ── -->
+<p-dialog
+  [visible]="dialogVisible()"
+  (onHide)="onDialogHide()"
+  [modal]="true"
+  [closable]="true"
+  [header]="isEditing() ? 'Editar Pesaje Manual' : 'Nuevo Pesaje Manual'"
+  [style]="{width:'620px'}"
+  [draggable]="false"
+  appendTo="body">
+
+  <form [formGroup]="form">
+    <div class="row g-2 mt-0">
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Nro. Ticket *</label>
+        <input pInputText formControlName="nroTicket" class="w-100" />
+        <small *ngIf="isInvalid('nroTicket')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Fecha *</label>
+        <p-calendar formControlName="fecha" dateFormat="dd/mm/yy"
+                    [showIcon]="true" appendTo="body"
+                    styleClass="w-100"></p-calendar>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Cliente *</label>
+        <input pInputText formControlName="cliente" class="w-100"
+               placeholder="Nombre del cliente" />
+        <small *ngIf="isInvalid('cliente')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Operador *</label>
+        <input pInputText formControlName="operador" class="w-100"
+               placeholder="Nombre del operador" />
+        <small *ngIf="isInvalid('operador')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Producto *</label>
+        <p-dropdown formControlName="producto" [options]="productos"
+                    placeholder="Seleccione" appendTo="body"
+                    styleClass="w-100"></p-dropdown>
+        <small *ngIf="isInvalid('producto')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Unidad *</label>
+        <p-dropdown formControlName="unidad" [options]="unidades"
+                    placeholder="Seleccione" appendTo="body"
+                    styleClass="w-100"></p-dropdown>
+      </div>
+
+      <div class="col-12"><hr class="my-1" /></div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Peso *</label>
+        <p-inputNumber formControlName="peso" [min]="0"
+                       [minFractionDigits]="2" [maxFractionDigits]="3"
+                       [useGrouping]="true" styleClass="w-100"></p-inputNumber>
+        <small *ngIf="isInvalid('peso')" class="p-error d-block">Debe ser mayor a 0</small>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Precio Unitario (Bs.) *</label>
+        <p-inputNumber formControlName="precio" [min]="0"
+                       [minFractionDigits]="2" prefix="Bs. "
+                       [useGrouping]="true" styleClass="w-100"></p-inputNumber>
+      </div>
+
+      <div class="col-12">
+        <div class="alert alert-success d-flex justify-content-between align-items-center py-2 mb-0">
+          <span class="fw-semibold">Total a Cobrar</span>
+          <span class="fw-bold fs-5">Bs. {{ totalCalculado | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold mb-0">Observación</label>
+        <textarea pInputTextarea formControlName="observacion"
+                  rows="2" placeholder="Notas..."
+                  class="w-100"></textarea>
+      </div>
+
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" icon="pi pi-times"
+            class="p-button-text" (click)="closeDialog()"></button>
+    <button pButton
+            [label]="isEditing() ? 'Actualizar' : 'Registrar'"
+            icon="pi pi-check" (click)="save()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

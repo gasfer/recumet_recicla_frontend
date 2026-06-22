@@ -2,42 +2,46 @@ import { Options } from "src/app/core/components/interfaces/OptionsTable.interfa
 import { Sector } from "./sector.interface";
 
 export interface GetAllProviders {
-    ok:        boolean;
+    ok: boolean;
     providers: Providers;
 }
 
 export interface Providers {
     previousPage: number | null;
-    currentPage:  number;
-    nextPage:     number | null;
-    total:        number;
-    per_page:     number;
-    from:         number;
-    to:           number;
-    data:         Provider[];
+    currentPage: number;
+    nextPage: number | null;
+    total: number;
+    per_page: number;
+    from: number;
+    to: number;
+    data: Provider[];
 }
 
 export interface Provider {
-    id:                number;
-    full_names:        string;
-    number_document:   string;
-    cellphone:         number;
-    direction:         string;
-    mayorista:         boolean;
-    name_contact:      string;
+    id: number;
+    full_names: string;
+    number_document: string;
+    cellphone: number;
+    direction: string;
+    mayorista: boolean;
+    name_contact: string;
     cellphone_contact: number;
-    id_category:       number;
-    id_sucursal:       null;
-    status:            boolean;
-    createdAt:         string;
-    updatedAt:         string;
-    category:          Category;
-    sector:            Sector;
+    id_category: number;
+    id_sucursal: null;
+    status: boolean;
+    createdAt: string;
+    updatedAt: string;
+    category: Category;
+    sector: Sector;
     companyContacts: string,
     workAreaOrPositionOrUnit: string,
     frequency: string,
-    type:              Type | null;
-    options?:          Options[];
+    type: Type | null;
+    date_last_input: string,
+    total_inputs: number,
+    total_products: number,
+    saldo_cuentas_por_pagar: number,
+    options?: Options[];
 }
 
 interface Type {
@@ -49,25 +53,25 @@ interface Type {
     updatedAt: string
 }
 interface Category {
-    id:          number;
-    name:        string;
+    id: number;
+    name: string;
     description: string;
-    status:      boolean;
-    createdAt:   string;
-    updatedAt:   string;
+    status: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 
 export interface GetAllTypesProvider {
-    ok:            boolean;
+    ok: boolean;
     typesProvider: TypesProvider[];
 }
 
 export interface TypesProvider {
-    id:        number;
-    name:      string;
-    code:      string;
-    status:    boolean;
+    id: number;
+    name: string;
+    code: string;
+    status: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

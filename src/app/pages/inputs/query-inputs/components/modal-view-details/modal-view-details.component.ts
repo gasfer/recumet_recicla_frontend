@@ -5,7 +5,7 @@ import { Input } from '../../../interfaces/input.interface';
 import { ValidatorsService } from 'src/app/services/validators.service';
 
 @Component({
-  selector: 'app-modal-view-details',
+  selector: 'app-modal-view-details-input',
   templateUrl: './modal-view-details.component.html',
   styles: []
 })
@@ -19,6 +19,11 @@ export class ModalViewDetailsComponent implements OnInit, OnDestroy {
   
   ngOnInit(): void {
     this.viewDetailsSub$ = this.inputService.detailsSubs$.subscribe(input => {
+      let totalQuantity = 0;
+      input.detailsInput.forEach(resp => {
+        totalQuantity += Number(resp.quantity);
+      })
+      input.totalQuantity = totalQuantity;
       this.input.set(input);
     });
   }

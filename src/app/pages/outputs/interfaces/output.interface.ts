@@ -1,4 +1,5 @@
 import { Options } from "src/app/core/components/interfaces/OptionsTable.interface";
+import { output } from '@angular/core';
 
 export interface OutputConfig {
     searchForCode: boolean, 
@@ -87,13 +88,22 @@ export interface Outputs {
     from:         number;
     to:           number;
     data:         Output[];
+    totals:        Totals;
+}
+interface Totals {
+    totalOutput: number,
+    totalQuantity: number,
+}
+export interface GetOneOutput {
+    ok:     boolean;
+    output:  Output;
 }
 
 export interface Output {
     id:                 number;
     cod:                string;
     voucher:            null | string;
-    date_output:        null | string;
+    date_output:        string;
     total:              string;
     type_voucher:       string;
     type_output:        string;
@@ -114,6 +124,7 @@ export interface Output {
     id_client:          null | number;
     id_scale:           number;
     id_sucursal:        number;
+    total_quantity:        number;
     status:             string;
     createdAt:          string;
     updatedAt:          string;

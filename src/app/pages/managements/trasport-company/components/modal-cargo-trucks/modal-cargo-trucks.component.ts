@@ -78,7 +78,7 @@ export class ModalCargoTrucksComponent implements OnInit, OnDestroy {
         this.transportCompanyService.save$.next(true);
         Swal.fire({ 
           title: 'Éxito!', 
-          text: `Se ha dado de baja al chofer`,
+          text: `Se ha dado de baja al camion`,
           icon: 'success', 
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},

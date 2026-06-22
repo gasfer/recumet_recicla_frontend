@@ -176,7 +176,7 @@
                         </small>
                     </div>
                     <div  *ngIf="formP.frequency.view" class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">{{formP.frequency.label}}<span class="text-danger">*</span>
+                        <label class="block mb-0">{{formP.frequency.label}}
                         </label>
                         <p-dropdown [options]="frequencies()" 
                           placeholder="Selecciona una {{formP.frequency.label}}" 
@@ -184,6 +184,7 @@
                           optionValue="code"
                           appendTo="body"
                           [filter]="true" filterBy="name"
+                          [showClear]="true"
                           [virtualScrollItemSize]="38" [lazy]="true"
                           formControlName="frequency" 
                           [class.ng-dirty]="validatorsService.inputValid('frequency',providerForm)"

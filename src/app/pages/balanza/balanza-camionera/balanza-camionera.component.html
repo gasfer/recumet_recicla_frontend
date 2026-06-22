@@ -1,0 +1,880 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="card bg-light m-0">
+  <div class="card-body shadow pt-2 pb-2">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="mb-0"><i class="fa-solid fa-weight-scale me-2 text-primary"></i>BALANZA CAMIONERA</h4>
+        <small class="text-muted">Control de pesaje de vehículos de carga</small>
+      </div>
+      <div class="d-flex gap-2">
+        <button pButton icon="pi pi-filter" [label]="mostrarFiltros() ? 'Ocultar filtros' : 'Mostrar filtros'"
+                class="p-button-sm p-button-outlined" (click)="toggleFiltros()"></button>
+        <button pButton icon="pi pi-plus" label="1° Peso"
+                class="p-button-sm" (click)="openNuevoPrimer()"></button>
+        <button pButton icon="pi pi-plus-circle" label="2° Peso"
+                class="p-button-sm p-button-warning" (click)="openSegundoPeso()"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     FILTROS AVANZADOS
+══════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="mostrarFiltros()" class="card mt-2 mb-0">
+  <div class="card-body shadow py-2">
+    <div class="row g-2 align-items-end">
+
+      <!-- Tipo período -->
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="form-label fw-semibold mb-0 small">Período</label>
+        <p-selectButton
+          [options]="opcionesFiltroTipo"
+          [ngModel]="filtroTipo()"
+          (ngModelChange)="setFiltroTipo($event)"
+          optionLabel="label" optionValue="value"
+          styleClass="w-100 p-selectbutton-sm">
+        </p-selectButton>
+      </div>
+
+      <!-- Fecha -->
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="form-label fw-semibold mb-0 small">
+          {{ filtroTipo() === 'dia' ? 'Fecha' : filtroTipo() === 'mes' ? 'Mes/Año' : 'Año' }}
+        </label>
+        <p-calendar
+          [ngModel]="filtroFecha()"
+          (ngModelChange)="setFiltroFecha($event)"
+          [view]="filtroTipo() === 'dia' ? 'date' : filtroTipo() === 'mes' ? 'month' : 'year'"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          appendTo="body"
+          styleClass="w-100">
+        </p-calendar>
+      </div>
+
+      <!-- Filtro boleta -->
+      <div class="col-12 col-sm-6 col-md-3">
+        <label class="form-label fw-semibold mb-0 small">Nro. Boleta</label>
+        <span class="p-input-icon-left w-100">
+          <i class="pi pi-search"></i>
+          <input pInputText
+                 [ngModel]="filtroBoleta()"
+                 (ngModelChange)="setFiltroBoleta($event)"
+                 placeholder="Buscar por boleta..."
+                 class="w-100" />
+        </span>
+      </div>
+
+      <!-- Filtro proveedor -->
+      <div class="col-12 col-sm-6 col-md-3">
+        <label class="form-label fw-semibold mb-0 small">Proveedor</label>
+        <span class="p-input-icon-left w-100">
+          <i class="pi pi-search"></i>
+          <input pInputText
+                 [ngModel]="filtroProveedor()"
+                 (ngModelChange)="setFiltroProveedor($event)"
+                 placeholder="Buscar por proveedor..."
+                 class="w-100" />
+        </span>
+      </div>
+
+      <!-- Exportar -->
+      <div class="col-12 col-md-2">
+        <label class="form-label fw-semibold mb-0 small d-block">&nbsp;</label>
+        <div class="d-flex gap-1">
+          <button pButton icon="pi pi-file-pdf" pTooltip="Exportar PDF"
+                  class="p-button-sm p-button-danger flex-fill"
+                  (click)="exportarPDF()"></button>
+          <button pButton icon="pi pi-file-excel" pTooltip="Exportar Excel"
+                  class="p-button-sm p-button-success flex-fill"
+                  (click)="exportarExcel()"></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     STATS
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="row mt-2 mb-1 g-2">
+  <div class="col-6 col-sm-3">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-truck-moving fa-lg text-primary mb-1"></i>
+      <div class="fw-bold fs-5">{{ totalPesajes() }}</div>
+      <small class="text-muted">Total Pesajes</small>
+    </div>
+  </div>
+  <div class="col-6 col-sm-3">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-circle-check fa-lg text-success mb-1"></i>
+      <div class="fw-bold fs-5">{{ totalCompletos() }}</div>
+      <small class="text-muted">Completos</small>
+    </div>
+  </div>
+  <div class="col-6 col-sm-3">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-clock fa-lg text-warning mb-1"></i>
+      <div class="fw-bold fs-5">{{ totalPendient() }}</div>
+      <small class="text-muted">En 1° Peso</small>
+    </div>
+  </div>
+  <div class="col-6 col-sm-3">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-weight-hanging fa-lg text-info mb-1"></i>
+      <div class="fw-bold fs-5">{{ totalNetoKg() | number:'1.0-0' }} kg</div>
+      <small class="text-muted">Neto Total</small>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TABLA
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="row mt-1">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body shadow m-0 p-0">
+
+        <div class="row m-1 mt-0">
+          <div class="col-12">
+            <p-messages severity="info">
+              <ng-template pTemplate>
+                <b>LISTA PESAJE BALANZA CAMIONERA &nbsp;<i class="fa-solid fa-weight-scale"></i></b>
+                <i class="fa-solid fa-truck ms-4 p-text-secondary" pBadge
+                   style="font-size:1.2rem" value="{{ totalPesajes() }}"></i>
+              </ng-template>
+            </p-messages>
+          </div>
+        </div>
+
+        <p-table
+          [value]="pesajesFiltrados()"
+          [loading]="loading()"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+          [rowHover]="true"
+          [paginator]="true"
+          [rows]="15"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="nroBoleta" style="min-width:140px">
+                Nro. Boleta <p-sortIcon field="nroBoleta"></p-sortIcon>
+              </th>
+              <th style="min-width:100px">Fecha</th>
+              <th style="min-width:80px">Hora 1°</th>
+              <th style="min-width:80px">Hora 2°</th>
+              <th style="min-width:100px;text-align:right">Tara (kg)</th>
+              <th style="min-width:100px;text-align:right">Bruto (kg)</th>
+              <th style="min-width:110px;text-align:right">
+                <span class="text-success fw-bold">Neto (kg)</span>
+              </th>
+              <th style="min-width:160px">Proveedor Origen</th>
+              <th style="min-width:120px">Producto</th>
+              <th style="min-width:100px">Placa</th>
+              <th style="min-width:90px;text-align:center">Estado</th>
+              <th style="min-width:130px;text-align:center">Opciones</th>
+            </tr>
+            <!-- Filtro en encabezado -->
+            <tr>
+              <th>
+                <input pInputText
+                       [ngModel]="filtroBoleta()"
+                       (ngModelChange)="setFiltroBoleta($event)"
+                       placeholder="Boleta..." class="w-100 p-inputtext-sm" />
+              </th>
+              <th colspan="6"></th>
+              <th>
+                <input pInputText
+                       [ngModel]="filtroProveedor()"
+                       (ngModelChange)="setFiltroProveedor($event)"
+                       placeholder="Proveedor..." class="w-100 p-inputtext-sm" />
+              </th>
+              <th colspan="4"></th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-p>
+            <tr>
+              <td>
+                <span class="badge bg-primary font-monospace" style="font-size:.72rem">
+                  {{ p.nroBoleta }}
+                </span>
+              </td>
+              <td>{{ p.fechaRegistro | date:'dd/MM/yyyy' }}</td>
+              <td><span class="badge bg-light text-dark border">{{ p.horaPrimerPeso }}</span></td>
+              <td>
+                <span *ngIf="p.horaSegundoPeso; else sinHora2"
+                      class="badge bg-light text-dark border">{{ p.horaSegundoPeso }}</span>
+                <ng-template #sinHora2><span class="text-muted">—</span></ng-template>
+              </td>
+              <td class="text-end">{{ p.tara  | number:'1.0-0' }}</td>
+              <td class="text-end">{{ p.bruto | number:'1.0-0' }}</td>
+              <td class="text-end fw-bold text-success">{{ p.neto | number:'1.0-0' }}</td>
+              <td>
+                <span class="d-block fw-semibold" style="font-size:.82rem">{{ p.proveedorOrigen.nombre }}</span>
+                <small class="text-muted">CI/NIT: {{ p.proveedorOrigen.ciNit }}</small>
+              </td>
+              <td>
+                <span class="d-block">{{ p.producto.nombre }}</span>
+                <small class="text-muted">{{ p.producto.unidad }}</small>
+              </td>
+              <td>
+                <span class="fw-bold">{{ p.transportista.placa }}</span><br>
+                <small class="text-muted">{{ p.transportista.marca }}</small>
+              </td>
+              <td class="text-center">
+                <p-tag [value]="getEstadoLabel(p.estado)"
+                       [severity]="getSeverity(p.estado)"></p-tag>
+                <span *ngIf="p.esServicio" class="badge bg-info ms-1" style="font-size:.68rem">SRV</span>
+              </td>
+              <td class="text-center">
+                <!-- Registrar 2° peso (solo si está en PRIMER_PESO) -->
+                <button *ngIf="p.estado === 'PRIMER_PESO'"
+                        pButton icon="pi pi-plus-circle"
+                        class="p-button-rounded p-button-warning p-button-sm"
+                        pTooltip="Registrar 2° Peso" tooltipPosition="top"
+                        (click)="openSegundoPeso(); seleccionarParaSegundoPeso(p)"></button>
+                <!-- Ver -->
+                <button pButton icon="pi pi-eye"
+                        class="p-button-rounded p-button-text p-button-info p-button-sm"
+                        pTooltip="Ver" tooltipPosition="top"
+                        (click)="openVer(p)"></button>
+                <!-- Editar -->
+                <button pButton icon="pi pi-pencil"
+                        class="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Editar" tooltipPosition="top"
+                        (click)="openEditar(p)"
+                        [disabled]="!puedeEditar(p)"></button>
+                <!-- Imprimir boleta -->
+                <button pButton icon="pi pi-print"
+                        class="p-button-rounded p-button-text p-button-secondary p-button-sm"
+                        pTooltip="Imprimir Boleta" tooltipPosition="top"
+                        (click)="imprimirBoleta(p)"></button>
+                <!-- Eliminar -->
+                <button pButton icon="pi pi-trash"
+                        class="p-button-rounded p-button-text p-button-danger p-button-sm"
+                        pTooltip="Eliminar" tooltipPosition="top"
+                        (click)="confirmEliminar(p)"
+                        [disabled]="!puedeEliminar(p)"></button>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="12" class="text-center py-4 text-muted">
+                <i class="fa-solid fa-truck-moving fa-2x mb-2 d-block opacity-25"></i>
+                Sin registros para el filtro seleccionado
+              </td>
+            </tr>
+          </ng-template>
+
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     DIALOG: PRIMER PESO / EDITAR
+══════════════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [visible]="dialogVisible()"
+  (onHide)="onDialogHide()"
+  [modal]="true"
+  [closable]="true"
+  [header]="modoDialog() === 'EDITAR' ? 'Editar Pesaje' : 'Registrar Primer Peso'"
+  [style]="{width:'860px'}"
+  [maximizable]="true"
+  [draggable]="false"
+  appendTo="body">
+
+  <form [formGroup]="formPrimer">
+    <div class="row g-2">
+
+      <!-- ══ BLOQUE: VER PESO BALANZA ══ -->
+      <div class="col-12">
+        <div class="card border-primary mb-0">
+          <div class="card-header bg-primary text-white py-1 px-2">
+            <i class="fa-solid fa-display me-2"></i>
+            <strong>PESO EN BALANZA</strong>
+          </div>
+          <div class="card-body py-2">
+            <div class="row align-items-center g-2">
+              <div class="col-12 col-md-6">
+                <div class="bc-peso-display">
+                  <span class="bc-peso-display__val">
+                    {{ pesoActual() !== null ? (pesoActual()! | number:'1.0-0') + ' kg' : '— — — —' }}
+                  </span>
+                  <span class="bc-peso-display__lbl">Peso actual</span>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="d-flex flex-column gap-2">
+                  <button pButton icon="pi pi-refresh" label="Leer Peso"
+                          class="p-button-sm p-button-outlined p-button-primary"
+                          [loading]="conectandoBalanza()"
+                          (click)="leerPesoBalanza()"></button>
+                  <button pButton icon="pi pi-desktop" label="Mostrar en pantalla completa"
+                          class="p-button-sm p-button-outlined p-button-secondary"
+                          (click)="abrirPantallaCompleta()"></button>
+                  <small class="text-muted">
+                    <i class="pi pi-info-circle me-1"></i>Balanza: 192.168.0.240:8000
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ BLOQUE: DATOS DEL REGISTRO ══ -->
+      <div class="col-12">
+        <hr class="my-1" />
+        <small class="text-muted fw-semibold text-uppercase">
+          <i class="fa-solid fa-hashtag me-1"></i>Datos del Registro
+        </small>
+      </div>
+
+      <div class="col-12 col-sm-5">
+        <label class="form-label fw-semibold mb-0 small">N° Boleta</label>
+        <input pInputText formControlName="nroBoleta" class="w-100 fw-bold font-monospace" readonly />
+      </div>
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0 small">Fecha *</label>
+        <p-calendar formControlName="fechaRegistro" dateFormat="dd/mm/yy"
+                    [showIcon]="true" appendTo="body" styleClass="w-100"></p-calendar>
+      </div>
+      <div class="col-12 col-sm-3">
+        <label class="form-label fw-semibold mb-0 small">Hora 1° Peso *</label>
+        <input pInputText formControlName="horaPrimerPeso" class="w-100" placeholder="HH:mm:ss" />
+      </div>
+
+      <!-- ══ BLOQUE: TARA ══ -->
+      <div class="col-12">
+        <div class="alert alert-primary py-2 d-flex justify-content-between align-items-center mb-0">
+          <div>
+            <label class="fw-bold mb-0 d-block">
+              <i class="fa-solid fa-weight-scale me-1"></i>TARA (kg) — Peso camión + material *
+            </label>
+            <small class="text-muted">
+              Ingrese manualmente o use el botón "Leer Peso" para capturar desde la balanza
+            </small>
+          </div>
+          <p-inputNumber formControlName="tara" [min]="0" suffix=" kg"
+                         [useGrouping]="true" styleClass="bc-peso-input"
+                         [ngClass]="{'ng-dirty ng-invalid': isInvalid(formPrimer,'tara')}">
+          </p-inputNumber>
+        </div>
+        <small *ngIf="isInvalid(formPrimer,'tara')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <!-- ══ BLOQUE: PROVEEDOR ORIGEN ══ -->
+      <div class="col-12">
+        <hr class="my-1" />
+        <small class="text-muted fw-semibold text-uppercase">
+          <i class="fa-solid fa-arrow-right me-1 text-success"></i>Proveedor / Origen
+        </small>
+      </div>
+
+      <div class="col-12 col-sm-4" style="position:relative">
+        <label class="form-label fw-semibold mb-0 small">CI / NIT Origen *</label>
+        <div class="d-flex gap-1">
+          <input pInputText formControlName="origenCiNit" class="flex-fill"
+                 placeholder="Buscar CI/NIT..."
+                 (input)="buscarOrigen($any($event.target).value)" />
+          <button pButton icon="pi pi-user-plus" class="p-button-sm p-button-outlined"
+                  pTooltip="Nuevo proveedor"></button>
+        </div>
+        <div *ngIf="sugOrigen().length" class="bc-suggest shadow">
+          <div *ngFor="let pv of sugOrigen()" class="bc-suggest__item"
+               (click)="seleccionarOrigen(pv)">
+            <span class="fw-bold">{{ pv.ciNit }}</span>
+            <span class="text-muted ms-2">{{ pv.nombre }}</span>
+          </div>
+        </div>
+        <small *ngIf="isInvalid(formPrimer,'origenCiNit')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-8">
+        <label class="form-label fw-semibold mb-0 small">Razón Social / Nombre Origen</label>
+        <input pInputText formControlName="origenNombre" class="w-100 bg-light" readonly />
+      </div>
+
+      <!-- ══ BLOQUE: PROVEEDOR DESTINO ══ -->
+      <div class="col-12">
+        <small class="text-muted fw-semibold text-uppercase">
+          <i class="fa-solid fa-arrow-left me-1 text-danger"></i>Destino
+        </small>
+      </div>
+
+      <div class="col-12 col-sm-4" style="position:relative">
+        <label class="form-label fw-semibold mb-0 small">CI / NIT Destino *</label>
+        <div class="d-flex gap-1">
+          <input pInputText formControlName="destinoCiNit" class="flex-fill"
+                 placeholder="Buscar CI/NIT..."
+                 (input)="buscarDestino($any($event.target).value)" />
+          <button pButton icon="pi pi-user-plus" class="p-button-sm p-button-outlined"
+                  pTooltip="Nuevo proveedor"></button>
+        </div>
+        <div *ngIf="sugDestino().length" class="bc-suggest shadow">
+          <div *ngFor="let pv of sugDestino()" class="bc-suggest__item"
+               (click)="seleccionarDestino(pv)">
+            <span class="fw-bold">{{ pv.ciNit }}</span>
+            <span class="text-muted ms-2">{{ pv.nombre }}</span>
+          </div>
+        </div>
+        <small *ngIf="isInvalid(formPrimer,'destinoCiNit')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-8">
+        <label class="form-label fw-semibold mb-0 small">Razón Social / Nombre Destino</label>
+        <input pInputText formControlName="destinoNombre" class="w-100 bg-light" readonly />
+      </div>
+
+      <!-- ══ BLOQUE: TRANSPORTISTA ══ -->
+      <div class="col-12">
+        <hr class="my-1" />
+        <small class="text-muted fw-semibold text-uppercase">
+          <i class="fa-solid fa-id-card me-1"></i>Datos del Transportista
+        </small>
+      </div>
+
+      <div class="col-12 col-sm-4" style="position:relative">
+        <label class="form-label fw-semibold mb-0 small">CI / Licencia *</label>
+        <div class="d-flex gap-1">
+          <input pInputText formControlName="transportistaCi" class="flex-fill"
+                 placeholder="Buscar CI..."
+                 (input)="buscarTransportista($any($event.target).value)" />
+          <button pButton icon="pi pi-user-plus" class="p-button-sm p-button-outlined"
+                  pTooltip="Nuevo transportista"></button>
+        </div>
+        <div *ngIf="sugTransportista().length" class="bc-suggest shadow">
+          <div *ngFor="let t of sugTransportista()" class="bc-suggest__item"
+               (click)="seleccionarTransportista(t)">
+            <span class="fw-bold">{{ t.ci }}</span>
+            <span class="text-muted ms-2">{{ t.nombre }} — {{ t.placa }}</span>
+          </div>
+        </div>
+        <small *ngIf="isInvalid(formPrimer,'transportistaCi')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-8">
+        <label class="form-label fw-semibold mb-0 small">Nombre Completo</label>
+        <input pInputText formControlName="transportistaNombre" class="w-100 bg-light" readonly />
+      </div>
+
+      <div class="col-12 col-sm-3" style="position:relative">
+        <label class="form-label fw-semibold mb-0 small">Placa *</label>
+        <input pInputText formControlName="placa" class="w-100 fw-bold"
+               placeholder="ABC-123" style="text-transform:uppercase"
+               (blur)="buscarPorPlaca($any($event.target).value)" />
+        <small *ngIf="isInvalid(formPrimer,'placa')" class="p-error d-block">Requerido</small>
+      </div>
+      <div class="col-12 col-sm-3">
+        <label class="form-label fw-semibold mb-0 small">Marca</label>
+        <input pInputText formControlName="marca" class="w-100 bg-light" readonly />
+      </div>
+      <div class="col-12 col-sm-3">
+        <label class="form-label fw-semibold mb-0 small">Color</label>
+        <input pInputText formControlName="color" class="w-100 bg-light" readonly />
+      </div>
+      <div class="col-12 col-sm-3">
+        <label class="form-label fw-semibold mb-0 small">Tipo de Camión</label>
+        <input pInputText formControlName="tipoCamion" class="w-100 bg-light" readonly />
+      </div>
+
+      <!-- ══ BLOQUE: PRODUCTO ══ -->
+      <div class="col-12">
+        <hr class="my-1" />
+        <small class="text-muted fw-semibold text-uppercase">
+          <i class="fa-solid fa-boxes-stacked me-1"></i>Datos del Producto
+        </small>
+      </div>
+
+      <div class="col-12 col-sm-6" style="position:relative">
+        <label class="form-label fw-semibold mb-0 small">Producto *</label>
+        <div class="d-flex gap-1">
+          <input pInputText placeholder="Buscar producto..." class="flex-fill"
+                 (input)="buscarProducto($any($event.target).value)" />
+          <button pButton icon="pi pi-plus" class="p-button-sm p-button-outlined"
+                  pTooltip="Nuevo producto"></button>
+        </div>
+        <div *ngIf="sugProducto().length" class="bc-suggest shadow">
+          <div *ngFor="let pr of sugProducto()" class="bc-suggest__item"
+               (click)="seleccionarProducto(pr)">
+            <span class="fw-bold">{{ pr.nombre }}</span>
+            <span class="text-muted ms-2">{{ pr.unidad }}</span>
+          </div>
+        </div>
+        <small *ngIf="isInvalid(formPrimer,'productoId')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0 small">Nombre Producto</label>
+        <input pInputText formControlName="productoNombre" class="w-100 bg-light" readonly />
+      </div>
+      <div class="col-12 col-sm-2">
+        <label class="form-label fw-semibold mb-0 small">Unidad</label>
+        <input pInputText formControlName="productoUnidad" class="w-100 bg-light" readonly />
+      </div>
+
+      <!-- ══ BLOQUE: SERVICIO BALANZA (condicional) ══ -->
+      <div class="col-12">
+        <div class="d-flex align-items-center gap-2">
+          <p-checkbox formControlName="esServicio" [binary]="true" inputId="chkServicio">
+          </p-checkbox>
+          <label for="chkServicio" class="fw-semibold mb-0">
+            <i class="fa-solid fa-tools me-1"></i>Es Servicio de Balanza
+          </label>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-4" *ngIf="formPrimer.get('esServicio')?.value">
+        <label class="form-label fw-semibold mb-0 small">Precio Servicio (Bs.) *</label>
+        <p-inputNumber formControlName="precioServicio" [min]="0" prefix="Bs. "
+                       [minFractionDigits]="2" styleClass="w-100"></p-inputNumber>
+      </div>
+
+      <!-- ══ BLOQUE: OBSERVACIÓN ══ -->
+      <div class="col-12">
+        <label class="form-label fw-semibold mb-0 small">Observación</label>
+        <textarea pInputTextarea formControlName="observacion"
+                  rows="2" placeholder="Notas adicionales..."
+                  class="w-100"></textarea>
+      </div>
+
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" icon="pi pi-times"
+            class="p-button-text" (click)="closeDialog()"></button>
+    <button pButton
+            [label]="modoDialog() === 'EDITAR' ? 'Actualizar' : 'Registrar 1° Peso'"
+            icon="pi pi-check"
+            (click)="guardarPrimerPeso()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     DIALOG: SEGUNDO PESO
+══════════════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [visible]="dialogSegundo()"
+  (onHide)="closeSegundo()"
+  [modal]="true"
+  [closable]="true"
+  header="Registrar Segundo Peso"
+  [style]="{width:'580px'}"
+  [draggable]="false"
+  appendTo="body">
+
+  <form [formGroup]="formSegundo">
+    <div class="row g-2">
+
+      <!-- ══ VER PESO ══ -->
+      <div class="col-12">
+        <div class="bc-peso-display bc-peso-display--lg">
+          <span class="bc-peso-display__val">
+            {{ pesoActual() !== null ? (pesoActual()! | number:'1.0-0') + ' kg' : '— — — —' }}
+          </span>
+          <span class="bc-peso-display__lbl">Peso actual en balanza</span>
+        </div>
+        <div class="d-flex gap-2 mt-2">
+          <button pButton icon="pi pi-refresh" label="Leer Peso desde Balanza"
+                  class="p-button-sm p-button-outlined flex-fill"
+                  [loading]="conectandoBalanza()"
+                  (click)="leerPesoBalanza()"></button>
+          <button pButton icon="pi pi-desktop"
+                  class="p-button-sm p-button-outlined p-button-secondary"
+                  pTooltip="Pantalla completa"
+                  (click)="abrirPantallaCompleta()"></button>
+        </div>
+      </div>
+
+      <!-- ══ BUSCAR BOLETA / PLACA ══ -->
+      <div class="col-12">
+        <hr class="my-1" />
+        <small class="text-muted fw-semibold text-uppercase">Buscar Registro</small>
+      </div>
+
+      <div class="col-12" style="position:relative">
+        <label class="form-label fw-semibold mb-0 small">N° Boleta o Placa del vehículo</label>
+        <span class="p-input-icon-left w-100">
+          <i class="pi pi-search"></i>
+          <input pInputText formControlName="buscarBoleta" class="w-100"
+                 placeholder="Escriba la boleta o placa..."
+                 (input)="buscarBoletaSegundo($any($event.target).value)" />
+        </span>
+        <div *ngIf="sugBuscarBoleta().length" class="bc-suggest shadow">
+          <div *ngFor="let p of sugBuscarBoleta()" class="bc-suggest__item"
+               (click)="seleccionarParaSegundoPeso(p)">
+            <span class="fw-bold text-primary">{{ p.nroBoleta }}</span>
+            <span class="text-muted ms-2">{{ p.transportista.placa }} — {{ p.proveedorOrigen.nombre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ INFO REGISTRO SELECCIONADO ══ -->
+      <ng-container *ngIf="selectedPesaje()">
+        <div class="col-12">
+          <div class="alert alert-info py-2 mb-0">
+            <div class="row g-1">
+              <div class="col-6">
+                <small class="text-muted d-block">N° BOLETA</small>
+                <span class="fw-bold font-monospace">{{ formSegundo.get('nroBoleta')?.value }}</span>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">HORA 1° PESO</small>
+                <span class="fw-bold">{{ formSegundo.get('horaPrimerPeso')?.value }}</span>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">PROVEEDOR ORIGEN</small>
+                <span>{{ formSegundo.get('proveedorOrigen')?.value }}</span>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">PRODUCTO</small>
+                <span>{{ formSegundo.get('producto')?.value }}</span>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">TARA REGISTRADA</small>
+                <span class="fw-bold">{{ selectedPesaje()?.tara | number:'1.0-0' }} kg</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hora 2° peso -->
+        <div class="col-12 col-sm-5">
+          <label class="form-label fw-semibold mb-0 small">Hora 2° Peso *</label>
+          <input pInputText formControlName="horaSegundoPeso" class="w-100" placeholder="HH:mm:ss" />
+        </div>
+
+        <!-- Bruto -->
+        <div class="col-12 col-sm-7">
+          <div class="alert alert-warning py-2 d-flex justify-content-between align-items-center mb-0">
+            <div>
+              <label class="fw-bold mb-0 d-block small">
+                BRUTO (kg) — Solo camión *
+              </label>
+              <small class="text-muted">Peso del camión vacío</small>
+            </div>
+            <p-inputNumber formControlName="bruto" [min]="0" suffix=" kg"
+                           [useGrouping]="true" styleClass="bc-peso-input"
+                           [ngClass]="{'ng-dirty ng-invalid': isInvalid(formSegundo,'bruto')}">
+            </p-inputNumber>
+          </div>
+        </div>
+
+        <!-- Neto calculado preview -->
+        <div class="col-12" *ngIf="formSegundo.get('bruto')?.value > 0">
+          <div class="alert alert-success d-flex justify-content-between align-items-center py-2 mb-0">
+            <span class="fw-bold">
+              <i class="fa-solid fa-check-circle me-1"></i>Peso Neto Calculado
+            </span>
+            <span class="fw-bold fs-4">
+              {{ (selectedPesaje()!.tara - formSegundo.get('bruto')!.value) | number:'1.0-0' }} kg
+            </span>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" icon="pi pi-times"
+            class="p-button-text" (click)="closeSegundo()"></button>
+    <button pButton label="Registrar 2° Peso" icon="pi pi-check"
+            [disabled]="!selectedPesaje()"
+            (click)="guardarSegundoPeso()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     DIALOG: VER DETALLE
+══════════════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [visible]="dialogVer()"
+  (onHide)="closeVer()"
+  [modal]="true"
+  [closable]="true"
+  header="Detalle de Pesaje"
+  [style]="{width:'600px'}"
+  [draggable]="false"
+  appendTo="body">
+
+  <ng-container *ngIf="selectedPesaje() as p">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <span class="badge bg-primary font-monospace fs-6">{{ p.nroBoleta }}</span>
+      <div class="d-flex gap-1 align-items-center">
+        <p-tag [value]="getEstadoLabel(p.estado)" [severity]="getSeverity(p.estado)"></p-tag>
+        <span *ngIf="p.esServicio" class="badge bg-info">SERVICIO</span>
+      </div>
+    </div>
+
+    <div class="row g-2">
+      <div class="col-6">
+        <small class="text-muted d-block">FECHA</small>
+        <span class="fw-semibold">{{ p.fechaRegistro | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="col-3">
+        <small class="text-muted d-block">HORA 1° PESO</small>
+        <span class="fw-semibold">{{ p.horaPrimerPeso }}</span>
+      </div>
+      <div class="col-3">
+        <small class="text-muted d-block">HORA 2° PESO</small>
+        <span class="fw-semibold">{{ p.horaSegundoPeso || '—' }}</span>
+      </div>
+    </div>
+
+    <hr class="my-2" />
+
+    <!-- Pesos -->
+    <div class="row g-2 text-center mb-2">
+      <div class="col-4">
+        <div class="card border-secondary py-2">
+          <small class="text-muted d-block">TARA (kg)</small>
+          <span class="fw-bold fs-5">{{ p.tara | number:'1.0-0' }}</span>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="card border-warning py-2">
+          <small class="text-muted d-block">BRUTO (kg)</small>
+          <span class="fw-bold fs-5 text-warning">{{ p.bruto | number:'1.0-0' }}</span>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="card border-success py-2">
+          <small class="text-muted d-block">NETO (kg)</small>
+          <span class="fw-bold fs-5 text-success">{{ p.neto | number:'1.0-0' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <p-accordion [multiple]="true">
+      <p-accordionTab header="Proveedor Origen / Destino" [selected]="true">
+        <div class="row g-1">
+          <div class="col-2"><small class="text-muted">ORIGEN NIT</small></div>
+          <div class="col-4"><span class="fw-semibold font-monospace">{{ p.proveedorOrigen.ciNit }}</span></div>
+          <div class="col-6"><span>{{ p.proveedorOrigen.nombre }}</span></div>
+          <div class="col-2"><small class="text-muted">DESTINO NIT</small></div>
+          <div class="col-4"><span class="fw-semibold font-monospace">{{ p.proveedorDestino.ciNit }}</span></div>
+          <div class="col-6"><span>{{ p.proveedorDestino.nombre }}</span></div>
+        </div>
+      </p-accordionTab>
+      <p-accordionTab header="Transportista / Vehículo" [selected]="true">
+        <div class="row g-1">
+          <div class="col-3"><small class="text-muted">CI</small><div>{{ p.transportista.ci }}</div></div>
+          <div class="col-9"><small class="text-muted">NOMBRE</small><div class="fw-semibold">{{ p.transportista.nombre }}</div></div>
+          <div class="col-3"><small class="text-muted">PLACA</small><div class="fw-bold">{{ p.transportista.placa }}</div></div>
+          <div class="col-3"><small class="text-muted">MARCA</small><div>{{ p.transportista.marca }}</div></div>
+          <div class="col-3"><small class="text-muted">COLOR</small><div>{{ p.transportista.color }}</div></div>
+          <div class="col-3"><small class="text-muted">TIPO</small><div>{{ p.transportista.tipoCamion }}</div></div>
+        </div>
+      </p-accordionTab>
+      <p-accordionTab header="Producto" [selected]="true">
+        <div class="row g-1">
+          <div class="col-6"><small class="text-muted">PRODUCTO</small><div class="fw-semibold">{{ p.producto.nombre }}</div></div>
+          <div class="col-3"><small class="text-muted">UNIDAD</small><div>{{ p.producto.unidad }}</div></div>
+          <div *ngIf="p.esServicio" class="col-3">
+            <small class="text-muted">PRECIO SRV</small>
+            <div class="fw-bold text-info">Bs. {{ p.precioServicio | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </p-accordionTab>
+    </p-accordion>
+
+    <div *ngIf="p.observacion" class="alert alert-light mt-2 mb-0 py-2">
+      <small class="text-muted">OBSERVACIÓN:</small> {{ p.observacion }}
+    </div>
+
+  </ng-container>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cerrar" icon="pi pi-times"
+            class="p-button-text" (click)="closeVer()"></button>
+    <button pButton label="Imprimir Boleta" icon="pi pi-print"
+            class="p-button-outlined"
+            (click)="imprimirBoleta(selectedPesaje()!)"></button>
+    <button *ngIf="puedeEditar(selectedPesaje()!)"
+            pButton label="Editar" icon="pi pi-pencil"
+            (click)="closeVer(); openEditar(selectedPesaje()!)"></button>
+  </ng-template>
+</p-dialog>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ESTILOS LOCALES
+══════════════════════════════════════════════════════════════════════════ -->
+<style>
+  /* Pantalla de peso */
+  .bc-peso-display {
+    background: #1e293b;
+    border-radius: 8px;
+    padding: .75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+  }
+  .bc-peso-display--lg { min-height: 90px; }
+  .bc-peso-display__val {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #4ade80;
+    font-family: 'Courier New', monospace;
+    letter-spacing: .1em;
+    line-height: 1;
+  }
+  .bc-peso-display__lbl {
+    font-size: .7rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-top: .2rem;
+  }
+  /* Input de peso grande */
+  :host ::ng-deep .bc-peso-input .p-inputnumber-input {
+    font-size: 1.3rem;
+    font-weight: 700;
+    width: 140px;
+    text-align: right;
+  }
+  /* Autocomplete sugerencias */
+  .bc-suggest {
+    position: absolute;
+    z-index: 1050;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0 0 6px 6px;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  .bc-suggest__item {
+    padding: .45rem .75rem;
+    cursor: pointer;
+    font-size: .85rem;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .15s;
+  }
+  .bc-suggest__item:hover { background: #e0f2fe; }
+</style>

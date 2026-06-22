@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, inject, signal } from '@angular/core';
 import { Product } from '../../inventories/interfaces/products.interface';
 import { OutputConfig } from '../../outputs/interfaces/output.interface';
-import { Classified, FormSearchClassified, GetAllClassifieds, NewClassifiedForm } from '../interfaces/classified.interface';
+import { Classified, FormSearchClassified, GetAllClassifieds, GetOneClassified, NewClassifiedForm } from '../interfaces/classified.interface';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -14,7 +14,7 @@ const base_url = environment.base_url;
 export class ClassifiedService {
   detailSale        = signal<Product[]>([]);
   productSelect     = signal<Product|undefined>(undefined);
-  types_registry    = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'}]);
+  types_registry    = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'},{name: 'SIN FICHA', code: 'SIN FICHA'},]);
   showModalConfigClassified : boolean = false;
   showModalSaveClassified   : boolean = false;
   showModalDetailsClassified: boolean = false;
@@ -28,6 +28,11 @@ export class ClassifiedService {
   private http   = inject(HttpClient);
   detailsSubs$: EventEmitter<Classified> = new EventEmitter<Classified>();
 
+
+  getClassifiedById(id_classified:string): Observable<GetOneClassified>{
+    let  url = `${base_url}/classified/find/${id_classified}`;
+    return this.http.get<GetOneClassified>(url);
+  }
 
   getAllAndSearchClassifieds(page: number, limit: number,params:FormSearchClassified, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllClassifieds>{
     let url = '';
@@ -77,8 +82,8 @@ export class ClassifiedService {
   }
 
   resetClassified() {
-    this.detailSale.update((details)=>  details = []); 
-    this.productSelect.set(undefined); 
+    this.detailSale.update((details)=>  details = []);
+    this.productSelect.set(undefined);
   }
 
   //* Reportes */
@@ -136,7 +141,7 @@ export class ClassifiedService {
     return this.http.get(url,{
               responseType: 'blob',
             });
-  } 
+  }
 
   printPdfReport(id_classified:number) {
     Swal.fire({

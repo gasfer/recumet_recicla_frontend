@@ -44,7 +44,7 @@ export class ListCostsProductComponent implements OnInit {
     }
   ];
   searchItems = signal<MenuItem[]>([
-    { 
+    {
       label: 'Productos precios', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
@@ -54,9 +54,9 @@ export class ListCostsProductComponent implements OnInit {
   ]);
   cols = signal<ColsTable[]>([
     { field: 'cod', header: 'COD' , style:'min-width:90px;max-width:90px;', tooltip: true,},
-    { field: `name`, header: 'NOMBRE' , style:'min-width:200px;max-width:200px;', tooltip: true , isText: true },
+    { field: `name`, header: 'NOMBRE PRODUCTO' , style:'min-width:200px;max-width:200px;', tooltip: true , isText: true },
     { field: `description`, header: 'DESCRIPCION' , style:'min-width:150px;max-width:300px;',tooltip: true, isText:true  },
-    { field: `productCosts.cost`, header: 'EN EL PUESTO' , style:'min-width:180px;max-width:180px;',tooltip: true,
+    { field: `productCosts.cost`, header: 'EN RECUMET' , style:'min-width:180px;max-width:180px;',tooltip: true,
       isTag:true,
       tagValue: (val:string)=>  this.pipeNumber.transform( val != 'null' ? Number(val) : Number(0),this.decimal()),
       tagColor: (val:number)=> 'primary',
@@ -74,13 +74,13 @@ export class ListCostsProductComponent implements OnInit {
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  'fa-solid fa-sack-dollar'
     },
-    { 
+    {
       field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true, activeSortable:false
     }
   ]);
   searchFor = signal<SearchFor[]>([
     {name: 'NOMBRE', code: 'name'},
-    {name: 'COD', code: 'cod'},   
+    {name: 'COD', code: 'cod'},
     {name: 'DESCRIPCION', code: 'description'},
   ]);
   categories  = signal<{name:string,code:string}[]>([]);
@@ -92,14 +92,14 @@ export class ListCostsProductComponent implements OnInit {
 
   getAllCategories() {
     this.categories.set([]);
-    this.categoriesService.getAllAndSearch(1,1000,true).subscribe(resp => {
+    this.categoriesService.getAllAndSearch(1,10000,true).subscribe(resp => {
       const formattedCategory = resp.categories.data.map(category => ({
         name: category.name,
         code: category.id!.toString()
       }));
       this.categories.set(formattedCategory);
     });
-   
+
   }
 
   getAllAndSearchProducts(page: number, limit: number,type: string = '', query: string = '') {
@@ -119,7 +119,7 @@ export class ListCostsProductComponent implements OnInit {
       complete:() => {
         this.errorLogsService.notifications('Modificado correctamente','success');
       },
-      error: () => this.loading.set(false) 
+      error: () => this.loading.set(false)
     });
   }
 

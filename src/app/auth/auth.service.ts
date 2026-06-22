@@ -61,7 +61,6 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
-    localStorage.removeItem('id_sucursal');
     this.validatorsService.id_sucursal.set(0);
     this.validatorsService.storages.set([]);
     this.router.navigateByUrl('/auth');

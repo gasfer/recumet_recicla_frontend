@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { GetAllProviders, GetAllTypesProvider, Provider } from '../interfaces/provider.interface';
@@ -18,7 +18,7 @@ export class ProvidersService {
   save$: Subject<boolean> = new Subject();
   reloadCategoriesSectors$: Subject<boolean> = new Subject();
   editSubs: EventEmitter<Provider> = new EventEmitter<Provider>();
-
+/*
   getAllAndSearch(page: number, limit: number,status:boolean, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC', id_type_provider:string = ''): Observable<GetAllProviders>{
     let url = '';
     if(type === ''){
@@ -27,7 +27,40 @@ export class ProvidersService {
       url = `${base_url}/provider?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&field_sort=${field_sort}&order=${order}&id_type_provider=${id_type_provider}`;
     }
     return this.http.get<GetAllProviders>(url);
+  }*/
+
+getAllAndSearch(
+  page: number,
+  limit: number,
+  status: boolean,
+  type: string = '',
+  query: string = '',
+  field_sort: string = 'id',
+  order: string = 'DESC',
+  id_type_provider: string = ''
+): Observable<GetAllProviders> {
+
+  let params = new HttpParams()
+    .set('page', page)
+    .set('limit', limit)
+    .set('status', status)
+    .set('field_sort', field_sort)
+    .set('order', order);
+
+  if (id_type_provider) {
+    params = params.set('id_type_provider', id_type_provider);
   }
+
+  if (type) {
+    params = params.set('type', type);
+  }
+
+  if (query) {
+    params = params.set('query', query);
+  }
+
+  return this.http.get<GetAllProviders>(`${base_url}/provider`, { params });
+}
 
   postNew(form:Provider) {
     const {id, ...body}= form;
@@ -71,4 +104,12 @@ export class ProvidersService {
     let url = `${base_url}/provider/types`;
     return this.http.get<GetAllTypesProvider>(url);
   }
+
+
+  getReportExcel(status:boolean, type: string = '', query?: string, field_sort:string = 'id',order:string = 'DESC',id_type_provider:string = '') {
+      const url = `${base_url}/provider/excel?field_sort=${field_sort}&order=${order}&type=${type}&query=${query}&status=${status}&id_type_provider=${id_type_provider}`;
+      return this.http.get(url,{
+                responseType: 'blob',
+              });
+    }
 }

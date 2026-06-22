@@ -31,11 +31,12 @@ export class ModalSaveClassifiedComponent implements OnInit {
   @Input({required: true}) id_storage : number | null = null;
 
   formClassified: UntypedFormGroup  = this.fb.group({
-    id_scale: ['',[Validators.required]],
+    id_scale: [1,[Validators.required]],
     id_sucursal: ['',[Validators.required]],
     id_storage: ['',[Validators.required]],
     id_product: ['',[Validators.required]],
     cost_product: ['',[Validators.required]],
+    date_classified: [new Date(),[Validators.required]],
     quantity_product: ['',[Validators.required, Validators.min(0.1)]],
     type_registry: ['FICHA',[Validators.required]],
     number_registry: ['',[Validators.required]],
@@ -61,7 +62,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
       quantity: prod.quantity,
       cost: prod.costo,
       id_product: prod.id,
-      status: "ACTIVE" 
+      status: "ACTIVE"
     }));
     const data:NewClassifiedForm = {
       classified_data: this.formClassified.value,
@@ -69,10 +70,10 @@ export class ModalSaveClassifiedComponent implements OnInit {
     }
     this.classifiedService.postNewClassified(data).subscribe({
       next: (resp) => {
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Clasificación registrada exitosamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
@@ -90,7 +91,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
 
 
   getAllScales() {
-    this.scalesService.getAllAndSearch(1,1000,true).subscribe({
+    this.scalesService.getAllAndSearch(1,10000,true).subscribe({
       next: (resp) => this.scales.set(resp.scales.data),
       error: () => this.scales.set([])
     });
@@ -114,8 +115,21 @@ export class ModalSaveClassifiedComponent implements OnInit {
       quantity_product: '',
       type_registry: 'FICHA',
       number_registry: '',
+      date_classified: new Date(),
       comments: null,
       status: 'ACTIVE',
     });
   }
+
+  selectTypeRegistry() {
+    const type_registry = this.formClassified.get('type_registry')?.value;
+    this.formClassified.patchValue({number_registry: ''});
+    if(type_registry == 'SIN FICHA') {
+      this.formClassified.get('number_registry')?.setValidators([]);
+    } else {
+      this.formClassified.get('number_registry')?.setValidators([Validators.required]);
+    }
+    this.formClassified.get('number_registry')?.updateValueAndValidity();
+  }
+
 }

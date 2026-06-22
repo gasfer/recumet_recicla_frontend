@@ -1,0 +1,388 @@
+<!-- ── HEADER CARD ── -->
+<div class="card bg-light m-0">
+  <div class="card-body shadow pt-2 pb-2">
+    <h4><i class="fa-solid fa-screwdriver-wrench me-2"></i>SERVICIO DE BALANZAS</h4>
+    <p class="text-muted mb-0">Gestión de órdenes de servicio técnico</p>
+  </div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="row mt-2 mb-1 g-2">
+  <div class="col-6 col-sm-3">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-file-invoice fa-lg text-secondary mb-1"></i>
+      <div class="fw-bold fs-5">{{ totalServicios() }}</div>
+      <small class="text-muted">Total Órdenes</small>
+    </div>
+  </div>
+  <div class="col-6 col-sm-3">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-clock fa-lg text-warning mb-1"></i>
+      <div class="fw-bold fs-5">{{ pendientes() }}</div>
+      <small class="text-muted">Pendientes</small>
+    </div>
+  </div>
+  <div class="col-6 col-sm-3">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-gear fa-spin fa-lg text-primary mb-1"></i>
+      <div class="fw-bold fs-5">{{ enProceso() }}</div>
+      <small class="text-muted">En Proceso</small>
+    </div>
+  </div>
+  <div class="col-6 col-sm-3">
+    <div class="card shadow-sm text-center py-2">
+      <i class="fa-solid fa-circle-check fa-lg text-success mb-1"></i>
+      <div class="fw-bold fs-5">{{ completados() }}</div>
+      <small class="text-muted">Completados</small>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN CARD ── -->
+<div class="row mt-1">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body shadow m-0 p-0">
+
+        <div class="row m-1 mt-0">
+          <div class="col-12">
+            <p-messages severity="info">
+              <ng-template pTemplate>
+                <b>ÓRDENES DE SERVICIO &nbsp;<i class="fa-solid fa-screwdriver-wrench"></i></b>
+                <i class="fa-solid fa-file-invoice ms-5 p-text-secondary"
+                   pBadge style="font-size:1.2rem"
+                   value="{{ totalServicios() }}"></i>
+              </ng-template>
+            </p-messages>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end px-2 pb-2">
+          <button pButton icon="pi pi-plus" label="Nueva Orden"
+                  class="p-button-sm" (click)="openNew()"></button>
+        </div>
+
+        <p-table
+          [value]="servicios()"
+          [loading]="loading()"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+          [rowHover]="true"
+          [paginator]="true"
+          [rows]="10">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Orden</th>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Equipo</th>
+              <th>Cliente</th>
+              <th>Técnico</th>
+              <th>F. Promesa</th>
+              <th class="text-end">Costo Bs.</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-s>
+            <tr>
+              <td>
+                <span class="badge bg-warning text-dark font-monospace">{{ s.nroOrden }}</span>
+              </td>
+              <td>{{ s.fecha | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <p-tag [value]="getTipoLabel(s.tipoServicio)"
+                       [severity]="getTipoSeverity(s.tipoServicio)"></p-tag>
+              </td>
+              <td>
+                <span class="fw-semibold d-block">{{ s.equipo }}</span>
+                <small class="text-muted">{{ s.marca }} · {{ s.modelo }}</small>
+              </td>
+              <td>
+                <span class="d-block">{{ s.cliente }}</span>
+                <small class="text-muted">
+                  <i class="pi pi-phone me-1"></i>{{ s.telefono }}
+                </small>
+              </td>
+              <td>{{ s.tecnico }}</td>
+              <td>{{ s.fechaPromesa | date:'dd/MM/yyyy' }}</td>
+              <td class="text-end"><b>{{ s.costo | number:'1.2-2' }}</b></td>
+              <td class="text-center">
+                <p-tag [value]="getEstadoLabel(s.estado)"
+                       [severity]="getSeverity(s.estado)"></p-tag>
+              </td>
+              <td class="text-center">
+                <button pButton icon="pi pi-eye"
+                        class="p-button-rounded p-button-text p-button-info p-button-sm"
+                        pTooltip="Ver detalle" tooltipPosition="top"
+                        (click)="openDetail(s)"></button>
+                <button pButton icon="pi pi-pencil"
+                        class="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Editar" tooltipPosition="top"
+                        (click)="openEdit(s)"
+                        [disabled]="s.estado === 'CANCELADO' || s.estado === 'COMPLETADO'"></button>
+                <button pButton icon="pi pi-ban"
+                        class="p-button-rounded p-button-text p-button-danger p-button-sm"
+                        pTooltip="Cancelar" tooltipPosition="top"
+                        (click)="confirmDelete(s)"
+                        [disabled]="s.estado === 'CANCELADO' || s.estado === 'COMPLETADO'"></button>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10" class="text-center py-4">Sin órdenes de servicio registradas</td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DIALOG NUEVO / EDITAR ── -->
+<p-dialog
+  [visible]="dialogVisible()"
+  (onHide)="onDialogHide()"
+  [modal]="true"
+  [closable]="true"
+  [header]="isEditing() ? 'Editar Orden de Servicio' : 'Nueva Orden de Servicio'"
+  [style]="{width:'720px'}"
+  [draggable]="false"
+  appendTo="body">
+
+  <form [formGroup]="form">
+    <div class="row g-2 mt-0">
+
+      <!-- Nro Orden / Fechas -->
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0">Nro. Orden *</label>
+        <input pInputText formControlName="nroOrden" class="w-100" />
+        <small *ngIf="isInvalid('nroOrden')" class="p-error d-block">Requerido</small>
+      </div>
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0">Fecha *</label>
+        <p-calendar formControlName="fecha" dateFormat="dd/mm/yy"
+                    [showIcon]="true" appendTo="body"
+                    styleClass="w-100"></p-calendar>
+      </div>
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0">Fecha Promesa *</label>
+        <p-calendar formControlName="fechaPromesa" dateFormat="dd/mm/yy"
+                    [showIcon]="true" appendTo="body"
+                    styleClass="w-100"></p-calendar>
+      </div>
+
+      <div class="col-12">
+        <hr class="my-1" />
+        <small class="text-muted fw-semibold text-uppercase">Datos del Equipo</small>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Tipo de Servicio *</label>
+        <p-dropdown formControlName="tipoServicio" [options]="tiposServicio"
+                    placeholder="Seleccione" appendTo="body"
+                    styleClass="w-100"></p-dropdown>
+        <small *ngIf="isInvalid('tipoServicio')" class="p-error d-block">Requerido</small>
+      </div>
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Equipo *</label>
+        <input pInputText formControlName="equipo" class="w-100"
+               placeholder="Ej: Balanza de Piso" />
+        <small *ngIf="isInvalid('equipo')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0">Marca *</label>
+        <input pInputText formControlName="marca" class="w-100" />
+        <small *ngIf="isInvalid('marca')" class="p-error d-block">Requerido</small>
+      </div>
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0">Modelo</label>
+        <input pInputText formControlName="modelo" class="w-100" />
+      </div>
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0">N° Serie</label>
+        <input pInputText formControlName="serie" class="w-100" />
+      </div>
+
+      <div class="col-12">
+        <hr class="my-1" />
+        <small class="text-muted fw-semibold text-uppercase">Cliente y Técnico</small>
+      </div>
+
+      <div class="col-12 col-sm-8">
+        <label class="form-label fw-semibold mb-0">Cliente *</label>
+        <input pInputText formControlName="cliente" class="w-100" />
+        <small *ngIf="isInvalid('cliente')" class="p-error d-block">Requerido</small>
+      </div>
+      <div class="col-12 col-sm-4">
+        <label class="form-label fw-semibold mb-0">Teléfono</label>
+        <input pInputText formControlName="telefono" class="w-100" />
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Técnico Asignado *</label>
+        <p-dropdown formControlName="tecnico" [options]="tecnicos"
+                    placeholder="Seleccione" appendTo="body"
+                    styleClass="w-100"></p-dropdown>
+        <small *ngIf="isInvalid('tecnico')" class="p-error d-block">Requerido</small>
+      </div>
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Estado *</label>
+        <p-dropdown formControlName="estado" [options]="estados"
+                    appendTo="body" styleClass="w-100"></p-dropdown>
+      </div>
+
+      <div class="col-12">
+        <hr class="my-1" />
+        <small class="text-muted fw-semibold text-uppercase">Descripción y Costo</small>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold mb-0">Descripción del Trabajo *</label>
+        <textarea pInputTextarea formControlName="descripcion"
+                  rows="2" class="w-100"></textarea>
+        <small *ngIf="isInvalid('descripcion')" class="p-error d-block">Requerido</small>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold mb-0">Diagnóstico Técnico</label>
+        <textarea pInputTextarea formControlName="diagnostico"
+                  rows="2" placeholder="Falla detectada..."
+                  class="w-100"></textarea>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Costo del Servicio (Bs.) *</label>
+        <p-inputNumber formControlName="costo" [min]="0" prefix="Bs. "
+                       [minFractionDigits]="2" [useGrouping]="true"
+                       styleClass="w-100"></p-inputNumber>
+      </div>
+      <div class="col-12 col-sm-6">
+        <label class="form-label fw-semibold mb-0">Observación</label>
+        <input pInputText formControlName="observacion" class="w-100" />
+      </div>
+
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" icon="pi pi-times"
+            class="p-button-text" (click)="closeDialog()"></button>
+    <button pButton
+            [label]="isEditing() ? 'Actualizar' : 'Crear Orden'"
+            icon="pi pi-check" (click)="save()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ── DIALOG DETALLE ── -->
+<p-dialog
+  [visible]="detailVisible()"
+  (onHide)="onDetailHide()"
+  [modal]="true"
+  [closable]="true"
+  header="Detalle de Orden de Servicio"
+  [style]="{width:'520px'}"
+  [draggable]="false"
+  appendTo="body">
+
+  <ng-container *ngIf="viewDetail() as s">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <span class="badge bg-warning text-dark font-monospace fs-6">{{ s.nroOrden }}</span>
+      <p-tag [value]="getEstadoLabel(s.estado)"
+             [severity]="getSeverity(s.estado)"></p-tag>
+    </div>
+
+    <div class="row g-2 mb-2">
+      <div class="col-6">
+        <small class="text-muted d-block">FECHA</small>
+        <span class="fw-semibold">{{ s.fecha | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="col-6">
+        <small class="text-muted d-block">FECHA PROMESA</small>
+        <span class="fw-semibold">{{ s.fechaPromesa | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="col-6">
+        <small class="text-muted d-block">TIPO</small>
+        <span class="fw-semibold">{{ getTipoLabel(s.tipoServicio) }}</span>
+      </div>
+      <div class="col-6">
+        <small class="text-muted d-block">COSTO</small>
+        <span class="fw-bold text-success">Bs. {{ s.costo | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <p-messages *ngIf="s.estado === 'PENDIENTE'" severity="warn" [closable]="false">
+      <ng-template pTemplate>
+        <span>Orden pendiente de atención</span>
+      </ng-template>
+    </p-messages>
+
+    <p-accordion [multiple]="true">
+      <p-accordionTab header="Datos del Equipo" [selected]="true">
+        <div class="row g-2">
+          <div class="col-12">
+            <small class="text-muted d-block">EQUIPO</small>
+            <span class="fw-semibold">{{ s.equipo }}</span>
+          </div>
+          <div class="col-6">
+            <small class="text-muted d-block">MARCA</small>
+            <span>{{ s.marca }}</span>
+          </div>
+          <div class="col-6">
+            <small class="text-muted d-block">MODELO</small>
+            <span>{{ s.modelo || '—' }}</span>
+          </div>
+          <div class="col-12">
+            <small class="text-muted d-block">N° SERIE</small>
+            <span class="font-monospace">{{ s.serie || '—' }}</span>
+          </div>
+        </div>
+      </p-accordionTab>
+
+      <p-accordionTab header="Cliente" [selected]="true">
+        <div class="row g-2">
+          <div class="col-12">
+            <small class="text-muted d-block">CLIENTE</small>
+            <span class="fw-semibold">{{ s.cliente }}</span>
+          </div>
+          <div class="col-6">
+            <small class="text-muted d-block">TELÉFONO</small>
+            <span>{{ s.telefono || '—' }}</span>
+          </div>
+          <div class="col-6">
+            <small class="text-muted d-block">TÉCNICO</small>
+            <span>{{ s.tecnico }}</span>
+          </div>
+        </div>
+      </p-accordionTab>
+
+      <p-accordionTab header="Trabajo" [selected]="true">
+        <p class="mb-1"><b>Descripción:</b> {{ s.descripcion }}</p>
+        <p *ngIf="s.diagnostico" class="mb-1">
+          <b>Diagnóstico:</b> {{ s.diagnostico }}
+        </p>
+        <p *ngIf="s.observacion" class="mb-0">
+          <b>Observación:</b> {{ s.observacion }}
+        </p>
+      </p-accordionTab>
+    </p-accordion>
+
+  </ng-container>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cerrar" icon="pi pi-times"
+            class="p-button-text" (click)="closeDetail()"></button>
+    <button pButton label="Editar" icon="pi pi-pencil"
+            (click)="openEditFromDetail()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

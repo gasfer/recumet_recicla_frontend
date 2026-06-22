@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
-import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { CategoriesService } from 'src/app/pages/inventories/services/categories.service';
 import { ProductsService } from 'src/app/pages/inventories/services/products.service';
@@ -11,17 +11,20 @@ import { ValidatorsService } from 'src/app/services/validators.service';
   styleUrls: ['./dataview-products.component.scss']
 })
 export class DataviewProductsComponent implements OnInit {
-  searchFor              = signal([{name: 'Producto', code: 'pos'},{name: 'Categoría', code: 'id_category'}]); 
-  rows      :number      = 50;      
-  total     :number      = 0;      
-  from      :number      = 0;        
-  to        :number      = 0;          
+  searchFor              = signal([{name: 'Producto', code: 'pos'},{name: 'Categoría', code: 'id_category'}]);
+  rows      :number      = 50;
+  total     :number      = 0;
+  from      :number      = 0;
+  to        :number      = 0;
   isSearchByProduct      = signal(true);
   loading                = signal(true);
   @Input() isViewQuantity: boolean = false;
   @Input() isViewPrice: boolean = false;
   @Input() id_sucursal: string = '';
   @Input() id_storage : string = '';
+  @Input() isInput : boolean = false;
+  @Input() withStock : boolean = false;
+  @Input() typeFrom : ''|'INPUT' | 'OUTPUT' = '';
   products          = signal<Product[]>([]);
   categories        = signal<{name:string,code:string}[]>([]);
   productsService   = inject(ProductsService);
@@ -36,6 +39,7 @@ export class DataviewProductsComponent implements OnInit {
   decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
 
   @Output() onProductSelect: EventEmitter<Product> = new EventEmitter();
+  @Output() onProductSelectQuantity: EventEmitter<{product:Product,quantity: number}> = new EventEmitter();
   @Output() onProductByCod: EventEmitter<Product> = new EventEmitter();
 
   ngOnInit(): void {
@@ -70,7 +74,7 @@ export class DataviewProductsComponent implements OnInit {
 
   getAllAndSearchProducts(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
     if(!query) {this.loading.set(true);} //not loading in search
-    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage).subscribe({
+    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage,'name','ASC',this.withStock).subscribe({
       next: (resp) => {
         this.products.set(resp.products.data);
         this.total = resp.products.total;
@@ -101,15 +105,21 @@ export class DataviewProductsComponent implements OnInit {
     return 'red';//this.productService.getColorStock(total_stock, stock_min);
   }
 
-  
+
 
   addListDetailPos(product: Product) {
+    product.set_quantity = 1;
+    this.onProductSelect.next(product);
+  }
+
+   addListDetailPosQuantity(product: Product) {
+    if(!product.set_quantity) product.set_quantity = 1;
     this.onProductSelect.next(product);
   }
 
   getAllCategories() {
     this.categories.set([]);
-    this.categoriesService.getAllAndSearch(1,1000,true).subscribe(resp => {
+    this.categoriesService.getAllAndSearch(1,10000,true).subscribe(resp => {
       const formattedCategory = resp.categories.data.map(category => ({
         name: category.name,
         code: category.id!.toString()
@@ -130,4 +140,50 @@ export class DataviewProductsComponent implements OnInit {
       this.isSearchByProduct.set(false);
     }
   }
+  // --- MODAL IMAGEN ---
+displayImageModal = signal(false);
+selectedProductImage = signal<Product | null>(null);
+
+// abrir modal con imagen
+openImageModal(product: Product): void {
+  this.selectedProductImage.set(product);
+  this.displayImageModal.set(true);
+}
+
+// cerrar modal
+closeImageModal(): void {
+  this.displayImageModal.set(false);
+  this.selectedProductImage.set(null);
+}
+
+private clickTimer: any = null;
+
+onCardClick(product: Product): void {
+  this.clickTimer = setTimeout(() => {
+    // acción normal (enviar producto)
+    if (this.isViewQuantity) {
+      this.addListDetailPosQuantity(product);
+    } else {
+      this.addListDetailPos(product);
+    }
+  }, 200);
+}
+
+onCardDoubleClick(product: Product): void {
+  if (this.clickTimer) {
+    clearTimeout(this.clickTimer);
+    this.clickTimer = null;
+  }
+  this.openImageModal(product);
+}
+
+zoomLevel = 1;
+
+onZoom(event: WheelEvent) {
+  event.preventDefault();
+
+  const delta = event.deltaY > 0 ? -0.1 : 0.1;
+  this.zoomLevel = Math.min(Math.max(this.zoomLevel + delta, 1), 3);
+}
+
 }

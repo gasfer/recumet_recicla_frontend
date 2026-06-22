@@ -42,6 +42,10 @@ export interface GetAllClassifieds {
     ok:          boolean;
     classifieds: Classifieds;
 }
+export interface GetOneClassified {
+    ok:     boolean;
+    classified:  Classified;
+}
 
 export interface Classifieds {
     previousPage: number | null;

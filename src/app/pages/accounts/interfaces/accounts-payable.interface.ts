@@ -14,8 +14,14 @@ export interface AccountsPayable {
     from:         number;
     to:           number;
     data:         AccountPayable[];
+    totals:    Totals;
 }
 
+interface Totals {
+    total_abonados: number,
+    total_restante: number,
+    total_account: number,
+}
 export interface AccountPayable {
     id:                    number;
     cod:                   string;
@@ -47,6 +53,9 @@ export interface AbonosAccountsPayable {
     id_user:            number;
     user:               User;
     status:             boolean;
+    comments:           string;
+    type_payment:       string;
+    account_output:     string;
     createdAt:          string;
     updatedAt:          string;
 }

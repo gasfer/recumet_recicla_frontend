@@ -12,6 +12,7 @@ import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/Options
 import { FormSearchOutputs, Output, Outputs } from '../interfaces/output.interface';
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
+import { Client } from '../interfaces/client.interface';
 
 @Component({
   selector: 'app-query-outputs',
@@ -38,7 +39,7 @@ export class QueryOutputsComponent {
     type_registry: '',
     type_output: '',
     id_client:'',
-    type_pay: 'CONTADO',
+    type_pay: '',
     id_storage: '',
     id_sucursal: '',
     status: 'ACTIVE',
@@ -69,7 +70,17 @@ export class QueryOutputsComponent {
     },
   ];
   searchItems = signal<MenuItem[]>([
-    { 
+    {
+      label: 'Todos', icon: 'fas fa-list',
+      iconStyle: { 'color': '#FF851B'},
+      command: () => {
+        this.cols()[0].isLink = false;
+        this.paramsSearch().type_pay = '';
+        this.paramsSearch().status = 'ACTIVE';
+        this.getAllAndSearchOutputs(1,this.rows());
+      }
+    },
+    {
       label: 'Al Contado', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
@@ -79,8 +90,8 @@ export class QueryOutputsComponent {
         this.getAllAndSearchOutputs(1,this.rows());
       }
     },
-    { 
-      label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left', 
+    {
+      label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left',
       iconStyle: { 'color': '#14A44D'},
       command: () => {
         this.cols()[0].isLink = true;
@@ -90,23 +101,23 @@ export class QueryOutputsComponent {
         this.paramsSearch().type_pay = 'CREDITO';
         this.paramsSearch().status = 'ACTIVE';
         this.getAllAndSearchOutputs(1,this.rows());
-      } 
+      }
     },
-    { 
-      label: 'Anulados', icon: 'fa-solid fa-trash-can', 
+    {
+      label: 'Anulados', icon: 'fa-solid fa-trash-can',
       iconStyle: { 'color': '#DC4C64'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
         this.paramsSearch().status = 'INACTIVE';
         this.getAllAndSearchOutputs(1,this.rows());
-      } 
+      }
     },
   ]);
   types_registry = computed(() => this.outputService.types_registry());
   types_output   = computed(() => this.outputService.types_output());
   formReport:UntypedFormGroup = this.fb.group({
-    filterBy: ['DAY'],
+    filterBy: ['MONTH'],
     dates: [new Date(), [Validators.required]],
     type_registry: [''],
     type_output: [],
@@ -119,40 +130,42 @@ export class QueryOutputsComponent {
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   cols = signal<ColsTable[]>([
-    { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
-    { field: 'voucher', header: 'TIPO V.' , style:'min-width:100px;max-width:100px;', tooltip: true,isTag: true, 
+    { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true, footer:'TOTALES'},
+    { field: 'voucher', header: 'TIPO V.' , style:'min-width:100px;max-width:100px;', tooltip: true,isTag: true,
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'info',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
     },
-    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:100px;max-width:100px;', tooltip: true,isTag: true, 
+    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:100px;max-width:100px;', tooltip: true,isTag: true,
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'success',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
     },
-   
-    // { field: 'registry_number', header: 'N. DOC.' , style:'min-width:90px;max-width:100px;', tooltip: true},
-    { field: 'createdAt', header: 'FECHA V.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
+    { field: 'number_registry', header: 'NUMERO' , style:'min-width:80px;max-width:120px;', tooltip: true, isText: true},
+    { field: 'date_output', header: 'FECHA V.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: `client.full_names`, header: 'CLIENTE' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: `comments`, header: 'OBSERVACIONES' , style:'min-width:100px;max-width:250px;', tooltip: true, isText: true  },
-    { field: `total`, header: 'TOTAL' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
+    { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
+      tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+      tagColor: (val:number)=> 'warning',
+      tagIcon: (val:number)=>  'fas fa-boxes-stacked'
+    },
+    { field: `total`, header: 'TOTAL' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
       tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  'fa-solid fa-sack-dollar'
     },
-    // { field: `type_output`, header: 'TIPO' , style:'min-width:90px;max-width:90px;', tooltip: true, isTag: true, 
-    //   tagValue: (val:string)=>  val,
-    //   tagColor: (val:string)=>  val == 'CONTADO' ? 'primary' :'#14A44D',
-    //   tagIcon: (val:string)=>  val == 'CONTADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
-    // },
-    { field: 'user.full_names', header: 'USUARIO' , style:'min-width:100px;max-width:180px;', tooltip: true, isText: true},
-    { field: 'storage.name', header: 'ALMACÉN' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
+    { field: `type_output`, header: 'TIPO' , style:'min-width:90px;max-width:90px;', tooltip: true, isTag: true,
+      tagValue: (val:string)=>  val,
+      tagColor: (val:string)=>  val == 'CONTADO' ? 'primary' :'success',
+      tagIcon: (val:string)=>  val == 'CONTADO' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock-rotate-left'
+    },
     { field: 'options', header: 'OPCIONES', style:'min-width:170px;max-width:170px', isButton:true }
   ]);
   searchFor = signal<SearchFor[]>([
-    {name: 'CÓDIGO', code: 'cod'},
-    {name: 'CLIENTE', code: 'client.full_names'},
     {name: 'NUMBER DOC.', code: 'number_registry'},
+    {name: 'CLIENTE', code: 'client.full_names'},
+    {name: 'CÓDIGO', code: 'cod'},
     {name: 'COMENTARIOS', code: 'comments'},
     {name: 'BALANZA', code: 'scale.name'},
     {name: 'USUARIO', code: 'user.full_names'},
@@ -172,12 +185,16 @@ export class QueryOutputsComponent {
   ]);
   fieldSort = signal('');
   order     = signal('');
+  txtSearchClient      = signal('');
+  suggestedClient      = signal<Client[]>([]);
+  loadingSearchClient  = signal(false);
+  clientSelect         = signal<Client|undefined>(undefined);
 
   ngOnInit(): void {
     this.getAllAndSearchOutputs(1,this.rows());
   }
 
-  
+
   getAllAndSearchOutputs(page: number, limit: number,type: string = '', query: string = '') {
     this.formReport.patchValue({id_sucursal:this.validatorsService.id_sucursal()});
     this.formReport.markAllAsTouched();
@@ -189,8 +206,8 @@ export class QueryOutputsComponent {
         this.outputs.set(resp.outputs);
         this.outputs()!.data.forEach((output) => {
           output.options = output.status == 'ACTIVE'  ? [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -198,10 +215,10 @@ export class QueryOutputsComponent {
                 this.outputService.showModalDetailsInput = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-edit', 
-              tooltip: 'Editar',
-              disabled: this.validatorsService.withPermission('VENTAS','update'),
+            {
+              label:'',icon:'fas fa-edit',
+              tooltip: this.validatorsService.hasDaysPassedSinceEdit(output.createdAt,30) ? 'La fecha límite de edición ha sido superada.' : 'Editar',
+              disabled:  !this.validatorsService.hasDaysPassedSinceEdit(output.createdAt,30) ? this.validatorsService.withPermission('VENTAS','update') : false,
               class:'p-button-rounded p-button-warning p-button-sm  ms-1',
               eventClick: () => {
                 this.outputService.resetOutput();
@@ -229,14 +246,14 @@ export class QueryOutputsComponent {
                       prices: resp.product.prices,
                     },
                   ]);
-                }); 
+                });
                 this.outputService.clientSelect.set(output.client!);
                 this.outputService.dataOutputForEdit.set(output);
                 this.router.navigateByUrl('/outputs/output');
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Imprimir',
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -244,7 +261,7 @@ export class QueryOutputsComponent {
               }
             },
             {
-              label:'',icon:'fa-solid fa-trash-can', 
+              label:'',icon:'fa-solid fa-trash-can',
               tooltip: 'Anular',
               disabled: this.validatorsService.withPermission('VENTAS','delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
@@ -253,8 +270,8 @@ export class QueryOutputsComponent {
               }
             },
           ] : [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -264,6 +281,10 @@ export class QueryOutputsComponent {
             },
           ] ;
         });
+        const totalOutput = resp.outputs?.totals?.totalOutput ?? 0;
+        const totalQuantity = resp.outputs?.totals?.totalQuantity ?? 0;
+        this.cols()[7].footer =  this.pipeNumber.transform(totalQuantity,this.decimal()) ?? '0';
+        this.cols()[8].footer =  this.pipeNumber.transform(totalOutput,this.decimal()) ?? '0';
       },
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)
@@ -299,10 +320,10 @@ export class QueryOutputsComponent {
       if(!result.isConfirmed) return;
       if(result.value) {
         this.getAllAndSearchOutputs(1,this.rows());
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `La venta fue anulada correctamente, Disponible en la sección de anulados`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},
         });
@@ -313,7 +334,7 @@ export class QueryOutputsComponent {
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
       const { filterBy, id_sucursal,id_storage,type_registry,type_output, id_client, dates} = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_registry: type_registry ? type_registry : '',
@@ -369,10 +390,10 @@ export class QueryOutputsComponent {
       id_client: '',
       date_range: '',
       type_pay: '',
-      status: 'ACTIVE',   
+      status: 'ACTIVE',
     });
   }
-  
+
   printPdfReport() {
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
@@ -474,5 +495,38 @@ export class QueryOutputsComponent {
         });
       },
     });
+  }
+
+  suggestedsClient(txtSearchClient: string){
+    if(txtSearchClient.length==0) {
+      this.txtSearchClient.set('');
+      this.suggestedClient.set([]);
+      return;
+    }
+    this.loadingSearchClient.set(true);
+    this.txtSearchClient.set(txtSearchClient);
+    this.suggestedClient.set([]);
+    this.clientsService.getAllAndSearch(1,10000,true,'pos',txtSearchClient,'full_names','ASC')
+      .subscribe({
+        next: (resp) => {
+          this.suggestedClient.set(resp.clients.data);
+          this.loadingSearchClient.set(false);
+        },
+        error: (e) => {
+          this.loadingSearchClient.set(false);
+        }
+      });
+  }
+
+  selectClient(client: Client) {
+    this.suggestedClient.set([]);
+    this.txtSearchClient.set('');
+    this.clientSelect.set(client);
+    this.formReport.get('id_client')?.setValue(this.clientSelect()?.id);
+  }
+
+  clearSelectClient() {
+    this.clientSelect.set(undefined);
+    this.formReport.get('id_client')?.setValue(null);
   }
 }

@@ -5,6 +5,7 @@ import { Storage } from '../pages/managements/interfaces/sucursales.interface';
 import { Subject } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
 import { User } from '../auth/auth.interface';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +44,7 @@ export class ValidatorsService {
     }
   }
 
-  withPermission(module_search:string,action:'view'|'create'|'update'|'delete'|'reports') {
+  withPermission(module_search: string, action:'view'|'create'|'update'|'delete'|'reports') {
     if(!module_search) return false;
     if(this.user()?.role === 'ADMINISTRADOR') return true;
     const permission = this.user()?.assign_permission.find(assign_permission => assign_permission.module === module_search);
@@ -93,13 +94,13 @@ export class ValidatorsService {
   isSpacesInPassword(control: AbstractControl): ValidationErrors | null {
     const txt = control.value;
     return !txt || txt.trim().length < 8 ? { isSpacesInPassword: true } : null;
-  } 
+  }
 
   compressFile(imageBase64: string, img:File): Promise<File> {
     const sizeImage = img.size;
     const filename = img['name'];
     if (sizeImage <= 3145728) {
-      return new Promise((resolve, reject) => { 
+      return new Promise((resolve, reject) => {
         this.localCompressedURl = imageBase64;
         this.compressLoading = false;
         resolve(img);
@@ -128,5 +129,16 @@ export class ValidatorsService {
       int8Array[i] = byteString.charCodeAt(i);
     } const blob = new Blob([int8Array], { type: 'image/jpeg' });
     return blob;
+  }
+
+  hasDaysPassedSinceEdit(date: string, limit_days:number):boolean {
+    const _date_output = moment(date);
+    const _dateOutput = moment();
+    const differentDays = _dateOutput.diff(_date_output, 'days');
+    if (differentDays >= limit_days) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

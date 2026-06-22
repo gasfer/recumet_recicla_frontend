@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { Observable, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AccountReceivable, FormSearchAccountsReceivable, GetAllAccountsReceivable, NewAbonoAccountReceivable, ResponseNewAbono } from '../interfaces/accounts-receivable.interface';
+import { FormPayMultiple, GetAllAccountsPayableForClient } from '../interfaces/accounts-payable-client.interface';
 const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class AccountsReceivableService {
   detailsSubs$: EventEmitter<AccountReceivable> = new EventEmitter<AccountReceivable>();
   showModalDetailsAccountReceivable: boolean = false;
   showModalNewAbono: boolean = false;
+  showModalAccountsClient: boolean = false;
   reloadAccountsReceivable$: Subject<number> = new Subject();
 
   getAllAndSearchAccountsReceivable(page: number, limit: number,params:FormSearchAccountsReceivable, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllAccountsReceivable>{
@@ -34,6 +36,7 @@ export class AccountsReceivableService {
     const url = `${base_url}/accounts_receivable/new-abono`;
     return this.http.post<ResponseNewAbono>(url, data);
   }
+
 
   deleteAbonoAccountReceivable(id_abono_account_receivable: number) {
     const url = `${base_url}/accounts_receivable/destroy-abono/${id_abono_account_receivable}`;
@@ -59,6 +62,11 @@ export class AccountsReceivableService {
               responseType: 'blob',
             });
   }
+
+  getAccountsPayableForClient(id_client:number): Observable<GetAllAccountsPayableForClient> {
+      const url = `${base_url}/accounts_receivable/forClient?id_client=${id_client}`;
+      return this.http.get<GetAllAccountsPayableForClient>(url);
+    }
 
   //* IMPRIMIR BOLETAS
   getPrintAccountReceivable(id_account_receivable:Number) {

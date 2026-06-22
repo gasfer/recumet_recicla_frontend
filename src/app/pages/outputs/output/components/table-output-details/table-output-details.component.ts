@@ -60,14 +60,9 @@ export class TableOutputDetailsComponent implements OnDestroy {
 
   showUpdateBs(cambio:number){
     if(this.product_temp()){
-      this.product_temp.update((product) => {
-        if (!product) return product;
-        return {
-          ...product,
-          price_select: cambio,
-        };
-      });
-      this.outputService.updateDetailSale(this.product_temp()!, false);
+      const product = this.product_temp();
+      product!.price_select = cambio;
+      this.outputService.updateDetailSale(product!, false);
       this.product_temp.set(undefined);
     }
   }

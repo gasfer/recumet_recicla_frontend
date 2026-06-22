@@ -5,7 +5,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { Classified } from '../../../interfaces/classified.interface';
 
 @Component({
-  selector: 'app-modal-view-details',
+  selector: 'app-modal-view-details-classified',
   templateUrl: './modal-view-details.component.html',
   styles: [
   ]

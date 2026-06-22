@@ -15,6 +15,7 @@ import { ModalSaveInputComponent } from './input-small/components/modal-save-inp
 import { QueryInputsComponent } from './query-inputs/query-inputs.component';
 import { ModalViewDetailsComponent } from './query-inputs/components/modal-view-details/modal-view-details.component';
 import { ChipModule } from 'primeng/chip';
+import { AccordionModule } from 'primeng/accordion';
 @NgModule({
   declarations: [
     ProvidersComponent,
@@ -33,7 +34,11 @@ import { ChipModule } from 'primeng/chip';
     InputsRoutingModule,
     PagesModule,
     CoreModule,
-    ChipModule
+    ChipModule,
+    AccordionModule,
   ],
+  exports: [
+    ModalViewDetailsComponent
+  ]
 })
 export class InputsModule {}

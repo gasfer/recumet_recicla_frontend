@@ -53,7 +53,7 @@ export class QueryClassifiedsComponent implements OnInit {
     },
   ];
   searchItems = signal<MenuItem[]>([
-    { 
+    {
       label: 'Clasificados', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
@@ -61,18 +61,18 @@ export class QueryClassifiedsComponent implements OnInit {
         this.getAllAndSearchClassifieds(1,this.rows());
       }
     },
-    { 
-      label: 'Anulados', icon: 'fa-solid fa-trash-can', 
+    {
+      label: 'Anulados', icon: 'fa-solid fa-trash-can',
       iconStyle: { 'color': '#DC4C64'},
       command: () => {
         this.paramsSearch().status = 'INACTIVE';
         this.getAllAndSearchClassifieds(1,this.rows());
-      } 
+      }
     },
   ]);
   types_registry = computed(() => this.classifiedService.types_registry());
   formReport:UntypedFormGroup = this.fb.group({
-    filterBy: ['DAY'],
+    filterBy: ['MONTH'],
     dates: [new Date(), [Validators.required]],
     type_registry: [''],
     id_sucursal: ['',[Validators.required]],
@@ -85,18 +85,18 @@ export class QueryClassifiedsComponent implements OnInit {
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   cols = signal<ColsTable[]>([
     { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
-    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:100px;max-width:100px;', tooltip: true,isTag: true, 
+    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:100px;max-width:100px;', tooltip: true,isTag: true,
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'success',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
     },
     { field: 'number_registry', header: 'N. DOC.' , style:'min-width:90px;max-width:100px;', tooltip: true},
     { field: 'product.name', header: 'PRODUCTO' , style:'min-width:150px;max-width:250px;', tooltip: true, isText: true},
-    { field: 'quantity_product', header: 'CANT.' , style:'min-width:90px;max-width:90px;text-align: center;', tooltip: true,isTag: true, 
+    { field: 'quantity_product', header: 'CANT.' , style:'min-width:90px;max-width:90px;text-align: center;', tooltip: true,isTag: true,
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'warning',
       tagIcon: (val:boolean)=>  'fa-solid fa-tag'
-    },  
+    },
     { field: 'date_classified', header: 'FECHA CL.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: `comments`, header: 'OBSERVACIONES' , style:'min-width:100px;max-width:250px;', tooltip: true, isText: true  },
     { field: 'user.full_names', header: 'USUARIO' , style:'min-width:100px;max-width:180px;', tooltip: true, isText: true},
@@ -104,8 +104,8 @@ export class QueryClassifiedsComponent implements OnInit {
     { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
   ]);
   searchFor = signal<SearchFor[]>([
-    {name: 'CÓDIGO', code: 'cod'},
     {name: 'NUMBER DOC.', code: 'number_registry'},
+    {name: 'CÓDIGO', code: 'cod'},
     {name: 'COMENTARIOS', code: 'comments'},
     {name: 'BALANZA', code: 'scale.name'},
     {name: 'USUARIO', code: 'user.full_names'},
@@ -126,7 +126,7 @@ export class QueryClassifiedsComponent implements OnInit {
     id_storage: '',
     id_sucursal: '',
     status: 'ACTIVE',
-    filterBy:'DAY',
+    filterBy:'MONTH',
     date1: '',
     date2: ''
   });
@@ -143,7 +143,7 @@ export class QueryClassifiedsComponent implements OnInit {
     this.getAllAndSearchClassifieds(1,this.rows());
   }
 
-  
+
   getAllAndSearchClassifieds(page: number, limit: number,type: string = '', query: string = '') {
     this.formReport.patchValue({id_sucursal:this.validatorsService.id_sucursal()});
     this.formReport.markAllAsTouched();
@@ -155,8 +155,8 @@ export class QueryClassifiedsComponent implements OnInit {
         this.classifieds.set(resp.classifieds);
         this.classifieds()!.data.forEach((classified) => {
           classified.options = classified.status == 'ACTIVE'  ? [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -164,8 +164,8 @@ export class QueryClassifiedsComponent implements OnInit {
                 this.classifiedService.showModalDetailsClassified = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Imprimir',
               disabled: this.validatorsService.withPermission('CLASIFICADOS','reports'),
               class:'p-button-rounded p-button-sm ms-1',
@@ -174,7 +174,7 @@ export class QueryClassifiedsComponent implements OnInit {
               }
             },
             {
-              label:'',icon:'fa-solid fa-trash-can', 
+              label:'',icon:'fa-solid fa-trash-can',
               tooltip: 'Anular',
               disabled: this.validatorsService.withPermission('CLASIFICADOS','delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
@@ -183,8 +183,8 @@ export class QueryClassifiedsComponent implements OnInit {
               }
             },
           ] : [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -262,10 +262,10 @@ export class QueryClassifiedsComponent implements OnInit {
       if(!result.isConfirmed) return;
       if(result.value) {
         this.getAllAndSearchClassifieds(1,this.rows());
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `La clasificación fue anulada correctamente, Disponible en la sección de anulados`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},
         });
@@ -276,7 +276,7 @@ export class QueryClassifiedsComponent implements OnInit {
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
       const { filterBy, id_sucursal,id_storage,type_registry, id_product, dates} = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_registry: type_registry ? type_registry : '',
@@ -328,11 +328,11 @@ export class QueryClassifiedsComponent implements OnInit {
       id_product: '',
       id_storage: '',
       date_range: '',
-      status: 'ACTIVE',   
+      status: 'ACTIVE',
     });
     this.productSelect.set(undefined);
   }
-  
+
   printPdfReport() {
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;

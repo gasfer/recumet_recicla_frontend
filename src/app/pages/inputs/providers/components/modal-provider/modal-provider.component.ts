@@ -32,7 +32,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   ]);
   providerForm: FormGroup = this.fb.group({
     id: [''],
-    full_names: [ '', [Validators.minLength(2),Validators.maxLength(174),this.validatorsService.isSpacesInDynamicTxt]],
+    full_names: [ '', [Validators.minLength(2),Validators.maxLength(174)]],
     id_sector: [ '', [ Validators.required]],
     number_document: [null, [Validators.maxLength(50)]],
     cellphone: [ null, [Validators.min(60000000),Validators.max(79999999)]],
@@ -44,7 +44,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     id_category: [ '', [Validators.required]],
     id_sucursal: [ null],
     companyContacts:[ '', [Validators.maxLength(254)]],
-    frequency:[ '', [Validators.maxLength(254)]],
+    frequency:[ 'MENSUAL', [Validators.maxLength(254)]],
     workAreaOrPositionOrUnit: ['', [Validators.maxLength(254)]],
     status: [true]
   });
@@ -71,7 +71,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.isEditSub$ = this.providersService.editSubs.subscribe(resp => {
       this.providerForm.reset({
         id: resp.id,
-        full_names: resp.full_names,
+        full_names: resp.full_names, //|| resp.name_contact
         id_sector: resp.sector.id.toString(),
         number_document: resp.number_document,
         cellphone: resp.cellphone,
@@ -81,7 +81,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
           code:resp.type?.code.toString(),
           id: resp.type?.id.toString(),
         },
-        mayorista: resp.mayorista,
+        mayorista: resp.mayorista ?? false,
         name_contact: resp.name_contact,
         companyContacts: resp.companyContacts,
         frequency: resp.frequency,
@@ -97,7 +97,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
                                 this.getAllSectors()
                             });
   }
-  
+
   ngOnDestroy(): void {
     this.isEditSub$.unsubscribe();
     this.isReloadSub$.unsubscribe();
@@ -144,29 +144,28 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   newProvider() {
     this.providerForm.markAllAsTouched();
     if(!this.providerForm.valid) return;
     this.loading.set(true);
     const id_type_provider = this.providerForm.get('id_type_provider')?.value;
-    this.providerForm.patchValue({
-      id_type_provider:id_type_provider.id
-    })
-    this.providersService.postNew(this.providerForm.value).subscribe({
+    const formProvider = this.providerForm.value;
+    formProvider.id_type_provider = id_type_provider.id;
+    this.providersService.postNew(formProvider).subscribe({
       complete: () => {
         this.providersService.save$.next(true);
         this.loading.set(false);
         this.providersService.showModal = false;
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Proveedor nuevo agregado correctamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
       },
-      error: () => this.loading.set(false) 
+      error: () => this.loading.set(false)
     });
   }
 
@@ -175,27 +174,26 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     if(!this.providerForm.valid) return;
     this.loading.set(true);
     const id_type_provider = this.providerForm.get('id_type_provider')?.value;
-    this.providerForm.patchValue({
-      id_type_provider:id_type_provider.id
-    })
-    this.providersService.putUpdate(this.providerForm.value).subscribe({
+    const formProvider = this.providerForm.value;
+    formProvider.id_type_provider = id_type_provider.id;
+    this.providersService.putUpdate(formProvider).subscribe({
       complete: () => {
         this.providersService.save$.next(true);
         this.loading.set(false);
         this.providersService.showModal = false;
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Proveedor modificado correctamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
       },
-      error: () => this.loading.set(false) 
+      error: () => this.loading.set(false)
     });
   }
 
-  resetModal() { 
+  resetModal() {
     this.resetForm();
     if(this.types().length > 0) {
       this.providerForm.get('id_type_provider')?.setValue({
@@ -209,20 +207,19 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   resetForm() {
     this.providerForm.patchValue({
-      id: '',
       full_names: '',
       id_sector: '',
       number_document: null,
       cellphone: null,
       direction: null,
       type: '',
-      mayorista: false,
+      mayorista: true,
       name_contact: null,
       cellphone_contact: null,
       id_category: '',
       id_sucursal: null,
       companyContacts: '',
-      frequency: '',
+      frequency: 'MENSUAL',
       workAreaOrPositionOrUnit: '',
       status: true,
     });
@@ -247,8 +244,9 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       cellphone: { label: 'Celular', view: true },
       status: { label: 'Estado:', view: true },
     };
-    
+
     switch (type?.code) {
+      //grandes empresas
       case 'A':
         this.formP = {
           ...defaultFormConfig,
@@ -259,34 +257,49 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
           workAreaOrPositionOrUnit: { label: 'Área de trabajo o cargo o unidad dependiente', view: true },
         };
         break;
+        //pequeñas empresas
       case 'B':
         this.formP = {
           ...defaultFormConfig,
           full_names: { label: 'Nombre del taller o negocio', view: true },
+          number_document: {label:'CI / NIT', view: true},
           direction: { label: 'Dirección del taller o negocio', view: true },
         };
         break;
+        //acopiadores mayoristas
       case 'C':
         this.formP = {
           ...defaultFormConfig,
-          full_names: { label: 'Nombre de la acopiadora mayorista', view: true },
+          full_names: { label: 'Nombre Completo Mayorista', view: true },
           direction: { label: 'Dirección de la acopiadora mayorista', view: true },
+          number_document: {label:'CI / NIT', view: true},
           mayorista: {  label: 'Mayorista o minorista', view: true},
+          name_contact: { label: 'Nombre de contacto', view: false },
+          cellphone_contact: { label: 'Celular de contacto', view: false },
+
         };
         break;
+        //acopiadores minoristas
       case 'D':
         this.formP = {
           ...defaultFormConfig,
-          full_names: { label: '', view: false },
+          full_names: { label: 'Nombre Completo Minorista', view: true },
           direction: { label: 'Dirección de la acopiadora minorista', view: true },
-          mayorista: {  label: 'Mayorista o minorista', view: true},
+          number_document: {label:'CI / NIT', view: true},
+          mayorista: {  label: 'Mayorista o minorista', view: false},
+          name_contact: { label: 'Nombre de contacto', view: false },
+          cellphone_contact: { label: 'Celular de contacto', view: false },
         };
         break;
+        //domiciliarios nuevos
       case 'E':
         this.formP = {
           ...defaultFormConfig,
-          full_names: { label: '', view: false },
-          direction: { label: '', view: false },
+         full_names: { label: 'Nombre completo', view: true },
+          number_document: {label:'CI / Nit', view: true},
+          direction: { label: '', view: true },
+          name_contact: { label: 'Nombre de contacto', view: false },
+          cellphone_contact: { label: 'Celular de contacto', view: false },
         };
         break;
       case 'F':
@@ -298,7 +311,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
           companyContacts: { label: 'Contactos empresa', view:true },
           workAreaOrPositionOrUnit: {label: 'Área de trabajo o cargo o unidad dependiente', view: true},
         };
-        break;          
+        break;
       default:
         this.formP = { ...defaultFormConfig };
         break;

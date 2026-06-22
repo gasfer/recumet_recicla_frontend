@@ -1,5 +1,10 @@
 import { Options } from "src/app/core/components/interfaces/OptionsTable.interface";
 
+export interface GetOneTransfer {
+    ok:        boolean;
+    transfer: Transfer;
+}
+
 export interface GetAllTransfers {
     ok:        boolean;
     transfers: Transfers;
@@ -14,6 +19,7 @@ export interface Transfers {
     from:         number;
     to:           number;
     data:         Transfer[];
+    totals:       Totals;
 }
 
 export interface Transfer {
@@ -40,10 +46,13 @@ export interface Transfer {
     user_send:             User;
     user_received:         User;
     detailsTransfers:      DetailsTransfer[];
-    options?:             Options[];
-
+    total_quantity:        number;
+    options?:              Options[];
 }
-
+interface Totals {
+    totalTransfer: number,
+    totalQuantity: number,
+}
 export interface DetailsTransfer {
     id:          number;
     quantity:    string;

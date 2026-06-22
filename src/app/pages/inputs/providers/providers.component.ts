@@ -8,26 +8,30 @@ import Swal from 'sweetalert2';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { Router } from '@angular/router';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-providers',
   templateUrl: './providers.component.html',
   styles: [`
       .title {
-        display: flex; 
-        justify-content: space-between; 
+        display: flex;
+        justify-content: space-between;
         align-items: center;
       }
-    
+
   `]
 })
 export class ProvidersComponent implements OnInit, OnDestroy {
   searchItems = signal<MenuItem[]>([
-    { label: 'Activos',   icon: 'fa-solid fa-circle-check' ,command: () => {
+    { label: 'Activos',   icon: 'fa-solid fa-circle-check' ,
+      iconStyle: { 'color': '#3B71CA'}, command: () => {
       this.type.set('');
       this.getAllAndSearchProviders(1,this.rows(),true);
     }},
-    { label: 'Inactivos', icon: 'fa-solid fa-trash-can', command: () => {
+    { label: 'Inactivos', icon: 'fa-solid fa-trash-can',
+      iconStyle: { 'color': '#DC4C64'},
+      command: () => {
       this.type.set('');
       this.getAllAndSearchProviders(1,this.rows(),false)
     } },
@@ -36,7 +40,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   searchFor = signal<SearchFor[]>([
     {name: 'NOMBRES', code: 'full_names'},
     {name: 'SECTOR', code: 'sector.name'},
-    {name: 'DOCUMENTO', code: 'number_document'},
+    {name: 'CI / NIT', code: 'number_document'},
     {name: 'CELULAR', code: 'cellphone'},
     {name: 'DIRECCIÓN', code: 'direction'},
     {name: 'TIPO', code: 'type.name'},
@@ -45,6 +49,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     {name: 'CATEGORÍA', code: 'category.name'},
   ]);
   loading   = signal(false);
+  loadingReport   = signal(false);
   rows      = signal(50);
   fieldSort = signal('');
   order     = signal('');
@@ -59,6 +64,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     {name: 'AÑO', code: 'YEAR'},
     {name: 'RANGO', code: 'RANGE'},
   ]);
+
   providers = signal<Providers|undefined>(undefined);
   private providersService = inject(ProvidersService);
   validatorsService = inject(ValidatorsService);
@@ -68,6 +74,9 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   formReport:UntypedFormGroup = this.fb.group({
     id_type_provider: [],
   });
+  pipeNumber      = new DecimalPipe('en-US');
+  decimalLength     = signal(this.validatorsService.decimalLength());
+  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   ngOnInit(): void {
     this.getAllTypes();
     this.save$ = this.providersService.save$.subscribe(resp => this.getAllAndSearchProviders(this.page(),this.rows(),this.status()));
@@ -75,20 +84,20 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.save$.unsubscribe();
   }
- 
+
 
   getAllAndSearchProviders(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
     if(!query) {this.loading.set(true);} //not loading in search
     this.status.set(status);
-    this.loadColsTableByType();
+    this.cols.set(this.loadColsTableByType());
     const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
-    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider.id).subscribe({
+    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '').subscribe({
       next: (resp) => {
         this.providers.set(resp.providers);
         this.providers()!.data.forEach((provider) => {
           provider.options = provider.status  ? [
-            { 
-              label:'',icon:'fa-solid fa-comment-dollar', 
+            {
+              label:'',icon:'fa-solid fa-comment-dollar',
               tooltip: 'Cuentas por pagar',
               disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR','view'),
               class:'p-button-rounded  p-button-sm',
@@ -96,8 +105,8 @@ export class ProvidersComponent implements OnInit, OnDestroy {
                 this.router.navigateByUrl(`/accounts/accounts-payable?p=${provider.id}`)
               }
             },
-            { 
-              label:'',icon:'fas fa-edit', 
+            {
+              label:'',icon:'fas fa-edit',
               tooltip: 'Editar',
               disabled: this.validatorsService.withPermission('PROVEEDORES','update'),
               class:'p-button-rounded p-button-warning p-button-sm ms-1',
@@ -106,7 +115,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               }
             },
             {
-              label:'',icon:'fa-solid fa-trash-can', 
+              label:'',icon:'fa-solid fa-trash-can',
               tooltip: 'Inactivar',
               disabled: this.validatorsService.withPermission('PROVEEDORES','delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
@@ -162,10 +171,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       if(!result.isConfirmed) return;
       if(result.value) {
         this.getAllAndSearchProviders(1,this.rows(),!newStatus);
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Disponible en la sección de ${newStatus ? "Activos" : "Inactivos"}`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},
         });
@@ -220,7 +229,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         name: type.name,
         id: type.id!.toString(),
         code: type.code,
-      }));
+      })).sort((a, b) => a.name.localeCompare(b.name));
+      formattedType.unshift(
+        {code:'ALL', name:'TODOS',id: ''}
+      )
       this.types.set(formattedType);
       if(formattedType.length > 0) {
         this.formReport.get('id_type_provider')?.setValue({
@@ -240,97 +252,110 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadColsTableByType() {
+  getDefaultColumns() {
+    return [
+      { field: 'category.name', header: 'CATEGORÍA', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+      { field: 'date_last_input', header: 'ULT. COMPRA', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true, isDate: true, isNotDateAndHour: true },
+      { field: 'total_products', header: 'COMPRAS [KG]', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true, field2: 'total_inputs', isDoubleValue: true,
+        tagValue: (val: string) => val ? this.pipeNumber.transform(val, this.decimal()) : 0,
+        tagColor: (val: string) => 'primary',
+        tagIcon: (val: string) => '',
+      },
+      { field: 'saldo_cuentas_por_pagar', header: 'SALDO', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true,
+        tagValue: (val: string) => val ? this.pipeNumber.transform(val, this.decimal()) : 0,
+        tagColor: (val: string) => 'success',
+        tagIcon: (val: string) => '',
+      },
+    //  { field: 'sector.name', header: 'SECTOR', style:'min-width:150px;max-width:200px;', tooltip: true, isText: true },
+    //  { field: 'frequency', header: 'FRECUENCIA', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
+    ];
+  }
+
+  loadColsTableByType(): any[] {
+    const columns = this.getDefaultColumns();
     const type = this.formReport.get('id_type_provider')?.value;
     switch (type.code) {
-      case 'A':
-        this.cols.set([
-          { field: 'full_names', header: 'EMPRESA' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
-          { field: `number_document`, header: 'NIT' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
-          { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-          { field: `companyContacts`, header: 'CONTACTO' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
-          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
-          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
-          { field: `workAreaOrPositionOrUnit`, header: 'AREA - UNIDAD' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
-          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
-          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
-          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
-        ]);
-        break;
+      case 'A': case 'F':
+        return [...columns,
+          { field: 'full_names', header: type === 'A' ? 'EMPRESA' : 'EMPRESA PUBLICA', style:'min-width:150px;max-width:300px;', tooltip: true, isText: true },
+          { field: 'number_document', header: 'NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
+          { field: 'direction', header: 'DIRECCIÓN', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
+          { field: 'companyContacts', header: 'CONTACTO', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
+          { field: 'name_contact', header: 'PERSONA NOMBRE', style:'min-width:150px;max-width:200px;', tooltip: true, isText: true },
+          { field: 'cellphone_contact', header: 'PERSONA CELULAR', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+         // { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px;', isButton: true }
+        ];
       case 'B':
-          this.cols.set([
-            { field: 'full_names', header: 'TALLER, NEGOCIO' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
-            { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-            { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
-            { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
-            { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
-            { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
-            { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
-            { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
-          ]);
-        break;
-      case 'C':
-        this.cols.set([
-          { field: 'full_names', header: 'ACOPIADORA MAYORISTA' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
-          { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
-          { field: `mayorista`, header: 'MAYOR.' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
-            tagValue: (val:boolean)=> val ? 'SI' : 'NO',
-            tagColor: (val:boolean)=> val ? 'primary' : 'success',
-            tagIcon: (val:boolean)=> val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box',
+        return [...columns,
+          { field: 'full_names', header: 'TALLER, NEGOCIO', style:'min-width:150px;max-width:300px;', tooltip: true, isText: true },
+          { field: 'number_document', header: 'CI / NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
+          { field: 'direction', header: 'DIRECCIÓN', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px;', isButton: true }
+        ];
+      case 'C': case 'D':
+        return [...columns,
+          { field: 'number_document', header: 'CI / NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
+          { field: 'direction', header: type === 'C' ? 'ACOPIADORA MAYORISTA' : 'DIRECCIÓN ACOPIADORA MINORISTA', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
+          { field: 'mayorista', header: 'MAYOR.', style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
+            tagValue: (val: boolean) => val ? 'SI' : 'NO',
+            tagColor: (val: boolean) => val ? 'primary' : 'success',
+            tagIcon: (val: boolean) => val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'
           },
-          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
-          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
-          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
-          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
-          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
-        ]);
-        break;  
-      case 'D':
-        this.cols.set([
-          { field: `direction`, header: 'DIRECCIÓN ACOPIADORA MINORISTA' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
-          { field: `mayorista`, header: 'MAYOR.' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
-            tagValue: (val:boolean)=> val ? 'SI' : 'NO',
-            tagColor: (val:boolean)=> val ? 'primary' : 'success',
-            tagIcon: (val:boolean)=> val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box',
-          },
-          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
-          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
-          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
-          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
-          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
-        ]);
-        break  
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px;', isButton: true }
+        ];
       case 'E':
-        this.cols.set([
-          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
-          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
-          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
-          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
-          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
-          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
-        ]);
-        break
-      case 'F':
-        this.cols.set([
-          { field: 'full_names', header: 'EMPRESA PUBLICA' , style:'min-width:150px;max-width:300px;', tooltip: true, isText:true},
-          { field: `number_document`, header: 'NIT' , style:'min-width:120px;max-width:120px;', tooltip: true , isText:true },
-          { field: `direction`, header: 'DIRECCIÓN' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-          { field: `companyContacts`, header: 'CONTACTO' , style:'min-width:200px;max-width:200px;', tooltip: true , isText:true },
-          { field: 'sector.name', header: 'SECTOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true},
-          { field: `name_contact`, header: 'PERSONA NOMBRE' , style:'min-width:150px;max-width:200px;',tooltip: true , isText:true },
-          { field: `cellphone_contact`, header: 'PERSONA CELULAR' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
-          { field: `workAreaOrPositionOrUnit`, header: 'AREA - UNIDAD' , style:'min-width:120px;max-width:150px;', tooltip: true  , isText:true},
-          { field: `category.name`, header: 'CATEGORÍA' , style:'min-width:120px;max-width:150px;', tooltip: true , isText:true },
-          { field: `frequency`, header: 'FRECUENCIA' , style:'min-width:120px;max-width:120px;', tooltip: true, isText:true  },
-          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px', isButton:true }
-        ]);
-        break
+        return [...columns,
+          { field: 'number_document', header: 'CI / NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
+          { field: 'name_contact', header: 'PERSONA NOMBRE', style:'min-width:150px;max-width:200px;', tooltip: true, isText: true },
+          { field: 'cellphone_contact', header: 'PERSONA CELULAR', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+          { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px;', isButton: true }
+        ];
+      case 'ALL':
+          return [...columns,
+            { field: 'full_names', header: 'EMPRESA - TALLER, NEGOCIO', style: 'min-width:150px;max-width:300px;', tooltip: true, isText: true },
+            { field: 'number_document', header: 'CI / NIT', style: 'min-width:120px;max-width:120px;', tooltip: true, isText: true },
+          //  { field: 'direction', header: 'DIRECCIÓN - ACOPIADORA', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
+            { field: 'companyContacts', header: 'CONTACTO', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
+            { field: 'name_contact', header: 'PERSONA NOMBRE', style: 'min-width:150px;max-width:200px;', tooltip: true, isText: true },
+            { field: 'cellphone_contact', header: 'PERSONA CELULAR', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+           // { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+            {
+              field: 'mayorista', header: 'MAYOR.', style: 'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
+              tagValue: (val: boolean) => val ? 'SI' : 'NO',
+              tagColor: (val: boolean) => val ? 'primary' : 'success',
+              tagIcon: (val: boolean) => val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'
+            },
+            { field: 'options', header: 'OPCIONES', style: 'min-width:130px;max-width:130px;', isButton: true }
+          ];
       default:
-          this.cols.set([]);
-        break;
+        return [];
     }
+  }
+
+
+  printPdfReport() {
+    this.loadingReport.set(true);
+    const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
+    Swal.fire({
+      title: 'Generando Excel!',
+      html: `Espere un momento`,
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.providersService.getReportExcel(this.status(),this.type(),this.query(),this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '').subscribe({
+            next: (data) => {
+              this.loadingReport.set(false);
+              const fileURL = window.URL.createObjectURL(data);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+            },
+          });
+        });
+      },
+    });
   }
 }

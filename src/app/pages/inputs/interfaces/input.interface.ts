@@ -3,7 +3,7 @@ import { Category, Unit } from "../../inventories/interfaces/products.interface"
 import { Provider } from "./provider.interface";
 
 export interface InputConfig {
-    searchForCode: boolean, 
+    searchForCode: boolean,
     viewCardProducts: boolean,
     printAfter: boolean,
     clearInputAfterProductSearch: boolean,
@@ -51,6 +51,10 @@ export interface GetAllInputs {
     inputs: Inputs;
 }
 
+export interface GetOneInput {
+    ok:     boolean;
+    input:  Input;
+}
 export interface Inputs {
     previousPage: null;
     currentPage:  number;
@@ -60,8 +64,12 @@ export interface Inputs {
     from:         number;
     to:           number;
     data:         Input[];
+    totals:       Totals;
 }
-
+interface Totals {
+    totalInput: number,
+    totalQuantity: number,
+}
 export interface Input {
     id:              number;
     cod:             string;
@@ -94,6 +102,10 @@ export interface Input {
     user:            User;
     detailsInput:    DetailsInput[];
     options?:        Options[];
+    totalQuantity:   number;
+    referral_sources: string;
+    old_customer:     boolean;
+    with_pickup:      boolean;
 }
 
 export interface DetailsInput {
@@ -170,13 +182,17 @@ interface AbonosAccountsPayable {
 
 //** Form Search */
 export interface FormSearchInputs {
-    status:        string;
-    type_pay:      string;
-    id_storage:    string;
-    id_sucursal:   string;
-    filterBy:      string;
-    date1:         string;
-    date2:         string;
-    type_registry: string;
-    id_provider:   string;
+    status:           string;
+    type_pay:         string;
+    id_storage:       string;
+    id_sucursal:      string;
+    filterBy:         string;
+    date1:            string;
+    date2:            string;
+    type_registry:    string;
+    id_provider:      string;
+    referral_sources: string
+    id_type_provider: string;
+    old_customer: string;
+    with_pickup: string;
 }

@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit {
   validatorsService = inject(ValidatorsService);
   cardsRequest = signal([
     {
-      class: 'card r-card', icon: 'fa-solid fa-tags', 
+      class: 'card r-card', icon: 'fa-solid fa-tags',
       view: this.validatorsService.withPermission('PRODUCTOS','view'),
       title: 'PRODUCTOS',  linkRedirect: '/inventories/products',
     },
@@ -24,20 +24,20 @@ export class HomeComponent implements OnInit {
       class: 'card bookp-card', icon: 'fa-solid fa-truck',
       view: this.validatorsService.withPermission('COMPRAS','create'),
       title: 'COMPRAS', linkRedirect: '/inputs/input-small',
-    }, { 
+    }, {
       class: 'card revenue-card', icon: 'fa-solid fa-boxes-stacked',
       view: this.validatorsService.withPermission('CLASIFICADOS','create'),
-      title: 'CLASIFICADOS', linkRedirect: '/classifieds/classified', 
+      title: 'CLASIFICADOS', linkRedirect: '/classifieds/classified',
     },
     {
       class: 'card o-card', icon: 'fa-solid fa-users',
       view: this.validatorsService.withPermission('CLIENTES','view'),
       title: 'CLIENTES', linkRedirect: '/outputs/clients',
-    }, 
+    },
     {
       class: 'card b-card', icon: 'fa-solid fa-cart-plus',
       view: this.validatorsService.withPermission('VENTAS','create'),
-      title: 'VENTAS', linkRedirect: '/outputs/output', 
+      title: 'VENTAS', linkRedirect: '/outputs/output',
     },
     {
       class: 'card p-card', icon: 'fa-solid fa-signs-post',
@@ -51,10 +51,10 @@ export class HomeComponent implements OnInit {
     },
     {
       class: 'card p-card', icon: 'fas fa-clipboard-list',
-      view: this.validatorsService.withPermission('KARDEX','view'),
-      title: 'KARDEX', linkRedirect: '/inventories/kardex',
-    }, 
-    
+      view: this.validatorsService.withPermission('KARDEX-FIS','view'),
+      title: 'INVENTARIO', linkRedirect: '/inventories/kardex-fisico/mp',
+    },
+
   ]);
   cardsRequestPermission = computed(()=>this.cardsRequest().filter(resp => resp.view == true))
   cols         = signal<ColsTable[]>([
@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit {
       next: (resp) => {
         this.loading.set(false);
         this.histories.set(resp.histories);
-      }, 
+      },
       error: () => this.loading.set(false)
     });
   }

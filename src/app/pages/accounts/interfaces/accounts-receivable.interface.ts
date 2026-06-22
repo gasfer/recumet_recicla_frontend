@@ -14,8 +14,13 @@ export interface AccountsReceivable {
     from:         number;
     to:           number;
     data:         AccountReceivable[];
+    totals:    Totals;
 }
-
+interface Totals {
+    total_abonados: number,
+    total_restante: number,
+    total_account: number,
+}
 export interface AccountReceivable {
     id:                       number;
     cod:                      string;
@@ -47,6 +52,9 @@ export interface AbonosAccountsReceivable {
     restante_credito:      number;
     id_user:               number;
     status:                boolean;
+    comments:              string;
+    type_payment:          string;
+    account_output:        string;
     createdAt:             string;
     updatedAt:             string;
     user:                  User;

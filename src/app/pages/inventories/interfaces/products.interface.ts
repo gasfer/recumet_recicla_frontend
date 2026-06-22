@@ -36,6 +36,7 @@ export interface Product {
     //items frontend required
     options?:      Options[];
     quantity:      number;
+    set_quantity?:      number;
     import:        number;
     price_select?: number; 
     total_stock?: number; 

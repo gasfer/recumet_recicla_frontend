@@ -12,6 +12,7 @@ export interface ColsTable {
     field?:      string | string[];
     field2?:     string | string[];
     link?:     string;
+    footer?:     string;
     header:     string;
     style?:      string;
     tooltip?:   boolean;
@@ -25,6 +26,7 @@ export interface ColsTable {
     isButton?:  boolean;
     isImg?:     boolean;
     isText?:     boolean;
+    isTextArray?:     boolean;
     isDoubleValue?:  boolean;
     isLink?:     boolean;
     isValueUpdate?: boolean;

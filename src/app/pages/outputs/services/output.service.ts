@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, inject, signal } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Product } from '../../inventories/interfaces/products.interface';
-import { Client, FormSearchOutputs, GetAllOutputs, NewOutputForm, Output, OutputConfig } from '../interfaces/output.interface';
+import { Client, FormSearchOutputs, GetAllOutputs, GetOneOutput, NewOutputForm, Output, OutputConfig } from '../interfaces/output.interface';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -34,6 +34,11 @@ export class OutputService {
   }
 
   constructor() { }
+
+  getOutputById(id_output:string): Observable<GetOneOutput>{
+    let  url = `${base_url}/output/find/${id_output}`;
+    return this.http.get<GetOneOutput>(url);
+  }
 
   getAllAndSearchOutputs(page: number, limit: number,params:FormSearchOutputs, type: string = '', query?: string, field_sort:string = 'id',order:string = 'DESC',): Observable<GetAllOutputs>{
     let url = '';

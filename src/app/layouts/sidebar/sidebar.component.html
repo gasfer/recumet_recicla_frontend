@@ -17,14 +17,14 @@
               <span class="badge rounded-pill float-end bg-{{item.badge.variant}}" *ngIf="item.badge">{{item.badge.text |
                 translate}}</span>
             </a>
-  
+
             <a routerLink="{{item.link}}" *ngIf="!hasItems(item)  && item.link" class="side-nav-link-ref">
               <i class="{{ item.icon }}" *ngIf="item.icon"></i>
               <span> {{ item.label ?? '' | translate }}</span>
               <span class="badge rounded-pill bg-{{item.badge.variant}} float-end" *ngIf="item.badge">{{item.badge.text |
                 translate}}</span>
             </a>
-  
+
             <ul *ngIf="hasItems(item)" class="sub-menu" aria-expanded="false">
               <li *ngFor="let subitem of item.subItems">
                 <a routerLink="{{subitem.link}}" *ngIf="!hasItems(subitem)" class="side-nav-link-ref"
@@ -39,7 +39,7 @@
                 </a>
                 <ul *ngIf="hasItems(subitem)" class="sub-menu mm-collapse" aria-expanded="false">
                   <li *ngFor="let subSubitem of subitem.subItems">
-                    <a [attr.data-parent]="subSubitem.parentId" routerLink="{{subSubitem.link}}" 
+                    <a [attr.data-parent]="subSubitem.parentId" routerLink="{{subSubitem.link}}"
                       class="side-nav-link-ref">
                       {{ subSubitem.label | translate }}
                     </a>
@@ -53,7 +53,7 @@
     </div>
   </ng-template>
   <!-- Sidebar -->
-  
+
   <div class="vertical-menu">
     <ngx-simplebar class="h-100" #componentRef>
       <div *ngIf="!isCondensed">

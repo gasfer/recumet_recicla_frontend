@@ -1,7 +1,7 @@
 <!--Pos config modal-->
 <app-modal-config-input></app-modal-config-input> 
 <!--Pos Data modal save-->
-<app-modal-save-input></app-modal-save-input>
+<app-modal-save-input [id_storage]="formReport.get('id_storage')?.value"></app-modal-save-input>
 <!--provider new modal-->
 <app-modal-provider></app-modal-provider>
 
@@ -69,7 +69,25 @@
                 </div>
             </div>
         </div>
-      
+        <div [formGroup]="formReport"  class="row mt-2">
+            <div class="col-12 col-sm-6">
+                <label class="block mb-0">Area / Almacén ingreso stock: &nbsp;</label>
+                <p-dropdown [options]="validatorsService.storages()" 
+                  placeholder="Selecciona un almacén" 
+                  optionLabel="name"
+                  optionValue="id"
+                  (onChange)="setSelectStorage()"
+                  (onHide)="this.componentService.clearInputSearch$.next(true)"
+                  appendTo="body" [filter]="true" filterBy="name"
+                  [virtualScrollItemSize]="38" [lazy]="true"
+                  formControlName="id_storage" 
+                  [class.ng-dirty]="validatorsService.inputValid('id_storage',formReport)"
+                ></p-dropdown>
+                <small *ngIf="validatorsService.inputValid('id_storage',formReport)" class="p-error block">
+                    {{ validatorsService.inputValidMessage("id_storage",formReport) }}
+                </small>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row mt-1">
@@ -118,6 +136,14 @@
     </div>
     
     <div *ngIf="inputsService._inputConfig.viewCardProducts" class="col-sm-12 col-md-5">
-        <app-dataview-products  (onProductSelect)="addItemCarByViewProduct($event)" (onProductByCod)="addItemCarByCodProduct($event)"></app-dataview-products>
+        <app-dataview-products  
+            [typeFrom]="'INPUT'"
+            [isInput]="true"
+            [isViewQuantity]="true" 
+            [id_sucursal]="formReport.get('id_sucursal')?.value" 
+            [id_storage]="formReport.get('id_storage')?.value" 
+            (onProductSelect)="addItemCarByViewProduct($event)" 
+            (onProductByCod)="addItemCarByCodProduct($event)">
+        </app-dataview-products>
     </div>
 </div>

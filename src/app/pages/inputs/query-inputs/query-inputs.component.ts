@@ -10,6 +10,7 @@ import { ProvidersService } from '../services/providers.service';
 import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { Provider } from '../interfaces/provider.interface';
 @Component({
   selector: 'app-query-inputs',
   templateUrl: './query-inputs.component.html',
@@ -33,26 +34,41 @@ export class QueryInputsComponent implements OnInit {
   maxDate!: Date;
   buttonItems: MenuItem[] = [
     {
-      label: 'Excel',
+      label: 'Reporte Compras',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D'},
       command: () => { this.printExcelReport(); }
     },
     {
-      label: 'Pdf Detalle',
-      icon: 'fas fa-print',
+      label: 'Reporte Compras Detallado',
+      icon: 'fas fa-file-pdf',
+      iconStyle: { 'color': '#DC4C64'},
+      command: () => { this.printPdfDetailsCPPReport(); }
+    }, {
+      label: 'Resumen por producto',
+      icon: 'fas fa-file-pdf',
       iconStyle: { 'color': '#DC4C64'},
       command: () => { this.printPdfDetailsReport(); }
     },
     {
-      label: 'Excel Detalle',
+      label: 'Resumen producto',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D'},
       command: () => { this.printExcelDetailsReport(); }
     },
   ];
   searchItems = signal<MenuItem[]>([
-    { 
+    {
+      label: 'Todos', icon: 'fas fa-list',
+      iconStyle: { 'color': '#FF851B'},
+      command: () => {
+        this.cols()[0].isLink = false;
+        this.paramsSearch().type_pay = '';
+        this.paramsSearch().status = 'ACTIVE';
+        this.getAllAndSearchInputs(1,this.rows());
+      }
+    },
+    {
       label: 'Al Contado', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
@@ -62,8 +78,8 @@ export class QueryInputsComponent implements OnInit {
         this.getAllAndSearchInputs(1,this.rows());
       }
     },
-    { 
-      label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left', 
+    {
+      label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left',
       iconStyle: { 'color': '#14A44D'},
       command: () => {
         this.cols()[0].isLink = true;
@@ -73,17 +89,17 @@ export class QueryInputsComponent implements OnInit {
         this.paramsSearch().type_pay = 'CREDITO';
         this.paramsSearch().status = 'ACTIVE';
         this.getAllAndSearchInputs(1,this.rows());
-      } 
+      }
     },
-    { 
-      label: 'Anulados', icon: 'fa-solid fa-trash-can', 
+    {
+      label: 'Anulados', icon: 'fa-solid fa-trash-can',
       iconStyle: { 'color': '#DC4C64'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
         this.paramsSearch().status = 'INACTIVE';
         this.getAllAndSearchInputs(1,this.rows());
-      } 
+      }
     },
   ]);
   types_registry = computed(() => this.inputsService.types_registry());
@@ -95,32 +111,52 @@ export class QueryInputsComponent implements OnInit {
     id_storage: [''],
     id_provider: [''],
     type_pay: [''],
-    status: ['ACTIVE']
+    status: ['ACTIVE'],
+    referral_sources: [''],
+    id_type_provider: [''],
+    old_customer: [''],
+    with_pickup: [''],
   });
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   cols = signal<ColsTable[]>([
-    { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
-    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:100px;max-width:120px;', tooltip: true,isTag: true, 
+    { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true, footer:'TOTALES'},
+    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true,
       tagValue: (val:boolean)=>  val,
       tagColor: (val:boolean)=> 'success',
       tagIcon: (val:boolean)=>  'fa-solid fa-file'
     },
-    { field: 'createdAt', header: 'FECHA CMP.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
+    { field: 'registry_number', header: 'NUMERO' , style:'min-width:80px;max-width:120px;', tooltip: true, isText: true},
+    { field: 'date_voucher', header: 'FECHA CMP.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: `comments`, header: 'OBSERVACIONES' , style:'min-width:100px;max-width:250px;', tooltip: true, isText: true  },
-    { field: `total`, header: 'TOTAL' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true, 
+    { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
+      tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+      tagColor: (val:number)=> 'warning',
+      tagIcon: (val:number)=>  'fas fa-boxes-stacked'
+    },
+    { field: `total`, header: 'TOTAL' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
       tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
       tagColor: (val:number)=> 'primary',
       tagIcon: (val:number)=>  'fa-solid fa-sack-dollar'
     },
-    { field: 'user.full_names', header: 'USUARIO' , style:'min-width:100px;max-width:180px;', tooltip: true, isText: true},
-    { field: 'storage.name', header: 'ALMACÉN' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
+    { field: 'type', header: 'TIPO' , style:'min-width:80px;max-width:80px;', tooltip: true, isTag: true,
+      tagValue: (val:string)=>  val,
+      tagColor: (val:string)=> val == 'CONTADO' ? 'primary' : 'success',
+      tagIcon: (val:string)=>  'fa-solid fa-sack-dollar'
+    },
+    { field: `old_customer`, header: 'ANTIGUO' , style:'min-width:80px;max-width:80px;', tooltip: true, isValueUpdate:true,
+      tagValue: (val:boolean)=> val ? 'SI' : 'NO',
+    },
+    { field: `referral_sources`, header: 'NOS CONOCIÓ' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
+    { field: `with_pickup`, header: 'RECOJO' , style:'min-width:80px;max-width:80px;', tooltip: true, isValueUpdate:true,
+      tagValue: (val:boolean)=> val ? 'SI' : 'NO',
+    },
     { field: 'options', header: 'OPCIONES', style:'min-width:170px;max-width:170px', isButton:true }
   ]);
   searchFor = signal<SearchFor[]>([
-    {name: 'CÓDIGO', code: 'cod'},
     {name: 'NUMBER DOC.', code: 'registry_number'},
+    {name: 'CÓDIGO', code: 'cod'},
     {name: 'COMENTARIOS', code: 'comments'},
     {name: 'BALANZA', code: 'scale.name'},
     {name: 'USUARIO', code: 'user.full_names'},
@@ -130,20 +166,24 @@ export class QueryInputsComponent implements OnInit {
   page         = signal(1);
   type         = signal('');
   query        = signal('');
-  fieldSort    = signal('');
-  order        = signal('');
+  fieldSort    = signal('date_voucher');
+  order        = signal('DESC');
   inputs       = signal<Inputs|undefined>(undefined);
   providers    = signal<{name:string, code:string}[]>([]);
   paramsSearch = signal<FormSearchInputs>({
     type_registry: '',
     id_provider:'',
-    type_pay: 'CONTADO',
+    type_pay: '',
     id_storage: '',
     id_sucursal: '',
     status: 'ACTIVE',
     filterBy:'MONTH',
     date1: '',
-    date2: ''
+    date2: '',
+    referral_sources: '',
+    id_type_provider: '',
+    old_customer: '',
+    with_pickup: '',
   });
   types_filtrado = signal([
     {name: 'DIA', code: 'DAY'},
@@ -151,30 +191,56 @@ export class QueryInputsComponent implements OnInit {
     {name: 'AÑO', code: 'YEAR'},
     {name: 'RANGO', code: 'RANGE'},
   ]);
+  yes_no_type = signal([
+    {name: 'SI', code: 'SI'},
+    {name: 'NO', code: 'NO'},
+  ]);
+
+  referral_sources = computed(this.inputsService.referral_sources);
+  types = signal<{name:string, code:string}[]>([]);
+  txtSearchProvider      = signal('');
+  suggestedProvider      = signal<Provider[]>([]);
+  loadingSearchProvider  = signal(false);
+  providerSelect         = signal<Provider|undefined>(undefined);
 
   ngOnInit(): void {
-    this.getAllProviders();
     this.getAllAndSearchInputs(1,this.rows());
+    this.getAllTypes();
   }
 
-  getAllProviders() {
-    this.providersService.getAllAndSearch(1,1000,true).subscribe({
-      next: (resp)=> {
-        this.providers.set([]);
-        resp.providers.data.forEach(provider => {
-          this.providers.update((providers) => [
-            ...providers,
-            {
-              name: `${provider.full_names} - ${provider.number_document ?? ''}`,
-              code: provider.id.toString(),
-            },
-          ]);
-        })
-      },
-      error: (err)=> this.providers.set([])
-    });
+  suggestedsProvider(txtSearchProvider: string){
+    if(txtSearchProvider.length==0) {
+      this.txtSearchProvider.set('');
+      this.suggestedProvider.set([]);
+      return;
+    }
+    this.loadingSearchProvider.set(true);
+    this.txtSearchProvider.set(txtSearchProvider);
+    this.suggestedProvider.set([]);
+    this.providersService.getAllAndSearch(1,100000,true,'pos',txtSearchProvider,'full_names','ASC')
+        .subscribe({
+          next: (resp) => {
+            this.suggestedProvider.set(resp.providers.data);
+            this.loadingSearchProvider.set(false);
+          },
+          error: (e) => {
+            this.loadingSearchProvider.set(false);
+          }
+        });
   }
-  
+
+  selectProvider(provider: Provider) {
+    this.suggestedProvider.set([]);
+    this.txtSearchProvider.set('');
+    this.providerSelect.set(provider);
+    this.formReport.get('id_provider')?.setValue(this.providerSelect()?.id);
+  }
+
+  clearSelectProvider() {
+    this.providerSelect.set(undefined);
+    this.formReport.get('id_provider')?.setValue(null);
+  }
+
   getAllAndSearchInputs(page: number, limit: number,type: string = '', query: string = '') {
     this.formReport.get('id_sucursal')?.setValue(this.validatorsService.id_sucursal());
     this.formReport.markAllAsTouched();
@@ -186,8 +252,8 @@ export class QueryInputsComponent implements OnInit {
         this.inputs.set(resp.inputs);
         this.inputs()!.data.forEach((input) => {
           input.options = input.status == 'ACTIVE'  ? [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -195,10 +261,10 @@ export class QueryInputsComponent implements OnInit {
                 this.inputsService.showModalDetailsInput = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-edit', 
-              tooltip: 'Editar',
-              disabled: this.validatorsService.withPermission('COMPRAS','update'),
+            {
+              label:'',icon:'fas fa-edit',
+              tooltip: this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,30) ? 'La fecha límite de edición ha sido superada.' : 'Editar',
+              disabled:  !this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,30) ? this.validatorsService.withPermission('COMPRAS','update') : false,
               class:'p-button-rounded p-button-warning p-button-sm  ms-1',
               eventClick: () => {
                 this.inputsService.resetInput();
@@ -224,14 +290,14 @@ export class QueryInputsComponent implements OnInit {
                       prices: [],
                     },
                   ]);
-                }); 
+                });
                 this.inputsService.providerSelect.set(input.provider);
                 this.inputsService.dataInputForEdit.set(input);
                 this.router.navigateByUrl('/inputs/input-small');
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Imprimir',
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -239,7 +305,7 @@ export class QueryInputsComponent implements OnInit {
               }
             },
             {
-              label:'',icon:'fa-solid fa-trash-can', 
+              label:'',icon:'fa-solid fa-trash-can',
               tooltip: 'Anular',
               disabled: this.validatorsService.withPermission('COMPRAS','delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
@@ -248,8 +314,8 @@ export class QueryInputsComponent implements OnInit {
               }
             },
           ] : [
-            { 
-              label:'',icon:'fas fa-eye', 
+            {
+              label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
@@ -259,10 +325,15 @@ export class QueryInputsComponent implements OnInit {
             },
           ] ;
         });
+        const totalInput = resp.inputs?.totals?.totalInput ?? 0;
+        const totalQuantity = resp.inputs?.totals?.totalQuantity ?? 0;
+        this.cols()[6].footer =  this.pipeNumber.transform(totalQuantity,this.decimal()) ?? '0';
+        this.cols()[7].footer =  this.pipeNumber.transform(totalInput,this.decimal()) ?? '0';
       },
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)
     });
+
   }
 
   anularInput(input: Input) {
@@ -294,10 +365,10 @@ export class QueryInputsComponent implements OnInit {
       if(!result.isConfirmed) return;
       if(result.value) {
         this.getAllAndSearchInputs(1,this.rows());
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `La compra fue anulada correctamente, Disponible en la sección de anulados`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'sweetalert2'},
         });
@@ -307,8 +378,8 @@ export class QueryInputsComponent implements OnInit {
 
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates} = this.formReport.value;
-      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY'; 
+      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates, referral_sources, id_type_provider, old_customer, with_pickup} = this.formReport.value;
+      const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_registry: type_registry ? type_registry : '',
@@ -320,6 +391,10 @@ export class QueryInputsComponent implements OnInit {
         filterBy: filterBy,
         date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
+        referral_sources: referral_sources ? referral_sources : '',
+        id_type_provider: id_type_provider ? id_type_provider : '',
+        old_customer: old_customer ? old_customer : '',
+        with_pickup: with_pickup ? with_pickup : '',
       }
     });
   }
@@ -341,8 +416,6 @@ export class QueryInputsComponent implements OnInit {
   }
 
   customSort($sort:any) {
-    console.log($sort);
-    
     let {field, order} = $sort;
     this.fieldSort.set(field);
     this.order.set(order);
@@ -363,10 +436,14 @@ export class QueryInputsComponent implements OnInit {
       id_provider: '',
       date_range: '',
       type_pay: '',
-      status: 'ACTIVE',   
+      status: 'ACTIVE',
+      referral_sources: '',
+      id_type_provider: '',
+      old_customer: '',
+      with_pickup: '',  
     });
   }
-  
+
   printPdfReport() {
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
@@ -445,6 +522,32 @@ export class QueryInputsComponent implements OnInit {
     });
   }
 
+   printPdfDetailsCPPReport() {
+    this.formReport.markAllAsTouched();
+    if(!this.formReport.valid) return;
+    this.formParamsByForm();
+    Swal.fire({
+      title: 'Generando Reporte!',
+      html: `Con los parámetros seleccionados`,
+      didOpen: () => {
+        Swal.showLoading();
+        new Promise((resolve, reject) => {
+          this.inputsService.getReportDetailsCPPPdf(this.paramsSearch()).subscribe({
+            next: (data) => {
+              const file = new Blob([data], { type: 'application/pdf' });
+              const fileURL = URL.createObjectURL(file);
+              window.open(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+            },
+          });
+        });
+      },
+    });
+  }
+
   printExcelDetailsReport() {
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
@@ -468,6 +571,25 @@ export class QueryInputsComponent implements OnInit {
           });
         });
       },
+    });
+  }
+
+  getAllTypes() {
+    this.types.set([]);
+    this.providersService.getAllTypesProvider().subscribe(resp => {
+      const formattedType = resp.typesProvider.map(type => ({
+        name: type.name,
+        id: type.id!.toString(),
+        code: type.code,
+      })).sort((a, b) => a.name.localeCompare(b.name));
+      formattedType.unshift(
+        {code:'ALL', name:'TODOS',id: ''}
+      )
+      this.types.set(formattedType);
+      if(formattedType.length > 0) {
+        this.formReport.get('id_type_provider')?.setValue('');
+        this.getAllAndSearchInputs(1,this.rows());
+      }
     });
   }
 }

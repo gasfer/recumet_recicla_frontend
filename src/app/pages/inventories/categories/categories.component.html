@@ -1,27 +1,30 @@
 <div class="card shadow">
-    <p-toolbar>
-      <div class="p-toolbar-group-left">
-        <h4>LISTADO DE CATEGORÍAS</h4>
-      </div>
-      <div *ngIf="validatorsService.withPermission('CATEGORIAS','create')" class="p-toolbar-group-right ms-1">
-        <p-button
-          icon="fa-solid fa-circle-plus"
-          (click)="showModal()"
-          pTooltip="Añadir Nuevo"
-          tooltipPosition="left"
-          styleClass="p-button-primary p-button-rounded"
-          label="Añadir"
-        ></p-button>
-      </div>
-    </p-toolbar>
-    <app-modal-category></app-modal-category>
-    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
-    <app-table *ngIf="!status()" [cols]="cols()"   (customSort$)="customSort($event)"
-      [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
-      [data]="categories()" [loading]="loading()">
-    </app-table>
-    <app-table *ngIf="status()" [cols]="cols()"  (customSort$)="customSort($event)"
-      [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
-      [data]="categories()" [loading]="loading()">
-    </app-table>
+  <p-toolbar>
+    <div class="p-toolbar-group-left">
+      <h4>LISTADO DE CATEGORÍAS</h4>
+    </div>
+    <div *ngIf="validatorsService.withPermission('CATEGORIAS','create')" class="p-toolbar-group-right ms-1">
+      <p-button icon="fa-solid fa-circle-plus" (click)="showModal()" pTooltip="Añadir Nuevo" tooltipPosition="left"
+        styleClass="p-button-primary p-button-rounded" label="Añadir"></p-button>
+    </div>
+  </p-toolbar>
+  <app-modal-category></app-modal-category>
+  <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+    [activeItem]="searchItems()[0]"></p-tabMenu>
+  <app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+    (rows$)="paginate($event)" (search$)="search($event)" [data]="categories()" [loading]="loading()">
+    <div extra-filters class="p-element ng-star-inserted" style="display: inline-block; margin-right: 0.5rem;">
+      <p-dropdown [options]="categoryTypes" [(ngModel)]="categoryTypeFilter" optionLabel="label" optionValue="value"
+        placeholder="Filtrar por tipo" (onChange)="filterByCategoryType()" [style]="{'width':'200px'}" appendTo="body">
+      </p-dropdown>
+    </div>
+  </app-table>
+  <app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+    (rows$)="paginate($event)" (search$)="search($event)" [data]="categories()" [loading]="loading()">
+    <div extra-filters class="p-element ng-star-inserted" style="display: inline-block; margin-right: 0.5rem;">
+      <p-dropdown [options]="categoryTypes" [(ngModel)]="categoryTypeFilter" optionLabel="label" optionValue="value"
+        placeholder="Filtrar por tipo" (onChange)="filterByCategoryType()" [style]="{'width':'200px'}" appendTo="body">
+      </p-dropdown>
+    </div>
+  </app-table>
 </div>

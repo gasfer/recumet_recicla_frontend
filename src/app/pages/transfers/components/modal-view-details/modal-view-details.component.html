@@ -42,24 +42,21 @@
 					<tr>
 						<th style="background-color: var(--bg-primary)" class="text-white"> Producto </th>
 						<th style="background-color: var(--bg-primary)" class="text-white"> Cantidad </th>
-						<th style="background-color: var(--bg-primary)" class="text-white"> Costo </th>
 					</tr>
 				</thead>
 				<tbody>
                     <tr *ngFor="let detail of transfer()?.detailsTransfers" >
-                        <td style="max-width: 200px;">
+                        <td >
                             <h5 class="m-0 p-0">{{detail.product.name}}</h5>
                             <p style="font-size: 10px;" class="text-muted">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
                         </td>
-                        <td>{{detail.quantity}}</td>
-                        <td>{{detail.cost  | number:decimal()}}</td>
+                        <td>{{detail.quantity  | number:decimal() }}</td>
                     </tr>
 				</tbody>
 				<tfoot>
 					<tr>
-						<td></td>
-						<td width="10%" class="table-active fw-bold">TOTAL</td>
-                        <td id="total"> <p-tag [style]="{'font-size': '15px'}" value="{{totalQuantityItems() | number:decimal()}}" [rounded]="true"></p-tag> </td>
+						<td  class="table-active fw-bold">TOTAL</td>
+                        <td id="total"> <p-tag [style]="{'font-size': '15px'}" [severity]="'warning'"  value="{{totalQuantityItems() | number:decimal()}}" [rounded]="true"></p-tag> </td>
 					</tr>
 				</tfoot>
 			</table>

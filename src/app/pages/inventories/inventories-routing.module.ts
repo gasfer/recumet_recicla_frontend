@@ -10,23 +10,51 @@ import { KardexExistenciaComponent } from './kardex-existencia/kardex-existencia
 import { ListCostsProductComponent } from './list-costs-product/list-costs-product.component';
 
 const routes: Routes = [
-  { path: 'products', component: ProductsComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Productos' , active: true }], name: 'PRODUCTOS'} },
-  { path: 'categories', component: CategoriesComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Categorías' , active: true }], name: 'CATEGORIAS'}},
-  { path: 'units', component: UnitsComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Unidad de medida' , active: true }], name: 'UND MEDIDA'}},
-  { path: 'scales', component: ScalesComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Balanzas' , active: true }], name: 'BALANZAS'}},
-  { path: 'kardex', component: KardexComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Kardex' , active: true }], name: 'KARDEX HISTÓRICO'}},
-  { path: 'kardex-fisico', component: KardexFisicoComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Kardex Físico' , active: true }], name: 'KARDEX FÍSICO'}},
-  { path: 'kardex-existencia', component: KardexExistenciaComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Kardex De Existencia' , active: true }], name: 'KARDEX DE EXISTENCIA'}},
-  { path: 'list-products-prices', component: ListCostsProductComponent, 
-    data: { data: [ { title: 'Administración' },{ title: 'Almacén' },{ title: 'Productos' }, { title: 'Listado de precios' , active: true }], name: 'LISTADO DE PRECIOS'}},
-  { path: '**', redirectTo: 'products'}
+  {
+    path: 'products', component: ProductsComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Productos', active: true }], name: 'PRODUCTOS' }
+  },
+  {
+    path: 'categories', component: CategoriesComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Categorías', active: true }], name: 'CATEGORIAS' }
+  },
+  {
+    path: 'units', component: UnitsComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Unidad de medida', active: true }], name: 'UND MEDIDA' }
+  },
+  {
+    path: 'scales', component: ScalesComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Balanzas', active: true }], name: 'BALANZAS' }
+  },
+  {
+    path: 'kardex', component: KardexComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex', active: true }], name: 'KARDEX' }
+  },
+  {
+    path: 'kardex-fisico/mp', component: KardexFisicoComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'RAW_MATERIAL', title: '(MP) Materia Prima' }
+  },
+  {
+    path: 'kardex-fisico/pt', component: KardexFisicoComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'FINISHED_PRODUCT', title: '(PT) Productos Terminados' }
+  },
+  {
+    path: 'kardex-fisico/ar', component: KardexFisicoComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: 'RESALE_ITEM', title: '(AR) Artículos de Reventa' }
+  },
+  {
+    path: 'kardex-fisico/all', component: KardexFisicoComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex Físico', active: true }], name: 'KARDEX', category_types: '', title: 'Todos los Productos' }
+  },
+  {
+    path: 'kardex-existencia', component: KardexExistenciaComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Kardex De Existencia', active: true }], name: 'KARDEX' }
+  },
+  {
+    path: 'list-products-prices', component: ListCostsProductComponent,
+    data: { data: [{ title: 'Administración' }, { title: 'Almacén' }, { title: 'Productos' }, { title: 'Listado de precios', active: true }], name: 'LISTADO DE PRECIOS' }
+  },
+  { path: '**', redirectTo: 'products' }
 ];
 
 @NgModule({

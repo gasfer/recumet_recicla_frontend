@@ -10,6 +10,7 @@ import { ModalSaveClassifiedComponent } from './classified/components/modal-save
 import { TableClassifiedDetailsComponent } from './classified/components/table-classified-details/table-classified-details.component';
 import { InventoriesModule } from '../inventories/inventories.module';
 import { ModalViewDetailsComponent } from './query-classifieds/components/modal-view-details/modal-view-details.component';
+import { AccordionModule } from 'primeng/accordion';
 
 
 @NgModule({
@@ -25,7 +26,10 @@ import { ModalViewDetailsComponent } from './query-classifieds/components/modal-
     CommonModule,
     ClassifiedsRoutingModule,
     PagesModule,
-    InventoriesModule
+    AccordionModule
+  ],
+  exports: [
+    ModalViewDetailsComponent
   ]
 })
 export class ClassifiedsModule { }

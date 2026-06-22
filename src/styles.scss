@@ -40,7 +40,7 @@ p {
     font-size: small;
 }
 html {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 body .p-datepicker table td {
@@ -51,7 +51,7 @@ body .p-datepicker table td {
     position: fixed;
     z-index: 9999999;
     top: 50%;
-    height: 100%;
+    height: auto;
     left: 50%;
     transform: translate(-50%, -50%);
 }
