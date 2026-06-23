@@ -25,93 +25,129 @@ export class ModalAssignPermissionsComponent implements OnInit, OnDestroy {
   isEditSub$!: Subscription;
   user = signal<User | undefined>(undefined);
   permissionsForm!: FormGroup;
+permissionGroups = signal<PermissionGroup[]>([
+  // 📥 ENTRADAS
+  {
+    name: 'ENTRADAS',
+    icon: 'fa-arrow-down-to-line',
+    expanded: true,
+    permissions: [
+      { id_user: null, module: "PROVEEDORES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "RECOJO", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CERTIFICAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CUENTAS PROVEEDOR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "COMPRAS PROVEEDOR", view: false, create: false, update: false, delete: false, reports: false, status: true },
 
-  permissionGroups = signal<PermissionGroup[]>([
-    {
-      name: 'ENTRADAS',
-      icon: 'fa-arrow-down-to-line',
-      expanded: true,
-      permissions: [
-        // Compras
-        { id_user: null, module: "PROVEEDORES", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "CLASIFICADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      ]
-    },
-    {
-      name: 'SALIDAS',
-      icon: 'fa-arrow-up-from-line',
-      expanded: true,
-      permissions: [
-        // Ventas
-        { id_user: null, module: "CLIENTES", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "VENTAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        // Traslados
-        { id_user: null, module: "TRASLADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "RECEPCIONES", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      ]
-    },
-    {
-      name: 'GESTION CAJA',
-      icon: 'fa-cash-register',
-      expanded: true,
-      permissions: [
-        { id_user: null, module: "CAJA", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "CUENTAS POR PAGAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "CUENTAS POR COBRAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      ]
-    },
-    {
-      name: 'INVENTARIO',
-      icon: 'fa-boxes-stacked',
-      expanded: true,
-      permissions: [
-        { id_user: null, module: "KARDEX", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "KARDEX-FIS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "KARDEX-PT", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "KARDEX-AR", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      ]
-    },
-    {
-      name: 'GESTION VEHICULOS',
-      icon: 'fa-truck',
-      expanded: true,
-      permissions: [
-        { id_user: null, module: "TRANSPORTISTAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "CAMIONES", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "COMP. TRASPORTE", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      ]
-    },
-    {
-      name: 'PESAJE BALANZA',
-      icon: 'fa-scale-balanced',
-      expanded: true,
-      permissions: [
-        { id_user: null, module: "DASHBOARD BALANZA", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "GESTION BALANZAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "BALANZA CAMIONERA", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "BALANZA MANUAL", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "SERVICIO BALANZA", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      ]
-    },
-    {
-      name: 'ADMINISTRACION',
-      icon: 'fa-gear',
-      expanded: true,
-      permissions: [
-        // Almacén
-        { id_user: null, module: "UND MEDIDA", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "CATEGORIAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "PRODUCTOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        // Gestión
-        { id_user: null, module: "USUARIOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "EMPRESA", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "SUCURSALES", view: false, create: false, update: false, delete: false, reports: false, status: true },
-        { id_user: null, module: "ALMACENES", view: false, create: false, update: false, delete: false, reports: false, status: true },
-      ]
-    },
-  ]);
+      { id_user: null, module: "COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
 
+      { id_user: null, module: "CLASIFICADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR CLASIFICADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+    ]
+  },
+
+  // ⚖️ BALANZA
+  {
+    name: 'GESTIÓN BALANZA',
+    icon: 'fa-scale-balanced',
+    expanded: true,
+    permissions: [
+      { id_user: null, module: "REGISTRAR PESAJE CAMIONERA", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR PESAJES CAMIONERA", view: false, create: false, update: false, delete: false, reports: false, status: true },
+
+      { id_user: null, module: "REGISTRAR PESAJE MANUAL", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR PESAJES MANUALES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+
+      { id_user: null, module: "REGISTRAR SERVICIO", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR SERVICIOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+
+      { id_user: null, module: "REGISTRAR TRANSPORTISTA", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR TRANSPORTISTAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+
+      { id_user: null, module: "REGISTRAR CAMION", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR CAMIONES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+    ]
+  },
+
+  // 📤 SALIDAS
+  {
+    name: 'SALIDAS',
+    icon: 'fa-arrow-up-from-line',
+    expanded: true,
+    permissions: [
+      { id_user: null, module: "CLIENTES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "VENTAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR VENTAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+    ]
+  },
+
+  // 🔄 TRASLADOS
+  {
+    name: 'TRASLADOS',
+    icon: 'fa-truck-ramp-box',
+    expanded: true,
+    permissions: [
+      { id_user: null, module: "TRASLADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR TRASLADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "RECEPCIONES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+    ]
+  },
+
+  // 💰 CAJA Y FINANZAS
+  {
+    name: 'FINANZAS',
+    icon: 'fa-cash-register',
+    expanded: true,
+    permissions: [
+      { id_user: null, module: "CAJA", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CONSULTAR CAJA", view: false, create: false, update: false, delete: false, reports: false, status: true },
+
+      { id_user: null, module: "GASTOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "PERSONAL GASTOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+
+      { id_user: null, module: "CUENTAS POR PAGAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CUENTAS POR COBRAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+    ]
+  },
+
+  // 📦 INVENTARIO
+  {
+    name: 'INVENTARIO',
+    icon: 'fa-boxes-stacked',
+    expanded: true,
+    permissions: [
+      { id_user: null, module: "KARDEX-FIS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "KARDEX-PT", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "KARDEX-AR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "KARDEX-ALL", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "KARDEX-ALL-FILTRO", view: false, create: false, update: false, delete: false, reports: false, status: true },
+
+      { id_user: null, module: "INSUMOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "AF MAQUINARIA", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "AF VEHICULOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "AF MUEBLES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+    ]
+  },
+
+  // ⚙️ ADMINISTRACION
+  {
+    name: 'ADMINISTRACION',
+    icon: 'fa-gear',
+    expanded: true,
+    permissions: [
+      { id_user: null, module: "UND MEDIDA", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "BALANZAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "CATEGORIAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "PRODUCTOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+
+      { id_user: null, module: "USUARIOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "EMPRESA", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "SUCURSALES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "ALMACENES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "COMP. TRASPORTE", view: false, create: false, update: false, delete: false, reports: false, status: true },
+    ]
+  }
+]);
 ngOnInit(): void {
   this.resetFormGroup();
   this.isEditSub$ = this.userService.assignPermisosSubs.subscribe(resp => {

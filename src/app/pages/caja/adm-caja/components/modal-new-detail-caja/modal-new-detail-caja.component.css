@@ -1,0 +1,81 @@
+/* ── Contenedor fila de tarjetas ── */
+.print-format-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* ── Tarjeta base ── */
+.print-card {
+  flex: 1 1 0%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid var(--surface-border);
+  background: var(--surface-ground);
+  transition: all 0.2s ease;
+}
+
+/* ── Tarjeta activa ── */
+.print-card.active {
+  border-color: var(--primary-color);
+  background: var(--primary-50);
+}
+
+/* ── Ícono wrapper ── */
+.print-card__icon {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: var(--surface-200);
+  color: var(--text-color-secondary);
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.print-card.active .print-card__icon {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+/* ── Textos ── */
+.print-card__label {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.print-card__title {
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--text-color-primary);
+  transition: color 0.2s ease;
+}
+
+.print-card.active .print-card__title {
+  color: var(--primary-color);
+}
+
+.print-card__sub {
+  font-size: 0.65rem;
+  color: var(--text-color-secondary);
+}
+
+/* ── Check ── */
+.print-card__check {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--surface-300);
+  transition: all 0.2s ease;
+}
+
+.print-card.active .print-card__check {
+  color: var(--primary-color);
+}

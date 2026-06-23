@@ -41,22 +41,36 @@
 				<thead>
 					<tr>
 						<th style="background-color: var(--bg-primary)" class="text-white"> Producto </th>
-						<th style="background-color: var(--bg-primary)" class="text-white"> Cantidad </th>
+						<th style="background-color: var(--bg-primary)" class="text-white"> Cant. Enviada </th>
+						<th *ngIf="transfer()?.status === 'RECEIVED'" style="background-color: var(--bg-primary)" class="text-white"> Cant. Recibida </th>
+						<th *ngIf="transfer()?.status === 'RECEIVED'" style="background-color: var(--bg-primary)" class="text-white"> Observación Rec. </th>
 					</tr>
 				</thead>
 				<tbody>
                     <tr *ngFor="let detail of transfer()?.detailsTransfers" >
                         <td >
                             <h5 class="m-0 p-0">{{detail.product.name}}</h5>
-                            <p style="font-size: 10px;" class="text-muted">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
+                            <p style="font-size: 10px;" class="text-muted m-0">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
                         </td>
                         <td>{{detail.quantity  | number:decimal() }}</td>
+                        <td *ngIf="transfer()?.status === 'RECEIVED'">
+                            {{ (detail.quantity_received !== null && detail.quantity_received !== undefined ? detail.quantity_received : detail.quantity) | number:decimal() }}
+                        </td>
+                        <td *ngIf="transfer()?.status === 'RECEIVED'">
+                            <span class="text-dark">{{ detail.observation || '-' }}</span>
+                        </td>
                     </tr>
 				</tbody>
 				<tfoot>
 					<tr>
 						<td  class="table-active fw-bold">TOTAL</td>
-                        <td id="total"> <p-tag [style]="{'font-size': '15px'}" [severity]="'warning'"  value="{{totalQuantityItems() | number:decimal()}}" [rounded]="true"></p-tag> </td>
+                        <td id="total"> 
+                            <p-tag [style]="{'font-size': '15px'}" [severity]="'warning'"  value="{{totalQuantityItems() | number:decimal()}}" [rounded]="true"></p-tag> 
+                        </td>
+                        <td *ngIf="transfer()?.status === 'RECEIVED'">
+                            <p-tag [style]="{'font-size': '15px'}" [severity]="'success'"  value="{{totalQuantityReceivedItems() | number:decimal()}}" [rounded]="true"></p-tag>
+                        </td>
+                        <td *ngIf="transfer()?.status === 'RECEIVED'" class="table-active"></td>
 					</tr>
 				</tfoot>
 			</table>

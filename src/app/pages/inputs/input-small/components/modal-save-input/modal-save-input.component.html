@@ -219,13 +219,36 @@
           </div>
           <div class="col-sm-6 col-12 mt-sm-0 mt-1">
             <label *ngIf="formInput.get('type_payment')?.value == 'CHEQUE'" class="block mb-0">N. Cheque</label>
-            <label *ngIf="formInput.get('type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N. Cuenta</label>
+            <label *ngIf="formInput.get('type_payment')?.value == 'TRANSFERENCIA' || formInput.get('type_payment')?.value == 'QR'" class="block mb-0">N. Cuenta</label>
             <input type="text" style="text-transform: uppercase" pInputText
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_input" placeholder="EJ. "
               [class.ng-dirty]="validatorsService.inputValid('account_input',formInput)" />
             <small *ngIf="validatorsService.inputValid('account_input',formInput)" class="p-error block">
               {{ validatorsService.inputValidMessage("account_input",formInput) }}
             </small>
+          </div>
+        </div>
+        <div *ngIf="formInput.get('type_payment')?.value == 'TRANSFERENCIA' || formInput.get('type_payment')?.value == 'QR'" class="row mt-2 animated fadeInDown">
+          <div class="col-sm-6 col-12">
+            <label class="block mb-0">Nro. de Transferencia<span class="text-danger">*</span></label>
+            <input type="text" style="text-transform: uppercase" pInputText
+              formControlName="number_transaction" placeholder="EJ. 123456"
+              [class.ng-dirty]="validatorsService.inputValid('number_transaction',formInput)" />
+            <small *ngIf="validatorsService.inputValid('number_transaction',formInput)" class="p-error block">
+              {{ validatorsService.inputValidMessage("number_transaction",formInput) }}
+            </small>
+          </div>
+          <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+            <label class="block mb-0">Comprobante de Pago (Opcional)</label>
+            <div class="input-group mt-1" style="display: flex; align-items: center; gap: 8px;">
+              <input type="file" #fileInput (change)="onVoucherFileChange($event)" style="display: none;" accept="image/*,.pdf" />
+              <button type="button" pButton (click)="fileInput.click()" label="Subir Comprobante" icon="fa-solid fa-upload" class="p-button-sm p-button-outlined p-button-secondary"></button>
+              <span class="text-muted ms-2" *ngIf="!voucherFile">No se seleccionó comprobante</span>
+              <div *ngIf="voucherFile" style="display: flex; align-items: center; gap: 4px; background: #e8f5e9; padding: 4px 10px; border-radius: 20px; border: 1px solid #c8e6c9;">
+                <span class="text-success" style="font-size: 13px; font-weight: 500;">{{ voucherFile.name }}</span>
+                <i class="fa-solid fa-circle-xmark text-danger cursor-pointer ms-1" (click)="removeVoucherFile()" pTooltip="Eliminar comprobante"></i>
+              </div>
+            </div>
           </div>
         </div>
       </div>

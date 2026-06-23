@@ -14,6 +14,7 @@ export interface Products {
     from:         number;
     to:           number;
     data:         Product[];
+      limit: number;
 }
 
 export interface Product {
@@ -38,8 +39,8 @@ export interface Product {
     quantity:      number;
     set_quantity?:      number;
     import:        number;
-    price_select?: number; 
-    total_stock?: number; 
+    price_select?: number;
+    total_stock?: number;
 }
 
 export interface Category {

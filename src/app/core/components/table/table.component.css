@@ -1,0 +1,238 @@
+/* ─────────────────────────
+   WRAPPER
+───────────────────────── */
+
+.table-wrapper{
+  background:#f6f8fb;
+  padding:16px;
+  border-radius:12px;
+}
+
+
+/* ─────────────────────────
+   TOOLBAR
+───────────────────────── */
+
+.table-toolbar{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+/* selector vista */
+
+.table-view-switch{
+  display:flex;
+  gap:6px;
+}
+
+.table-view-switch button{
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  transition:.25s;
+}
+
+.table-view-switch button:hover{
+  background:#eef2ff;
+}
+
+.active-view{
+  background:var(--bg-primary);
+  color:white;
+}
+
+
+/* ─────────────────────────
+   TABLA
+───────────────────────── */
+
+.p-datatable{
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.p-datatable thead th{
+  background:var(--bg-primary);
+  color:white;
+  font-weight:600;
+  font-size:13px;
+}
+
+.p-datatable tbody tr{
+  transition:.2s;
+}
+
+.p-datatable tbody tr:hover{
+  background:#f3f6ff;
+}
+
+.p-datatable td{
+  padding:12px 14px;
+}
+
+/* imagen tabla */
+
+.p-datatable td img{
+  transition:.25s;
+}
+
+.p-datatable td img:hover{
+  transform:scale(1.15);
+}
+
+
+/* ─────────────────────────
+   GRID CATALOGO
+───────────────────────── */
+
+.gc-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:18px;
+  margin-top:10px;
+}
+
+
+/* ─────────────────────────
+   CARD
+───────────────────────── */
+
+.gc-card{
+  background:white;
+  border-radius:12px;
+  border:1px solid #eef1f5;
+  overflow:hidden;
+  position:relative;
+  transition:.25s;
+  cursor:pointer;
+}
+
+.gc-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 12px 25px rgba(0,0,0,.12);
+}
+
+.gc-card-selected{
+  border:2px solid #3b82f6;
+  box-shadow:0 6px 16px rgba(0,0,0,.15);
+}
+
+
+/* ─────────────────────────
+   IMAGEN
+───────────────────────── */
+
+.gc-card__img-wrap{
+  height:190px;
+  background:#fafafa;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.gc-card__img{
+  max-height:150px;
+  max-width:85%;
+  object-fit:contain;
+  transition:.35s ease;
+}
+
+.gc-card:hover .gc-card__img{
+  transform:scale(1.08);
+}
+
+
+/* ─────────────────────────
+   CODIGO BADGE
+───────────────────────── */
+
+.gc-cod-badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:#111;
+  color:white;
+  font-size:11px;
+  padding:4px 7px;
+  border-radius:5px;
+  letter-spacing:.5px;
+}
+
+
+/* ─────────────────────────
+   BOTON PREVIEW
+───────────────────────── */
+
+.gc-preview-btn{
+  position:absolute;
+  bottom:10px;
+  right:10px;
+  opacity:0;
+  transform:scale(.8);
+  transition:.25s;
+}
+
+.gc-card:hover .gc-preview-btn{
+  opacity:1;
+  transform:scale(1);
+}
+
+
+/* ─────────────────────────
+   ACCIONES
+───────────────────────── */
+
+.gc-card__actions{
+  border-top:1px solid #f1f3f6;
+  padding:10px;
+  display:flex;
+  justify-content:center;
+  gap:6px;
+}
+
+
+/* ─────────────────────────
+   ANIMACION ENTRADA
+───────────────────────── */
+
+.gc-card{
+  animation:fadeUp .35s ease;
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+
+/* ─────────────────────────
+   RESPONSIVE
+───────────────────────── */
+
+@media (max-width:1024px){
+  .gc-grid{
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  }
+}
+
+@media (max-width:768px){
+  .gc-grid{
+    grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+  }
+}
+
+@media (max-width:480px){
+  .gc-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}

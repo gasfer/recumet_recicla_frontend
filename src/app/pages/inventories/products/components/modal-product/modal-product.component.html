@@ -57,12 +57,12 @@
                     <!-- <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Controlar Inventariado<span class="text-danger">*</span>
                         </label>
-                        <p-dropdown [options]="inventariable()" 
-                          placeholder="Selecciona una opción" 
+                        <p-dropdown [options]="inventariable()"
+                          placeholder="Selecciona una opción"
                           optionLabel="name"
                           optionValue="code"
                           appendTo="body"
-                          formControlName="inventariable" 
+                          formControlName="inventariable"
                           [class.ng-dirty]="validatorsService.inputValid('inventariable',productForm)"
                         ></p-dropdown>
                         <small *ngIf="validatorsService.inputValid('inventariable',productForm)" class="p-error block">

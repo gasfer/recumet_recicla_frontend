@@ -12,37 +12,48 @@
     <ng-template pTemplate="header">
         <tr>
             <th class="text-white" style="min-width: 120px; max-width: 200px; background-color: var(--bg-primary)">Producto</th>
-            <th class="text-white text-center" style=" background-color: var(--bg-primary);">Cantidad</th>
-            <th class="text-white text-center" style=" background-color: var(--bg-primary)">Precio</th>
+            <th class="text-white text-center" style="background-color: var(--bg-primary);">Cantidad</th>
+            <th class="text-white text-center" style="background-color: var(--bg-primary)">Precio</th>
             <th class="text-white" style="min-width: 110px; max-width: 150px; background-color: var(--bg-primary)">Importe</th>
-            <th class="text-white text-center" style="min-width: 60px; max-width: 60px;  background-color: var(--bg-primary)">Quitar</th>
+            <th class="text-white text-center" style="min-width: 60px; max-width: 60px; background-color: var(--bg-primary)">Quitar</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product>
         <tr>
-            <td style="min-width: 120px;  max-width: 200px; ">
+            <td style="min-width: 120px; max-width: 200px;">
                 <h5 class="m-0 p-0">{{product.name}}</h5>
-                <p style="font-size: 10px;" class="text-muted">{{product.description}} <br *ngIf="product.description"> <span class="text-black">{{product.cod}} / {{product.category.name}} / {{product.unit.name}}</span></p>
+                <p style="font-size: 10px;" class="text-muted">
+                    {{product.description}}
+                    <br *ngIf="product.description">
+                    <span class="text-black">{{product.cod}} / {{product.category.name}} / {{product.unit.name}}</span>
+                </p>
+                <!-- ✅ Muestra stock disponible como referencia -->
+                <small class="text-muted">
+                    Stock disponible: <b>{{ product.total_stock | number:'1.2-4' }}</b>
+                </small>
             </td>
-            <td  class="text-center">
+            <td class="text-center">
                 <p-inputNumber
                     [style]="{'height': '38px'}"
                     [size]="5"
                     locale="en-US"
                     mode="decimal"
                     [minFractionDigits]="2"
+                    [maxFractionDigits]="4"
                     [showButtons]="true"
                     decrementButtonClass="p-button-secondary"
                     incrementButtonClass="p-button-primary"
                     placeholder="0"
-                    [min]="0.1"
-                    [max]="product.total_stock"
-                    [inputId]="product.id"
-                    [(ngModel)] = "product.quantity"
-                    (onInput)="updateQuantityProduct($event, product)">
+                    [min]="0"
+                    [max]="99999999999999"
+                    [inputId]="'qty-' + product.id"
+                    [(ngModel)]="product.quantity"
+                    (onInput)="updateQuantityProduct($event, product)"
+                    [pTooltip]="'Stock: ' + product.total_stock"
+                    tooltipPosition="top">
                 </p-inputNumber>
             </td>
-            <td  class="text-center">
+            <td class="text-center">
                 <p-inputNumber
                     [style]="{'height': '38px'}"
                     [size]="5"
@@ -56,31 +67,28 @@
                     placeholder="0.00"
                     [min]="0"
                     [max]="99999999999999"
-                    [inputId]="product.id"
-                    [(ngModel)] = "product.price_select"
-                    (dblclick)="openModalUpdateMontoSus($event,product)"
+                    [inputId]="'price-' + product.id"
+                    [(ngModel)]="product.price_select"
+                    (dblclick)="openModalUpdateMontoSus($event, product)"
                     (onInput)="updatePriceProduct($event, product)"
                     [pTooltip]="returnPricesProduct(product)"
                     tooltipPosition="top">
                 </p-inputNumber>
-                <!-- <select class="form-select cursor-pointer" style="min-width:90px"  [(ngModel)]="product.price_select" (change)="updatePriceProduct($event, product)">
-                    <option *ngFor="let price of product.prices" value="{{price.price}}">{{price.price |  number: decimal()}}</option>
-                </select>   -->
             </td>
-            <td style="min-width: 110px; max-width: 150px;">{{ product.import | number: decimal()}}</td>
+            <td style="min-width: 110px; max-width: 150px;">{{ product.import | number: decimal() }}</td>
             <td class="text-center" style="min-width: 60px; max-width: 60px;">
                 <p-button
                     (click)="deleteProductForDetailSale(product.id)"
                     icon="fa-regular fa-trash-can"
-                    styleClass="p-button-danger p-button-sm p-button-danger p-button-rounded">
+                    styleClass="p-button-danger p-button-sm p-button-rounded">
                 </p-button>
             </td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
         <tr>
-            <th colspan="3" class="text-end text-white pt-1" style=" background-color: var(--bg-primary)"><h4>Total: &nbsp;</h4></th>
-            <th colspan="2" class="text-start text-white pt-1" style=" background-color: var(--bg-primary)"><h4>{{ totalSummary()  | number:decimal() }}</h4></th>
+            <th colspan="3" class="text-end text-white pt-1" style="background-color: var(--bg-primary)"><h4>Total: &nbsp;</h4></th>
+            <th colspan="2" class="text-start text-white pt-1" style="background-color: var(--bg-primary)"><h4>{{ totalSummary() | number:decimal() }}</h4></th>
         </tr>
         <tr>
             <td colspan="5" class="text-end bg-white">
@@ -88,12 +96,13 @@
                     (click)="clearDetailSale()"
                     icon="fa-solid fa-ban"
                     label="Cancelar"
-                    styleClass=" p-button-danger p-button-sm p-button-rounded">
+                    styleClass="p-button-danger p-button-sm p-button-rounded">
                 </p-button>
+                <!-- ✅ Llama validación antes de abrir modal -->
                 <p-button
-                    styleClass="ms-2 p-button-sm p-button-primary p-button-rounded "
+                    styleClass="ms-2 p-button-sm p-button-primary p-button-rounded"
                     label="Registrar Venta"
-                    (click)="outputService.showModalSaveInput = true"
+                    (click)="onClickRegistrar()"
                     icon="fa-solid fa-floppy-disk">
                 </p-button>
             </td>
@@ -101,4 +110,3 @@
     </ng-template>
 </p-table>
 <app-modal-update-bs-sus [cambio]="this.product_temp()?.price_select ?? 0" (onNewBs)="showUpdateBs($event);"></app-modal-update-bs-sus>
-

@@ -40,7 +40,7 @@ export class OutputComponent implements OnInit {
   loadingSearchClient   = signal(false);
   loadingSearchProduct  = signal(false);
   storages              = signal<Storage[]>([]);
-  
+
   totalItems            = computed(() => this.outputService.detailSale().length);
   clientSelect          = computed(() => this.outputService.clientSelect());
 
@@ -76,15 +76,37 @@ export class OutputComponent implements OnInit {
     this.suggestedClients.set([]);
     this.clientsService.getAllAndSearch(1, 1000, true, 'pos' ,txtSearchClient)
         .subscribe({
-          next: (resp) => { 
+          next: (resp) => {
             this.suggestedClients.set(resp.clients.data);
             this.loadingSearchClient.set(false);
           },
           error: (err) => {
             this.loadingSearchClient.set(false);
           }
-        });    
+        });
   }
+
+  validateStockBeforeSave(): boolean {
+  const exceeds = this.outputService.detailSale().filter(
+    prod => prod.quantity > prod.total_stock!
+  );
+
+  if (exceeds.length > 0) {
+    const list = exceeds.map(p =>
+      `• ${p.name}: cantidad ${p.quantity}, stock disponible ${p.total_stock}`
+    ).join('\n');
+
+    Swal.fire({
+      title: 'Stock insuficiente',
+      text: `Los siguientes productos superan el stock:\n${list}`,
+      icon: 'warning',
+      showClass: { popup: 'animated animate fadeInDown' },
+      customClass: { container: 'swal-alert' },
+    });
+    return false;
+  }
+  return true;
+}
 
   selectClient(client: Client) {
     this.suggestedClients.set([]);
@@ -159,32 +181,35 @@ export class OutputComponent implements OnInit {
     }
   }
 
-  validateStockAndStorage(product:Product) {
-    this.formReport.markAllAsTouched();
-    if(this.formReport.invalid){
-      Swal.fire({ 
-        title: 'Ops, Para ingresar productos!', 
-        text: `Selecciona una sucursal y un almacén.`,
-        icon: 'warning', 
-        showClass: { popup: 'animated animate fadeInDown' },
-        customClass: { container: 'swal-alert'},
-      })
-      return false;
-    }
-    if(product.total_stock! < 0.1) {
-      Swal.fire({ 
-        title: 'Ops, Stock insuficiente', 
-        text: `No podemos continuar por que no tienes stock, prueba con otra sucursal o almacén.`,
-        icon: 'warning', 
-        showClass: { popup: 'animated animate fadeInDown' },
-        customClass: { container: 'swal-alert'},
-      })
-      return false;
-    }   
-    return true; 
+validateStockAndStorage(product: Product) {
+  this.formReport.markAllAsTouched();
+  if (this.formReport.invalid) {
+    Swal.fire({
+      title: 'Ops, Para ingresar productos!',
+      text: `Selecciona una sucursal y un almacén.`,
+      icon: 'warning',
+      showClass: { popup: 'animated animate fadeInDown' },
+      customClass: { container: 'swal-alert' },
+    });
+    return false;
   }
 
- 
+  // ✅ En edición no validar stock, el producto ya existía en la venta
+  if (!this.outputService.isEdit && product.total_stock! < 0.1) {
+    Swal.fire({
+      title: 'Ops, Stock insuficiente',
+      text: `No podemos continuar por que no tienes stock, prueba con otra sucursal o almacén.`,
+      icon: 'warning',
+      showClass: { popup: 'animated animate fadeInDown' },
+      customClass: { container: 'swal-alert' },
+    });
+    return false;
+  }
+
+  return true;
+}
+
+
 
   setSelectStorage() {
     const id_storage = this.formReport.get('id_storage')?.value;
@@ -193,5 +218,8 @@ export class OutputComponent implements OnInit {
     }
     this.outputService.resetOutput();
   }
+
+
+
 
 }

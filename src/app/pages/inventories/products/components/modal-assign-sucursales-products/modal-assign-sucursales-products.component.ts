@@ -33,30 +33,30 @@ export class ModalAssignSucursalesProductsComponent implements OnInit, OnDestroy
     this.productsService.getOneProductSucursal(this.product!.id).subscribe(resp => {
       this.productSucursals = resp.productSucursals;
       this.getAllSucursales();
-    })  
+    })
   }
 
   getAllSucursales() {
     this.sucursalService.getAllAndSearch(1,1000,true).subscribe({
-      next: (resp) => this.sucursales.set(resp.sucursales.data), 
+      next: (resp) => this.sucursales.set(resp.sucursales.data),
       complete: () => {
         this.sucursales().forEach(resp=> resp.select = false);
         this.productSucursals?.forEach((resp)=>{
           const targetIndex =  this.sucursales().findIndex(item => item.id === resp.id_sucursal);
           if (targetIndex !== -1) {
             this.sucursales()[targetIndex].select = true;  // Nuevo valor que deseas asignar
-          } 
+          }
         });
         this.loading.set(false);
       },
     });
   }
-  
+
   assignSucursal(sucursal: Sucursal) {
     const targetIndex =  this.sucursales().findIndex(item => item.id === sucursal.id);
     if (targetIndex !== -1) {
-      this.sucursales()[targetIndex].select = !this.sucursales()[targetIndex].select;  
-    } 
+      this.sucursales()[targetIndex].select = !this.sucursales()[targetIndex].select;
+    }
   }
 
   saveAssignSucursales() {
@@ -76,10 +76,10 @@ export class ModalAssignSucursalesProductsComponent implements OnInit, OnDestroy
     this.productsService.postNewAssignate(id_product,sucursalesAssign).subscribe({
       next: (resp) => {
         this.productsService.showModalSucursales = false;
-        Swal.fire({ 
-          title: 'Éxito!', 
+        Swal.fire({
+          title: 'Éxito!',
           text: `Asignación de sucursales realizada correctamente`,
-          icon: 'success', 
+          icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
         });
         this.loadingSubmit.set(false);

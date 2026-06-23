@@ -15,13 +15,13 @@ import { AbonosAccountPayableAllService } from '../../../services/abonos-account
   styles: [
   ]
 })
-export class ModalNewAbonosMultiplePayableComponent {
+export class ModalNewAbonosMultiplePayableComponent implements OnInit {
   accountsPayableService = inject(AccountsPayableService);
   AbonosAccountPayableAllService = inject(AbonosAccountPayableAllService);
   validatorsService = inject(ValidatorsService);
   fb = inject(FormBuilder);
   loading = signal(false);
-  types_pay = signal([{ name: 'EFECTIVO', code: 'EFECTIVO' }, { name: 'CHEQUE', code: 'CHEQUE' }, { name: 'TRANSFERENCIA', code: 'TRANSFERENCIA' }]);
+  types_pay = signal([{ name: 'EFECTIVO', code: 'EFECTIVO' }, { name: 'CHEQUE', code: 'CHEQUE' }, { name: 'TRANSFERENCIA', code: 'TRANSFERENCIA' }, { name: 'QR', code: 'QR' }]);
   accountsPayableProvider = signal<AccountsPayableProvider | undefined>(undefined);
   decimalLength = signal(this.validatorsService.decimalLength());
   decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
@@ -29,6 +29,8 @@ export class ModalNewAbonosMultiplePayableComponent {
   viewDetailsSub$!: Subscription;
   bankService = inject(BankService);
   nameProvider = signal('');
+  voucherFile? : File;
+
   abonoForm: FormGroup = this.fb.group({
     id_provider: [],
     date_abono: [new Date(), [Validators.required]],
@@ -40,6 +42,7 @@ export class ModalNewAbonosMultiplePayableComponent {
     id_bank: [null, []],
     id_bank_origin: [null,[]],
     account_origin: [null,[]],
+    number_transaction: [null, []]
   });
 
   ngOnInit(): void {
@@ -58,6 +61,9 @@ export class ModalNewAbonosMultiplePayableComponent {
         return;
       }
       this.accountsPayableProvider.set(resp.accountsPayable);
+      this.abonoForm.get('monto_abono')?.clearValidators();
+      this.abonoForm.get('monto_abono')?.setValidators([Validators.required, Validators.min(0), Validators.max(resp.accountsPayable.totals.total_restante)]);
+      this.abonoForm.get('monto_abono')?.updateValueAndValidity();
       this.abonoForm.patchValue({
         id_provider: id_provider,
         monto_abono: resp.accountsPayable.totals.total_restante
@@ -73,19 +79,24 @@ export class ModalNewAbonosMultiplePayableComponent {
     this.loading.set(true);
     this.AbonosAccountPayableAllService.postNewAbonoMultipleAccountPayable(this.abonoForm.value).subscribe({
       next: (resp) => {
-        this.loading.set(false);
-        //si paga todo cerramos el modal de detalle
-        this.accountsPayableService.reloadAccountsPayable$.next(0);
-        Swal.fire({
-          title: 'Éxito!',
-          text: `Abono nuevo agregado correctamente`,
-          icon: 'success',
-          showClass: { popup: 'animated animate fadeInDown' },
-          customClass: { container: 'swal-alert' },
-        });
-        this.getAccountsForProvider(this.abonoForm.get('id_provider')?.value);
-        this.AbonosAccountPayableAllService.printAbonoMultipleAccountPayablePdf(resp.id_abono_accounts_payable)
-
+        if (this.voucherFile) {
+          this.accountsPayableService.uploadVoucherAbono(resp.id_abono_accounts_payable, this.voucherFile, true).subscribe({
+            next: () => {
+              this.afterSaveAbono(resp);
+            },
+            error: () => {
+              Swal.fire({
+                title: 'Aviso',
+                text: 'El abono se registró pero no se pudo subir el comprobante de pago.',
+                icon: 'info',
+                customClass: { container: 'swal-alert' },
+              });
+              this.afterSaveAbono(resp);
+            }
+          });
+        } else {
+          this.afterSaveAbono(resp);
+        }
       },
       error: (error) => {
         Swal.fire({
@@ -100,6 +111,21 @@ export class ModalNewAbonosMultiplePayableComponent {
     });
   }
 
+  afterSaveAbono(resp: any) {
+    this.loading.set(false);
+    //si paga todo cerramos el modal de detalle
+    this.accountsPayableService.reloadAccountsPayable$.next(0);
+    Swal.fire({
+      title: 'Éxito!',
+      text: `Abono nuevo agregado correctamente`,
+      icon: 'success',
+      showClass: { popup: 'animated animate fadeInDown' },
+      customClass: { container: 'swal-alert' },
+    });
+    this.getAccountsForProvider(this.abonoForm.get('id_provider')?.value);
+    this.AbonosAccountPayableAllService.printAbonoMultipleAccountPayablePdf(resp.id_abono_accounts_payable);
+  }
+
   resetModal() {
     this.abonoForm.reset({
       id_provider: null,
@@ -111,7 +137,9 @@ export class ModalNewAbonosMultiplePayableComponent {
       id_bank: null,
       id_bank_origin: null,
       account_origin: null,
+      number_transaction: null
     });
+    this.voucherFile = undefined;
     this.clearPaymentValidators();
   }
 
@@ -124,11 +152,12 @@ export class ModalNewAbonosMultiplePayableComponent {
       this.setRequired('id_bank');
     }
 
-    if (type == 'TRANSFERENCIA') {
+    if (type == 'TRANSFERENCIA' || type == 'QR') {
       this.setRequired('account_output');
       this.setRequired('id_bank');
       this.setRequired('id_bank_origin');
       this.setRequired('account_origin');
+      this.setRequired('number_transaction');
     }
   }
 
@@ -141,7 +170,7 @@ export class ModalNewAbonosMultiplePayableComponent {
   }
 
   clearPaymentValidators() {
-    const fields = ['account_output', 'id_bank', 'id_bank_origin', 'account_origin'];
+    const fields = ['account_output', 'id_bank', 'id_bank_origin', 'account_origin', 'number_transaction'];
 
     fields.forEach(f => {
       const control = this.abonoForm.get(f);
@@ -155,5 +184,15 @@ export class ModalNewAbonosMultiplePayableComponent {
       next: (resp) => this.banks.set(resp.banks.data),
       error: () => this.banks.set([])
     });
+  }
+
+  onVoucherFileChange(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.voucherFile = event.target.files[0];
+    }
+  }
+
+  removeVoucherFile() {
+    this.voucherFile = undefined;
   }
 }

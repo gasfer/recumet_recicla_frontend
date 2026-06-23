@@ -97,8 +97,8 @@
                     <p-dropdown [options]="dropdownProducts()" [(ngModel)]="productSelectValue"
                       (onChange)="onProductSelect($event.value)" [filter]="true" filterBy="name,cod" [showClear]="true"
                       (onFilter)="filterProduct($event)" [loading]="loadingSearchProduct()"
-                      [disabled]="selectedCategoryValues.length === 0"
-                      placeholder="{{selectedCategoryValues.length === 0 ? 'Seleccione categorías primero...' : 'Busque un producto aquí...'}}"
+
+                      placeholder="Busque un producto aquí..."
                       [style]="{'width':'100%'}" appendTo="body" optionLabel="name" optionValue="id"
                       [scrollHeight]="'450px'" [panelStyle]="{'max-height': '500px', 'min-width': '450px'}">
 
@@ -185,9 +185,9 @@
 </form>
 <app-table [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.cod'"
   [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)" [data]="kardexes()"
-  [loading]="loading()">
+  [groupRowsBy]="'product.category.name'" [loading]="loading()">
   <tr>
-    <th colspan="3"></th>
-    <th style="background-color: var(--bg-primary)" colspan="5" class="text-center text-white">FÍSICO</th>
+    <th colspan="4"></th>
+    <th style="background-color: var(--bg-primary)" colspan="3" class="text-white text-center">FÍSICO</th>
   </tr>
 </app-table>

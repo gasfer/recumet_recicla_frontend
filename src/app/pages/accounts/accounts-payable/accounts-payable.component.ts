@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { MenuItem } from 'primeng/api';
 import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/OptionsTable.interface';
+import { environment } from 'src/environments/environment';
 import { ProvidersService } from '../../inputs/services/providers.service';
 import { AccountsPayable, FormSearchAccountsPayables } from '../interfaces/accounts-payable.interface';
 import { AccountsPayableService } from '../services/accounts-payable.service';
@@ -34,6 +35,10 @@ export class AccountsPayableComponent implements OnInit {
   accountsPayableService = inject(AccountsPayableService);
   activatedRoute = inject(ActivatedRoute);
   abonosAccountPayableAllService = inject(AbonosAccountPayableAllService);
+
+  @ViewChild('mainFileInput') mainFileInput!: ElementRef;
+  selectedAbonoId?: number;
+  selectedAbonoIsMultiple?: boolean;
 
   types_registry = signal([{ name: 'FICHA', code: 'FICHA' }, { name: 'BOLETA', code: 'BOLETA' }]);
   providers = signal<{ name: string, code: string }[]>([]);
@@ -245,7 +250,11 @@ export class AccountsPayableComponent implements OnInit {
       next: (resp) => {
         this.accountsPayable.set(resp.accountsPayable);
         this.accountsPayable()!.data.forEach((accountPayable) => {
-          accountPayable.options = accountPayable.status_account == 'PENDIENTE' ? [
+          const hasAbonoWithoutVoucher = accountPayable.abonosAccountsPayable?.some(abono => 
+            (abono.type_payment === 'TRANSFERENCIA' || abono.type_payment === 'QR') && !abono.payment_voucher
+          );
+
+          const defaultOptions = accountPayable.status_account == 'PENDIENTE' ? [
             {
               label: '', icon: 'fa-solid fa-comment-dollar',
               tooltip: 'Abonar',
@@ -277,7 +286,7 @@ export class AccountsPayableComponent implements OnInit {
               label: '', icon: 'fas fa-print',
               tooltip: 'Estado de cuenta',
               disabled: this.validatorsService.withPermission('CUENTAS POR PAGAR', 'reports'),
-              class: 'p-button-rounded p-button-sm ms-1',
+              class: hasAbonoWithoutVoucher ? 'p-button-rounded p-button-warning p-button-sm ms-1' : 'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
                 this.accountsPayableService.printAccountPayablePdf(accountPayable.id);
               }
@@ -296,12 +305,14 @@ export class AccountsPayableComponent implements OnInit {
               label: '', icon: 'fas fa-print',
               tooltip: 'Estado de cuenta',
               disabled: this.validatorsService.withPermission('CUENTAS POR PAGAR', 'reports'),
-              class: 'p-button-rounded p-button-sm ms-1',
+              class: hasAbonoWithoutVoucher ? 'p-button-rounded p-button-warning p-button-sm ms-1' : 'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
                 this.accountsPayableService.printAccountPayablePdf(accountPayable.id);
               }
             },
           ];
+
+          accountPayable.options = defaultOptions;
         });
         const total_abonados = resp.accountsPayable?.totals?.total_abonados ?? 0;
         const total_restante = resp.accountsPayable?.totals?.total_restante ?? 0;
@@ -336,7 +347,7 @@ export class AccountsPayableComponent implements OnInit {
       next: (resp) => {
         this.abonosAccountsPayable.set(resp.accountsPayableAll);
         this.abonosAccountsPayable()!.data.forEach((accountPayable) => {
-          accountPayable.options = [
+          const options = [
             {
               label: '', icon: 'fas fa-print',
               tooltip: 'Comprobante',
@@ -360,6 +371,41 @@ export class AccountsPayableComponent implements OnInit {
               }
             },
           ];
+
+          if ((accountPayable.type_payment === 'TRANSFERENCIA' || accountPayable.type_payment === 'QR') && !accountPayable.payment_voucher) {
+            options.push({
+              label: '', icon: 'fa-solid fa-triangle-exclamation',
+              tooltip: 'Falta subir comprobante',
+              disabled: true,
+              class: 'p-button-rounded p-button-text p-button-danger p-button-sm ms-1',
+              eventClick: () => {}
+            });
+
+            options.push({
+              label: '', icon: 'fa-solid fa-file-arrow-up',
+              tooltip: 'Adjuntar comprobante',
+              disabled: false,
+              class: 'p-button-rounded p-button-warning p-button-sm ms-1',
+              eventClick: () => {
+                const idAbono = accountPayable.from_pay_multiple ? accountPayable.id : accountPayable.ids_abonos_payables[0];
+                this.triggerMainFileUpload(idAbono, !!accountPayable.from_pay_multiple);
+              }
+            });
+          }
+
+          if ((accountPayable.type_payment === 'TRANSFERENCIA' || accountPayable.type_payment === 'QR') && accountPayable.payment_voucher) {
+            options.push({
+              label: '', icon: 'fa-solid fa-file-invoice',
+              tooltip: 'Ver comprobante adjunto',
+              disabled: false,
+              class: 'p-button-rounded p-button-info p-button-sm ms-1',
+              eventClick: () => {
+                this.viewAttachedVoucher(accountPayable.payment_voucher);
+              }
+            });
+          }
+
+          accountPayable.options = options;
         });
         const total_abonados = resp.accountsPayableAll?.totals?.total_abonados ?? 0;
         this.colsAbonos()[4].footer = this.pipeNumber.transform(total_abonados, this.decimal()) ?? '0';
@@ -600,5 +646,59 @@ export class AccountsPayableComponent implements OnInit {
         });
       }
     });
+  }
+
+  triggerMainFileUpload(idAbono: number, isMultiple: boolean) {
+    this.selectedAbonoId = idAbono;
+    this.selectedAbonoIsMultiple = isMultiple;
+    this.mainFileInput.nativeElement.click();
+  }
+
+  onMainFileSelected(event: any) {
+    if (event.target.files && event.target.files.length > 0 && this.selectedAbonoId !== undefined) {
+      const file = event.target.files[0];
+      this.uploadMainVoucher(this.selectedAbonoId, file, !!this.selectedAbonoIsMultiple);
+    }
+  }
+
+  uploadMainVoucher(abonoId: number, file: File, isMultiple: boolean) {
+    Swal.fire({
+      title: 'Subiendo comprobante...',
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      allowOutsideClick: false
+    });
+    
+    this.accountsPayableService.uploadVoucherAbono(abonoId, file, isMultiple).subscribe({
+      next: (resp) => {
+        Swal.fire({
+          title: 'Éxito!',
+          text: 'Comprobante subido correctamente.',
+          icon: 'success',
+          customClass: { container: 'swal-alert' }
+        });
+        if (this.mainFileInput) {
+          this.mainFileInput.nativeElement.value = '';
+        }
+        this.selectedAbonoId = undefined;
+        this.selectedAbonoIsMultiple = undefined;
+        this.accountsPayableService.reloadAccountsPayable$.next(0);
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err?.error?.errors?.[0]?.msg || 'No se pudo subir el comprobante.',
+          icon: 'error',
+          customClass: { container: 'swal-alert' }
+        });
+      }
+    });
+  }
+
+  viewAttachedVoucher(payment_voucher?: string) {
+    if (!payment_voucher) return;
+    const url = `${environment.base_url}/file/vouchers/${payment_voucher}`;
+    window.open(url, '_blank');
   }
 }

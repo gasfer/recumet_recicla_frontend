@@ -66,10 +66,10 @@ export class InputSmallComponent  {
     this.loadingSearchProvider.set(true);
     this.txtSearchProvider.set(txtSearchProvider);
     this.suggestedProviders.set([]);
-    this.providerService.getAllAndSearch(1, 1000, true, 'pos' ,txtSearchProvider)
+    this.providerService.getProvidersAutocomplete(txtSearchProvider)
         .subscribe({
           next: (resp) => { 
-            this.suggestedProviders.set(resp.providers.data);
+            this.suggestedProviders.set(resp.providers);
             this.loadingSearchProvider.set(false);
           },
           error: (err) => {
