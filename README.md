@@ -12,6 +12,13 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 * Node v18.17.1
 * Angular Cli
 
+update: 24/02/2026
+Angular 19
+CDK 19
+PrimeNG 19
+zone.js 0.15
+TypeScript 5.5
+
 
 ### 1. 📌 Common setup
 
