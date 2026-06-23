@@ -202,4 +202,11 @@ export class InputsService {
     },
   });
 }
+
+  uploadVoucher(idInput: number, file: File): Observable<any> {
+    const url = `${base_url}/input/upload/voucher?idInput=${idInput}`;
+    const formData = new FormData();
+    formData.append('voucher', file);
+    return this.http.put<any>(url, formData);
+  }
 }
