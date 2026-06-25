@@ -180,44 +180,49 @@ export class InputsService {
             });
   }
 
- printPdfReport(id_input: number) {
-  Swal.fire({
-    title: 'Generando Boleta!',
-    html: `Estamos generando la boleta`,
-    didOpen: () => {
-      Swal.showLoading();
-      new Promise((resolve, reject) => {
-        this.getPrintVoucherInput(id_input).subscribe({
-          next: (data) => {
-            const file = new Blob([data], { type: 'application/pdf' });
-            const fileURL = URL.createObjectURL(file);
+  printPdfReport(id_input: number) {
+    Swal.fire({
+      title: 'Generando Boleta!',
+      html: `Estamos generando la boleta`,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
 
-            // ✅ Abrir en iframe oculto y lanzar print() automáticamente (off-screen para evitar throttling y race conditions)
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'absolute';
-            iframe.style.width = '0px';
-            iframe.style.height = '0px';
-            iframe.style.border = 'none';
-            iframe.style.left = '-9999px';
+    this.getPrintVoucherInput(id_input).subscribe({
+      next: (data) => {
+        const file = new Blob([data], { type: 'application/pdf' });
+        const fileURL = URL.createObjectURL(file);
 
-            iframe.onload = () => {
-              iframe.contentWindow?.focus();
-              iframe.contentWindow?.print();
-              Swal.close();
-              setTimeout(() => {
-                iframe.remove();
-              }, 1000);
-            };
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.width = '800px';
+        iframe.style.height = '1100px';
+        iframe.style.border = 'none';
+        iframe.style.top = '-9999px';
+        iframe.style.left = '-9999px';
+        iframe.src = fileURL;
 
-            iframe.src = fileURL;
-            document.body.appendChild(iframe);
-          },
-          error: () => Swal.close()
-        });
-      });
-    },
-  });
-}
+        iframe.onload = () => {
+          setTimeout(() => {
+            Swal.close();
+            iframe.contentWindow?.focus();
+            iframe.contentWindow?.print();
+            setTimeout(() => {
+              iframe.remove();
+            }, 1000);
+          }, 1000); // Esperar 1 segundo con el loader activo para asegurar el renderizado
+        };
+
+        document.body.appendChild(iframe);
+      },
+      error: (err) => {
+        Swal.close();
+        console.error('Error al generar la boleta:', err);
+      }
+    });
+  }
 
   uploadVoucher(idInput: number, file: File): Observable<any> {
     const url = `${base_url}/input/upload/voucher?idInput=${idInput}`;
