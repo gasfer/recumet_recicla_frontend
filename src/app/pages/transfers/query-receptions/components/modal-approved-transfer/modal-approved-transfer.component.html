@@ -94,7 +94,7 @@
                                     incrementButtonClass="p-button-primary"
                                     placeholder="0.00"
                                     [min]="0"
-                                    (onInput)="checkObservationsRequirement()"
+                                    (onInput)="onReceivedInput($event, group)"
                                     [class.ng-dirty]="group.get('quantity_received')?.invalid"
                                 ></p-inputNumber>
                             </td>

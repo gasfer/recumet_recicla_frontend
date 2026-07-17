@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { TransfersService } from '../../../services/transfers.service';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import Swal from 'sweetalert2';
 import { Transfer } from '../../../interfaces/transfers.interface';
@@ -73,6 +73,12 @@ export class ModalApprovedTransferComponent {
         this.checkObservationsRequirement();
       }
     });
+  }
+
+  onReceivedInput(event: any, group: AbstractControl) {
+    const value = event.value !== null && event.value !== undefined ? Number(event.value) : 0;
+    group.get('quantity_received')?.setValue(value, { emitEvent: false });
+    this.checkObservationsRequirement();
   }
 
   checkObservationsRequirement() {

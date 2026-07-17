@@ -53,16 +53,14 @@ export class TableOutputDetailsComponent implements OnDestroy {
   }
 
   updateQuantityProduct(event: any, product: Product) {
-    let quantity = 0;
-    if (event.value !== null) {
-      quantity = event.value;
-    }
-    product.quantity = quantity;
-    product.import = quantity * product.price_select!;
+    if (event.value === null) return;
+    product.quantity = event.value;
+    product.import = event.value * product.price_select!;
     this.outputService.updateDetailSale(product, true, true);
   }
 
   updatePriceProduct(event: any, product: Product) {
+    if (event.value === null) return;
     product.price_select = event.value;
     this.outputService.updateDetailSale(product, false);
   }

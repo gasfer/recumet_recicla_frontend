@@ -98,7 +98,7 @@ updateDetailSale(product: Product, updateQuantity: boolean = true, newQuantity: 
         }
 
         prod.import = prod.quantity * prod.price_select!;
-        return { ...prod }; // ✅ nueva referencia para recalcular totalSummary
+        return prod;
       })
     );
   } else {
