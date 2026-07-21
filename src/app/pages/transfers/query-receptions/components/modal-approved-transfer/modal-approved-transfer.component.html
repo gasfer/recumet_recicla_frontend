@@ -67,8 +67,10 @@
                         <tr>
                             <th style="background-color: var(--bg-primary)" class="text-white">Producto</th>
                             <th style="background-color: var(--bg-primary)" class="text-white text-center">Peso Enviado</th>
-                            <th style="background-color: var(--bg-primary)" class="text-white text-center" style="width: 140px;">Peso Recibido</th>
-                            <th style="background-color: var(--bg-primary)" class="text-white text-center" style="width: 220px;">Observación por producto</th>
+                            <th style="background-color: var(--bg-primary); width: 140px;" class="text-white text-center">Peso Recibido</th>
+                            <th style="background-color: var(--bg-primary); width: 220px;" class="text-white text-center">Observación por producto</th>
+                            <th style="background-color: var(--bg-primary)" class="text-white text-center">Excedente</th>
+                            <th style="background-color: var(--bg-primary)" class="text-white text-center">Faltante</th>
                             <th style="background-color: var(--bg-primary)" class="text-white text-center">Diferencia</th>
                         </tr>
                     </thead>
@@ -113,6 +115,12 @@
                                     Observación requerida
                                 </small>
                             </td>
+                            <td class="text-center align-middle text-dark">
+                                {{ getExcedente(group) | number:'1.4-4' }}
+                            </td>
+                            <td class="text-center align-middle text-dark">
+                                {{ getFaltante(group) | number:'1.4-4' }}
+                            </td>
                             <td class="text-center align-middle">
                                 <span [class]="getDiffClass(group)">
                                     {{ getDiffPercentage(group) | number:'1.2-2' }}%
@@ -130,6 +138,12 @@
                                 {{ getTotalReceived() | number: decimal() }}
                             </td>
                             <td></td>
+                            <td class="text-center text-dark">
+                                {{ getTotalExcedente() | number:'1.4-4' }}
+                            </td>
+                            <td class="text-center text-dark">
+                                {{ getTotalFaltante() | number:'1.4-4' }}
+                            </td>
                             <td class="text-center">
                                 <span [class]="getTotalDiffClass()">
                                     {{ getTotalDiffPercentage() | number:'1.2-2' }}%

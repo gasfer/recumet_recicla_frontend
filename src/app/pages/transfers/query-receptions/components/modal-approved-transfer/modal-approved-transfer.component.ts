@@ -128,6 +128,31 @@ export class ModalApprovedTransferComponent {
     }
     return 'text-success';
   }
+
+  getExcedente(group: any): number {
+    const sent = Number(group.get('quantity_sent')?.value) || 0;
+    const received = Number(group.get('quantity_received')?.value) || 0;
+    return Math.max(0, received - sent);
+  }
+
+  getFaltante(group: any): number {
+    const sent = Number(group.get('quantity_sent')?.value) || 0;
+    const received = Number(group.get('quantity_received')?.value) || 0;
+    return Math.max(0, sent - received);
+  }
+
+  getTotalExcedente(): number {
+    return this.detailsFormArray.controls.reduce((sum, group) => {
+      return sum + this.getExcedente(group);
+    }, 0);
+  }
+
+  getTotalFaltante(): number {
+    return this.detailsFormArray.controls.reduce((sum, group) => {
+      return sum + this.getFaltante(group);
+    }, 0);
+  }
+
 /********* */
 getTotalSent(): number {
   return this.detailsFormArray.controls.reduce((sum, group) => {
