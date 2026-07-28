@@ -12,6 +12,8 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 
+import { NotificationsService } from 'src/app/services/notifications.service';
+
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
@@ -46,6 +48,7 @@ export class TopbarComponent implements OnInit{
   fb                = inject( FormBuilder  );
   sucursalService   = inject(SucursalesService);
   validatorsService = inject(ValidatorsService);
+  notificationsService = inject(NotificationsService);
   form:UntypedFormGroup = this.fb.group({
     id_sucursal: ['',[Validators.required]],
   });
@@ -65,9 +68,18 @@ export class TopbarComponent implements OnInit{
     }
     this.mediaQuery();
     this.getAllSucursales();
+    this.loadNotifications();
     this.isReloadSub$ = this.validatorsService.reload_sucursal_storages$.subscribe(resp => {
       this.getAllSucursales();
     });
+  }
+
+  loadNotifications() {
+    this.notificationsService.getUnreadNotifications().subscribe();
+  }
+
+  markAllNotificationsAsRead() {
+    this.notificationsService.markAsRead([]).subscribe();
   }
 
   //** Asignar sucursales al selector, segun solo las sucursales asignadas al usuario logueado */
