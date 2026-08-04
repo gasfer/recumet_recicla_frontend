@@ -495,7 +495,6 @@
 }
 
 
-/*******************/
 .caja-open-card {
   display: flex;
   align-items: center;
@@ -504,40 +503,40 @@
   border: 1px solid #dee2e6;
   border-radius: 8px;
   background: #fff;
+}
 
-  &--bank {
-    border-color: #b5d4f4;
-    background: #e6f1fb;
-  }
+.caja-open-card--bank {
+  border-color: #b5d4f4;
+  background: #e6f1fb;
+}
 
-  &__info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
+.caja-open-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-  &__label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #6c757d;
-  }
+.caja-open-card__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6c757d;
+}
 
-  &__account-badge {
-    font-size: 10px;
-    background: #b5d4f4;
-    color: #0c447c;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-weight: 500;
-  }
+.caja-open-card__account-badge {
+  font-size: 10px;
+  background: #b5d4f4;
+  color: #0c447c;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
 
-  &__amount {
-    font-size: 16px;
-    font-weight: 600;
-    color: #212529;
-  }
+.caja-open-card__amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
 }
 
 .caja-btn-open--bank {
