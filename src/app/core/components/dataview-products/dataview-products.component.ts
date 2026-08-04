@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { CategoriesService } from 'src/app/pages/inventories/services/categories.service';
@@ -10,7 +10,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
   templateUrl: './dataview-products.component.html',
   styleUrls: ['./dataview-products.component.scss']
 })
-export class DataviewProductsComponent implements OnInit {
+export class DataviewProductsComponent implements OnInit, OnChanges {
   searchFor              = signal([{name: 'Producto', code: 'pos'},{name: 'Categoría', code: 'id_category'}]);
   rows      :number      = 50;
   total     :number      = 0;
@@ -25,6 +25,7 @@ export class DataviewProductsComponent implements OnInit {
   @Input() isInput : boolean = false;
   @Input() withStock : boolean = false;
   @Input() typeFrom : ''|'INPUT' | 'OUTPUT' = '';
+  @Input() categoryType : string = '';
   products          = signal<Product[]>([]);
   categories        = signal<{name:string,code:string}[]>([]);
   productsService   = inject(ProductsService);
@@ -45,6 +46,13 @@ export class DataviewProductsComponent implements OnInit {
   ngOnInit(): void {
     this.getAllAndSearchProducts(1,this.rows,true);
     this.getAllCategories();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['categoryType'] && !changes['categoryType'].firstChange) {
+      this.getAllAndSearchProducts(1, this.rows, true);
+      this.getAllCategories();
+    }
   }
 
   searchByProduct(txtSearchProduct: string){
@@ -74,7 +82,7 @@ export class DataviewProductsComponent implements OnInit {
 
   getAllAndSearchProducts(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
     if(!query) {this.loading.set(true);} //not loading in search
-    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage,'name','ASC',this.withStock).subscribe({
+    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage,'name','ASC',this.withStock,this.categoryType).subscribe({
       next: (resp) => {
         this.products.set(resp.products.data);
         this.total = resp.products.total;
@@ -119,7 +127,7 @@ export class DataviewProductsComponent implements OnInit {
 
   getAllCategories() {
     this.categories.set([]);
-    this.categoriesService.getAllAndSearch(1,10000,true).subscribe(resp => {
+    this.categoriesService.getAllAndSearch(1,10000,true,'','',this.categoryType).subscribe(resp => {
       const formattedCategory = resp.categories.data.map(category => ({
         name: category.name,
         code: category.id!.toString()
