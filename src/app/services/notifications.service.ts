@@ -49,15 +49,40 @@ export class NotificationsService {
     this.initSocketConnection();
   }
 
+  private getSocketUrl(): string {
+    if (!base_url) {
+      return typeof window !== 'undefined' ? window.location.origin : '';
+    }
+    if (base_url.startsWith('http://') || base_url.startsWith('https://')) {
+      return base_url.replace(/\/api\/v1\/?$/, '');
+    }
+    return typeof window !== 'undefined' ? window.location.origin : '';
+  }
+
   private initSocketConnection() {
     try {
-      const socketUrl = base_url.replace('/api/v1', '');
-      this.socket = io(socketUrl);
+      const socketUrl = this.getSocketUrl();
+      if (!socketUrl) return;
+
+      this.socket = io(socketUrl, {
+        transports: ['polling', 'websocket'],
+        autoConnect: true,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 2000
+      });
+
+      this.socket.on('connect_error', (err) => {
+        console.warn('Socket.io error de conexión (no crítico):', err.message);
+      });
+
       this.socket.on('new-notification', () => {
-        this.getUnreadNotifications().subscribe();
+        this.getUnreadNotifications().subscribe({
+          error: (err) => console.warn('Error al refrescar notificaciones:', err)
+        });
       });
     } catch (err) {
-      console.error('Error al conectar Socket.io:', err);
+      console.warn('Error al inicializar Socket.io:', err);
     }
   }
 
