@@ -45,8 +45,30 @@ export class NotificationsService {
   notifications = signal<AppNotification[]>([]);
   hasDangerAlert = signal<boolean>(false);
 
+  private audioCtx?: AudioContext;
+
   constructor() {
     this.initSocketConnection();
+    this.unlockAudio();
+  }
+
+  private unlockAudio() {
+    if (typeof window === 'undefined') return;
+    const unlock = () => {
+      if (!this.audioCtx) {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          this.audioCtx = new AudioCtx();
+        }
+      }
+      if (this.audioCtx && this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+    };
+
+    window.addEventListener('click', unlock, { once: true });
+    window.addEventListener('keydown', unlock, { once: true });
+    window.addEventListener('touchstart', unlock, { once: true });
   }
 
   private getSocketUrl(): string {
@@ -98,18 +120,29 @@ export class NotificationsService {
     }
   }
 
-  playNotificationSound() {
+  async playNotificationSound() {
     try {
+      if (typeof window === 'undefined') return;
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioCtx) return;
-      const ctx = new AudioCtx();
 
-      // Acorde armónico cristalino estilo campanada de 2 segundos (E5, G#5, B5, E6)
+      if (!this.audioCtx) {
+        this.audioCtx = new AudioCtx();
+      }
+
+      if (this.audioCtx.state === 'suspended') {
+        await this.audioCtx.resume();
+      }
+
+      const ctx = this.audioCtx;
+      const now = ctx.currentTime;
+
+      // Acorde armónico cristalino de 2 segundos (E5, G#5, B5, E6)
       const notes = [
         { freq: 659.25, time: 0.00 }, // E5
         { freq: 830.61, time: 0.12 }, // G#5
         { freq: 987.77, time: 0.24 }, // B5
-        { freq: 1318.51, time: 0.36 } // E6 (Campana aguda con resonancia)
+        { freq: 1318.51, time: 0.36 } // E6
       ];
 
       const duration = 2.0;
@@ -119,21 +152,21 @@ export class NotificationsService {
         const gain = ctx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(note.freq, ctx.currentTime + note.time);
+        osc.frequency.setValueAtTime(note.freq, now + note.time);
 
-        const startTime = ctx.currentTime + note.time;
-        gain.gain.setValueAtTime(0.001, startTime);
-        gain.gain.exponentialRampToValueAtTime(0.25, startTime + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        const startTime = now + note.time;
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.linearRampToValueAtTime(0.4, startTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
         osc.start(startTime);
-        osc.stop(ctx.currentTime + duration);
+        osc.stop(now + duration);
       });
     } catch (e) {
-      // Ignorar bloqueos de autoplay de audio
+      console.warn('Error al reproducir audio de notificación:', e);
     }
   }
 
