@@ -76,7 +76,11 @@ export class NotificationsService {
         console.warn('Socket.io error de conexión (no crítico):', err.message);
       });
 
-      this.socket.on('new-notification', () => {
+      this.socket.on('new-notification', (data: any) => {
+        this.playNotificationSound();
+        if (data && data.title) {
+          this.showDesktopNotification(data.title, data.message || 'Nueva notificación en el sistema');
+        }
         this.getUnreadNotifications().subscribe({
           error: (err) => console.warn('Error al refrescar notificaciones:', err)
         });
@@ -86,14 +90,73 @@ export class NotificationsService {
     }
   }
 
+  requestNotificationPermission() {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    }
+  }
+
+  playNotificationSound() {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.15);
+
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.15);
+    } catch (e) {
+      // Ignorar bloqueos de autoplay de audio
+    }
+  }
+
+  showDesktopNotification(title: string, message: string) {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      const notification = new Notification(title, {
+        body: message,
+        icon: 'assets/images/logo.png',
+        tag: 'recumet-notification'
+      });
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    }
+  }
+
+  private updateDocumentTitle(unreadCount: number, hasDanger: boolean) {
+    if (typeof document === 'undefined') return;
+    if (unreadCount > 0) {
+      const prefix = hasDanger ? `🚨 (${unreadCount}) ` : `(${unreadCount}) `;
+      document.title = `${prefix}Recumet Recicla`;
+    } else {
+      document.title = 'Recumet Recicla';
+    }
+  }
+
   getUnreadNotifications(): Observable<GetNotificationsResponse> {
     const url = `${base_url}/notifications`;
     return this.http.get<GetNotificationsResponse>(url).pipe(
       tap((resp) => {
         if (resp && resp.ok && resp.notifications) {
           this.notifications.set(resp.notifications);
+          const unreadCount = resp.notifications.length;
           const containsDanger = resp.notifications.some(n => n.level === 'DANGER');
           this.hasDangerAlert.set(containsDanger);
+          this.updateDocumentTitle(unreadCount, containsDanger);
         }
       })
     );
@@ -114,9 +177,13 @@ export class NotificationsService {
         if (notificationIds.length === 0) {
           this.notifications.set([]);
           this.hasDangerAlert.set(false);
+          this.updateDocumentTitle(0, false);
         } else {
           this.notifications.update(current => current.filter(n => !notificationIds.includes(n.id)));
-          this.hasDangerAlert.set(this.notifications().some(n => n.level === 'DANGER'));
+          const remaining = this.notifications();
+          const containsDanger = remaining.some(n => n.level === 'DANGER');
+          this.hasDangerAlert.set(containsDanger);
+          this.updateDocumentTitle(remaining.length, containsDanger);
         }
       })
     );

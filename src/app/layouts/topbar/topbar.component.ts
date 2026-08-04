@@ -75,6 +75,7 @@ export class TopbarComponent implements OnInit{
   }
 
   loadNotifications() {
+    this.notificationsService.requestNotificationPermission();
     this.notificationsService.getUnreadNotifications().subscribe();
   }
 
