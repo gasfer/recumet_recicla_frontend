@@ -103,21 +103,35 @@ export class NotificationsService {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.15);
+      // Acorde armónico cristalino estilo campanada de 2 segundos (E5, G#5, B5, E6)
+      const notes = [
+        { freq: 659.25, time: 0.00 }, // E5
+        { freq: 830.61, time: 0.12 }, // G#5
+        { freq: 987.77, time: 0.24 }, // B5
+        { freq: 1318.51, time: 0.36 } // E6 (Campana aguda con resonancia)
+      ];
 
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      const duration = 2.0;
 
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+      notes.forEach(note => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-      osc.start();
-      osc.stop(ctx.currentTime + 0.15);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(note.freq, ctx.currentTime + note.time);
+
+        const startTime = ctx.currentTime + note.time;
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.25, startTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(startTime);
+        osc.stop(ctx.currentTime + duration);
+      });
     } catch (e) {
       // Ignorar bloqueos de autoplay de audio
     }
