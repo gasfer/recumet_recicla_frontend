@@ -10,25 +10,6 @@
 <div class="card bg-light m-0">
     <div class="card-body shadow pt-2 pb-2">
         <h4>{{'REGISTRO DE CLASIFICADOS'}}</h4>
-        <div [formGroup]="formReport"  class="row mt-2">
-            <div class="col-12 col-sm-6">
-                <label class="block mb-0">Area / Almacén: &nbsp;</label>
-                <p-dropdown [options]="validatorsService.storages()" 
-                  placeholder="Selecciona un almacén" 
-                  optionLabel="name"
-                  optionValue="id"
-                  (onChange)="setSelectStorage()"
-                  (onHide)="this.componentService.clearInputSearch$.next(true)"
-                  appendTo="body" [filter]="true" filterBy="name"
-                  [virtualScrollItemSize]="38" [lazy]="true"
-                  formControlName="id_storage" 
-                  [class.ng-dirty]="validatorsService.inputValid('id_storage',formReport)"
-                ></p-dropdown>
-                <small *ngIf="validatorsService.inputValid('id_storage',formReport)" class="p-error block">
-                    {{ validatorsService.inputValidMessage("id_storage",formReport) }}
-                </small>
-            </div>
-        </div>
         <div class="row mt-2">
             <div class="col-sm-6 col-12 mt-0">
                 <app-input-search (onEnters)="setSuggestedProducts($event)" (onDebounce)="setSuggestedProducts($event)"

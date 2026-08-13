@@ -114,7 +114,13 @@ export class TransfersService {
               window.open(fileURL);
               Swal.close();
             },
-            error: (err) => Swal.close()
+            error: () => {
+              Swal.fire({
+                title: 'No se pudo generar la boleta',
+                text: 'La recepción fue registrada. Puedes reintentar la impresión desde la consulta de traslados.',
+                icon: 'warning',
+              });
+            }
           });
         });
       },

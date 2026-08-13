@@ -222,10 +222,7 @@ export class KardexComponent implements OnInit {
   ngOnInit(): void {
     this.getAllProviders();
 
-    const storagesList = this.validatorsService.storages();
-    if (storagesList.length > 0) {
-      this.formReport.patchValue({ id_storage: storagesList[0].id });
-    }
+    this.formReport.patchValue({ id_storage: this.validatorsService.id_storage() || '' });
 
     this.getAllAndSearchKardex(1, this.rows());
   }

@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { AbstractControl, ValidationErrors, UntypedFormGroup } from '@angular/forms';
 import { NgxImageCompressService } from 'ngx-image-compress';
-import { Storage } from '../pages/managements/interfaces/sucursales.interface';
+import { Storage, Sucursal } from '../pages/managements/interfaces/sucursales.interface';
 import { Subject } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
 import { User } from '../auth/auth.interface';
@@ -25,11 +25,43 @@ export class ValidatorsService {
   //compressLoading1: boolean = false;
   user = signal<User|undefined>(undefined);
   id_sucursal = signal(0);
+  id_storage  = signal(0);
   storages    = signal<Storage[]>([]);
   reload      = signal(false);
   reload_sucursal_storages$: Subject<boolean> = new Subject();
   constructor(private imageCompress: NgxImageCompressService) {
 
+  }
+
+  setWorkContext(sucursales: Sucursal[], idSucursal: number, preferredStorageId?: number | null): boolean {
+    const sucursal = sucursales.find(item => item.id === Number(idSucursal));
+    const storages = [...(sucursal?.storage || [])]
+      .filter(storage => storage.status)
+      .sort((first, second) => first.name.localeCompare(second.name));
+
+    this.storages.set(storages);
+    if (!sucursal?.id || storages.length === 0) {
+      this.id_sucursal.set(0);
+      this.id_storage.set(0);
+      localStorage.removeItem('id_sucursal');
+      localStorage.removeItem('id_storage');
+      return false;
+    }
+
+    const storage = storages.find(item => item.id === Number(preferredStorageId)) || storages[0];
+    this.id_sucursal.set(sucursal.id);
+    this.id_storage.set(storage.id);
+    localStorage.setItem('id_sucursal', String(sucursal.id));
+    localStorage.setItem('id_storage', String(storage.id));
+    return true;
+  }
+
+  clearWorkContext() {
+    this.id_sucursal.set(0);
+    this.id_storage.set(0);
+    this.storages.set([]);
+    localStorage.removeItem('id_sucursal');
+    localStorage.removeItem('id_storage');
   }
 
   validateUserWithPermissions(): boolean {

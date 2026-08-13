@@ -202,7 +202,7 @@ getTotalDiffClass(): string {
     };
 
     this.transfersService.putTransferToReceived(payload).subscribe({
-      next: () => {
+      next: (resp) => {
         this.loading.set(false);
         Swal.fire({
           title: 'Éxito!',
@@ -210,7 +210,7 @@ getTotalDiffClass(): string {
           icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
-        });
+        }).then(() => this.transfersService.printPdfReport(resp.id_transfer));
         this.transfersService.showModalConfirmationReception = false;
         this.resetModal();
         this.save$.next(true);

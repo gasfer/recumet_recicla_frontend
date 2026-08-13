@@ -65,8 +65,10 @@
             </div>
           </div>
         </div> -->
-        <div class="m-3" [formGroup]="form">
-          <p-dropdown [options]="sucursales()" 
+        <div class="work-context d-flex" [formGroup]="form">
+          <div class="work-context__field">
+            <label for="topbar-sucursal">Sucursal</label>
+            <p-dropdown inputId="topbar-sucursal" [options]="sucursales()" 
               [style]="this.styleSucursales()"
               optionLabel="name"
               optionValue="id"
@@ -74,7 +76,20 @@
               (onChange)="setStoragesBySucursal()"
               [virtualScrollItemSize]="38" [lazy]="true"
               formControlName="id_sucursal" 
-          ></p-dropdown>
+            ></p-dropdown>
+          </div>
+          <div class="work-context__field">
+            <label for="topbar-storage">Almacén</label>
+            <p-dropdown inputId="topbar-storage" [options]="validatorsService.storages()"
+              [style]="this.styleSucursales()"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Almacén"
+              (onChange)="setStorage()"
+              [virtualScrollItemSize]="38" [lazy]="true"
+              formControlName="id_storage"
+            ></p-dropdown>
+          </div>
         </div>
       </div>
   

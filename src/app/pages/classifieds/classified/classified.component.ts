@@ -39,15 +39,15 @@ export class ClassifiedComponent implements OnInit {
 
   formReport:UntypedFormGroup = this.fb.group({
     id_sucursal: [this.validatorsService.id_sucursal(),[Validators.required]],
-    id_storage: ['',[Validators.required]],
+    id_storage: [this.validatorsService.id_storage() || null,[Validators.required]],
   });
 
   ngOnInit(): void {
-    let id_storage_classified  = localStorage.getItem('id_storage_classified');
-    if(id_storage_classified){
-      this.formReport.get('id_storage')?.setValue(Number(id_storage_classified));
-      this.formReport.markAllAsTouched();
-    }
+    this.formReport.patchValue({
+      id_sucursal: this.validatorsService.id_sucursal(),
+      id_storage: this.validatorsService.id_storage() || null
+    });
+    this.formReport.markAllAsTouched();
   }
 
   setSuggestedProducts(txtSearchProduct: string){
@@ -174,12 +174,4 @@ export class ClassifiedComponent implements OnInit {
     return true; 
   }
 
-  
-  setSelectStorage() {
-    const id_storage = this.formReport.get('id_storage')?.value;
-    if(id_storage){
-      localStorage.setItem('id_storage_classified', id_storage);
-    }
-    this.classifiedService.resetClassified();
-  }
 }

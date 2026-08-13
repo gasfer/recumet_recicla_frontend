@@ -37,11 +37,9 @@ export class TransferComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const id_storage_tras  = localStorage.getItem('id_storage_tras');
-    const findStorage = this.validatorsService.storages().find(resp => resp.id === Number(id_storage_tras));
     this.formReport.patchValue({
       id_sucursal: this.validatorsService.id_sucursal(),
-      id_storage: findStorage ? Number(id_storage_tras) : null
+      id_storage: this.validatorsService.id_storage() || null
     });
     this.formReport.markAllAsTouched();
   }
@@ -117,11 +115,4 @@ export class TransferComponent implements OnInit {
     return true; 
   }
 
-  setSelectStorage() {
-    const id_storage = this.formReport.get('id_storage')?.value;
-    if(id_storage){
-      localStorage.setItem('id_storage_tras', id_storage);
-    }
-    this.transfersService.resetTransfer();
-  }
 }

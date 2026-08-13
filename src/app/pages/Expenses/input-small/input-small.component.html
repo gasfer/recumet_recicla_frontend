@@ -69,25 +69,6 @@
                 </div>
             </div>
         </div>
-        <div [formGroup]="formReport"  class="row mt-2">
-            <div class="col-12 col-sm-6">
-                <label class="block mb-0">Area / Almacén ingreso stock: &nbsp;</label>
-                <p-dropdown [options]="validatorsService.storages()" 
-                  placeholder="Selecciona un almacén" 
-                  optionLabel="name"
-                  optionValue="id"
-                  (onChange)="setSelectStorage()"
-                  (onHide)="this.componentService.clearInputSearch$.next(true)"
-                  appendTo="body" [filter]="true" filterBy="name"
-                  [virtualScrollItemSize]="38" [lazy]="true"
-                  formControlName="id_storage" 
-                  [class.ng-dirty]="validatorsService.inputValid('id_storage',formReport)"
-                ></p-dropdown>
-                <small *ngIf="validatorsService.inputValid('id_storage',formReport)" class="p-error block">
-                    {{ validatorsService.inputValidMessage("id_storage",formReport) }}
-                </small>
-            </div>
-        </div>
     </div>
 </div>
 <div class="row mt-1">

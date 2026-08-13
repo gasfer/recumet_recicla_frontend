@@ -17,7 +17,12 @@ import { NotificationsService } from 'src/app/services/notifications.service';
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
-  styles: []
+  styles: [`
+    .work-context { align-items: end; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: .65rem; gap: .55rem; margin: .6rem 0 .6rem .75rem; padding: .35rem .55rem; }
+    .work-context__field { display: grid; gap: .2rem; }
+    .work-context__field label { color: #64748b; font-size: .66rem; font-weight: 700; line-height: 1; text-transform: uppercase; }
+    @media (max-width: 575px) { .work-context { margin-left: .25rem; padding: .25rem; } .work-context__field label { display: none; } }
+  `]
 })
 export class TopbarComponent implements OnInit{
   element:any;
@@ -51,6 +56,7 @@ export class TopbarComponent implements OnInit{
   notificationsService = inject(NotificationsService);
   form:UntypedFormGroup = this.fb.group({
     id_sucursal: ['',[Validators.required]],
+    id_storage: ['',[Validators.required]],
   });
   sucursales  = signal<Sucursal[]>([]);
   isReloadSub$!: Subscription;
@@ -105,16 +111,19 @@ export class TopbarComponent implements OnInit{
             customClass: { container: 'swal-alert'},
           }).then(() => this.authService.logout());
         }
-        const id_sucursal = localStorage.getItem('id_sucursal');
-        if(id_sucursal){
-          this.form.get('id_sucursal')?.setValue(Number(id_sucursal));
-        } else {
-          this.form.get('id_sucursal')?.setValue(this.sucursales()[this.sucursales().length - 1].id);
-          localStorage.setItem('id_sucursal',this.form.get('id_sucursal')?.value);
+        const idSucursal = Number(localStorage.getItem('id_sucursal')) || this.sucursales()[0]?.id;
+        const idStorage = Number(localStorage.getItem('id_storage')) || null;
+        if (!idSucursal || !this.setWorkContext(idSucursal, idStorage)) {
+          Swal.fire('Ops!', 'La sucursal seleccionada no tiene almacenes activos.', 'warning');
+          return;
         }
-        this.setStoragesBySucursal(false);
+        this.form.patchValue({ id_sucursal: this.validatorsService.id_sucursal(), id_storage: this.validatorsService.id_storage() });
       }
     });
+  }
+
+  setWorkContext(idSucursal: number, preferredStorageId?: number | null): boolean {
+    return this.validatorsService.setWorkContext(this.sucursales(), idSucursal, preferredStorageId);
   }
 
   setStoragesBySucursal(reload:boolean = true) {
@@ -126,15 +135,21 @@ export class TopbarComponent implements OnInit{
         this.validatorsService.reload.set(false);
       }, 100);
     }
-    const id_sucursal =  this.form.get('id_sucursal')?.value;
-    if(id_sucursal){
-      this.validatorsService.id_sucursal.set(id_sucursal);
-      localStorage.setItem('id_sucursal', id_sucursal);
-      const sucursal_select = this.sucursales().find(sucursal => sucursal.id == Number(id_sucursal));
-      this.validatorsService.storages.set(sucursal_select!.storage);
-    } else {
-      this.validatorsService.storages.set([]);
+    const idSucursal = Number(this.form.get('id_sucursal')?.value);
+    if (!this.setWorkContext(idSucursal, null)) {
+      this.form.get('id_storage')?.setValue(null);
+      Swal.fire('Ops!', 'La sucursal seleccionada no tiene almacenes activos.', 'warning');
+      return;
     }
+    this.form.get('id_storage')?.setValue(this.validatorsService.id_storage());
+  }
+
+  setStorage() {
+    const idSucursal = Number(this.form.get('id_sucursal')?.value);
+    const idStorage = Number(this.form.get('id_storage')?.value);
+    if (!this.setWorkContext(idSucursal, idStorage)) return;
+    this.validatorsService.reload.set(true);
+    setTimeout(() => this.validatorsService.reload.set(false), 100);
   }
 
   mediaQuery() {
@@ -146,7 +161,7 @@ export class TopbarComponent implements OnInit{
           if(this.isPageViewMovil){
             this.styleSucursales.set({'maxWidth':'130px','minWidth':'130px',});
           } else {
-            this.styleSucursales.set({'maxWidth':'auto','minWidth':'200px',});
+            this.styleSucursales.set({'maxWidth':'auto','minWidth':'190px',});
           }
         });
   }

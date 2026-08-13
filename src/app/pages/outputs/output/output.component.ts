@@ -50,11 +50,9 @@ export class OutputComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const id_storage_pos  = localStorage.getItem('id_storage_pos');
-    const findStorage = this.validatorsService.storages().find(resp => resp.id === Number(id_storage_pos));
     this.formReport.patchValue({
       id_sucursal: this.validatorsService.id_sucursal(),
-      id_storage: findStorage ? Number(id_storage_pos) : null
+      id_storage: this.validatorsService.id_storage() || null
     });
     this.formReport.markAllAsTouched();
     if(!this.outputService.isEdit){
@@ -208,17 +206,6 @@ validateStockAndStorage(product: Product) {
 
   return true;
 }
-
-
-
-  setSelectStorage() {
-    const id_storage = this.formReport.get('id_storage')?.value;
-    if(id_storage){
-      localStorage.setItem('id_storage_pos', id_storage);
-    }
-    this.outputService.resetOutput();
-  }
-
 
 
 
