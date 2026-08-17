@@ -124,6 +124,7 @@ export interface UpdateTransferToReceived {
     id_storage_received:   number;
     observations_received: string;
     date_received?:        Date | string;
+    id_merma_product?:     number | null;
     details?:              UpdateTransferDetailReceived[];
 }
 

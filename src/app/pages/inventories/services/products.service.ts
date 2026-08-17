@@ -47,6 +47,11 @@ export class ProductsService {
     return this.http.get<any>(url);
   }
 
+  getDifferenceProducts(query: string = '', limit: number = 100): Observable<{ ok: boolean, products: Product[] }> {
+    const url = `${base_url}/product/select?query=${query}&limit=${limit}&category_ids=22`;
+    return this.http.get<{ ok: boolean, products: Product[] }>(url);
+  }
+
   getOneProduct(id_product: number): Observable<{ ok: boolean, product: Product }> {
     let url = `${base_url}/product/product?id_product=${id_product}`;
     return this.http.get<{ ok: boolean, product: Product }>(url);

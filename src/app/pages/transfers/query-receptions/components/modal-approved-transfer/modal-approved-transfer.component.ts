@@ -4,6 +4,8 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { ValidatorsService } from 'src/app/services/validators.service';
 import Swal from 'sweetalert2';
 import { Transfer } from '../../../interfaces/transfers.interface';
+import { ProductsService } from 'src/app/pages/inventories/services/products.service';
+import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 
 @Component({
   selector: 'app-modal-approved-transfer',
@@ -15,19 +17,37 @@ export class ModalApprovedTransferComponent {
   transfersService  = inject( TransfersService );
   validatorsService = inject( ValidatorsService );
   fb                = inject( FormBuilder );
+  productsService   = inject( ProductsService );
   loading           = signal( false );
+  mermaProducts     = signal<Product[]>([]);
 
   transfer          = signal<Transfer|undefined>(undefined);
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
 
   _id_transfer = 0;
+  private readonly defaultMermaProductName = 'DIFERENCIA DE PESO POR TRASLADO – EN REVISIÓN';
+
+  constructor() {
+    this.detailsFormArray.valueChanges.subscribe(() => this.checkObservationsRequirement());
+  }
 
  onDialogShow() {
+  this.loadMermaProducts();
   if (this._id_transfer) {
     this.loadTransferDetails(this._id_transfer);
   }
 }
+
+  loadMermaProducts() {
+    this.productsService.getDifferenceProducts().subscribe({
+      next: ({ products }) => {
+        this.mermaProducts.set(products);
+        this.checkObservationsRequirement();
+      },
+      error: () => this.mermaProducts.set([])
+    });
+  }
 
 @Input({required:true}) set id_transfer(val: number) {
   this._id_transfer = val;
@@ -44,6 +64,7 @@ export class ModalApprovedTransferComponent {
     id_storage_received: [ '', [Validators.required]],
     date_received: [new Date(), [Validators.required]],
     observations_received: ['', [ Validators.maxLength(500)]],
+    id_merma_product: [''],
     details: this.fb.array([])
   });
 
@@ -75,12 +96,6 @@ export class ModalApprovedTransferComponent {
     });
   }
 
-  onReceivedInput(event: any, group: AbstractControl) {
-    const value = event.value !== null && event.value !== undefined ? Number(event.value) : 0;
-    group.get('quantity_received')?.setValue(value, { emitEvent: false });
-    this.checkObservationsRequirement();
-  }
-
   checkObservationsRequirement() {
     const detailsArray = this.detailsFormArray;
     for (let i = 0; i < detailsArray.length; i++) {
@@ -102,8 +117,29 @@ export class ModalApprovedTransferComponent {
       } else {
         obsControl?.setValidators([Validators.maxLength(500)]);
       }
-      obsControl?.updateValueAndValidity();
+      obsControl?.updateValueAndValidity({ emitEvent: false });
     }
+    const mermaControl = this.approvedForm.get('id_merma_product');
+    if (this.hasShortage()) mermaControl?.setValidators([Validators.required]);
+    else {
+      mermaControl?.clearValidators();
+      mermaControl?.setValue('', { emitEvent: false });
+    }
+    this.selectDefaultMermaProduct(mermaControl);
+    mermaControl?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private selectDefaultMermaProduct(mermaControl: AbstractControl | null) {
+    if (!this.hasShortage() || mermaControl?.value) return;
+
+    const defaultProduct = this.mermaProducts().find(
+      ({ name }) => name === this.defaultMermaProductName
+    );
+    if (defaultProduct) mermaControl?.setValue(defaultProduct.id, { emitEvent: false });
+  }
+
+  hasShortage(): boolean {
+    return this.getTotalFaltante() > 0;
   }
 
   isProductObservationRequired(group: any): boolean {
@@ -194,6 +230,7 @@ getTotalDiffClass(): string {
       id_storage_received: formValue.id_storage_received,
       date_received: formValue.date_received,
       observations_received: formValue.observations_received,
+      id_merma_product: formValue.id_merma_product || null,
       details: formValue.details.map((d: any) => ({
         id_detail: d.id_detail,
         quantity_received: d.quantity_received,
@@ -210,7 +247,7 @@ getTotalDiffClass(): string {
           icon: 'success',
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
-        }).then(() => this.transfersService.printPdfReport(resp.id_transfer));
+        }).then(() => this.transfersService.printReceptionPdfReport(resp.id_transfer));
         this.transfersService.showModalConfirmationReception = false;
         this.resetModal();
         this.save$.next(true);
@@ -226,6 +263,7 @@ getTotalDiffClass(): string {
       date_received: new Date(),
       id_storage_received: '',
       observations_received: '',
+      id_merma_product: '',
     });
     this.detailsFormArray.clear();
     this.transfer.set(undefined);

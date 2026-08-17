@@ -57,6 +57,20 @@
                     </small>
                 </div>
             </div>
+            <div class="field col-12" *ngIf="hasShortage()">
+                <label class="block mb-0">Producto para registrar diferencia de peso <span class="text-danger">*</span></label>
+                <p-dropdown [options]="mermaProducts()"
+                    placeholder="Seleccione el producto de diferencia"
+                    optionLabel="name" optionValue="id" appendTo="body"
+                    [filter]="true" filterBy="name,cod"
+                    formControlName="id_merma_product"
+                    [class.ng-dirty]="approvedForm.get('id_merma_product')?.invalid && approvedForm.get('id_merma_product')?.touched">
+                    <ng-template pTemplate="item" let-product>{{ product.cod }} - {{ product.name }}</ng-template>
+                </p-dropdown>
+                <small *ngIf="approvedForm.get('id_merma_product')?.invalid && approvedForm.get('id_merma_product')?.touched" class="p-error block">
+                    Seleccione un producto activo de MERMAS (Materia Prima).
+                </small>
+            </div>
         </div>
 
         <div *ngIf="transfer()?.detailsTransfers" class="mt-3">
@@ -96,7 +110,6 @@
                                     incrementButtonClass="p-button-primary"
                                     placeholder="0.00"
                                     [min]="0"
-                                    (onInput)="onReceivedInput($event, group)"
                                     [class.ng-dirty]="group.get('quantity_received')?.invalid"
                                 ></p-inputNumber>
                             </td>

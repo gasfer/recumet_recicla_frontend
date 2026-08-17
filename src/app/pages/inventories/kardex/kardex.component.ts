@@ -210,6 +210,13 @@ export class KardexComponent implements OnInit {
       tooltip: true,
       isValueUpdate: true,
       tagValue: (val: number) => this.formatNumeric(val)
+    },
+    {
+      field: 'options',
+      header: 'REVISIÓN',
+      style: 'min-width:125px;max-width:125px;text-align:center;',
+      tooltip: false,
+      isButton: true,
     }
   ]);
 
@@ -241,7 +248,20 @@ export class KardexComponent implements OnInit {
     this.kardexService
       .getAllAndSearchKardex(page, limit, this.paramsSearch(), type, query, this.fieldSort(), this.order())
       .subscribe({
-        next: (resp) => this.kardexes.set(resp.kardexes),
+        next: (resp) => {
+          resp.kardexes.data.forEach((kardex: any) => {
+            if (!kardex.review_note) return;
+            kardex.options = [{
+              label: 'Ver nota',
+              icon: 'fa-regular fa-file-lines',
+              class: 'p-button-sm p-button-outlined',
+              tooltip: kardex.review_note.registry_number,
+              disabled: false,
+              eventClick: () => this.printTransferReviewNote(kardex.review_note.id),
+            }];
+          });
+          this.kardexes.set(resp.kardexes);
+        },
         complete: () => this.loading.set(false),
         error: () => this.loading.set(false)
       });
@@ -375,6 +395,13 @@ export class KardexComponent implements OnInit {
           error: () => Swal.close()
         });
       }
+    });
+  }
+
+  printTransferReviewNote(id: number) {
+    this.kardexService.getTransferReviewNotePdf(id).subscribe({
+      next: (data) => window.open(URL.createObjectURL(data)),
+      error: () => Swal.fire('No se pudo generar la nota', '', 'warning')
     });
   }
 

@@ -140,13 +140,23 @@
       <label for="login-sucursal">Sucursal</label>
       <p-dropdown inputId="login-sucursal" [options]="sucursales()" optionLabel="name" optionValue="id"
         formControlName="id_sucursal" placeholder="Selecciona una sucursal" [filter]="true" filterBy="name"
-        (onChange)="onSucursalChange()" styleClass="w-100"></p-dropdown>
+        (onChange)="onSucursalChange()" appendTo="body" panelStyleClass="work-context-dropdown-panel"
+        [panelStyle]="{ width: 'min(36rem, calc(100vw - 2rem))' }" styleClass="w-100">
+        <ng-template pTemplate="item" let-sucursal>
+          <span class="work-context-dropdown-option" [title]="sucursal.name">{{ sucursal.name }}</span>
+        </ng-template>
+      </p-dropdown>
     </div>
     <div class="context-field">
       <label for="login-storage">Almacén</label>
       <p-dropdown inputId="login-storage" [options]="getStorages(contextForm.get('id_sucursal')?.value)"
         optionLabel="name" optionValue="id" formControlName="id_storage" placeholder="Selecciona un almacén"
-        [filter]="true" filterBy="name" styleClass="w-100"></p-dropdown>
+        [filter]="true" filterBy="name" appendTo="body" panelStyleClass="work-context-dropdown-panel"
+        [panelStyle]="{ width: 'min(36rem, calc(100vw - 2rem))' }" styleClass="w-100">
+        <ng-template pTemplate="item" let-storage>
+          <span class="work-context-dropdown-option" [title]="storage.name">{{ storage.name }}</span>
+        </ng-template>
+      </p-dropdown>
       <small *ngIf="contextForm.get('id_sucursal')?.value && getStorages(contextForm.get('id_sucursal')?.value).length === 0" class="p-error">
         Esta sucursal no tiene almacenes activos.
       </small>

@@ -90,3 +90,19 @@ body .p-fluid .p-inputnumber .p-inputnumber-input {
 body .p-dropdown {
     border-radius: 6px;
 }
+
+/* Listas del contexto inicial: los nombres largos se leen completos al desplegar. */
+.work-context-dropdown-panel {
+    max-width: calc(100vw - 2rem);
+}
+
+.work-context-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    white-space: normal;
+    line-height: 1.35;
+}
+
+.work-context-dropdown-option {
+    display: block;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
