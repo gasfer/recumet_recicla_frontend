@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <div [formGroup]="formReport"  class="row mt-2">
+        <div *ngIf="false" [formGroup]="formReport" class="row mt-2">
             <div class="col-12 col-sm-6">
                 <label class="block mb-0">Area / Almacén ingreso stock: &nbsp;</label>
                 <p-dropdown [options]="validatorsService.storages()" 
@@ -140,6 +140,7 @@
             [typeFrom]="'INPUT'"
             [isInput]="true"
             [isViewQuantity]="true" 
+            [categoryType]="categoryType"
             [id_sucursal]="formReport.get('id_sucursal')?.value" 
             [id_storage]="formReport.get('id_storage')?.value" 
             (onProductSelect)="addItemCarByViewProduct($event)" 

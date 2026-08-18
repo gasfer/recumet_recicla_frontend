@@ -27,15 +27,16 @@ export class ProductsService {
   assignSucursalSubs: EventEmitter<Product> = new EventEmitter<Product>();
   viewProviderSubs: EventEmitter<Product> = new EventEmitter<Product>();
 
-  getAllAndSearch(page: number, limit: number, status: boolean, type: string = '', query?: string, stock: boolean = false, id_sucursal: string = '', id_storage: string = '', field_sort: string = 'id', order: string = 'DESC', withStock: boolean = false): Observable<GetAllProducts> {
+  getAllAndSearch(page: number, limit: number, status: boolean, type: string = '', query?: string, stock: boolean = false, id_sucursal: string = '', id_storage: string = '', field_sort: string = 'id', order: string = 'DESC', withStock: boolean = false, category_type: string = ''): Observable<GetAllProducts> {
     if (!id_sucursal) {
       id_sucursal = this.validatorsService.id_sucursal().toString();
     }
+    const categoryFilter = category_type ? `&category_type=${category_type}` : '';
     let url = '';
     if (type === '') {
-      url = `${base_url}/product?page=${page}&limit=${limit}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}`;
+      url = `${base_url}/product?page=${page}&limit=${limit}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}${categoryFilter}`;
     } else {
-      url = `${base_url}/product?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}`;
+      url = `${base_url}/product?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}${categoryFilter}`;
     }
     return this.http.get<GetAllProducts>(url);
   }
@@ -44,6 +45,11 @@ export class ProductsService {
     const id_sucursal = this.validatorsService.id_sucursal().toString();
     const url = `${base_url}/product/select?query=${query}&limit=${limit}&category_type=${category_type}&category_ids=${category_ids}&id_sucursal=${id_sucursal}`;
     return this.http.get<any>(url);
+  }
+
+  getDifferenceProducts(query: string = '', limit: number = 100): Observable<{ ok: boolean, products: Product[] }> {
+    const url = `${base_url}/product/select?query=${query}&limit=${limit}&category_ids=22`;
+    return this.http.get<{ ok: boolean, products: Product[] }>(url);
   }
 
   getOneProduct(id_product: number): Observable<{ ok: boolean, product: Product }> {

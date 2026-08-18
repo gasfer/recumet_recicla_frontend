@@ -28,6 +28,10 @@ export class KardexService {
     });
   }
 
+  getTransferReviewNotePdf(id: number) {
+    return this.http.get(`${base_url}/transfer-review-notes/${id}/pdf`, { responseType: 'blob' });
+  }
+
   getAllAndSearchKardexFisico(page: number, limit: number, params: FormSearchKardex, type: string = '', query?: string, field_sort: string = 'id', order: string = 'DESC'): Observable<GetAllKardexes> {
     let url = '';
     if (type === '') {

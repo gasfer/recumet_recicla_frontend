@@ -100,22 +100,41 @@ export class TransfersService {
             });
   } 
 
+  getPrintVoucherReception(id_transfer: Number) {
+    const url = `${base_url}/transfers/pdf/reception-voucher/${id_transfer}`;
+    return this.http.get(url, {
+      responseType: 'blob',
+    });
+  }
+
   printPdfReport(id_transfer:number) {
+    this.printVoucher(id_transfer, 'Guía de traslado', () => this.getPrintVoucherTransfer(id_transfer));
+  }
+
+  printReceptionPdfReport(id_transfer: number) {
+    this.printVoucher(id_transfer, 'Guía de recepción', () => this.getPrintVoucherReception(id_transfer));
+  }
+
+  private printVoucher(id_transfer: number, voucherName: string, requestVoucher: () => Observable<Blob>) {
     Swal.fire({
-      title: 'Generando Boleta!',
-      html: `Estamos generando la boleta`,
+      title: `Generando ${voucherName}!`,
+      html: `Estamos generando la ${voucherName.toLowerCase()}`,
       didOpen: () => {
         Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.getPrintVoucherTransfer(id_transfer).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
-            error: (err) => Swal.close()
-          });
+        requestVoucher().subscribe({
+          next: (data) => {
+            const file = new Blob([data], { type: 'application/pdf' });
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL);
+            Swal.close();
+          },
+          error: () => {
+            Swal.fire({
+              title: `No se pudo generar la ${voucherName.toLowerCase()}`,
+              text: 'Puedes reintentar la impresión desde la consulta de traslados.',
+              icon: 'warning',
+            });
+          },
         });
       },
     });

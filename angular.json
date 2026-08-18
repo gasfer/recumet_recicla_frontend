@@ -19,8 +19,11 @@
           "options": {
             "allowedCommonJsDependencies": [
               "sweetalert2",
-               "dropzone",
-              "can-use-dom"
+              "dropzone",
+              "can-use-dom",
+              "socket.io-client",
+              "engine.io-client",
+              "moment"
             ],
             "outputPath": "dist/frontend_recumet",
             "index": "src/index.html",

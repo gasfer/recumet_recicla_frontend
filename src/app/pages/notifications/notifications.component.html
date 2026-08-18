@@ -1,0 +1,126 @@
+<div class="container-fluid">
+  <!-- Title & Breadcrumb -->
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title-box d-flex align-items-center justify-content-between">
+        <h4 class="mb-0 font-size-18">Historial de Notificaciones</h4>
+        <div class="page-title-right">
+          <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a routerLink="/">Inicio</a></li>
+            <li class="breadcrumb-item active">Notificaciones</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="filterForm" (ngSubmit)="onSearch()">
+            <div class="row g-3 align-items-center">
+              <div class="col-md-5">
+                <label class="form-label font-size-13 fw-bold">Buscar por Boleta o Texto</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bx bx-search"></i></span>
+                  <input type="text" formControlName="query" class="form-control" placeholder="Ej. #TRAS00005, discrepancia...">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label font-size-13 fw-bold">Nivel de Alerta</label>
+                <p-dropdown [options]="levelOptions" 
+                            formControlName="level" 
+                            optionLabel="label" 
+                            optionValue="value"
+                            [style]="{'width':'100%'}"
+                            (onChange)="onSearch()">
+                </p-dropdown>
+              </div>
+              <div class="col-md-3 d-flex align-items-end gap-2 mt-4">
+                <button type="submit" class="btn btn-primary w-50">
+                  <i class="bx bx-filter-alt me-1"></i> Filtrar
+                </button>
+                <button type="button" (click)="onReset()" class="btn btn-light w-50">
+                  <i class="bx bx-refresh me-1"></i> Limpiar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title m-0">Registros de Alerta</h5>
+            <button class="btn btn-sm btn-outline-secondary" (click)="markAllAsRead()" *ngIf="notifications().length > 0">
+              <i class="bx bx-check-double me-1"></i> Marcar visibles como leídas
+            </button>
+          </div>
+
+          <p-table [value]="notifications()" 
+                   [loading]="loading()" 
+                   [lazy]="true"
+                   [paginator]="true"
+                   [rows]="limit()"
+                   [totalRecords]="totalRecords()"
+                   (onPage)="onPageChange($event)"
+                   styleClass="p-datatable-striped p-datatable-gridlines">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 15%">Fecha y Hora</th>
+                <th style="width: 15%">Nivel</th>
+                <th style="width: 25%">Título</th>
+                <th style="width: 35%">Detalle</th>
+                <th style="width: 10%" class="text-center">Estado</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+              <tr [ngClass]="{'table-danger bg-light-danger': item.level === 'DANGER' && !item.is_read}">
+                <td>
+                  <span class="font-size-13"><i class="mdi mdi-clock-outline me-1"></i>{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </td>
+                <td>
+                  <span class="badge font-size-12 px-2 py-1" 
+                        [ngClass]="item.level === 'DANGER' ? 'bg-danger text-white' : 'bg-info text-white'">
+                    <i [ngClass]="item.level === 'DANGER' ? 'bx bx-error me-1' : 'bx bx-info-circle me-1'"></i>
+                    {{ item.level === 'DANGER' ? 'ALERTA ROJA' : 'INFORMACIÓN' }}
+                  </span>
+                </td>
+                <td>
+                  <strong [ngClass]="{'text-danger': item.level === 'DANGER'}">{{ item.title }}</strong>
+                </td>
+                <td>
+                  <span class="text-muted font-size-13">{{ item.message }}</span>
+                </td>
+                <td class="text-center">
+                  <button *ngIf="!item.is_read" 
+                          (click)="markAsRead(item)" 
+                          class="btn btn-xs btn-outline-primary"
+                          title="Marcar como leída">
+                    <i class="bx bx-check"></i> Pendiente
+                  </button>
+                  <span *ngIf="item.is_read" class="badge bg-secondary text-white">Leída</span>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center p-4 text-muted">
+                  No se encontraron notificaciones registradas.
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

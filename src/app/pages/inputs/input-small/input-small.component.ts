@@ -8,6 +8,8 @@ import { Product } from '../../inventories/interfaces/products.interface';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
+import { AuthService } from 'src/app/auth/auth.service';
+
 @Component({
   selector: 'app-input-small',
   templateUrl: './input-small.component.html',
@@ -25,6 +27,7 @@ export class InputSmallComponent  {
   inputsService    = inject( InputsService );
   componentService = inject( ComponentsService );
   validatorsService = inject( ValidatorsService );
+  authService       = inject( AuthService );
   fb                = inject( FormBuilder  );
   suggestedProviders    = signal<Provider[]>([]);
   suggestedProducts     = signal<Product[]>([]);
@@ -36,17 +39,24 @@ export class InputSmallComponent  {
   providerSelect        = computed(() => this.inputsService.providerSelect());
   providerSelectName    = computed(() => `${this.inputsService.providerSelect()?.number_document ?? '0'} / ${this.providerSelect()?.full_names}`);
 
+  get isOperador(): boolean {
+    const role = this.validatorsService.user()?.role || this.authService.getUser?.role;
+    return role ? role !== 'ADMINISTRADOR' : false;
+  }
+
+  get categoryType(): string {
+    return this.isOperador ? 'RAW_MATERIAL' : '';
+  }
+
   formReport:UntypedFormGroup = this.fb.group({
     id_sucursal: ['',[Validators.required]],
     id_storage: ['',[Validators.required]],
   });
 
   ngOnInit(): void {
-    const id_storage_pos  = localStorage.getItem('id_storage_posI');
-    const findStorage = this.validatorsService.storages().find(resp => resp.id === Number(id_storage_pos));
     this.formReport.patchValue({
       id_sucursal: this.validatorsService.id_sucursal(),
-      id_storage: findStorage ? Number(id_storage_pos) : null
+      id_storage: this.validatorsService.id_storage() || null
     });
     this.formReport.markAllAsTouched();
     if(!this.inputsService.isEdit){
@@ -98,7 +108,7 @@ export class InputSmallComponent  {
     this.loadingSearchProduct.set(true);
     this.txtSearchProduct.set(txtSearchProduct);
     this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true, this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,)
+    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true, this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'id','DESC',false,this.categoryType)
         .subscribe({
           next: (resp) => {
             this.suggestedProducts.set(resp.products.data);
@@ -130,11 +140,8 @@ export class InputSmallComponent  {
       this.componentService.clearInputSearch$.next(false);
     }
   }
+
   setSelectStorage() {
-    const id_storage = this.formReport.get('id_storage')?.value;
-    if(id_storage){
-      localStorage.setItem('id_storage_posI', id_storage);
-    }
-    // this.inputsService.resetInput();
+    // El origen de las compras nuevas se define desde el contexto global.
   }
 }

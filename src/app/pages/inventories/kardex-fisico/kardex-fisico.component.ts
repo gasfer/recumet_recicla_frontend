@@ -193,12 +193,7 @@ export class KardexFisicoComponent {
       id_sucursal: this.validatorsService.id_sucursal()
     });
 
-    const storagesList = this.validatorsService.storages();
-    if (storagesList.length > 0) {
-      this.formReport.patchValue({
-        id_storage: storagesList[0].id
-      });
-    }
+    this.formReport.patchValue({ id_storage: this.validatorsService.id_storage() || '' });
 
     this.activatedRoute.data.subscribe((data: any) => {
       this.title.set(data.title || 'CONSULTA DE KARDEX FÍSICO');
@@ -488,9 +483,7 @@ export class KardexFisicoComponent {
       id_sucursal: this.validatorsService.id_sucursal(),
       id_provider: '',
       type_kardex: '',
-      id_storage: this.validatorsService.storages().length > 0
-        ? this.validatorsService.storages()[0].id
-        : '',
+      id_storage: this.validatorsService.id_storage() || '',
       id_product: '', // Asegurar que se limpia
       showZeroSaldo: false,
       category_types: ''

@@ -148,12 +148,8 @@ export class TotalStockRecumetComponent implements OnInit {
       id_sucursal: [this.validatorsService.id_sucursal()]
     });
 
-    const storagesList = this.validatorsService.storages();
-    if (storagesList.length > 0) {
-      this.formReport.patchValue({
-        id_storage: [storagesList[0].id]
-      });
-    }
+    const idStorage = this.validatorsService.id_storage();
+    this.formReport.patchValue({ id_storage: idStorage ? [idStorage] : [] });
 
     this.getSucursales();
     this.loadCategories();
@@ -375,12 +371,11 @@ export class TotalStockRecumetComponent implements OnInit {
   }
 
   clearInputs() {
-    const storagesList = this.validatorsService.storages();
     this.formReport.patchValue({
       filterBy: 'RANGE',
       dates: [new Date('2025-01-01'), new Date()],
       id_sucursal: [this.validatorsService.id_sucursal()],
-      id_storage: storagesList.length > 0 ? [storagesList[0].id] : [],
+      id_storage: this.validatorsService.id_storage() ? [this.validatorsService.id_storage()] : [],
       showZeroSaldo: false,
     });
     this.selectedCategoryIds.set([]);

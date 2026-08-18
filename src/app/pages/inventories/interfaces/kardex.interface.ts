@@ -59,6 +59,7 @@ export interface Kardex {
     sucursal: Sucursal;
     storage: Storage;
     product: Product;
+    review_note?: { id: number; registry_number: string; type: string };
     options?: Options[];
 
 }

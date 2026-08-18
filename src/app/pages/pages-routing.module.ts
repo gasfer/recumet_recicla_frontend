@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: 'managements',loadChildren: () => import('./managements/managements.module').then(m => m.ManagementsModule) },
   { path: 'accounts',loadChildren: () => import('./accounts/accounts.module').then(m => m.AccountsModule) },
   { path: 'caja',loadChildren: () => import('./caja/caja.module').then(m => m.CajaModule) },
+  { path: 'notifications', loadChildren: () => import('./notifications/notifications.module').then(m => m.NotificationsModule) },
   { path: '**', redirectTo: 'dashboard'}
 ];
 

@@ -133,7 +133,7 @@ export class QueryReceptionsComponent implements OnInit {
             },
             {
               label:'',icon:'fas fa-print',
-              tooltip: 'Imprimir boleta',
+              tooltip: 'Imprimir guía de traslado',
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -152,11 +152,20 @@ export class QueryReceptionsComponent implements OnInit {
             },
             {
               label:'',icon:'fas fa-print',
-              tooltip: 'Imprimir boleta',
+              tooltip: 'Imprimir guía de traslado',
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
                 this.transfersService.printPdfReport(transfer.id);
+              }
+            },
+            {
+              label:'',icon:'fas fa-clipboard-check',
+              tooltip: 'Imprimir guía de recepción',
+              disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
+              class:'p-button-rounded p-button-info p-button-sm ms-1',
+              eventClick: () => {
+                this.transfersService.printReceptionPdfReport(transfer.id);
               }
             }
           ] ;
