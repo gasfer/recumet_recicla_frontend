@@ -2,14 +2,14 @@
      VIEW TOGGLE BAR
 ════════════════════════════════════════════════════ -->
 <div class="view-toggle-bar" *ngIf="data?.data?.length && !loading">
-  <button [class.active]="viewMode === 'table'" (click)="viewMode = 'table'">
-    <i class="fas fa-table"></i> Tabla
+  <button type="button" [class.active]="viewMode === 'table'" [attr.aria-pressed]="viewMode === 'table'" (click)="viewMode = 'table'">
+    <i class="fas fa-table" aria-hidden="true"></i> Tabla
   </button>
-  <button [class.active]="viewMode === 'cards'" (click)="viewMode = 'cards'">
-    <i class="fas fa-id-card"></i> Cards
+  <button type="button" [class.active]="viewMode === 'cards'" [attr.aria-pressed]="viewMode === 'cards'" (click)="viewMode = 'cards'">
+    <i class="fas fa-id-card" aria-hidden="true"></i> Cards
   </button>
-  <button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">
-    <i class="fas fa-th-large"></i> Catálogo
+  <button type="button" [class.active]="viewMode === 'grid'" [attr.aria-pressed]="viewMode === 'grid'" (click)="viewMode = 'grid'">
+    <i class="fas fa-th-large" aria-hidden="true"></i> Catálogo
   </button>
 </div>
 
@@ -27,17 +27,18 @@
 
   <p-table #dt id="table"
       [value]="data?.data"
-      styleClass="p-datatable-sm p-datatable-striped animated fadeIn"
+      [styleClass]="responsiveTableClass"
+      [attr.data-responsive-strategy]="responsiveStrategy"
       [scrollHeight]="heightTable"
       [resizableColumns]="true"
       [rowHover]="true"
       [rows]="50"
       [columns]="cols"
-      responsiveLayout="stack"
+      [responsiveLayout]="responsiveStrategy"
       [paginator]="customPagination"
       [showCurrentPageReport]="true"
       [sortField]="sortField"
-      [sortOrder]="sortOrder === 'DESC' ? 0 : 1"
+      [sortOrder]="sortOrder === 'DESC' ? -1 : 1"
       sortMode="single"
       (onLazyLoad)="customSort($event)"
       [lazy]="isCustomSort"
@@ -54,10 +55,13 @@
             placeholder="Buscar por:" optionLabel="name" optionValue="code"
             appendTo="body"></p-dropdown>
         <span class="p-input-icon-right ms-2 mt-1">
-          <i (click)="clearSearch()" class="fa-solid fa-circle-xmark cursor-pointer"></i>
-          <input type="text" style="text-transform:uppercase" pInputText
+          <i role="button" tabindex="0" aria-label="Limpiar búsqueda"
+              (click)="clearSearch()" (keydown.enter)="clearSearch()"
+              (keydown.space)="$event.preventDefault(); clearSearch()"
+              class="fa-solid fa-circle-xmark cursor-pointer"></i>
+          <input type="text" pInputText
               placeholder="Escriba para filtrar..."
-              [formControl]="txtTermino" (keyup)="search()" />
+              [formControl]="txtTermino" (keyup)="search()" class="text-uppercase"/>
         </span>
       </div>
     </ng-template>
@@ -66,9 +70,9 @@
       <div class="text-center">
         <span class="p-input-icon-left ml-auto">
           <i class="fas fa-search"></i>
-          <input pInputText type="text" style="text-transform:uppercase"
+          <input pInputText type="text"
               (input)="applyFilterGlobal($event, 'contains')"
-              placeholder="Escriba para filtrar..." />
+              placeholder="Escriba para filtrar..." class="text-uppercase"/>
         </span>
       </div>
     </ng-template>
@@ -77,7 +81,7 @@
       <ng-content *ngIf="!loading"></ng-content>
       <tr *ngIf="!loading">
         <th *ngFor="let col of columns" [style]="col.style"
-            style="background-color: var(--bg-primary)" class="text-white"
+            class="text-white background-primary"
             [pSortableColumn]="(col.activeSortable ?? true) && !col.isButton ? col.field : ''">
           {{ col.header }}
           <p-sortIcon [field]="col.field"
@@ -95,9 +99,8 @@
     <ng-template pTemplate="body" let-rowData let-columns="columns">
       <tr *ngIf="!loading">
         <td *ngFor="let col of columns" ngClass="tdwith" [style]="col.style"
-            style="text-align:left; white-space:normal"
             [pTooltip]="col.tooltip ? (col.tooltipMsg ? col.tooltipMsg : formatTooltip(getRowData(rowData,col))) : null"
-            tooltipPosition="top">
+            tooltipPosition="top" class="text-start app-u-white-space-normal-f8f979b">
           <span class="p-column-title"><b>{{ col.header }}</b></span>
 
           <div *ngIf="col.isArray">
@@ -107,11 +110,11 @@
               <ng-template pTemplate>
                 <p-table [value]="getRowData(rowData,col)" responsiveLayout="scroll"
                     [scrollHeight]="'180px'" [columns]="col.colsChild"
-                    styleClass="p-datatable-sm p-datatable-striped animated fadeIn">
+                    styleClass="p-datatable-sm p-datatable-striped animated fadeIn app-table-scroll">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
                       <th *ngFor="let colC of columns"
-                          style="background-color:var(--primary-color)" class="text-white"
+                          class="text-white app-u-background-color-primary-color-33e5713"
                           [pSortableColumn]="colC.field">
                         {{ colC.header }}<p-sortIcon></p-sortIcon>
                       </th>
@@ -129,6 +132,7 @@
 
           <div *ngIf="col.isButton">
             <button *ngFor="let button of rowData[col.field]" pButton [label]="button.label"
+                [attr.aria-label]="button.ariaLabel || button.label || button.tooltip"
                 [disabled]="getReturnDisable(button.disabled)"
                 [pTooltip]="button.tooltip" tooltipPosition="bottom"
                 (click)="!getReturnDisable(button.disabled) ? button.eventClick() : null"
@@ -147,19 +151,22 @@
 
           <div *ngIf="col.isImg">
             <img [src]="rowData[col.field] | image : col.typeImg" width="50px"
-                class="cursor-pointer" style="border-radius:5px"
-                (click)="openViewImage(rowData)" alt="">
+                class="cursor-pointer app-u-border-radius-5px-6c9127f" role="button" tabindex="0"
+                [attr.aria-label]="'Ver imagen de ' + (rowData?.name || col.header)"
+                (click)="openViewImage(rowData)" (keydown.enter)="openViewImage(rowData)"
+                (keydown.space)="$event.preventDefault(); openViewImage(rowData)" alt="">
           </div>
 
           <div *ngIf="col.isText"><p>{{ getRowData(rowData,col) }}</p></div>
 
           <div *ngIf="col.isTextArray">
-            <p style="white-space:pre-line">{{ getRowData(rowData,col) }}</p>
+            <p class="app-u-white-space-pre-line-94badf9">{{ getRowData(rowData,col) }}</p>
           </div>
 
           <div *ngIf="col.isLink">
-            <p class="badge text-bg-light text-primary p-2 cursor-pointer"
-                (click)="returnLink(col.link, getRowData2(rowData,col))">
+            <p class="badge text-bg-light text-primary p-2 cursor-pointer" role="link" tabindex="0"
+                (click)="returnLink(col.link, getRowData2(rowData,col))"
+                (keydown.enter)="returnLink(col.link, getRowData2(rowData,col))">
               {{ getRowData(rowData,col) }}
             </p>
           </div>
@@ -184,12 +191,12 @@
     </ng-template>
 
     <ng-template pTemplate="groupfooter" let-rowData let-columns="columns">
-      <tr *ngIf="groupRowsBy && !loading" class="group-footer-row" style="background-color: #f8f9fa; font-weight: bold;">
-        <td [attr.colspan]="getGroupFooterColspan(columns)" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6; text-align: left; padding-left: 1.5rem; font-size: 0.9rem;">
+      <tr *ngIf="groupRowsBy && !loading" class="group-footer-row app-u-background-color-f8f9fa-ba50009 fw-bold">
+        <td [attr.colspan]="getGroupFooterColspan(columns)" class="app-u-background-color-f8f9fa-ba50009 app-u-border-top-1px-solid-dee2e6-12a7384 app-u-border-bottom-2px-solid-dee2e6-c453d47 text-start app-u-padding-left-1-5rem-f7e4b8f app-u-font-size-0-9rem-c821f2f">
           TOTAL {{ getGroupValue(rowData) | uppercase }}
         </td>
         <ng-container *ngFor="let col of columns; let i = index">
-          <td *ngIf="i >= getGroupFooterColspan(columns)" [style]="col.style" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6;">
+          <td *ngIf="i >= getGroupFooterColspan(columns)" [style]="col.style" class="app-table-group-total-cell">
             <span *ngIf="col.isValueUpdate">
               {{ formatGroupTotal(getGroupValue(rowData), col) }}
             </span>
@@ -201,8 +208,7 @@
     <ng-template pTemplate="footer" let-rowData let-columns>
       <tr *ngIf="!loading && hasFooter(columns)">
         @for (col of columns; track $index) {
-          <td ngClass="tdwith" [style]="col.style"
-              style="text-align:left; white-space:normal">{{ col.footer }}</td>
+          <td ngClass="tdwith" [style]="col.style" class="text-start app-u-white-space-normal-f8f979b">{{ col.footer }}</td>
         }
       </tr>
     </ng-template>
@@ -214,7 +220,7 @@
   </app-table-loading>
 
   <p-paginator *ngIf="!customPagination" [rows]="rows"
-      [rowsPerPageOptions]="[50,100,200,500]"
+      [rowsPerPageOptions]="[10,50,100,200,500]"
       (onPageChange)="paginate($event)" [showCurrentPageReport]="true"
       currentPageReportTemplate="Mostrando del {{from}} al {{to}} total de {{total}}"
       [totalRecords]="total" #paginator [dropdownAppendTo]="'body'">
@@ -230,14 +236,14 @@
 
   <p-table #dt id="table"
       [value]="data?.data"
-      styleClass="p-datatable-sm animated fadeIn cards-table-mode"
+      styleClass="p-datatable-sm animated fadeIn cards-table-mode app-table-scroll"
       [scrollHeight]="heightTable"
       [rows]="50"
       [columns]="cols"
       [paginator]="customPagination"
       [showCurrentPageReport]="true"
       [sortField]="sortField"
-      [sortOrder]="sortOrder === 'DESC' ? 0 : 1"
+      [sortOrder]="sortOrder === 'DESC' ? -1 : 1"
       sortMode="single"
       (onLazyLoad)="customSort($event)"
       [lazy]="isCustomSort"
@@ -245,7 +251,7 @@
       [rowsPerPageOptions]="[10,50,100,200,500]"
       rowGroupMode="subheader"
       [groupRowsBy]="groupRowsBy"
-      [globalFilterFields]="stringSearch">
+      [globalFilterFields]="stringSearch" responsiveLayout="scroll">
 
     <ng-template *ngIf="includeSearch" pTemplate="caption">
       <div class="text-center">
@@ -254,16 +260,19 @@
             placeholder="Buscar por:" optionLabel="name" optionValue="code"
             appendTo="body"></p-dropdown>
         <span class="p-input-icon-right ms-2 mt-1">
-          <i (click)="clearSearch()" class="fa-solid fa-circle-xmark cursor-pointer"></i>
-          <input type="text" style="text-transform:uppercase" pInputText
+          <i role="button" tabindex="0" aria-label="Limpiar búsqueda"
+              (click)="clearSearch()" (keydown.enter)="clearSearch()"
+              (keydown.space)="$event.preventDefault(); clearSearch()"
+              class="fa-solid fa-circle-xmark cursor-pointer"></i>
+          <input type="text" pInputText
               placeholder="Escriba para filtrar..."
-              [formControl]="txtTermino" (keyup)="search()" />
+              [formControl]="txtTermino" (keyup)="search()" class="text-uppercase"/>
         </span>
       </div>
     </ng-template>
 
     <ng-template pTemplate="header">
-      <tr style="display:none"></tr>
+      <tr class="d-none"></tr>
     </ng-template>
 
     <ng-template pTemplate="groupheader" let-rowData let-columns="columns">
@@ -286,7 +295,9 @@
             <ng-container *ngFor="let col of columns">
               <div class="rc__img" *ngIf="col.isImg">
                 <img [src]="getImgSrc(rowData,col) | image : getTypeImg(col)"
-                     (click)="openDetailModal(rowData)" alt="" />
+                     role="button" tabindex="0" aria-label="Abrir detalle"
+                     (click)="openDetailModal(rowData)" (keydown.enter)="openDetailModal(rowData)"
+                     (keydown.space)="$event.preventDefault(); openDetailModal(rowData)" alt="" />
               </div>
             </ng-container>
 
@@ -311,19 +322,20 @@
                                && !col.isTextArray && !col.isText">
                     {{ getRowData(rowData,col) }}
                   </span>
-                  <span class="rc__value" *ngIf="col.isText || col.isTextArray"
-                        style="white-space:pre-line">
+                  <span class="rc__value app-u-white-space-pre-line-94badf9" *ngIf="col.isText || col.isTextArray"
+                       >
                     {{ getRowData(rowData,col) }}
                   </span>
                   <span class="rc__value badge text-bg-light text-primary cursor-pointer"
-                        *ngIf="col.isLink"
-                        (click)="returnLink(getLink(col), getRowData2(rowData,col))">
+                        *ngIf="col.isLink" role="link" tabindex="0"
+                        (click)="returnLink(getLink(col), getRowData2(rowData,col))"
+                        (keydown.enter)="returnLink(getLink(col), getRowData2(rowData,col))">
                     {{ getRowData(rowData,col) }}
                   </span>
                   <span class="rc__value d-flex flex-column align-items-end"
                         *ngIf="col.isDoubleValue">
                     <span>{{ getRowData(rowData,col) }}</span>
-                    <span class="badge text-bg-light" style="font-size:10px">
+                    <span class="badge text-bg-light app-u-font-size-10px-0d5be05">
                       {{ getRowData2(rowData,col) }}
                     </span>
                   </span>
@@ -336,19 +348,19 @@
                   <span class="rc__label">{{ col.header }}</span>
                   <button pButton label="Ver" (click)="opC.toggle($event)" pRipple
                       icon="fas fa-eye"
-                      class="p-button-rounded p-button-success p-button-sm"
-                      style="font-size:11px;padding:3px 8px">
+                      class="p-button-rounded p-button-success p-button-sm app-u-font-size-11px-11a5081 app-u-padding-3px-8px-84a96e3"
+                     >
                   </button>
                   <p-overlayPanel #opC [showCloseIcon]="true"
                       [style]="{width: col.widthTable ?? '500px'}">
                     <ng-template pTemplate>
                       <p-table [value]="getRowData(rowData,col)" responsiveLayout="scroll"
                           [scrollHeight]="'180px'" [columns]="col.colsChild"
-                          styleClass="p-datatable-sm p-datatable-striped animated fadeIn">
+                          styleClass="p-datatable-sm p-datatable-striped animated fadeIn app-table-scroll">
                         <ng-template pTemplate="header" let-columns>
                           <tr>
                             <th *ngFor="let colC of columns"
-                                style="background-color:var(--primary-color)" class="text-white"
+                                class="text-white app-u-background-color-primary-color-33e5713"
                                 [pSortableColumn]="colC.field">
                               {{ colC.header }}<p-sortIcon></p-sortIcon>
                             </th>
@@ -373,6 +385,7 @@
                 <ng-container *ngIf="col.isButton">
                   <button *ngFor="let button of getButtons(rowData,col)"
                       pButton [label]="button.label"
+                      [attr.aria-label]="button.ariaLabel || button.label || button.tooltip"
                       [disabled]="getReturnDisable(button.disabled)"
                       [pTooltip]="button.tooltip" tooltipPosition="bottom"
                       (click)="!getReturnDisable(button.disabled) ? button.eventClick() : null"
@@ -389,15 +402,15 @@
     </ng-template>
 
     <ng-template pTemplate="groupfooter" let-rowData let-columns="columns">
-      <tr *ngIf="groupRowsBy && !loading" class="group-footer-row-cards" style="background-color: #f8f9fa; font-weight: bold;">
-        <td [attr.colspan]="columns.length" style="padding: 12px 15px; background-color: #f8f9fa; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6;">
+      <tr *ngIf="groupRowsBy && !loading" class="group-footer-row-cards app-u-background-color-f8f9fa-ba50009 fw-bold">
+        <td [attr.colspan]="columns.length" class="app-u-padding-12px-15px-13af0d6 app-u-background-color-f8f9fa-ba50009 app-u-border-top-1px-solid-dee2e6-12a7384 app-u-border-bottom-2px-solid-dee2e6-c453d47">
           <div class="d-flex flex-wrap gap-4 justify-content-between align-items-center">
-            <span style="color: var(--primary-color);">TOTAL {{ getGroupValue(rowData) | uppercase }}</span>
+            <span class="app-u-color-primary-color-e0beeb5">TOTAL {{ getGroupValue(rowData) | uppercase }}</span>
             <div class="d-flex gap-4">
               <span *ngFor="let col of columns">
                 <span *ngIf="col.isValueUpdate">
-                  <span class="text-muted" style="font-size: 0.9em; margin-right: 5px;">{{ col.header }}:</span>
-                  <span style="color: #2d3748;">{{ formatGroupTotal(getGroupValue(rowData), col) }}</span>
+                  <span class="text-muted app-u-font-size-0-9em-65025e9 app-u-margin-right-5px-8896c95">{{ col.header }}:</span>
+                  <span class="app-u-color-2d3748-d6e2baf">{{ formatGroupTotal(getGroupValue(rowData), col) }}</span>
                 </span>
               </span>
             </div>
@@ -413,7 +426,7 @@
   </app-table-loading>
 
   <p-paginator *ngIf="!customPagination" [rows]="rows"
-      [rowsPerPageOptions]="[50,100,200,500]"
+      [rowsPerPageOptions]="[10,50,100,200,500]"
       (onPageChange)="paginate($event)" [showCurrentPageReport]="true"
       currentPageReportTemplate="Mostrando del {{from}} al {{to}} total de {{total}}"
       [totalRecords]="total" #paginator [dropdownAppendTo]="'body'">
@@ -429,17 +442,19 @@
 <ng-container *ngIf="viewMode === 'grid'">
 
   <!-- Barra búsqueda -->
-  <div *ngIf="includeSearch && !loading"
-       style="background:#f7f8fc; padding:12px 18px 0; display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
+  <div *ngIf="includeSearch && !loading" class="app-u-background-f7f8fc-3f54b94 app-u-padding-12px-18px-0-eff0538 d-flex align-items-center justify-content-center app-u-gap-8px-33fcd4c app-u-flex-wrap-wrap-62da067">
     <ng-content select="[extra-filters]"></ng-content>
     <p-dropdown [options]="searchFor" [formControl]="searchSelect"
         placeholder="Buscar por:" optionLabel="name" optionValue="code"
         appendTo="body"></p-dropdown>
     <span class="p-input-icon-right">
-      <i (click)="clearSearch()" class="fa-solid fa-circle-xmark cursor-pointer"></i>
-      <input type="text" style="text-transform:uppercase" pInputText
+      <i role="button" tabindex="0" aria-label="Limpiar búsqueda"
+          (click)="clearSearch()" (keydown.enter)="clearSearch()"
+          (keydown.space)="$event.preventDefault(); clearSearch()"
+          class="fa-solid fa-circle-xmark cursor-pointer"></i>
+      <input type="text" pInputText
           placeholder="Escriba para filtrar..."
-          [formControl]="txtTermino" (keyup)="search()" />
+          [formControl]="txtTermino" (keyup)="search()" class="text-uppercase"/>
     </span>
   </div>
 
@@ -451,7 +466,7 @@
         <div class="gc-card__img-wrap">
           <p-skeleton width="100%" height="148px" borderRadius="0"></p-skeleton>
         </div>
-        <div class="gc-card__body" style="display:flex;flex-direction:column;gap:8px;padding:12px 12px 10px">
+        <div class="gc-card__body d-flex app-u-flex-direction-column-06c8b5e app-u-gap-8px-33fcd4c app-u-padding-12px-12px-10px-2f62c0d">
           <p-skeleton width="90%" height="14px" borderRadius="4px"></p-skeleton>
           <p-skeleton width="65%" height="12px" borderRadius="4px"></p-skeleton>
           <p-skeleton width="80%" height="11px" borderRadius="4px"></p-skeleton>
@@ -465,7 +480,9 @@
       <div class="gc-card" *ngFor="let rowData of data?.data">
 
         <!-- ── Zona imagen: click abre modal ── -->
-        <div class="gc-card__img-wrap" (click)="openDetailModal(rowData)">
+        <div class="gc-card__img-wrap" role="button" tabindex="0" aria-label="Abrir detalle"
+             (click)="openDetailModal(rowData)" (keydown.enter)="openDetailModal(rowData)"
+             (keydown.space)="$event.preventDefault(); openDetailModal(rowData)">
 
           <!-- Badge código — SOLO aquí, una vez -->
           <ng-container *ngFor="let col of cols">
@@ -530,13 +547,14 @@
                   {{ getRowData(rowData,col) }}
                 </span>
                 <span class="gc-field__value badge text-bg-light text-primary cursor-pointer"
-                      *ngIf="col.isLink"
-                      (click)="$event.stopPropagation(); returnLink(getLink(col), getRowData2(rowData,col))">
+                      *ngIf="col.isLink" role="link" tabindex="0"
+                      (click)="$event.stopPropagation(); returnLink(getLink(col), getRowData2(rowData,col))"
+                      (keydown.enter)="$event.stopPropagation(); returnLink(getLink(col), getRowData2(rowData,col))">
                   {{ getRowData(rowData,col) }}
                 </span>
                 <span class="gc-field__value d-flex flex-column align-items-end" *ngIf="col.isDoubleValue">
                   <span>{{ getRowData(rowData,col) }}</span>
-                  <span class="badge text-bg-light" style="font-size:9.5px">{{ getRowData2(rowData,col) }}</span>
+                  <span class="badge text-bg-light app-u-font-size-9-5px-593d1e1">{{ getRowData2(rowData,col) }}</span>
                 </span>
                 <span class="gc-field__value" *ngIf="col.isValueUpdate">
                   {{ getTagValue(col,rowData) }}
@@ -547,7 +565,9 @@
           </ng-container>
 
           <!-- "Ver todo" si hay más de 6 campos -->
-          <div class="gc-more-hint" *ngIf="countDataCols(cols) > 6" (click)="openDetailModal(rowData)">
+          <div class="gc-more-hint" *ngIf="countDataCols(cols) > 6" role="button" tabindex="0"
+               (click)="openDetailModal(rowData)" (keydown.enter)="openDetailModal(rowData)"
+               (keydown.space)="$event.preventDefault(); openDetailModal(rowData)">
             <i class="fas fa-ellipsis-h"></i>&nbsp;Ver todo
           </div>
 
@@ -559,6 +579,7 @@
             <ng-container *ngIf="col.isButton">
               <button *ngFor="let button of getButtons(rowData,col)"
                   pButton [label]="button.label"
+                  [attr.aria-label]="button.ariaLabel || button.label || button.tooltip"
                   [disabled]="getReturnDisable(button.disabled)"
                   [pTooltip]="button.tooltip" tooltipPosition="top"
                   (click)="$event.stopPropagation(); !getReturnDisable(button.disabled) ? button.eventClick() : null"
@@ -573,7 +594,7 @@
     </div><!-- /gc-grid -->
 
     <p-paginator *ngIf="!customPagination" [rows]="rows"
-        [rowsPerPageOptions]="[50,100,200,500]"
+        [rowsPerPageOptions]="[10,50,100,200,500]"
         (onPageChange)="paginate($event)" [showCurrentPageReport]="true"
         currentPageReportTemplate="Mostrando del {{from}} al {{to}} total de {{total}}"
         [totalRecords]="total" #paginator [dropdownAppendTo]="'body'"
@@ -597,8 +618,7 @@
   [draggable]="false"
   [resizable]="false"
   [closeOnEscape]="true"
-  styleClass="gc-detail-dialog"
-  [style]="{ width: '680px', maxWidth: '96vw' }"
+  styleClass="gc-detail-dialog app-dialog--md"
   appendTo="body">
 
   <ng-template pTemplate="header">
@@ -656,13 +676,14 @@
                        && !col.isValueUpdate && !col.isTextArray && !col.isText">
             {{ getRowData(detailRow, col) }}
           </span>
-          <span class="gc-dialog-field__value" style="white-space:pre-line"
+          <span class="gc-dialog-field__value app-u-white-space-pre-line-94badf9"
                 *ngIf="col.isText || col.isTextArray">
             {{ getRowData(detailRow, col) }}
           </span>
           <span class="gc-dialog-field__value badge text-bg-light text-primary cursor-pointer"
-                *ngIf="col.isLink"
-                (click)="returnLink(getLink(col), getRowData2(detailRow,col))">
+                *ngIf="col.isLink" role="link" tabindex="0"
+                (click)="returnLink(getLink(col), getRowData2(detailRow,col))"
+                (keydown.enter)="returnLink(getLink(col), getRowData2(detailRow,col))">
             {{ getRowData(detailRow, col) }}
           </span>
           <span class="gc-dialog-field__value" *ngIf="col.isDoubleValue">
@@ -680,19 +701,19 @@
           <span class="gc-dialog-field__label">{{ col.header }}</span>
           <button pButton label="Ver detalle" (click)="opDlg.toggle($event)" pRipple
               icon="fas fa-eye"
-              class="p-button-rounded p-button-success p-button-sm"
-              style="font-size:11px;padding:3px 8px">
+              class="p-button-rounded p-button-success p-button-sm app-u-font-size-11px-11a5081 app-u-padding-3px-8px-84a96e3"
+             >
           </button>
           <p-overlayPanel #opDlg [showCloseIcon]="true"
               [style]="{width: col.widthTable ?? '500px'}">
             <ng-template pTemplate>
               <p-table [value]="getRowData(detailRow,col)" responsiveLayout="scroll"
                   [scrollHeight]="'180px'" [columns]="col.colsChild"
-                  styleClass="p-datatable-sm p-datatable-striped animated fadeIn">
+                  styleClass="p-datatable-sm p-datatable-striped animated fadeIn app-table-scroll">
                 <ng-template pTemplate="header" let-columns>
                   <tr>
                     <th *ngFor="let colC of columns"
-                        style="background-color:var(--primary-color)" class="text-white"
+                        class="text-white app-u-background-color-primary-color-33e5713"
                         [pSortableColumn]="colC.field">
                       {{ colC.header }}<p-sortIcon></p-sortIcon>
                     </th>
@@ -720,6 +741,7 @@
         <ng-container *ngIf="col.isButton && detailRow">
           <button *ngFor="let button of getButtons(detailRow, col)"
               pButton [label]="button.label"
+              [attr.aria-label]="button.ariaLabel || button.label || button.tooltip"
               [disabled]="getReturnDisable(button.disabled)"
               [pTooltip]="button.tooltip" tooltipPosition="top"
               (click)="!getReturnDisable(button.disabled) ? button.eventClick() : null"

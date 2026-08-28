@@ -1,7 +1,7 @@
 <p-dialog [header]="cajaService.type_event == 'OPEN_CAJA' ? 'Abrir caja' : cajaService.type_event == 'UPDATE_CAJA' ? 'Modificar monto apertura': 'Cerrar caja'" [(visible)]="cajaService.showModalOpenCaja"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [modal]="true" [draggable]="false"
     [resizable]="false" (onShow)="showModal()" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="form">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
@@ -25,12 +25,12 @@
                         decrementButtonIcon="fa-solid fa-minus"
                         [min]="0"
                         [max]="100000000"
-                        [class.ng-dirty]="validatorsService.inputValid('monto',form)" 
+                        [class.ng-dirty]="validatorsService.inputValid('monto',form)"
                     >
                     </p-inputNumber>
                     <small *ngIf="validatorsService.inputValid('monto',form)" class="p-error block">
                         {{ 'Monto no valido' }}
-                    </small> 
+                    </small>
                 </div>
             </div>
         </div>

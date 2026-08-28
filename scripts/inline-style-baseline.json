@@ -1,0 +1,17 @@
+{
+  "src/app/core/components/table/table.component.html": {
+    "literal": 0,
+    "styleBinding": 15,
+    "ngStyle": 0
+  },
+  "src/app/core/components/view-image/view-image.component.html": {
+    "literal": 0,
+    "styleBinding": 1,
+    "ngStyle": 0
+  },
+  "src/app/pages/inventories/list-costs-product/components/table-list-costs-products/table-list-costs-products.component.html": {
+    "literal": 0,
+    "styleBinding": 1,
+    "ngStyle": 0
+  }
+}

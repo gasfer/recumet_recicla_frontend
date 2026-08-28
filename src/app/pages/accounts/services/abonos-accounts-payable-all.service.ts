@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Observable, Subject } from 'rxjs';
@@ -12,6 +12,7 @@ const base_url = environment.base_url;
   providedIn: 'root'
 })
 export class AbonosAccountPayableAllService {
+  private mutationOptions() { return { headers: new HttpHeaders({ 'Idempotency-Key': globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}` }) }; }
   private http = inject(HttpClient);
   showModalNewAbono: boolean = false;
   reloadAccountsPayable$: Subject<number> = new Subject();
@@ -32,7 +33,7 @@ export class AbonosAccountPayableAllService {
 
   postNewAbonoMultipleAccountPayable(data: FormPayMultiple) : Observable<{id_abono_accounts_payable:number}>{
     const url = `${base_url}/accounts_payable/payMultiProvider`;
-    return this.http.post<{id_abono_accounts_payable:number}>(url, data);
+    return this.http.post<{id_abono_accounts_payable:number}>(url, data, this.mutationOptions());
   }
 
 
@@ -96,9 +97,9 @@ export class AbonosAccountPayableAllService {
     });
   }
 
-  deleteAbonoAccountPayableMultiple(id_abono_account_payable_multiple: number) {
-    const url = `${base_url}/accounts_payable/destroy-abono-multiple/${id_abono_account_payable_multiple}`;
-    return this.http.delete(url);
+  deleteAbonoAccountPayableMultiple(id_abono_account_payable_multiple: number, reason: string) {
+    const url = `${base_url}/accounts_payable/void-multiple-payment/${id_abono_account_payable_multiple}`;
+    return this.http.delete(url, { ...this.mutationOptions(), body: { reason } });
   }
 
 }

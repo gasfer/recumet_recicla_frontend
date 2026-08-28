@@ -11,19 +11,19 @@
   <app-modal-category></app-modal-category>
   <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
     [activeItem]="searchItems()[0]"></p-tabMenu>
-  <app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  <app-table responsiveStrategy="stack" *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
     (rows$)="paginate($event)" (search$)="search($event)" [data]="categories()" [loading]="loading()">
-    <div extra-filters class="p-element ng-star-inserted" style="display: inline-block; margin-right: 0.5rem;">
+    <div extra-filters class="p-element ng-star-inserted d-inline-block app-u-margin-right-0-5rem-d9ee422">
       <p-dropdown [options]="categoryTypes" [(ngModel)]="categoryTypeFilter" optionLabel="label" optionValue="value"
-        placeholder="Filtrar por tipo" (onChange)="filterByCategoryType()" [style]="{'width':'200px'}" appendTo="body">
+        placeholder="Filtrar por tipo" (onChange)="filterByCategoryType()" appendTo="body" class="app-u-width-200px-2acaf3b">
       </p-dropdown>
     </div>
   </app-table>
-  <app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  <app-table responsiveStrategy="stack" *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
     (rows$)="paginate($event)" (search$)="search($event)" [data]="categories()" [loading]="loading()">
-    <div extra-filters class="p-element ng-star-inserted" style="display: inline-block; margin-right: 0.5rem;">
+    <div extra-filters class="p-element ng-star-inserted d-inline-block app-u-margin-right-0-5rem-d9ee422">
       <p-dropdown [options]="categoryTypes" [(ngModel)]="categoryTypeFilter" optionLabel="label" optionValue="value"
-        placeholder="Filtrar por tipo" (onChange)="filterByCategoryType()" [style]="{'width':'200px'}" appendTo="body">
+        placeholder="Filtrar por tipo" (onChange)="filterByCategoryType()" appendTo="body" class="app-u-width-200px-2acaf3b">
       </p-dropdown>
     </div>
   </app-table>

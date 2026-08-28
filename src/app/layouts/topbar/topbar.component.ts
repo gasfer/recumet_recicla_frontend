@@ -1,8 +1,7 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, Inject, OnInit, Output, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { AuthService } from 'src/app/auth/auth.service';
 import { LanguageService } from 'src/app/core/services/language.service';
 import { Sucursal } from 'src/app/pages/managements/interfaces/sucursales.interface';
@@ -13,16 +12,12 @@ import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { NotificationsService } from 'src/app/services/notifications.service';
+import { TransferReviewService } from 'src/app/services/transfer-review.service';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
-  styles: [`
-    .work-context { align-items: end; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: .65rem; gap: .55rem; margin: .6rem 0 .6rem .75rem; padding: .35rem .55rem; }
-    .work-context__field { display: grid; gap: .2rem; }
-    .work-context__field label { color: #64748b; font-size: .66rem; font-weight: 700; line-height: 1; text-transform: uppercase; }
-    @media (max-width: 575px) { .work-context { margin-left: .25rem; padding: .25rem; } .work-context__field label { display: none; } }
-  `]
+  styleUrls: ['./topbar.component.scss']
 })
 export class TopbarComponent implements OnInit{
   element:any;
@@ -33,8 +28,7 @@ export class TopbarComponent implements OnInit{
   constructor(@Inject(DOCUMENT) private document: any, private router: Router,
               public languageService: LanguageService,
               public translate: TranslateService,
-              public authService: AuthService,
-              private breakpointObserver: BreakpointObserver) {
+              public authService: AuthService) {
   }
 
   listLang = [
@@ -46,14 +40,15 @@ export class TopbarComponent implements OnInit{
 
   @Output() settingsButtonClicked = new EventEmitter();
   @Output() mobileMenuButtonClicked = new EventEmitter();
+  @Input() mobileMenuOpen = false;
+  @Input() mobileMenuControls = 'app-sidebar';
   cities: any[] | undefined;
   selectedCity: any | undefined;
-  isPageViewMovil: boolean = false;
-  styleSucursales   = signal({});
   fb                = inject( FormBuilder  );
   sucursalService   = inject(SucursalesService);
   validatorsService = inject(ValidatorsService);
   notificationsService = inject(NotificationsService);
+  transferReviewService = inject(TransferReviewService);
   form:UntypedFormGroup = this.fb.group({
     id_sucursal: ['',[Validators.required]],
     id_storage: ['',[Validators.required]],
@@ -72,7 +67,6 @@ export class TopbarComponent implements OnInit{
     } else {
       this.flagvalue = val.map(element => element.flag);
     }
-    this.mediaQuery();
     this.getAllSucursales();
     this.loadNotifications();
     this.isReloadSub$ = this.validatorsService.reload_sucursal_storages$.subscribe(resp => {
@@ -118,6 +112,7 @@ export class TopbarComponent implements OnInit{
           return;
         }
         this.form.patchValue({ id_sucursal: this.validatorsService.id_sucursal(), id_storage: this.validatorsService.id_storage() });
+        this.transferReviewService.checkCurrentContext(true).subscribe();
       }
     });
   }
@@ -142,28 +137,16 @@ export class TopbarComponent implements OnInit{
       return;
     }
     this.form.get('id_storage')?.setValue(this.validatorsService.id_storage());
+    this.transferReviewService.checkCurrentContext(true).subscribe();
   }
 
   setStorage() {
     const idSucursal = Number(this.form.get('id_sucursal')?.value);
     const idStorage = Number(this.form.get('id_storage')?.value);
     if (!this.setWorkContext(idSucursal, idStorage)) return;
+    this.transferReviewService.checkCurrentContext(true).subscribe();
     this.validatorsService.reload.set(true);
     setTimeout(() => this.validatorsService.reload.set(false), 100);
-  }
-
-  mediaQuery() {
-    this.breakpointObserver.observe([
-          Breakpoints.XSmall,
-          Breakpoints.Small,
-        ]).subscribe((state: BreakpointState) => {
-          this.isPageViewMovil = state.matches;
-          if(this.isPageViewMovil){
-            this.styleSucursales.set({'maxWidth':'130px','minWidth':'130px',});
-          } else {
-            this.styleSucursales.set({'maxWidth':'auto','minWidth':'190px',});
-          }
-        });
   }
 
   setLanguage(text: string, lang: string, flag: string) {

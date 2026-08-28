@@ -1,8 +1,8 @@
 <!--Pos config modal-->
-<app-modal-config-classified></app-modal-config-classified> 
+<app-modal-config-classified></app-modal-config-classified>
 <!--Pos Data modal save-->
-<app-modal-save-classified 
-    [id_sucursal]="formReport.get('id_sucursal')?.value" 
+<app-modal-save-classified
+    [id_sucursal]="formReport.get('id_sucursal')?.value"
     [id_storage]="formReport.get('id_storage')?.value"
 ></app-modal-save-classified>
 <!--provider new modal-->
@@ -17,7 +17,7 @@
                     [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un producto aquí....'">
                 </app-input-search>
                 <small>Producto buscado por la sucursal y area / almacén seleccionado.</small>
-                <div style="position: absolute; z-index: 999; width: 90%;">
+                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
                     <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
                         <li class="list-group-item list-group-item-action">
                             <span class='fw-bold'>Cargando....</span>
@@ -57,7 +57,10 @@
             <div class="col-sm-1 col-12">
                 <div class="d-flex justify-content-end">
                     <i class="cursor-pointer fa-solid fa-gear" pTooltip="Config. Modo de clasificación" tooltipPosition="left"
-                        (click)="classifiedService.showModalConfigClassified = true">
+                        role="button" tabindex="0" aria-label="Configurar modo de clasificación"
+                        (click)="classifiedService.showModalConfigClassified = true"
+                        (keydown.enter)="classifiedService.showModalConfigClassified = true"
+                        (keydown.space)="$event.preventDefault(); classifiedService.showModalConfigClassified = true">
                     </i>
                 </div>
             </div>
@@ -74,14 +77,14 @@
                         <p-messages severity="info">
                             <ng-template pTemplate>
                                 <b>ITEMS CLASIFICADOS <i class="fa-solid fa-cart-arrow-down"></i></b>
-                                <i class="fa-solid fa-tags ms-5 p-text-secondary" pBadge style="font-size: 1.2rem;"
+                                <i class="fa-solid fa-tags ms-5 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
                                     value="{{totalItems()}}"></i>
                             </ng-template>
                         </p-messages>
                         <app-input-search *ngIf="!classifiedService._classifiedConfig.viewCardProducts" (onEnters)="suggestedProductClassifieds($event)" (onDebounce)="suggestedProductClassifieds($event)"
                             [icon]="'fa-solid fa-cart-plus'"
                             [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                        <div style="position: absolute; z-index: 999; width: 96%;">
+                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
                             <ul *ngIf="loadingSearchProductClassified()" class="list-group shadow">
                                 <li class="list-group-item list-group-item-action">
                                     <span class='fw-bold'>Cargando....</span>
@@ -108,14 +111,16 @@
             <app-table-classified-details></app-table-classified-details>
         </div>
     </div>
-    
+
     <div *ngIf="classifiedService._classifiedConfig.viewCardProducts" class="col-sm-12 col-md-5">
-        <app-dataview-products 
-            [isViewQuantity]="true" 
+        <app-dataview-products
+            [prominentProductCode]="true"
+            [productContext]="productContext"
+            [isViewQuantity]="true"
             [isViewPrice]="false"
-            [id_sucursal]="formReport.get('id_sucursal')?.value" 
-            [id_storage]="formReport.get('id_storage')?.value" 
-            (onProductSelect)="addItemCarByViewProduct($event)" 
+            [id_sucursal]="formReport.get('id_sucursal')?.value"
+            [id_storage]="formReport.get('id_storage')?.value"
+            (onProductSelect)="addItemCarByViewProduct($event)"
             (onProductByCod)="addItemCarByCodProduct($event)">
         </app-dataview-products>
     </div>

@@ -2,9 +2,9 @@
 // _buttons.scss
 //
 
-button,
-a {
-    outline: none !important;
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+    outline: none;
 }
 
 // Rounded Buttons

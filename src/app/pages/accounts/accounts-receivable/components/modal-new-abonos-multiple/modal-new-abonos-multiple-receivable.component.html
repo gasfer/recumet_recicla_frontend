@@ -1,36 +1,35 @@
 <p-dialog [header]="'Abono multiple a : ' + nameClient()"
-    [(visible)]="accountsPayableService.showModalAccountsClient" [modal]="true"
-    [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '70vw' }" [draggable]="false"
-    [resizable]="false" (onHide)="resetModal()" [dismissableMask]="true">
+    [(visible)]="accountsPayableService.showModalAccountsClient" [modal]="true" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()" [dismissableMask]="true" styleClass="app-dialog--lg">
     <form [formGroup]="abonoForm" (submit)="!loading() ? newAbono() : null">
         <app-alert-notify></app-alert-notify>
         <p-tag styleClass="m-2 ms-0 mb-1" value="CUENTA DE: {{nameClient()}} " [rounded]="true"></p-tag>
         <div class="row">
             <div class="col-7">
                 <div class="table-responsive">
-                    <table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm">
+                    <table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm app-table-scroll" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
                         <thead>
                             <tr>
-                                <th style="background-color: var(--bg-primary);min-width:80px;max-width:100px"
-                                    class="text-white">COMPRA</th>
-                                <th style="background-color: var(--bg-primary);min-width:100px;" class="text-white">
+                                <th
+                                    class="text-white background-primary app-u-min-width-80px-c3c7cd9 app-u-max-width-100px-d579dc3">COMPRA</th>
+                                <th class="text-white background-primary app-u-min-width-100px-e79a03c">
                                     FECHA</th>
-                                <th style="background-color: var(--bg-primary);min-width:100px;" class="text-white">
+                                <th class="text-white background-primary app-u-min-width-100px-e79a03c">
                                     NUMERO</th>
-                                <th style="background-color: var(--bg-primary)" class="text-white">A CUENTA</th>
-                                <th style="background-color: var(--bg-primary)" class="text-white">SALDO</th>
-                                <th style="background-color: var(--bg-primary)" class="text-white">TOTAL</th>
+                                <th class="text-white background-primary">A CUENTA</th>
+                                <th class="text-white background-primary">SALDO</th>
+                                <th class="text-white background-primary">TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let abono of accountsPayableClient()?.data">
-                                <td style="min-width:80px;max-width:110px;">{{abono.output.cod}}</td>
-                                <td style="min-width:80px;max-width:80px">{{abono.output.date_output|
+                                <td class="app-u-min-width-80px-c3c7cd9 app-u-max-width-110px-91245b1">{{abono.output.cod}}</td>
+                                <td class="app-u-min-width-80px-c3c7cd9 app-u-max-width-80px-151dcb2">{{abono.output.date_output|
                                     date:'dd/MM/yyyy'}}</td>
-                                <td style="min-width:110px;">{{abono.output.number_registry }}</td>
-                                <td style="min-width:110px;">{{abono.monto_abonado | number:decimal()}}</td>
-                                <td style="min-width:110px;">{{abono.monto_restante | number:decimal()}}</td>
-                                <td style="min-width:110px;">{{abono.total | number:decimal()}}</td>
+                                <td class="app-u-min-width-110px-365391b">{{abono.output.number_registry }}</td>
+                                <td class="app-u-min-width-110px-365391b">{{abono.monto_abonado | number:decimal()}}</td>
+                                <td class="app-u-min-width-110px-365391b">{{abono.monto_restante | number:decimal()}}</td>
+                                <td class="app-u-min-width-110px-365391b">{{abono.total | number:decimal()}}</td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -91,9 +90,9 @@
                     </div>
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Concepto</label>
-                        <textarea pInputTextarea type="text" style="text-transform: uppercase" pInputText
+                        <textarea pInputTextarea type="text" pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="comments"
-                            placeholder="EJ. ......" class="mt-1"
+                            placeholder="EJ. ......" class="mt-1 text-uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('comments',abonoForm)"></textarea>
                         <small *ngIf="validatorsService.inputValid('comments',abonoForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("comments",abonoForm) }}
@@ -117,10 +116,10 @@
                             Cheque</label>
                         <label *ngIf="abonoForm.get('type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N.
                             Cuenta</label>
-                        <input type="text" style="text-transform: uppercase" pInputText
+                        <input type="text" pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_input"
                             placeholder="EJ. "
-                            [class.ng-dirty]="validatorsService.inputValid('account_input',abonoForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('account_input',abonoForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('account_input',abonoForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("account_input",abonoForm) }}
                         </small>

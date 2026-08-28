@@ -1,6 +1,6 @@
 <p-dialog [header]="'Registro de clasificado'" [(visible)]="classifiedService.showModalSaveClassified"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '38vw' }" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true" (onShow)="showModal()" (onHide)="resetModal()">
+    [modal]="true" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true" (onShow)="showModal()" (onHide)="resetModal()" styleClass="app-dialog--sm">
     <form [formGroup]="formClassified">
         <div class="p-fluid grid">
             <div class="field col-12">
@@ -18,7 +18,7 @@
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Stock a reducir [{{productSelect()?.unit?.siglas}}]:<span class="text-danger">*</span></label>
                         <p-inputNumber
-                            [style]="{'height': '38px'}"
+
                             [size]="5"
                             locale="en-US"
                             mode="decimal"
@@ -30,8 +30,7 @@
                             [min]="0.1"
                             [max]="productSelect()?.total_stock"
                             formControlName="quantity_product"
-                            [readonly]="true"
-                           >
+                            [readonly]="true" class="app-u-height-38px-3b84911">
                         </p-inputNumber>
                         <small *ngIf="validatorsService.inputValid('quantity_product',formClassified)" class="p-error block">
                             {{ 'Stock no valido' }}
@@ -59,11 +58,10 @@
                             @if (formClassified.get('type_registry')?.value != 'SIN FICHA') {
                               <div class="col-sm-6 col-12">
                                   <label class="block mb-0">Nro.</label>
-                                  <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                                  <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                                       formControlName="number_registry" placeholder="EJ. 0001"
                                       [pKeyFilter]="validatorsService.expRegValidInput"
-                                      [class.ng-dirty]="validatorsService.inputValid('number_registry',formClassified)"
-                                  />
+                                      [class.ng-dirty]="validatorsService.inputValid('number_registry',formClassified)" class="text-uppercase"/>
                                   <small *ngIf="validatorsService.inputValid('number_registry',formClassified)" class="p-error block">
                                       {{ validatorsService.inputValidMessage("number_registry",formClassified) }}
                                   </small>
@@ -114,12 +112,12 @@
                         <label class="block mb-0">Observaciones</label>
                         <textarea pInputTextarea
                             type="text"
-                            style="text-transform: uppercase"
+
                             pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="comments"
                             placeholder="EJ. ......"
-                            class="mt-1"
+                            class="mt-1 text-uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('comments',formClassified)"
                         ></textarea>
                         <small *ngIf="validatorsService.inputValid('comments',formClassified)" class="p-error block">

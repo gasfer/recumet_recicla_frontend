@@ -11,6 +11,18 @@ const base_url = environment.base_url;
 export class KardexService {
   private http = inject(HttpClient);
 
+  getStockDiagnostic(params: { id_sucursal?: number | string, id_storage?: number | string, limit?: number } = {}): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params.id_sucursal) httpParams = httpParams.set('id_sucursal', String(params.id_sucursal));
+    if (params.id_storage) httpParams = httpParams.set('id_storage', String(params.id_storage));
+    if (params.limit) httpParams = httpParams.set('limit', String(params.limit));
+    return this.http.get<any>(`${base_url}/kardex/diagnostic`, { params: httpParams });
+  }
+
+  syncStocksFromKardex(body: { id_sucursal?: number | string, id_storage?: number | string } = {}): Observable<any> {
+    return this.http.put<any>(`${base_url}/kardex/sync-stocks`, body);
+  }
+
 
   getAllAndSearchKardex(page: number, limit: number, params: FormSearchKardex, type: string = '', query?: string, field_sort: string = 'id', order: string = 'DESC'): Observable<GetAllKardexes> {
     let url = '';

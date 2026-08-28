@@ -1,0 +1,2385 @@
+{
+  "generatedBy": "Playwright (viewport-1024, viewport-1366, viewport-320, viewport-360, viewport-390, viewport-768)",
+  "generatedAt": "2026-08-20T15:18:28.844Z",
+  "completeRun": true,
+  "acceptanceRun": true,
+  "globalErrors": [],
+  "coverage": {
+    "navigation": {
+      "observed": 336,
+      "expected": 336
+    },
+    "requiredScenarios": {
+      "observed": 36,
+      "expected": 36,
+      "missing": []
+    }
+  },
+  "testStatuses": {
+    "passed": 372
+  },
+  "testAttemptStatuses": {
+    "passed": 372
+  },
+  "testsWithNonPassingAttempts": 0,
+  "summary": {
+    "passed": 336,
+    "failed": 0,
+    "blocked": 0,
+    "pending": 0
+  },
+  "entries": [
+    {
+      "route": "/accounts/accounts-payable",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-payable",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-payable",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-payable",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-payable",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-payable",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-receivable",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-receivable",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-receivable",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-receivable",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-receivable",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/accounts/accounts-receivable",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-management",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-management",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-management",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-management",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-management",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-management",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-order",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-order",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-order",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-order",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-order",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-order",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-request",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-request",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-request",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-request",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-request",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/inputs/purchase-request",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/consumables",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/consumables",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/consumables",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/consumables",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/consumables",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/consumables",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/output-management",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/output-management",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/output-management",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/output-management",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/output-management",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/output-management",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/tools",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/tools",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/tools",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/tools",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/tools",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/assets/outputs/tools",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/adm-caja",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/adm-caja",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/adm-caja",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/adm-caja",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/adm-caja",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/adm-caja",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/expenses",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/expenses",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/expenses",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/expenses",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/expenses",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/expenses",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/major-transfers",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/major-transfers",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/major-transfers",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/major-transfers",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/major-transfers",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/major-transfers",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/query-caja",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/query-caja",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/query-caja",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/query-caja",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/query-caja",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/caja/query-caja",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/classified",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/classified",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/classified",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/classified",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/classified",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/classified",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/query-classifieds",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/query-classifieds",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/query-classifieds",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/query-classifieds",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/query-classifieds",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/classifieds/query-classifieds",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/dashboard/home",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/dashboard/home",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/dashboard/home",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/dashboard/home",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/dashboard/home",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/dashboard/home",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/input-small",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/input-small",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/input-small",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/input-small",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/input-small",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/input-small",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/providers",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/providers",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/providers",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/providers",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/providers",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/providers",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/query-inputs",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/query-inputs",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/query-inputs",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/query-inputs",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/query-inputs",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inputs/query-inputs",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/categories",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/categories",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/categories",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/categories",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/categories",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/categories",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/furniture-office",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/furniture-office",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/furniture-office",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/furniture-office",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/furniture-office",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/furniture-office",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/machinery",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/machinery",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/machinery",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/machinery",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/machinery",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/machinery",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/supplies",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/supplies",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/supplies",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/supplies",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/supplies",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/supplies",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/vehicles",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/vehicles",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/vehicles",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/vehicles",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/vehicles",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/fixed-assets/vehicles",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/all",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/all",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/all",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/all",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/all",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/all",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/ar",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/ar",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/ar",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/ar",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/ar",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/ar",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/mp",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/mp",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/mp",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/mp",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/mp",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/mp",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/pt",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/pt",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/pt",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/pt",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/pt",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/kardex-fisico/pt",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/products",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/products",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/products",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/products",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/products",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/products",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/scales",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/scales",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/scales",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/scales",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/scales",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/scales",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/total-stock-recumet",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/total-stock-recumet",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/total-stock-recumet",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/total-stock-recumet",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/total-stock-recumet",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/total-stock-recumet",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/units",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/units",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/units",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/units",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/units",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/inventories/units",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/company",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/company",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/company",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/company",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/company",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/company",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/storages",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/storages",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/storages",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/storages",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/storages",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/storages",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/sucursales",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/sucursales",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/sucursales",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/sucursales",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/sucursales",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/sucursales",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/trasport_company",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/trasport_company",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/trasport_company",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/trasport_company",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/trasport_company",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/trasport_company",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/users",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/users",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/users",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/users",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/users",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/managements/users",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/clients",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/clients",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/clients",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/clients",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/clients",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/clients",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/output",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/output",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/output",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/output",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/output",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/output",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/query-outputs",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/query-outputs",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/query-outputs",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/query-outputs",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/query-outputs",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/outputs/query-outputs",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/accounts",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/accounts",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/accounts",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/accounts",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/accounts",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/accounts",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/certify",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/certify",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/certify",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/certify",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/certify",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/certify",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/purchases",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/purchases",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/purchases",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/purchases",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/purchases",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/purchases",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/schedule-pickup",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/schedule-pickup",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/schedule-pickup",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/schedule-pickup",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/schedule-pickup",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/providers/schedule-pickup",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/query",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/query",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/query",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/query",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/query",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/query",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/register",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/register",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/register",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/register",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/register",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/drivers/register",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/query",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/query",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/query",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/query",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/query",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/query",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/register",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/register",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/register",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/register",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/register",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/manual-scale/register",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/query",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/query",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/query",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/query",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/query",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/query",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/register",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/register",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/register",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/register",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/register",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/service/register",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/query",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/query",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/query",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/query",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/query",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/query",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/register",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/register",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/register",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/register",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/register",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/truck-scale/register",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/query",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/query",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/query",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/query",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/query",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/query",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/register",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/register",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/register",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/register",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/register",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/scale/trucks/register",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-receptions",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-receptions",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-receptions",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-receptions",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-receptions",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-receptions",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-transfers",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-transfers",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-transfers",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-transfers",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-transfers",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/query-transfers",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/transfer",
+      "viewport": 320,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/transfer",
+      "viewport": 360,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/transfer",
+      "viewport": 390,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/transfer",
+      "viewport": 768,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/transfer",
+      "viewport": 1024,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    },
+    {
+      "route": "/transfers/transfer",
+      "viewport": 1366,
+      "status": "passed",
+      "retry": 0,
+      "incident": ""
+    }
+  ]
+}

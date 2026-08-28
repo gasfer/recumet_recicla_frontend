@@ -1,7 +1,7 @@
 <p-dialog [header]="!providersService.isEdit ? 'Registro Proveedor' : 'Modificar Proveedor'" [(visible)]="providersService.showModal"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '40vw' }" [draggable]="false"
+    [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--md">
     <form [formGroup]="providerForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
@@ -9,12 +9,12 @@
                 <div class="row">
                     <label class="block mb-0">Tipo proveedor<span class="text-danger">*</span>
                     </label>
-                    <p-dropdown [options]="types()" 
-                        placeholder="Selecciona un tipo" 
+                    <p-dropdown [options]="types()"
+                        placeholder="Selecciona un tipo"
                         optionLabel="name"
                         appendTo="body"
                         [filter]="true" filterBy="name"
-                        formControlName="id_type_provider" 
+                        formControlName="id_type_provider"
                         (onChange)="changeLabelAndForm()"
                         [class.ng-dirty]="validatorsService.inputValid('id_type_provider',providerForm)"
                     ></p-dropdown>
@@ -26,19 +26,18 @@
                     <div *ngIf="formP.full_names.view" class="col-sm-6 col-12">
                         <label class="block mb-0">{{formP.full_names.label}}<span class="text-danger">*</span>
                         </label>
-                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="full_names" placeholder="EJ. PROVEEDOR ..."
-                            [class.ng-dirty]="validatorsService.inputValid('full_names',providerForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('full_names',providerForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('full_names',providerForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("full_names",providerForm) }}
                         </small>
                     </div>
                     <div *ngIf="formP.number_document.view"  class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">{{formP.number_document.label}}</label>
-                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="number_document" placeholder="EJ. ..."
-                            [class.ng-dirty]="validatorsService.inputValid('number_document',providerForm)" 
-                            />
+                            [class.ng-dirty]="validatorsService.inputValid('number_document',providerForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('number_document',providerForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("number_document",providerForm)  }}
                         </small>
@@ -49,18 +48,19 @@
                        <div *ngIf="formP.id_sector.view" class="field">
                             <label class="block mb-0">{{formP.id_sector.label}}<span class="text-danger">*</span></label>
                             <div class="p-inputgroup">
-                                <p-dropdown [options]="sectors()" 
-                                    placeholder="Selecciona un sector" 
+                                <p-dropdown [options]="sectors()"
+                                    placeholder="Selecciona un sector"
                                     optionLabel="name"
                                     optionValue="code"
-                                    appendTo="body" 
+                                    appendTo="body"
                                     [filter]="true" filterBy="name"
                                     [virtualScrollItemSize]="38" [lazy]="true"
-                                    formControlName="id_sector" 
+                                    formControlName="id_sector"
                                     [class.ng-dirty]="validatorsService.inputValid('id_sector',providerForm)"
                                 ></p-dropdown>
-                                <button type="button" pButton pRipple icon="fa-solid fa-circle-plus" 
-                                        pTooltip="Agregar nuevo" 
+                                <button type="button" pButton pRipple icon="fa-solid fa-circle-plus"
+                                        aria-label="Agregar nuevo sector"
+                                        pTooltip="Agregar nuevo"
                                         (click)="providersService.showModalSectors = true">
                                 </button>
                             </div>
@@ -89,12 +89,12 @@
                         <label class="block mb-0">{{formP.direction.label}}</label>
                         <textarea pInputTextarea
                             type="text"
-                            style="text-transform: uppercase"
+
                             pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="direction"
                             placeholder="EJ. ......"
-                            class="mt-1"
+                            class="mt-1 text-uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('direction',providerForm)"
                         ></textarea>
                         <small *ngIf="validatorsService.inputValid('direction',providerForm)" class="p-error block">
@@ -112,21 +112,21 @@
                                 <p-inputSwitch formControlName="mayorista"></p-inputSwitch>
                             </div>
                             <div class="col">
-                                <p-tag  [rounded]="true" 
-                                        [icon]="providerForm.get('mayorista')!.value ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'" 
+                                <p-tag  [rounded]="true"
+                                        [icon]="providerForm.get('mayorista')!.value ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'"
                                         [severity]="providerForm.get('mayorista')!.value
                                                   ? 'info'
-                                                  : 'success'" 
+                                                  : 'success'"
                                         [value]="providerForm.get('mayorista')!.value ? 'SI' : 'NO'">
                                 </p-tag>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                     <div *ngIf="formP.name_contact.view" class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">{{formP.name_contact.label}}</label>
-                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="name_contact" placeholder="EJ. PROVEEDOR ..."
-                            [class.ng-dirty]="validatorsService.inputValid('name_contact',providerForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('name_contact',providerForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('name_contact',providerForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("name_contact",providerForm) }}
                         </small>
@@ -150,14 +150,14 @@
                     <div  *ngIf="formP.id_category.view" class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">{{formP.id_category.label}}<span class="text-danger">*</span>
                         </label>
-                        <p-dropdown [options]="categories()" 
-                          placeholder="Selecciona una categoría" 
+                        <p-dropdown [options]="categories()"
+                          placeholder="Selecciona una categoría"
                           optionLabel="name"
                           optionValue="code"
                           appendTo="body"
                           [filter]="true" filterBy="name"
                           [virtualScrollItemSize]="38" [lazy]="true"
-                          formControlName="id_category" 
+                          formControlName="id_category"
                           [class.ng-dirty]="validatorsService.inputValid('id_category',providerForm)"
                         ></p-dropdown>
                         <small *ngIf="validatorsService.inputValid('id_category',providerForm)" class="p-error block">
@@ -168,9 +168,9 @@
                 <div class="row mt-1">
                     <div *ngIf="formP.workAreaOrPositionOrUnit.view" class="col-sm-6 col-12">
                         <label class="block mb-0">{{formP.workAreaOrPositionOrUnit.label}}</label>
-                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="workAreaOrPositionOrUnit" placeholder="EJ. ..."
-                            [class.ng-dirty]="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("workAreaOrPositionOrUnit",providerForm) }}
                         </small>
@@ -178,15 +178,15 @@
                     <div  *ngIf="formP.frequency.view" class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">{{formP.frequency.label}}
                         </label>
-                        <p-dropdown [options]="frequencies()" 
-                          placeholder="Selecciona una {{formP.frequency.label}}" 
+                        <p-dropdown [options]="frequencies()"
+                          placeholder="Selecciona una {{formP.frequency.label}}"
                           optionLabel="name"
                           optionValue="code"
                           appendTo="body"
                           [filter]="true" filterBy="name"
                           [showClear]="true"
                           [virtualScrollItemSize]="38" [lazy]="true"
-                          formControlName="frequency" 
+                          formControlName="frequency"
                           [class.ng-dirty]="validatorsService.inputValid('frequency',providerForm)"
                         ></p-dropdown>
                         <small *ngIf="validatorsService.inputValid('frequency',providerForm)" class="p-error block">
@@ -197,9 +197,9 @@
                 <div class="row mt-1">
                     <div *ngIf="formP.companyContacts.view" class="col-sm-12 col-12">
                         <label class="block mb-0">{{formP.companyContacts.label}}</label>
-                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="companyContacts" placeholder="EJ. ..."
-                            [class.ng-dirty]="validatorsService.inputValid('companyContacts',providerForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('companyContacts',providerForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('companyContacts',providerForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("companyContacts",providerForm) }}
                         </small>
@@ -213,15 +213,13 @@
                         <p-inputSwitch formControlName="status"></p-inputSwitch>
                     </div>
                     <div class="col">
-                        <p-tag  [rounded]="true" 
-                                [icon]="providerForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
-                                [style]="providerForm.get('status')!.value
-                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
-                                          : { 'background-color': 'red', color: '#ffffff' }" 
+                        <p-tag  [rounded]="true"
+                                [icon]="providerForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                                [styleClass]="providerForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
                                 [value]="providerForm.get('status')!.value ? 'Activo' : 'Inactivo'">
                         </p-tag>
                     </div>
-                </div>  
+                </div>
             </div>
         </div>
     </form>

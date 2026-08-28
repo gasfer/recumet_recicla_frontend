@@ -1,0 +1,266 @@
+/*
+ * Primitivas responsivas de la aplicación.
+ * Las clases `app-*` expresan intención y evitan reglas particulares por módulo.
+ */
+
+:root {
+  --app-shell-breakpoint: 992px;
+  --app-header-height: 70px;
+  --app-content-gutter: clamp(.75rem, 2vw, 1.5rem);
+  --app-safe-gap: clamp(.75rem, 2.5vw, 1.5rem);
+  --app-touch-target: 44px;
+  --app-dialog-sm: 32rem;
+  --app-dialog-md: 48rem;
+  --app-dialog-lg: 68rem;
+  --app-dialog-xl: 86rem;
+}
+
+.main-content,
+.page-content,
+.page-content > .container-fluid,
+.card,
+.card-body,
+.row > * {
+  min-width: 0;
+}
+
+.app-control-fluid,
+.app-control-fluid.p-component,
+.app-control-fluid .p-component,
+.app-control-fluid .p-inputtext {
+  min-width: 0;
+  width: 100%;
+}
+
+/* Diálogos */
+.p-dialog.app-dialog--sm,
+.p-dialog.app-dialog--md,
+.p-dialog.app-dialog--lg,
+.p-dialog.app-dialog--xl {
+  display: flex;
+  flex-direction: column;
+  margin: var(--app-safe-gap);
+  max-height: calc(100dvh - (var(--app-safe-gap) * 2));
+  max-width: calc(100vw - (var(--app-safe-gap) * 2));
+}
+
+.p-dialog.app-dialog--sm { width: min(var(--app-dialog-sm), calc(100vw - (var(--app-safe-gap) * 2))) !important; }
+.p-dialog.app-dialog--md { width: min(var(--app-dialog-md), calc(100vw - (var(--app-safe-gap) * 2))) !important; }
+.p-dialog.app-dialog--lg { width: min(var(--app-dialog-lg), calc(100vw - (var(--app-safe-gap) * 2))) !important; }
+.p-dialog.app-dialog--xl { width: min(var(--app-dialog-xl), calc(100vw - (var(--app-safe-gap) * 2))) !important; }
+
+.p-dialog[class*="app-dialog--"] .p-dialog-content {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.p-dialog[class*="app-dialog--"] .p-dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: flex-end;
+}
+
+/* Tablas */
+.app-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-table-scroll > table,
+.app-table-scroll .p-datatable-table {
+  min-width: max-content;
+}
+
+.p-datatable.app-table-scroll {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.p-datatable.app-table-scroll .p-datatable-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+table.app-table-scroll {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.app-table--stack td::before {
+  content: attr(data-label);
+}
+
+/* Formularios, filtros y acciones */
+.app-form-grid,
+.app-filter-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.app-filter-grid {
+  align-items: end;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.app-action-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.app-action-bar--end {
+  justify-content: flex-end;
+}
+
+.page-content form,
+.p-dialog form,
+.page-content .p-inputgroup,
+.p-dialog .p-inputgroup {
+  min-width: 0;
+}
+
+.page-content form :where(p-dropdown, p-multiselect, p-calendar, p-inputnumber, p-autocomplete),
+.p-dialog form :where(p-dropdown, p-multiselect, p-calendar, p-inputnumber, p-autocomplete) {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.page-content form :where(.p-dropdown, .p-multiselect, .p-calendar, .p-inputnumber, .p-autocomplete),
+.p-dialog form :where(.p-dropdown, .p-multiselect, .p-calendar, .p-inputnumber, .p-autocomplete) {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.page-content .card-header,
+.page-content .card-footer,
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-footer {
+  min-width: 0;
+}
+
+:where(a, button, input, select, textarea, [tabindex], .p-component):focus-visible {
+  outline: 2px solid var(--bs-primary, #556ee6);
+  outline-offset: 2px;
+}
+
+.p-tag.app-status-active {
+  background-color: var(--bg-primary) !important;
+  color: #fff !important;
+}
+
+.p-tag.app-status-inactive {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.p-tag.app-invoice-paid { background-color: var(--teal-600) !important; }
+.p-tag.app-invoice-unpaid { background-color: var(--bluegray-400) !important; }
+
+.app-loading-width-250 {
+  display: block;
+  width: min(250px, 100%);
+}
+
+.app-fade-in {
+  animation: fadeIn .3s;
+}
+
+.app-table-group-total-cell {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  border-top: 1px solid #dee2e6;
+}
+
+@media (max-width: 992px) {
+  :root {
+    --app-header-height: 118px;
+  }
+
+  .page-content {
+    padding-top: calc(var(--app-header-height) + var(--app-content-gutter));
+    padding-inline: var(--app-content-gutter);
+  }
+}
+
+@media (max-width: 340px) {
+  :root {
+    --app-header-height: 174px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  :root {
+    --app-safe-gap: .5rem;
+  }
+
+  .p-dialog[class*="app-dialog--"] .p-dialog-footer {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .p-dialog[class*="app-dialog--"] .p-dialog-footer .p-button,
+  .p-dialog[class*="app-dialog--"] .p-dialog-footer button {
+    justify-content: center;
+    margin: 0;
+    min-height: var(--app-touch-target);
+    width: 100%;
+  }
+
+  .app-action-bar > .btn,
+  .app-action-bar > button,
+  .app-action-bar > p-button,
+  .app-action-bar > p-splitbutton {
+    min-height: var(--app-touch-target);
+  }
+
+  .page-content .p-button,
+  .page-content button.btn,
+  .page-content a.btn {
+    min-height: var(--app-touch-target);
+  }
+
+  .page-content form .row,
+  .p-dialog form .row {
+    row-gap: .75rem;
+  }
+
+  .page-content form .d-flex,
+  .page-content .card-body > .d-flex,
+  .page-content .card-header.d-flex,
+  .page-content .card-footer.d-flex {
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-form-grid,
+  .app-filter-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.app-print-frame {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  width: 800px;
+  height: 1100px;
+  border: 0;
+}
+
+.app-print-frame--hidden {
+  display: none;
+}

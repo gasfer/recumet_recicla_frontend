@@ -54,6 +54,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { BalanzaCamioneraComponent } from './balanza-camionera/balanza-camionera.component';
 import { BalanzaManualComponent }    from './balanza-manual/balanza-manual.component';
 import { ServicioBalanzaComponent }  from './servicio-balanza/servicio-balanza.component';
+import { CoreModule } from 'src/app/core/core.module';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { ServicioBalanzaComponent }  from './servicio-balanza/servicio-balanza.c
     FormsModule,
     ReactiveFormsModule,
     BalanzaRoutingModule,
+    CoreModule,
 
     // ── PrimeNG 17.18.x ─────────────────────────────────────────────────
     // Tabla

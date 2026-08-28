@@ -6,6 +6,7 @@ import { FormAssignSucursalesProduct, GetAllProducts, GetProductSucursals, NewPr
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { GetAllPaginateProviderProduct } from '../interfaces/provider-products.interface';
 import { GetAllProductsAndCosts, ProductCost } from '../interfaces/products-prices.interfaces';
+import { PRODUCT_ACCESS_ROUTE_SEGMENTS, ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -27,28 +28,34 @@ export class ProductsService {
   assignSucursalSubs: EventEmitter<Product> = new EventEmitter<Product>();
   viewProviderSubs: EventEmitter<Product> = new EventEmitter<Product>();
 
-  getAllAndSearch(page: number, limit: number, status: boolean, type: string = '', query?: string, stock: boolean = false, id_sucursal: string = '', id_storage: string = '', field_sort: string = 'id', order: string = 'DESC', withStock: boolean = false, category_type: string = ''): Observable<GetAllProducts> {
+  getAllAndSearch(page: number, limit: number, status: boolean, type: string = '', query?: string, stock: boolean = false, id_sucursal: string = '', id_storage: string = '', field_sort: string = 'id', order: string = 'DESC', withStock: boolean = false, category_type: string = '', productContext: ProductAccessContext | '' = ''): Observable<GetAllProducts> {
     if (!id_sucursal) {
       id_sucursal = this.validatorsService.id_sucursal().toString();
     }
     const categoryFilter = category_type ? `&category_type=${category_type}` : '';
+    const endpoint = productContext
+      ? `product/operational/${PRODUCT_ACCESS_ROUTE_SEGMENTS[productContext]}`
+      : 'product';
     let url = '';
     if (type === '') {
-      url = `${base_url}/product?page=${page}&limit=${limit}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}${categoryFilter}`;
+      url = `${base_url}/${endpoint}?page=${page}&limit=${limit}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}${categoryFilter}`;
     } else {
-      url = `${base_url}/product?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}${categoryFilter}`;
+      url = `${base_url}/${endpoint}?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&stock=${stock}&id_sucursal=${id_sucursal}&id_storage=${id_storage}&field_sort=${field_sort}&order=${order}&withStock=${withStock}${categoryFilter}`;
     }
     return this.http.get<GetAllProducts>(url);
   }
 
-  getSelectProducts(query: string = '', limit: number = 10, category_type: string = '', category_ids: string = ''): Observable<any> {
+  getSelectProducts(query: string = '', limit: number = 10, category_type: string = '', category_ids: string = '', productContext: ProductAccessContext | '' = ''): Observable<any> {
     const id_sucursal = this.validatorsService.id_sucursal().toString();
-    const url = `${base_url}/product/select?query=${query}&limit=${limit}&category_type=${category_type}&category_ids=${category_ids}&id_sucursal=${id_sucursal}`;
+    const endpoint = productContext
+      ? `product/operational/${PRODUCT_ACCESS_ROUTE_SEGMENTS[productContext]}/select`
+      : 'product/select';
+    const url = `${base_url}/${endpoint}?query=${query}&limit=${limit}&category_type=${category_type}&category_ids=${category_ids}&id_sucursal=${id_sucursal}`;
     return this.http.get<any>(url);
   }
 
   getDifferenceProducts(query: string = '', limit: number = 100): Observable<{ ok: boolean, products: Product[] }> {
-    const url = `${base_url}/product/select?query=${query}&limit=${limit}&category_ids=22`;
+    const url = `${base_url}/product/differences/select?query=${query}&limit=${limit}`;
     return this.http.get<{ ok: boolean, products: Product[] }>(url);
   }
 

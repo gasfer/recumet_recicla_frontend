@@ -10,9 +10,9 @@
         tooltipPosition="left" styleClass="p-button-success p-button-rounded ms-1" label="Lista de precios"></p-button>
 
       <!-- ✅ Exportar -->
-      <p-button icon="fa-regular fa-file-excel" (click)="printExcelReport()" pTooltip="Exportar Excel"
+      <p-button ariaLabel="Exportar productos a Excel" icon="fa-regular fa-file-excel" (click)="printExcelReport()" pTooltip="Exportar Excel"
         tooltipPosition="left" styleClass="p-button-rounded ms-1" ></p-button>
-      <p-button icon="fa-regular fa-file-pdf" (click)="printPdfReport()" pTooltip="Exportar PDF" tooltipPosition="left"
+      <p-button ariaLabel="Exportar productos a PDF" icon="fa-regular fa-file-pdf" (click)="printPdfReport()" pTooltip="Exportar PDF" tooltipPosition="left"
         styleClass="p-button-danger p-button-rounded ms-1" ></p-button>
     </div>
 
@@ -32,18 +32,18 @@
           <label class="block mb-1 text-xs font-semibold text-color-secondary">CATEGORÍA</label>
           <p-multiSelect [options]="categoryOptions()" [(ngModel)]="selectedCategories"
             (onChange)="onCategoryChange($event.value)" optionLabel="name" optionValue="code"
-            placeholder="Todas las categorías..." [style]="{'width':'100%'}" appendTo="body" [filter]="true"
-            filterBy="name" [showClear]="true" display="chip"></p-multiSelect>
+            placeholder="Todas las categorías..." appendTo="body" [filter]="true"
+            filterBy="name" [showClear]="true" display="chip" class="app-u-width-100-0466783"></p-multiSelect>
         </div>
         <!-- Búsqueda general — 3 cols -->
         <div class="col-8 col-md-9 ps-md-2">
           <label class="block mb-1 text-xs font-semibold text-color-secondary">BUSCAR</label>
           <div class="p-inputgroup">
             <p-dropdown [options]="searchFor()" [(ngModel)]="selectedSearchField" optionLabel="name" optionValue="code"
-              [style]="{'min-width':'160px'}" appendTo="body"></p-dropdown>
+              appendTo="body" class="app-u-min-width-160px-94253f9"></p-dropdown>
             <input pInputText type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)"
               placeholder="Escriba para buscar..." class="w-full" />
-            <button *ngIf="searchQuery" pButton icon="fa-solid fa-xmark" class="p-button-secondary"
+            <button aria-label="Limpiar búsqueda" *ngIf="searchQuery" pButton icon="fa-solid fa-xmark" class="p-button-secondary"
               (click)="clearSearch()"></button>
           </div>
         </div>
@@ -58,10 +58,10 @@
     <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
 
 
-  <app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  <app-table responsiveStrategy="scroll" *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
     (rows$)="paginate($event)" (search$)="search($event)" [data]="products()" [loading]="loading()">
   </app-table>
-  <app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  <app-table responsiveStrategy="scroll" *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
     (rows$)="paginate($event)" (search$)="search($event)" [data]="products()" [loading]="loading()">
   </app-table>
 </div>

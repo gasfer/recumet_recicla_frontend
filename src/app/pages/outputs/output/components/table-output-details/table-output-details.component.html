@@ -8,21 +8,21 @@
         </div>
     </div>
 </div>
-<p-table *ngIf="outputService.detailSale().length !== 0" [value]="outputService.detailSale()" styleClass="p-datatable-sm" responsiveLayout="scroll">
+<p-table *ngIf="outputService.detailSale().length !== 0" [value]="outputService.detailSale()" styleClass="p-datatable-sm app-table-scroll" responsiveLayout="scroll">
     <ng-template pTemplate="header">
         <tr>
-            <th class="text-white" style="min-width: 120px; max-width: 200px; background-color: var(--bg-primary)">Producto</th>
-            <th class="text-white text-center" style="background-color: var(--bg-primary);">Cantidad</th>
-            <th class="text-white text-center" style="background-color: var(--bg-primary)">Precio</th>
-            <th class="text-white" style="min-width: 110px; max-width: 150px; background-color: var(--bg-primary)">Importe</th>
-            <th class="text-white text-center" style="min-width: 60px; max-width: 60px; background-color: var(--bg-primary)">Quitar</th>
+            <th class="text-white app-u-min-width-120px-651945a app-u-max-width-200px-a828909 background-primary">Producto</th>
+            <th class="text-white text-center background-primary">Cantidad</th>
+            <th class="text-white text-center background-primary">Precio</th>
+            <th class="text-white app-u-min-width-110px-365391b app-u-max-width-150px-7eba571 background-primary">Importe</th>
+            <th class="text-white text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838 background-primary">Quitar</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product>
         <tr>
-            <td style="min-width: 120px; max-width: 200px;">
+            <td class="app-u-min-width-120px-651945a app-u-max-width-200px-a828909">
                 <h5 class="m-0 p-0">{{product.name}}</h5>
-                <p style="font-size: 10px;" class="text-muted">
+                <p class="text-muted app-u-font-size-10px-0d5be05">
                     {{product.description}}
                     <br *ngIf="product.description">
                     <span class="text-black">{{product.cod}} / {{product.category.name}} / {{product.unit.name}}</span>
@@ -34,7 +34,7 @@
             </td>
             <td class="text-center">
                 <p-inputNumber
-                    [style]="{'height': '38px'}"
+
                     [size]="5"
                     locale="en-US"
                     mode="decimal"
@@ -50,12 +50,12 @@
                     [(ngModel)]="product.quantity"
                     (onInput)="updateQuantityProduct($event, product)"
                     [pTooltip]="'Stock: ' + product.total_stock"
-                    tooltipPosition="top">
+                    tooltipPosition="top" class="app-u-height-38px-3b84911">
                 </p-inputNumber>
             </td>
             <td class="text-center">
                 <p-inputNumber
-                    [style]="{'height': '38px'}"
+
                     [size]="5"
                     locale="en-US"
                     mode="decimal"
@@ -72,12 +72,12 @@
                     (dblclick)="openModalUpdateMontoSus($event, product)"
                     (onInput)="updatePriceProduct($event, product)"
                     [pTooltip]="returnPricesProduct(product)"
-                    tooltipPosition="top">
+                    tooltipPosition="top" class="app-u-height-38px-3b84911">
                 </p-inputNumber>
             </td>
-            <td style="min-width: 110px; max-width: 150px;">{{ product.import | number: decimal() }}</td>
-            <td class="text-center" style="min-width: 60px; max-width: 60px;">
-                <p-button
+            <td class="app-u-min-width-110px-365391b app-u-max-width-150px-7eba571">{{ product.import | number: decimal() }}</td>
+            <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
+                <p-button ariaLabel="Eliminar"
                     (click)="deleteProductForDetailSale(product.id)"
                     icon="fa-regular fa-trash-can"
                     styleClass="p-button-danger p-button-sm p-button-rounded">
@@ -87,8 +87,8 @@
     </ng-template>
     <ng-template pTemplate="footer">
         <tr>
-            <th colspan="3" class="text-end text-white pt-1" style="background-color: var(--bg-primary)"><h4>Total: &nbsp;</h4></th>
-            <th colspan="2" class="text-start text-white pt-1" style="background-color: var(--bg-primary)"><h4>{{ totalSummary() | number:decimal() }}</h4></th>
+            <th colspan="3" class="text-end text-white pt-1 background-primary"><h4>Total: &nbsp;</h4></th>
+            <th colspan="2" class="text-start text-white pt-1 background-primary"><h4>{{ totalSummary() | number:decimal() }}</h4></th>
         </tr>
         <tr>
             <td colspan="5" class="text-end bg-white">

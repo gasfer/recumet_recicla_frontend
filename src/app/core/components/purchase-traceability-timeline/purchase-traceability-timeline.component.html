@@ -1,0 +1,29 @@
+<p-dialog [visible]="visible" (visibleChange)="visibleChange.emit($event)" [modal]="true" [draggable]="false"
+  [resizable]="false" [style]="{width:'min(1120px, 97vw)'}" [contentStyle]="{'max-height':'82vh','overflow':'auto'}"
+  header="Trazabilidad de la boleta">
+  <section class="trace-summary" *ngIf="data?.purchase as purchase">
+    <div><small>Boleta de compra</small><strong>{{ purchase.cod }} · {{ purchase.registry_number || 'Sin número' }}</strong></div>
+    <div><small>Proveedor</small><strong>{{ purchase.provider?.full_names }}</strong></div>
+    <div><small>Registró</small><strong>{{ purchase.user?.full_names || 'No disponible' }}</strong></div>
+    <div><small>Estado</small><strong>{{ purchase.status }}</strong></div>
+  </section>
+
+  <div class="trace-filters">
+    <label><span>Buscar</span><input pInputText [(ngModel)]="search" placeholder="Usuario, motivo o evento"></label>
+    <label><span>Tipo de evento</span><select [(ngModel)]="eventType"><option value="">Todos</option><option *ngFor="let type of eventTypes" [value]="type">{{ type }}</option></select></label>
+  </div>
+
+  <h5 class="mt-3">Línea de tiempo</h5>
+  <div *ngIf="events.length; else noEvents" class="trace-timeline">
+    <article *ngFor="let event of events" [class]="eventClass(event.entity_type)">
+      <header><strong>{{ event.event_type }}</strong><time>{{ event.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</time></header>
+      <div><b>Realizó:</b> {{ event.actor?.full_names || 'Usuario no disponible' }}</div>
+      <div *ngIf="event.authorizer"><b>Autorizó:</b> {{ event.authorizer.full_names }}</div>
+      <div *ngIf="event.reason"><b>Motivo:</b> {{ event.reason }}</div>
+      <div *ngIf="event.historical_incomplete" class="trace-warning"><b>Antecedente general:</b> no existe detalle anterior disponible.</div>
+      <ul *ngIf="event.changed_fields?.length"><li *ngFor="let change of event.changed_fields"><b>{{ change.field }}</b>: {{ change.before ?? '—' }} → {{ change.after ?? '—' }}</li></ul>
+    </article>
+  </div>
+  <ng-template #noEvents><p class="trace-empty">No existen eventos para los filtros seleccionados.</p></ng-template>
+  <ng-template pTemplate="footer"><p-button label="Cerrar" icon="fa-solid fa-xmark" styleClass="p-button-outlined" (click)="close()"></p-button></ng-template>
+</p-dialog>

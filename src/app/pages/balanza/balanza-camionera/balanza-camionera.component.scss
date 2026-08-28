@@ -1,0 +1,61 @@
+.bc-peso-display {
+  align-items: center;
+  background: #1e293b;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 70px;
+  padding: .75rem 1.25rem;
+}
+
+.bc-peso-display--lg {
+  min-height: 90px;
+}
+
+.bc-peso-display__val {
+  color: #4ade80;
+  font-family: 'Courier New', monospace;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  line-height: 1;
+}
+
+.bc-peso-display__lbl {
+  color: #94a3b8;
+  font-size: .7rem;
+  letter-spacing: .08em;
+  margin-top: .2rem;
+  text-transform: uppercase;
+}
+
+:host ::ng-deep .bc-peso-input .p-inputnumber-input {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: right;
+  width: 140px;
+}
+
+.bc-suggest {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0 0 6px 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  position: absolute;
+  width: 100%;
+  z-index: 1050;
+}
+
+.bc-suggest__item {
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  font-size: .85rem;
+  padding: .45rem .75rem;
+  transition: background .15s;
+}
+
+.bc-suggest__item:hover {
+  background: #e0f2fe;
+}

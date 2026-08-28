@@ -76,7 +76,7 @@
                       aria-describedby="password-addon"
                     />
 
-                    <button
+                    <button aria-label="Mostrar u ocultar contraseña"
                       class="btn btn-light ms-0"
                       type="button"
                       (click)="updateTypeInputPassword()"
@@ -113,14 +113,14 @@
                     {{!loading() ? 'Ingresar' : 'Ingresando'}}
                   </button>
                 </div>
-               
+
               </form>
             </div>
           </div>
         </div>
         <div class="mt-5 text-center">
           <p>
-            © {{ year() }} 
+            © {{ year() }}
           </p>
         </div>
       </div>
@@ -132,8 +132,7 @@
 <!-- end page -->
 
 <p-dialog header="Selecciona tu contexto de trabajo" [(visible)]="showWorkContext" [modal]="true"
-  [closable]="false" [draggable]="false" [resizable]="false" [style]="{ width: '30rem' }"
-  [breakpoints]="{ '576px': '95vw' }">
+  [closable]="false" [draggable]="false" [resizable]="false" styleClass="app-dialog--sm">
   <form [formGroup]="contextForm" class="context-form">
     <p class="text-muted mb-3">Elige la sucursal y el almacén con el que trabajarás.</p>
     <div class="context-field">

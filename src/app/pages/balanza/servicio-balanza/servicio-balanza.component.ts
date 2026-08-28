@@ -202,22 +202,22 @@ export class ServicioBalanzaComponent implements OnInit {
     });
   }
 
-  getSeverity(estado: EstadoServicio): 'success' | 'warn' | 'danger' | 'info' {
-    const map: Record<EstadoServicio, 'success' | 'warn' | 'danger' | 'info'> = {
+  getSeverity(estado: EstadoServicio): 'success' | 'warning' | 'danger' | 'info' {
+    const map: Record<EstadoServicio, 'success' | 'warning' | 'danger' | 'info'> = {
       COMPLETADO : 'success',
-      PENDIENTE  : 'warn',
+      PENDIENTE  : 'warning',
       CANCELADO  : 'danger',
       EN_PROCESO : 'info',
     };
     return map[estado];
   }
 
-  getTipoSeverity(tipo: TipoServicio): 'success' | 'warn' | 'danger' | 'info' {
-    const map: Record<TipoServicio, 'success' | 'warn' | 'danger' | 'info'> = {
+  getTipoSeverity(tipo: TipoServicio): 'success' | 'warning' | 'danger' | 'info' {
+    const map: Record<TipoServicio, 'success' | 'warning' | 'danger' | 'info'> = {
       CALIBRACION   : 'info',
       MANTENIMIENTO : 'success',
       REPARACION    : 'danger',
-      VERIFICACION  : 'warn',
+      VERIFICACION  : 'warning',
     };
     return map[tipo];
   }

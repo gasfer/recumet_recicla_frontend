@@ -11,6 +11,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import Swal from 'sweetalert2';
+import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 
 @Component({
   selector: 'app-output',
@@ -24,6 +25,7 @@ import Swal from 'sweetalert2';
   ]
 })
 export class OutputComponent implements OnInit {
+  readonly productContext = ProductAccessContext.Sales;
   fb                = inject( FormBuilder  );
   clientsService    = inject( ClientsService );
   productService    = inject( ProductsService );
@@ -143,7 +145,7 @@ export class OutputComponent implements OnInit {
     this.loadingSearchProduct.set(true);
     this.txtSearchProduct.set(txtSearchProduct);
     this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value)
+    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'id','DESC',false,'',this.productContext)
         .subscribe({
           next: (resp) => {
             this.suggestedProducts.set(resp.products.data);

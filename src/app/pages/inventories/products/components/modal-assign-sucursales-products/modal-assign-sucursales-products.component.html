@@ -1,25 +1,26 @@
 <p-dialog [header]="'Asignación de sucursales'" [(visible)]="productsService.showModalSucursales"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '45vw' }" [draggable]="false"
+    [modal]="true" [draggable]="false"
     [resizable]="false" (onShow)="this.getProductAndSucursal();"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--md">
     <form >
         <app-alert-notify [subTitle]="'Marca las sucursales a asignar'" [required]="false" [subTitle2]="''"></app-alert-notify>
         <div class="d-flex text-center justify-content-center align-content-center align-items-center"  *ngIf="this.loading()">
-            <app-loading class="m-0" [ngStyle]="{'width': '250px'}"></app-loading>
+            <app-loading class="m-0 app-loading-width-250"></app-loading>
         </div>
-        <p-table *ngIf="!this.loading()"   [value]="sucursales()" [styleClass]="'p-datatable-sm'">
+        <p-table *ngIf="!this.loading()"   [value]="sucursales()" styleClass="p-datatable-sm app-table-scroll" responsiveLayout="scroll">
             <ng-template pTemplate="header">
                 <tr>
-                    <th  class="text-white" style="min-width:20px;max-width:20px; background-color: var(--bg-primary)" >SELEC.</th>
-                    <th  class="text-white" style="min-width:70px; max-width:70px; background-color: var(--bg-primary)">NOMBRE</th>
+                    <th  class="text-white app-u-min-width-20px-e8f7a21 app-u-max-width-20px-76f960b background-primary" >SELEC.</th>
+                    <th  class="text-white app-u-min-width-70px-27295af app-u-max-width-70px-460bb70 background-primary">NOMBRE</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-sucursal>
                 <tr>
-                    <td style="min-width:20px;max-width:20px;">
+                    <td class="app-u-min-width-20px-e8f7a21 app-u-max-width-20px-76f960b">
                         <button
                             pButton
                             pTooltip="Asignar"
+                            [attr.aria-label]="(sucursal.select ? 'Desasignar ' : 'Asignar ') + sucursal.name"
                             tooltipPosition="bottom"
                             (click)="assignSucursal(sucursal)"
                             pRipple
@@ -30,7 +31,7 @@
                             }"
                         ></button>
                     </td>
-                    <td  style="text-align: left; white-space:normal; min-width:70px;max-width:70px;" >{{ sucursal.name }}</td>
+                    <td class="text-start app-u-white-space-normal-f8f979b app-u-min-width-70px-27295af app-u-max-width-70px-460bb70">{{ sucursal.name }}</td>
                 </tr>
             </ng-template>
         </p-table>

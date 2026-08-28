@@ -1,0 +1,236 @@
+<div class="container-fluid p-3">
+  <!-- Header Card -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body bg-light rounded d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div>
+        <h4 class="mb-1 text-primary fw-bold">
+          <i class="fa-solid fa-stethoscope me-2"></i>Diagnóstico & Trazabilidad de Stock
+        </h4>
+        <p class="text-muted mb-0 small">
+          Identifica y corrige discrepancias entre el Stock Físico (Realizar Compras) y el Saldo Kardex Físico/Detalle.
+        </p>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button
+          class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+          (click)="loadDiagnostic()"
+          [disabled]="loading()">
+          <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i> Actualizar
+        </button>
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center gap-2 fw-bold"
+          (click)="syncStocks()"
+          [disabled]="loading() || syncing() || countDiscrepancies === 0">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Sincronizar {{ countDiscrepancies }} productos
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metric Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-4 border-primary h-100">
+        <div class="card-body">
+          <span class="text-muted small fw-semibold">TOTAL PRODUCTOS EVALUADOS</span>
+          <h3 class="fw-bold my-1 text-dark">{{ diagnosticList().length }}</h3>
+          <span class="badge bg-light text-muted border">Evaluación integral</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-4 border-danger h-100">
+        <div class="card-body">
+          <span class="text-muted small fw-semibold">PRODUCTOS CON DESFASE</span>
+          <h3 class="fw-bold my-1" [class.text-danger]="countDiscrepancies > 0" [class.text-success]="countDiscrepancies === 0">
+            {{ countDiscrepancies }}
+          </h3>
+          <span class="badge" [class.bg-danger-subtle]="countDiscrepancies > 0" [class.text-danger]="countDiscrepancies > 0" [class.bg-success-subtle]="countDiscrepancies === 0" [class.text-success]="countDiscrepancies === 0">
+            {{ countDiscrepancies > 0 ? 'Requieren sincronización' : 'Sin diferencias' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-4 border-warning h-100">
+        <div class="card-body">
+          <span class="text-muted small fw-semibold">SUMA TOTAL DE DIFERENCIA ABSOLUTA</span>
+          <h3 class="fw-bold my-1 text-warning">{{ totalDiffSum | number:'1.2-2' }}</h3>
+          <span class="badge bg-warning-subtle text-warning">Diferencia total acumulada</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <form [formGroup]="formFilter" class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold small text-muted">Sucursal</label>
+          <select class="form-select form-select-sm" formControlName="id_sucursal" (change)="onSucursalChange()">
+            <option value="">-- TODAS LAS SUCURSALES --</option>
+            <option *ngFor="let s of dropdownSucursales()" [value]="s.id">{{ s.name }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold small text-muted">Almacén</label>
+          <select class="form-select form-select-sm" formControlName="id_storage">
+            <option value="">-- TODOS LOS ALMACENES --</option>
+            <option *ngFor="let st of filteredStorages()" [value]="st.id">{{ st.name }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <div class="form-check form-switch mb-1">
+            <input class="form-check-input" type="checkbox" id="onlyDiscSwitch" formControlName="onlyDiscrepancies">
+            <label class="form-check-label small fw-semibold text-muted" for="onlyDiscSwitch">
+              Solo desfases
+            </label>
+          </div>
+        </div>
+
+        <div class="col-md-2 d-flex gap-2">
+          <button class="btn btn-primary btn-sm w-100" (click)="loadDiagnostic()" [disabled]="loading()">
+            <i class="fa-solid fa-magnifying-glass me-1"></i> Filtrar
+          </button>
+          <button class="btn btn-light btn-sm border" (click)="clearFilters()" [disabled]="loading()">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div *ngIf="loading()" class="text-center p-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-muted mt-2 mb-0">Analizando registros de inventario y Kardex...</p>
+      </div>
+
+      <div *ngIf="!loading() && filteredList.length === 0" class="text-center p-5">
+        <i class="fa-solid fa-circle-check text-success fa-3x mb-3"></i>
+        <h5 class="fw-bold">No se encontraron desfases</h5>
+        <p class="text-muted mb-0">Todos los productos coinciden exactamente entre el Stock Físico y el Kardex en los filtros seleccionados.</p>
+      </div>
+
+      <div *ngIf="!loading() && filteredList.length > 0" class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 40px"></th>
+              <th>CÓDIGO</th>
+              <th>PRODUCTO</th>
+              <th class="text-end">STOCK FÍSICO</th>
+              <th class="text-end">SALDO KARDEX</th>
+              <th class="text-end">DIFERENCIA</th>
+              <th class="text-center">ESTADO</th>
+              <th class="text-center">TRASLADOS TRAZABLES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of filteredList">
+              <tr [class.table-danger]="Math.abs(item.physical_kardex_difference) > 0.0001">
+                <td>
+                  <button
+                    class="btn btn-sm btn-link text-dark p-0"
+                    (click)="toggleExpand(item)"
+                    *ngIf="(item.traceable_transfers?.length || 0) > 0">
+                    <i class="fa-solid" [class.fa-chevron-down]="item.isExpanded" [class.fa-chevron-right]="!item.isExpanded"></i>
+                  </button>
+                </td>
+                <td class="fw-bold text-secondary">{{ item.cod }}</td>
+                <td class="fw-semibold text-dark">{{ item.name }}</td>
+                <td class="text-end fw-bold">{{ item.physical_stock | number:'1.2-2' }}</td>
+                <td class="text-end fw-bold text-primary">{{ item.kardex_balance | number:'1.2-2' }}</td>
+                <td class="text-end fw-bold" [class.text-danger]="Math.abs(item.physical_kardex_difference) > 0.0001" [class.text-success]="Math.abs(item.physical_kardex_difference) <= 0.0001">
+                  {{ item.physical_kardex_difference > 0 ? '+' : '' }}{{ item.physical_kardex_difference | number:'1.2-2' }}
+                </td>
+                <td class="text-center">
+                  <span class="badge" [ngClass]="getSeverityBadge(item).class">
+                    {{ getSeverityBadge(item).label }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <span
+                    class="badge rounded-pill"
+                    [class.bg-info-subtle]="(item.traceable_transfers?.length || 0) > 0"
+                    [class.text-info]="(item.traceable_transfers?.length || 0) > 0"
+                    [class.bg-light]="(item.traceable_transfers?.length || 0) === 0"
+                    [class.text-muted]="(item.traceable_transfers?.length || 0) === 0">
+                    <i class="fa-solid fa-truck-ramp-box me-1"></i>
+                    {{ item.traceable_transfers?.length || 0 }} traslados
+                  </span>
+                </td>
+              </tr>
+
+              <!-- Expandable Row: Traceable Transfers -->
+              <tr *ngIf="item.isExpanded && (item.traceable_transfers?.length || 0) > 0" class="table-light">
+                <td colspan="8" class="p-3 bg-light">
+                  <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-secondary text-white py-2 small fw-bold d-flex justify-content-between align-items-center">
+                      <span><i class="fa-solid fa-list-check me-2"></i>Traslados con diferencia detectada para {{ item.cod }} - {{ item.name }}</span>
+                      <span class="badge bg-light text-dark">{{ item.traceable_transfers?.length }} registros</span>
+                    </div>
+                    <div class="card-body p-0">
+                      <div class="table-responsive">
+                        <table class="table table-sm table-striped mb-0 small align-middle">
+                          <thead class="table-dark">
+                            <tr>
+                              <th>Nº TRASLADO</th>
+                              <th>FECHA ENVÍO</th>
+                              <th>FECHA RECEPCIÓN</th>
+                              <th>ESTADO TRASLADO</th>
+                              <th class="text-end">CANT. ENVIADA</th>
+                              <th class="text-end">CANT. RECIBIDA</th>
+                              <th class="text-end">DIFERENCIA ÍTEM</th>
+                              <th>NOTA DE REVISIÓN VINCULADA</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let tr of item.traceable_transfers">
+                              <td class="fw-bold text-primary">{{ tr.transfer_cod }}</td>
+                              <td>{{ tr.date_send | date:'dd/MM/yyyy HH:mm' }}</td>
+                              <td>{{ tr.date_received ? (tr.date_received | date:'dd/MM/yyyy HH:mm') : 'PENDIENTE' }}</td>
+                              <td>
+                                <span class="badge" [class.bg-warning]="tr.transfer_status === 'PENDING'" [class.bg-success]="tr.transfer_status === 'RECEIVED'">
+                                  {{ tr.transfer_status }}
+                                </span>
+                              </td>
+                              <td class="text-end fw-semibold">{{ tr.quantity_sent | number:'1.2-2' }}</td>
+                              <td class="text-end fw-semibold">{{ tr.quantity_received !== null ? (tr.quantity_received | number:'1.2-2') : '---' }}</td>
+                              <td class="text-end fw-bold text-danger">
+                                {{ tr.quantity_difference | number:'1.2-2' }}
+                              </td>
+                              <td>
+                                <div *ngIf="tr.review_note_id">
+                                  <span class="badge bg-purple text-white me-1">
+                                    {{ tr.review_note_registry }}
+                                  </span>
+                                  <span class="badge bg-secondary">
+                                    {{ tr.review_note_type }} ({{ tr.review_note_status }})
+                                  </span>
+                                </div>
+                                <span *ngIf="!tr.review_note_id" class="text-muted fst-italic">Sin nota registrada</span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

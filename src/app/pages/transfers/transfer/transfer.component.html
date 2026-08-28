@@ -1,5 +1,5 @@
 <!--Pos config modal-->
-<app-modal-config-transfer></app-modal-config-transfer> 
+<app-modal-config-transfer></app-modal-config-transfer>
 <!--Pos Data modal save-->
 <app-modal-save-transfer [id_sucursal_send]="formReport.get('id_sucursal')?.value" [id_storage_send]="formReport.get('id_storage')?.value" ></app-modal-save-transfer>
 
@@ -10,7 +10,10 @@
             <div class="col-12">
                 <div class="d-flex justify-content-end">
                     <i class="cursor-pointer fa-solid fa-gear" pTooltip="Config. Modo de trasferencia" tooltipPosition="left"
-                        (click)="transfersService.showModalConfigTransfer = true">
+                        role="button" tabindex="0" aria-label="Configurar modo de transferencia"
+                        (click)="transfersService.showModalConfigTransfer = true"
+                        (keydown.enter)="transfersService.showModalConfigTransfer = true"
+                        (keydown.space)="$event.preventDefault(); transfersService.showModalConfigTransfer = true">
                     </i>
                 </div>
             </div>
@@ -27,14 +30,14 @@
                         <p-messages severity="info">
                             <ng-template pTemplate>
                                 <b>ITEMS A TRANSFERIR <i class="fa-solid fa-cart-arrow-down"></i></b>
-                                <i class="fa-solid fa-tags ms-5 p-text-secondary" pBadge style="font-size: 1.2rem;"
+                                <i class="fa-solid fa-tags ms-5 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
                                     value="{{totalItems()}}"></i>
                             </ng-template>
                         </p-messages>
                         <app-input-search *ngIf="!transfersService._transferConfig.viewCardProducts" (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
                             [icon]="'fa-solid fa-cart-plus'"
                             [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                        <div style="position: absolute; z-index: 999; width: 96%;">
+                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
                             <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
                                 <li class="list-group-item list-group-item-action">
                                     <span class='fw-bold'>Cargando....</span>
@@ -62,13 +65,15 @@
         </div>
     </div>
     <div *ngIf="transfersService._transferConfig.viewCardProducts" class="col-sm-12 col-md-5">
-        <app-dataview-products 
-            [isViewQuantity]="true" 
+        <app-dataview-products
+            [prominentProductCode]="true"
+            [productContext]="productContext"
+            [isViewQuantity]="true"
             [isViewPrice]="false"
             [withStock]="true"
-            [id_sucursal]="formReport.get('id_sucursal')?.value" 
-            [id_storage]="formReport.get('id_storage')?.value" 
-            (onProductSelect)="addItemCarByViewProduct($event)" 
+            [id_sucursal]="formReport.get('id_sucursal')?.value"
+            [id_storage]="formReport.get('id_storage')?.value"
+            (onProductSelect)="addItemCarByViewProduct($event)"
             (onProductByCod)="addItemCarByCodProduct($event)">
         </app-dataview-products>
     </div>

@@ -1,6 +1,6 @@
 <header id="page-topbar">
     <div class="navbar-header">
-      <div class="d-flex">
+      <div class="topbar-navigation d-flex align-items-center">
         <!-- LOGO -->
         <div class="navbar-brand-box">
           <a routerLink="/" class="logo logo-dark">
@@ -11,7 +11,7 @@
               <img src="assets/img/logo.png" alt="" height="17">
             </span>
           </a>
-  
+
           <a routerLink="/" class="logo logo-light">
             <span class="logo-sm">
               <img src="assets/img/logo.png" alt="" height="40">
@@ -21,12 +21,16 @@
             </span>
           </a>
         </div>
-  
+
         <button type="button" class="btn btn-sm px-3 font-size-16 header-item" id="vertical-menu-btn"
+          [attr.aria-expanded]="mobileMenuOpen"
+          [attr.aria-controls]="mobileMenuControls"
+          [attr.aria-label]="mobileMenuOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'"
           (click)="toggleMobileMenu($event)">
           <i class="fa fa-fw fa-bars"></i>
         </button>
-  
+      </div>
+
         <!-- App Search-->
         <!-- <form class="app-search d-none d-xl-block">
           <div class="position-relative">
@@ -34,9 +38,9 @@
             <span class="bx bx-search-alt"></span>
           </div>
         </form> -->
-  
+
         <!-- <div class="dropdown-mega d-none d-lg-block ms-2" dropdown>
-          <button type="button" class="btn header-item" dropdownToggle data-toggle="dropdown" aria-haspopup="false"
+          <button aria-label="Acción disponible" type="button" class="btn header-item" dropdownToggle data-toggle="dropdown" aria-haspopup="false"
             aria-expanded="false">
             {{ 'HEADER.SUCURSALES' | translate}}
             <i class="mdi mdi-chevron-down"></i>
@@ -57,7 +61,7 @@
                       <li>
                         <a href="javascript:void(0);">{{ 'HEADER.UI.SWEET_ALERT' | translate}}</a>
                       </li>
-                     
+
                     </ul>
                   </div>
                 </div>
@@ -65,23 +69,21 @@
             </div>
           </div>
         </div> -->
-        <div class="work-context d-flex" [formGroup]="form">
+        <div class="work-context" [formGroup]="form">
           <div class="work-context__field">
             <label for="topbar-sucursal">Sucursal</label>
-            <p-dropdown inputId="topbar-sucursal" [options]="sucursales()" 
-              [style]="this.styleSucursales()"
+            <p-dropdown inputId="topbar-sucursal" [options]="sucursales()" styleClass="app-control-fluid"
               optionLabel="name"
               optionValue="id"
               (onClear)="setStoragesBySucursal()"
               (onChange)="setStoragesBySucursal()"
               [virtualScrollItemSize]="38" [lazy]="true"
-              formControlName="id_sucursal" 
+              formControlName="id_sucursal"
             ></p-dropdown>
           </div>
           <div class="work-context__field">
             <label for="topbar-storage">Almacén</label>
-            <p-dropdown inputId="topbar-storage" [options]="validatorsService.storages()"
-              [style]="this.styleSucursales()"
+            <p-dropdown inputId="topbar-storage" [options]="validatorsService.storages()" styleClass="app-control-fluid"
               optionLabel="name"
               optionValue="id"
               placeholder="Almacén"
@@ -91,11 +93,10 @@
             ></p-dropdown>
           </div>
         </div>
-      </div>
-  
-      <div class="d-flex">
-        <div class="dropdown d-inline-block d-lg-none ms-2" dropdown>
-          <button type="button" class="btn header-item noti-icon" id="page-header-search-dropdown" data-toggle="dropdown"
+
+      <div class="topbar-actions d-flex align-items-center">
+        <div class="topbar-search dropdown d-inline-block d-lg-none ms-2" dropdown>
+          <button aria-label="Buscar" type="button" class="btn header-item noti-icon" id="page-header-search-dropdown" data-toggle="dropdown"
             aria-haspopup="true" dropdownToggle aria-expanded="false">
             <i class="mdi mdi-magnify"></i>
           </button>
@@ -106,17 +107,17 @@
                 <div class="input-group">
                   <input type="text" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
                   <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
+                    <button aria-label="Buscar" class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
                   </div>
                 </div>
               </div>
             </form>
           </div>
         </div>
-  
+
         <!-- <div class="dropdown d-inline-block" dropdown>
           <button type="button" class="btn header-item" id="page-header-user-dropdown" dropdownToggle>
-            <img *ngIf="flagvalue !== undefined" src="{{flagvalue}}" alt="Header Language" height="16"> 
+            <img *ngIf="flagvalue !== undefined" src="{{flagvalue}}" alt="Header Language" height="16">
             <img *ngIf="flagvalue === undefined" src="{{valueset}}" alt="Header Language" height="16">
           </button>
           <div class="dropdown-menu dropdown-menu-end" *dropdownMenu>
@@ -127,9 +128,9 @@
             </a>
           </div>
         </div> -->
-  
+
         <!-- <div class="dropdown d-none d-lg-inline-block ms-1" dropdown>
-          <button type="button" class="btn header-item noti-icon" dropdownToggle>
+          <button aria-label="Acción disponible" type="button" class="btn header-item noti-icon" dropdownToggle>
             <i class="bx bx-customize"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end" *dropdownMenu>
@@ -154,7 +155,7 @@
                   </a>
                 </div>
               </div>
-  
+
               <div class="row no-gutters">
                 <div class="col">
                   <a class="dropdown-icon-item" href="javascript: void(0);">
@@ -178,18 +179,18 @@
             </div>
           </div>
         </div> -->
-  
+
         <div class="dropdown d-none d-lg-inline-block ms-1">
-          <button type="button" class="btn header-item noti-icon" data-toggle="fullscreen" (click)="fullscreen()">
+          <button type="button" class="btn header-item noti-icon" data-toggle="fullscreen" aria-label="Pantalla completa" (click)="fullscreen()">
             <i class="bx bx-fullscreen"></i>
           </button>
         </div>
         <!-- NOTIFICACIONES -->
         <div class="dropdown d-inline-block" dropdown>
-          <button type="button" class="btn header-item noti-icon" id="page-header-notifications-dropdown" dropdownToggle (click)="loadNotifications()">
+          <button type="button" class="btn header-item noti-icon" id="page-header-notifications-dropdown" aria-label="Abrir notificaciones" dropdownToggle (click)="loadNotifications()">
             <i class="bx bx-bell" [ngClass]="{'bx-tada text-danger': notificationsService.hasDangerAlert()}"></i>
-            <span *ngIf="notificationsService.notifications().length > 0" 
-                  class="badge rounded-pill" 
+            <span *ngIf="notificationsService.notifications().length > 0"
+                  class="badge rounded-pill"
                   [ngClass]="notificationsService.hasDangerAlert() ? 'bg-danger' : 'bg-info'">
               {{ notificationsService.notifications().length }}
             </span>
@@ -205,17 +206,17 @@
                 </div>
               </div>
             </div>
-            <ngx-simplebar style="position: relative; max-height: 280px;">
+            <ngx-simplebar class="notification-scroll">
               <div *ngIf="notificationsService.notifications().length === 0" class="p-3 text-center text-muted">
                 No tienes notificaciones pendientes.
               </div>
-              <a href="javascript:void(0);" 
-                 class="text-reset notification-item d-block p-2 border-bottom" 
+              <a href="javascript:void(0);"
+                 class="text-reset notification-item d-block p-2 border-bottom"
                  *ngFor="let item of notificationsService.notifications()"
                  [ngClass]="{'bg-light-danger border-start border-danger border-4': item.level === 'DANGER'}">
                 <div class="d-flex align-items-start">
                   <div class="avatar-xs me-2 mt-1">
-                    <span class="avatar-title rounded-circle font-size-14" 
+                    <span class="avatar-title rounded-circle font-size-14"
                           [ngClass]="item.level === 'DANGER' ? 'bg-danger text-white' : 'bg-primary text-white'">
                       <i [ngClass]="item.level === 'DANGER' ? 'bx bx-error' : 'bx bx-transfer'"></i>
                     </span>
@@ -225,7 +226,7 @@
                       {{ item.title }}
                     </h6>
                     <div class="font-size-12 text-muted">
-                      <p class="mb-1 text-wrap" style="line-height: 1.3;">{{ item.message }}</p>
+                      <p class="mb-1 text-wrap notification-message">{{ item.message }}</p>
                       <p class="mb-0 font-size-11"><i class="mdi mdi-clock-outline me-1"></i>{{ item.createdAt | date:'short' }}</p>
                     </div>
                   </div>
@@ -239,9 +240,9 @@
             </div>
           </div>
         </div>
-  
+
         <div class="dropdown d-inline-block" dropdown>
-          <button type="button" class="btn header-item" dropdownToggle id="page-header-user-dropdown">
+          <button aria-label="Abrir menú de usuario" type="button" class="btn header-item" dropdownToggle id="page-header-user-dropdown">
             <img class="rounded-circle header-profile-user" src="assets/img/not-user.jpg" alt="Header Avatar">
             <span class="d-none d-xl-inline-block ms-1">{{authService.getUser.full_names}} </span>
             <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
@@ -264,13 +265,13 @@
               {{ 'HEADER.LOGIN.LOGOUT' | translate}}</a>
           </div>
         </div>
-  
+
         <!-- <div class="dropdown d-inline-block">
-          <button type="button" class="btn header-item noti-icon right-bar-toggle" (click)="toggleRightSidebar()">
+          <button aria-label="Configuración" type="button" class="btn header-item noti-icon right-bar-toggle" (click)="toggleRightSidebar()">
             <i class="bx bx-cog bx-spin"></i>
           </button>
         </div> -->
-  
+
       </div>
     </div>
   </header>

@@ -10,7 +10,7 @@
               <img src="assets/images/logo-dark.png" alt="" height="17">
             </span>
           </a>
-  
+
           <a routerLink="/" class="logo logo-light">
             <span class="logo-sm">
               <img src="assets/images/logo-light.svg" alt="" height="22">
@@ -20,27 +20,27 @@
             </span>
           </a>
         </div>
-  
-        <button type="button" class="btn btn-sm px-3 font-size-16 d-lg-none header-item" (click)="toggleMenubar()">
+
+        <button aria-label="Abrir menú de navegación" type="button" class="btn btn-sm px-3 font-size-16 d-lg-none header-item" (click)="toggleMenubar()">
           <i class="fa fa-fw fa-bars"></i>
         </button>
-  
+
         <form class="app-search d-none d-xl-block">
           <div class="position-relative">
             <input type="text" class="form-control" placeholder="{{'HEADER.SEARCH' | translate}}">
             <span class="bx bx-search-alt"></span>
           </div>
         </form>
-  
+
         <div class="dropdown dropdown-mega d-none d-lg-block me-2" dropdown>
-          <button type="button" class="btn header-item" dropdownToggle>
+          <button aria-label="Abrir menú de navegación" type="button" class="btn header-item" dropdownToggle>
             {{ 'HEADER.MEGA_MENU' | translate}}
             <i class="mdi mdi-chevron-down"></i>
           </button>
           <div class="dropdown-menu dropdown-megamenu" *dropdownMenu>
             <div class="row">
               <div class="col-sm-8">
-  
+
                 <div class="row">
                   <div class="col-md-4">
                     <h5 class="font-size-14 mt-0">{{ 'HEADER.UI.TITLE' | translate}}</h5>
@@ -68,7 +68,7 @@
                       </li>
                     </ul>
                   </div>
-  
+
                   <div class="col-md-4">
                     <h5 class="font-size-14 mt-0">{{ 'HEADER.APPLICATIONS.TITLE' | translate}}</h5>
                     <ul class="list-unstyled megamenu-list">
@@ -92,7 +92,7 @@
                       </li>
                     </ul>
                   </div>
-  
+
                   <div class="col-md-4">
                     <h5 class="font-size-14 mt-0">{{ 'HEADER.EXTRA_PAGES.TITLE' | translate}}</h5>
                     <ul class="list-unstyled megamenu-list">
@@ -117,7 +117,7 @@
                       <li>
                         <a href="javascript:void(0);">{{ 'HEADER.EXTRA_PAGES.FAQ' | translate}}</a>
                       </li>
-  
+
                     </ul>
                   </div>
                 </div>
@@ -150,7 +150,7 @@
                       </li>
                     </ul>
                   </div>
-  
+
                   <div class="col-sm-5">
                     <div>
                       <img src="assets/images/megamenu-img.png" alt="" class="img-fluid mx-auto d-block">
@@ -162,28 +162,28 @@
           </div>
         </div>
       </div>
-  
+
       <div class="d-flex">
-  
+
         <div class="dropdown d-inline-block d-lg-none me-2" dropdown>
-          <button type="button" class="btn header-item noti-icon" id="page-header-search-dropdown" dropdownToggle>
+          <button aria-label="Buscar" type="button" class="btn header-item noti-icon" id="page-header-search-dropdown" dropdownToggle>
             <i class="mdi mdi-magnify"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" *dropdownMenu>
-  
+
             <form class="p-3">
               <div class="m-0">
                 <div class="input-group">
                   <input type="text" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
                   <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
+                    <button aria-label="Buscar" class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
                   </div>
                 </div>
               </div>
             </form>
           </div>
         </div>
-  
+
         <div class="dropdown d-inline-block" dropdown>
           <button type="button" class="btn header-item" id="page-header-user-dropdown" dropdownToggle>
             <img *ngIf="flagvalue !== undefined" src="{{flagvalue}}" alt="Header Language" height="16"> <span
@@ -197,11 +197,11 @@
               <img src="{{item.flag}}" alt="user-image" class="ms-1" height="12"> <span
                 class="align-middle">{{item.text}}</span>
             </a>
-          </div>  
+          </div>
         </div>
-  
+
         <div class="dropdown d-none d-lg-inline-block me-1" dropdown>
-          <button type="button" class="btn header-item noti-icon" dropdownToggle>
+          <button aria-label="Abrir accesos rápidos" type="button" class="btn header-item noti-icon" dropdownToggle>
             <i class="bx bx-customize"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end" *dropdownMenu>
@@ -226,7 +226,7 @@
                   </a>
                 </div>
               </div>
-  
+
               <div class="row no-gutters">
                 <div class="col">
                   <a class="dropdown-icon-item" href="javascript: void(0);">
@@ -250,15 +250,16 @@
             </div>
           </div>
         </div>
-  
+
         <div class="dropdown d-none d-lg-inline-block me-1">
-          <button type="button" class="btn header-item noti-icon" data-toggle="fullscreen" (click)="fullscreen()">
+          <button aria-label="Pantalla completa" type="button" class="btn header-item noti-icon" data-toggle="fullscreen" (click)="fullscreen()">
             <i class="bx bx-fullscreen"></i>
           </button>
         </div>
-  
+
         <div class="dropdown d-inline-block" dropdown>
           <button type="button" class="btn header-item noti-icon" id="page-header-notifications-dropdown"
+            aria-label="Abrir notificaciones"
             dropdownToggle>
             <i class="bx bx-bell bx-tada"></i>
             <span class="badge bg-danger rounded-pill">3</span>
@@ -275,7 +276,7 @@
                 </div>
               </div>
             </div>
-            <ngx-simplebar style="position: relative; height: 230px;" >
+            <ngx-simplebar class="position-relative app-u-height-230px-b32f1e2">
               <a href="javascript: void(0);" class="text-reset notification-item">
                 <div class="media">
                   <div class="avatar-xs me-3">
@@ -344,7 +345,7 @@
             </div>
           </div>
         </div>
-  
+
         <div class="dropdown d-inline-block" dropdown>
           <button type="button" class="btn header-item" id="page-header-user-dropdown" dropdownToggle>
             <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg" alt="Header Avatar">
@@ -368,9 +369,9 @@
               {{ 'HEADER.LOGIN.LOGOUT' | translate}}</a>
           </div>
         </div>
-  
+
         <div class="dropdown d-inline-block">
-          <button type="button" class="btn header-item noti-icon right-bar-toggle" (click)="onSettingsButtonClicked()">
+          <button aria-label="Configuración" type="button" class="btn header-item noti-icon right-bar-toggle" (click)="onSettingsButtonClicked()">
             <i class="bx bx-cog bx-spin"></i>
           </button>
         </div>
@@ -389,14 +390,14 @@
                   <i class="bx {{item.icon}} me-2"></i>{{ item.label??'' | translate }} <div class="arrow-down"
                     *ngIf="hasItems(item)"></div>
                 </a>
-  
+
                 <a *ngIf="item.subItems" class="nav-link dropdown-toggle arrow-none" (click)="onMenuClick($event)"
                   href="javascript: void(0);" id="topnav-components" role="button">
                   <i class="bx {{item.icon}} me-1"></i>
                   {{item.label??''| translate }}
                   <div class="arrow-down"></div>
                 </a>
-  
+
                 <div class="dropdown-menu" [ngClass]="{'dropdown-mega-menu-xl px-2':  item.subItems.length > 11}" aria-labelledby="topnav-dashboard" *ngIf="hasItems(item)">
                   <ng-template ngFor let-i="index" let-subitem [ngForOf]="item.subItems">
                     <a *ngIf="item.subItems.length < 11 && !hasItems(subitem)" class="col dropdown-item side-nav-link-ref"
@@ -411,14 +412,14 @@
                         <div class="col-lg-4"><a class="dropdown-item side-nav-link-ref" routerLinkActive="active" [routerLink]="item.subItems[i + 2]?.link">{{item.subItems[i + 2]?.label | translate}}</a></div>
                     </div>
                 </div>
-  
+
                 <div *ngIf="item.subItems.length == 11 && !hasItems(subitem)">
                     <a class="dropdown-item dropdown-toggle" href="javascript: void(0);"
                       (click)="onMenuClick($event)">{{ subitem.label | translate }}
                       <div class="arrow-down"></div>
                     </a>
                 </div>
-                
+
                   <div class="dropdown" *ngIf="hasItems(subitem)">
                     <a class="dropdown-item dropdown-toggle" href="javascript: void(0);"
                       (click)="onMenuClick($event)">{{ subitem.label | translate }}
@@ -430,7 +431,7 @@
                           href="javascript: void(0);" [routerLink]="subSubitem.link"
                           routerLinkActive="active">{{ subSubitem.label | translate }}</a>
                         <div class="dropdown" *ngIf="hasItems(subSubitem)">
-  
+
                           <a class="dropdown-item dropdown-toggle" href="javascript: void(0);"
                             (click)="onMenuClick($event)">{{ subSubitem.label | translate }}
                             <div class="arrow-down"></div>

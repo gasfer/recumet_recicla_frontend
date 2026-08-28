@@ -12,7 +12,7 @@
         <small class="text-muted">Control de pesaje de vehículos de carga</small>
       </div>
       <div class="d-flex gap-2">
-        <button pButton icon="pi pi-filter" [label]="mostrarFiltros() ? 'Ocultar filtros' : 'Mostrar filtros'"
+        <button aria-label="Mostrar u ocultar filtros" pButton icon="pi pi-filter" [label]="mostrarFiltros() ? 'Ocultar filtros' : 'Mostrar filtros'"
                 class="p-button-sm p-button-outlined" (click)="toggleFiltros()"></button>
         <button pButton icon="pi pi-plus" label="1° Peso"
                 class="p-button-sm" (click)="openNuevoPrimer()"></button>
@@ -89,9 +89,11 @@
         <label class="form-label fw-semibold mb-0 small d-block">&nbsp;</label>
         <div class="d-flex gap-1">
           <button pButton icon="pi pi-file-pdf" pTooltip="Exportar PDF"
+                  aria-label="Exportar pesajes en PDF"
                   class="p-button-sm p-button-danger flex-fill"
                   (click)="exportarPDF()"></button>
           <button pButton icon="pi pi-file-excel" pTooltip="Exportar Excel"
+                  aria-label="Exportar pesajes en Excel"
                   class="p-button-sm p-button-success flex-fill"
                   (click)="exportarExcel()"></button>
         </div>
@@ -148,8 +150,8 @@
             <p-messages severity="info">
               <ng-template pTemplate>
                 <b>LISTA PESAJE BALANZA CAMIONERA &nbsp;<i class="fa-solid fa-weight-scale"></i></b>
-                <i class="fa-solid fa-truck ms-4 p-text-secondary" pBadge
-                   style="font-size:1.2rem" value="{{ totalPesajes() }}"></i>
+                <i class="fa-solid fa-truck ms-4 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
+                   value="{{ totalPesajes() }}"></i>
               </ng-template>
             </p-messages>
           </div>
@@ -159,7 +161,7 @@
           [value]="pesajesFiltrados()"
           [loading]="loading()"
           responsiveLayout="scroll"
-          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped app-table-scroll"
           [rowHover]="true"
           [paginator]="true"
           [rows]="15"
@@ -168,22 +170,22 @@
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="nroBoleta" style="min-width:140px">
+              <th pSortableColumn="nroBoleta" class="app-u-min-width-140px-4592c74">
                 Nro. Boleta <p-sortIcon field="nroBoleta"></p-sortIcon>
               </th>
-              <th style="min-width:100px">Fecha</th>
-              <th style="min-width:80px">Hora 1°</th>
-              <th style="min-width:80px">Hora 2°</th>
-              <th style="min-width:100px;text-align:right">Tara (kg)</th>
-              <th style="min-width:100px;text-align:right">Bruto (kg)</th>
-              <th style="min-width:110px;text-align:right">
+              <th class="app-u-min-width-100px-e79a03c">Fecha</th>
+              <th class="app-u-min-width-80px-c3c7cd9">Hora 1°</th>
+              <th class="app-u-min-width-80px-c3c7cd9">Hora 2°</th>
+              <th class="app-u-min-width-100px-e79a03c text-end">Tara (kg)</th>
+              <th class="app-u-min-width-100px-e79a03c text-end">Bruto (kg)</th>
+              <th class="app-u-min-width-110px-365391b text-end">
                 <span class="text-success fw-bold">Neto (kg)</span>
               </th>
-              <th style="min-width:160px">Proveedor Origen</th>
-              <th style="min-width:120px">Producto</th>
-              <th style="min-width:100px">Placa</th>
-              <th style="min-width:90px;text-align:center">Estado</th>
-              <th style="min-width:130px;text-align:center">Opciones</th>
+              <th class="app-u-min-width-160px-94253f9">Proveedor Origen</th>
+              <th class="app-u-min-width-120px-651945a">Producto</th>
+              <th class="app-u-min-width-100px-e79a03c">Placa</th>
+              <th class="app-u-min-width-90px-0143f2a text-center">Estado</th>
+              <th class="app-u-min-width-130px-b62dc2d text-center">Opciones</th>
             </tr>
             <!-- Filtro en encabezado -->
             <tr>
@@ -207,7 +209,7 @@
           <ng-template pTemplate="body" let-p>
             <tr>
               <td>
-                <span class="badge bg-primary font-monospace" style="font-size:.72rem">
+                <span class="badge bg-primary font-monospace app-u-font-size-72rem-dbd68c1">
                   {{ p.nroBoleta }}
                 </span>
               </td>
@@ -222,7 +224,7 @@
               <td class="text-end">{{ p.bruto | number:'1.0-0' }}</td>
               <td class="text-end fw-bold text-success">{{ p.neto | number:'1.0-0' }}</td>
               <td>
-                <span class="d-block fw-semibold" style="font-size:.82rem">{{ p.proveedorOrigen.nombre }}</span>
+                <span class="d-block fw-semibold app-u-font-size-82rem-1fe8667">{{ p.proveedorOrigen.nombre }}</span>
                 <small class="text-muted">CI/NIT: {{ p.proveedorOrigen.ciNit }}</small>
               </td>
               <td>
@@ -236,33 +238,38 @@
               <td class="text-center">
                 <p-tag [value]="getEstadoLabel(p.estado)"
                        [severity]="getSeverity(p.estado)"></p-tag>
-                <span *ngIf="p.esServicio" class="badge bg-info ms-1" style="font-size:.68rem">SRV</span>
+                <span *ngIf="p.esServicio" class="badge bg-info ms-1 app-u-font-size-68rem-229fef1">SRV</span>
               </td>
               <td class="text-center">
                 <!-- Registrar 2° peso (solo si está en PRIMER_PESO) -->
                 <button *ngIf="p.estado === 'PRIMER_PESO'"
                         pButton icon="pi pi-plus-circle"
+                        aria-label="Registrar segundo peso"
                         class="p-button-rounded p-button-warning p-button-sm"
                         pTooltip="Registrar 2° Peso" tooltipPosition="top"
                         (click)="openSegundoPeso(); seleccionarParaSegundoPeso(p)"></button>
                 <!-- Ver -->
                 <button pButton icon="pi pi-eye"
+                        aria-label="Ver pesaje"
                         class="p-button-rounded p-button-text p-button-info p-button-sm"
                         pTooltip="Ver" tooltipPosition="top"
                         (click)="openVer(p)"></button>
                 <!-- Editar -->
                 <button pButton icon="pi pi-pencil"
+                        aria-label="Editar pesaje"
                         class="p-button-rounded p-button-text p-button-sm"
                         pTooltip="Editar" tooltipPosition="top"
                         (click)="openEditar(p)"
                         [disabled]="!puedeEditar(p)"></button>
                 <!-- Imprimir boleta -->
                 <button pButton icon="pi pi-print"
+                        aria-label="Imprimir boleta de pesaje"
                         class="p-button-rounded p-button-text p-button-secondary p-button-sm"
                         pTooltip="Imprimir Boleta" tooltipPosition="top"
                         (click)="imprimirBoleta(p)"></button>
                 <!-- Eliminar -->
                 <button pButton icon="pi pi-trash"
+                        aria-label="Eliminar pesaje"
                         class="p-button-rounded p-button-text p-button-danger p-button-sm"
                         pTooltip="Eliminar" tooltipPosition="top"
                         (click)="confirmEliminar(p)"
@@ -296,10 +303,9 @@
   [modal]="true"
   [closable]="true"
   [header]="modoDialog() === 'EDITAR' ? 'Editar Pesaje' : 'Registrar Primer Peso'"
-  [style]="{width:'860px'}"
   [maximizable]="true"
   [draggable]="false"
-  appendTo="body">
+  appendTo="body" styleClass="app-dialog--lg">
 
   <form [formGroup]="formPrimer">
     <div class="row g-2">
@@ -389,13 +395,14 @@
         </small>
       </div>
 
-      <div class="col-12 col-sm-4" style="position:relative">
+      <div class="col-12 col-sm-4 position-relative">
         <label class="form-label fw-semibold mb-0 small">CI / NIT Origen *</label>
         <div class="d-flex gap-1">
           <input pInputText formControlName="origenCiNit" class="flex-fill"
                  placeholder="Buscar CI/NIT..."
                  (input)="buscarOrigen($any($event.target).value)" />
-          <button pButton icon="pi pi-user-plus" class="p-button-sm p-button-outlined"
+          <button pButton icon="pi pi-user-plus" aria-label="Crear proveedor de origen"
+                  class="p-button-sm p-button-outlined"
                   pTooltip="Nuevo proveedor"></button>
         </div>
         <div *ngIf="sugOrigen().length" class="bc-suggest shadow">
@@ -420,13 +427,14 @@
         </small>
       </div>
 
-      <div class="col-12 col-sm-4" style="position:relative">
+      <div class="col-12 col-sm-4 position-relative">
         <label class="form-label fw-semibold mb-0 small">CI / NIT Destino *</label>
         <div class="d-flex gap-1">
           <input pInputText formControlName="destinoCiNit" class="flex-fill"
                  placeholder="Buscar CI/NIT..."
                  (input)="buscarDestino($any($event.target).value)" />
-          <button pButton icon="pi pi-user-plus" class="p-button-sm p-button-outlined"
+          <button pButton icon="pi pi-user-plus" aria-label="Crear proveedor de destino"
+                  class="p-button-sm p-button-outlined"
                   pTooltip="Nuevo proveedor"></button>
         </div>
         <div *ngIf="sugDestino().length" class="bc-suggest shadow">
@@ -452,13 +460,14 @@
         </small>
       </div>
 
-      <div class="col-12 col-sm-4" style="position:relative">
+      <div class="col-12 col-sm-4 position-relative">
         <label class="form-label fw-semibold mb-0 small">CI / Licencia *</label>
         <div class="d-flex gap-1">
           <input pInputText formControlName="transportistaCi" class="flex-fill"
                  placeholder="Buscar CI..."
                  (input)="buscarTransportista($any($event.target).value)" />
-          <button pButton icon="pi pi-user-plus" class="p-button-sm p-button-outlined"
+          <button pButton icon="pi pi-user-plus" aria-label="Crear nuevo transportista"
+                  class="p-button-sm p-button-outlined"
                   pTooltip="Nuevo transportista"></button>
         </div>
         <div *ngIf="sugTransportista().length" class="bc-suggest shadow">
@@ -476,10 +485,10 @@
         <input pInputText formControlName="transportistaNombre" class="w-100 bg-light" readonly />
       </div>
 
-      <div class="col-12 col-sm-3" style="position:relative">
+      <div class="col-12 col-sm-3 position-relative">
         <label class="form-label fw-semibold mb-0 small">Placa *</label>
-        <input pInputText formControlName="placa" class="w-100 fw-bold"
-               placeholder="ABC-123" style="text-transform:uppercase"
+        <input pInputText formControlName="placa" class="w-100 fw-bold text-uppercase"
+               placeholder="ABC-123"
                (blur)="buscarPorPlaca($any($event.target).value)" />
         <small *ngIf="isInvalid(formPrimer,'placa')" class="p-error d-block">Requerido</small>
       </div>
@@ -504,12 +513,13 @@
         </small>
       </div>
 
-      <div class="col-12 col-sm-6" style="position:relative">
+      <div class="col-12 col-sm-6 position-relative">
         <label class="form-label fw-semibold mb-0 small">Producto *</label>
         <div class="d-flex gap-1">
           <input pInputText placeholder="Buscar producto..." class="flex-fill"
                  (input)="buscarProducto($any($event.target).value)" />
-          <button pButton icon="pi pi-plus" class="p-button-sm p-button-outlined"
+          <button pButton icon="pi pi-plus" aria-label="Crear nuevo producto"
+                  class="p-button-sm p-button-outlined"
                   pTooltip="Nuevo producto"></button>
         </div>
         <div *ngIf="sugProducto().length" class="bc-suggest shadow">
@@ -563,6 +573,7 @@
     <button pButton label="Cancelar" icon="pi pi-times"
             class="p-button-text" (click)="closeDialog()"></button>
     <button pButton
+            [attr.aria-label]="modoDialog() === 'EDITAR' ? 'Actualizar' : 'Registrar primer peso'"
             [label]="modoDialog() === 'EDITAR' ? 'Actualizar' : 'Registrar 1° Peso'"
             icon="pi pi-check"
             (click)="guardarPrimerPeso()"></button>
@@ -579,9 +590,8 @@
   [modal]="true"
   [closable]="true"
   header="Registrar Segundo Peso"
-  [style]="{width:'580px'}"
   [draggable]="false"
-  appendTo="body">
+  appendTo="body" styleClass="app-dialog--md">
 
   <form [formGroup]="formSegundo">
     <div class="row g-2">
@@ -600,6 +610,7 @@
                   [loading]="conectandoBalanza()"
                   (click)="leerPesoBalanza()"></button>
           <button pButton icon="pi pi-desktop"
+                  aria-label="Abrir pantalla completa"
                   class="p-button-sm p-button-outlined p-button-secondary"
                   pTooltip="Pantalla completa"
                   (click)="abrirPantallaCompleta()"></button>
@@ -612,7 +623,7 @@
         <small class="text-muted fw-semibold text-uppercase">Buscar Registro</small>
       </div>
 
-      <div class="col-12" style="position:relative">
+      <div class="col-12 position-relative">
         <label class="form-label fw-semibold mb-0 small">N° Boleta o Placa del vehículo</label>
         <span class="p-input-icon-left w-100">
           <i class="pi pi-search"></i>
@@ -715,9 +726,8 @@
   [modal]="true"
   [closable]="true"
   header="Detalle de Pesaje"
-  [style]="{width:'600px'}"
   [draggable]="false"
-  appendTo="body">
+  appendTo="body" styleClass="app-dialog--md">
 
   <ng-container *ngIf="selectedPesaje() as p">
 
@@ -818,63 +828,3 @@
             (click)="closeVer(); openEditar(selectedPesaje()!)"></button>
   </ng-template>
 </p-dialog>
-
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     ESTILOS LOCALES
-══════════════════════════════════════════════════════════════════════════ -->
-<style>
-  /* Pantalla de peso */
-  .bc-peso-display {
-    background: #1e293b;
-    border-radius: 8px;
-    padding: .75rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 70px;
-  }
-  .bc-peso-display--lg { min-height: 90px; }
-  .bc-peso-display__val {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #4ade80;
-    font-family: 'Courier New', monospace;
-    letter-spacing: .1em;
-    line-height: 1;
-  }
-  .bc-peso-display__lbl {
-    font-size: .7rem;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-top: .2rem;
-  }
-  /* Input de peso grande */
-  :host ::ng-deep .bc-peso-input .p-inputnumber-input {
-    font-size: 1.3rem;
-    font-weight: 700;
-    width: 140px;
-    text-align: right;
-  }
-  /* Autocomplete sugerencias */
-  .bc-suggest {
-    position: absolute;
-    z-index: 1050;
-    width: 100%;
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 0 0 6px 6px;
-    max-height: 180px;
-    overflow-y: auto;
-  }
-  .bc-suggest__item {
-    padding: .45rem .75rem;
-    cursor: pointer;
-    font-size: .85rem;
-    border-bottom: 1px solid #f1f5f9;
-    transition: background .15s;
-  }
-  .bc-suggest__item:hover { background: #e0f2fe; }
-</style>

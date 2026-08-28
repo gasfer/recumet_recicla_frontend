@@ -14,6 +14,7 @@ export class InputSearchComponent implements OnInit, OnDestroy {
   @Input() icon :string = '';
   @Input() btnNew :boolean = false;
   @Input() iconBtnNew :string = '';
+  @Input() btnNewAriaLabel: string = 'Añadir nuevo';
   @Output() onEnters  : EventEmitter<string> = new EventEmitter();
   @Output() onDebounce: EventEmitter<string> = new EventEmitter();
   @Output() onBtnNew: EventEmitter<boolean> = new EventEmitter();

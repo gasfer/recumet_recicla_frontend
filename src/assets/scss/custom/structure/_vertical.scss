@@ -177,7 +177,13 @@
 
 @media (max-width: 992px) {
     .vertical-menu {
-        display: none;
+        display: block;
+        max-width: min(86vw, 300px);
+        top: var(--app-header-height, #{$header-height});
+        transform: translateX(-105%);
+        transition: transform .2s ease;
+        width: min(86vw, 300px);
+        z-index: 1045;
     }
 
     .main-content {
@@ -186,8 +192,37 @@
 
     body.sidebar-enable {
         .vertical-menu {
-            display: block;
+            transform: translateX(0);
         }
+    }
+}
+
+.app-sidebar-backdrop {
+    background: rgba(15, 23, 42, .5);
+    border: 0;
+    display: none;
+    inset: var(--app-header-height, #{$header-height}) 0 0;
+    opacity: 0;
+    padding: 0;
+    pointer-events: none;
+    position: fixed;
+    transition: opacity .2s ease;
+    width: 100%;
+    z-index: 1040;
+}
+
+@media (max-width: 992px) {
+    .app-sidebar-backdrop {
+        display: block;
+
+        &.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+
+    body.app-sidebar-open {
+        overflow: hidden;
     }
 }
 

@@ -96,6 +96,7 @@ export class TransfersService {
   getPrintVoucherTransfer(id_transfer:Number) {
     const url = `${base_url}/transfers/pdf/voucher/${id_transfer}`;
     return this.http.get(url,{
+              params: { _: Date.now().toString() },
               responseType: 'blob',
             });
   } 
@@ -103,6 +104,7 @@ export class TransfersService {
   getPrintVoucherReception(id_transfer: Number) {
     const url = `${base_url}/transfers/pdf/reception-voucher/${id_transfer}`;
     return this.http.get(url, {
+      params: { _: Date.now().toString() },
       responseType: 'blob',
     });
   }

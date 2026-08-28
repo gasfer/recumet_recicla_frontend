@@ -1,8 +1,7 @@
 <p-dialog
   [header]="inputsService.isEdit ? 'Editar compra: ' + inputsService.dataInputForEdit()?.cod :  'Registro de compra'"
-  [(visible)]="inputsService.showModalSaveInput" [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }"
-  [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
-  (onHide)="resetModal()">
+  [(visible)]="inputsService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
+  (onHide)="resetModal()" styleClass="app-dialog--md">
   <form [formGroup]="formInput">
     <div class="m-2">
       <p-messages *ngIf="inputsService.isEdit" severity="warn" class="animated fadeInDown">
@@ -54,7 +53,7 @@
                     <p-tag [rounded]="true" [icon]="formInput.get('is_paid')!.value
                                             ? 'fa-solid fa-file-circle-check'
                                             : 'fa-solid fa-file-circle-xmark'"
-                      [style]="{ 'background': formInput.get('is_paid')!.value ? 'var(--teal-600)' : 'var(--bluegray-400)'}"
+                      [styleClass]="formInput.get('is_paid')!.value ? 'app-invoice-paid' : 'app-invoice-unpaid'"
                       [value]="formInput.get('is_paid')!.value
                                             ? 'CON FACTURA'
                                             : 'SIN FACTURA'"></p-tag>
@@ -88,10 +87,10 @@
               @if (formInput.get('type_registry')?.value != 'SIN FICHA') {
               <div class="col-sm-6 col-12 animated fadeInDown">
                 <label class="block mb-0">Nro. Pesaje</label>
-                <input type="text" style="text-transform: uppercase" pInputText
+                <input type="text" pInputText
                   [pKeyFilter]="validatorsService.expRegValidInput" formControlName="registry_number"
                   placeholder="EJ. 0001" [pKeyFilter]="validatorsService.expRegValidInput"
-                  [class.ng-dirty]="validatorsService.inputValid('registry_number',formInput)" />
+                  [class.ng-dirty]="validatorsService.inputValid('registry_number',formInput)" class="text-uppercase"/>
                 <small *ngIf="validatorsService.inputValid('registry_number',formInput)" class="p-error block">
                   {{ validatorsService.inputValidMessage("registry_number",formInput) }}
                 </small>
@@ -198,9 +197,9 @@
           </div>
           <div class="col-sm-6 col-12 mt-sm-0 mt-1">
             <label class="block mb-0">Observaciones</label>
-            <textarea pInputTextarea type="text" style="text-transform: uppercase" pInputText
+            <textarea pInputTextarea type="text" pInputText
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="comments" placeholder="EJ. ......"
-              class="mt-1" [class.ng-dirty]="validatorsService.inputValid('comments',formInput)"></textarea>
+              class="mt-1 text-uppercase" [class.ng-dirty]="validatorsService.inputValid('comments',formInput)"></textarea>
             <small *ngIf="validatorsService.inputValid('comments',formInput)" class="p-error block">
               {{ validatorsService.inputValidMessage("comments",formInput) }}
             </small>
@@ -220,13 +219,20 @@
           <div class="col-sm-6 col-12 mt-sm-0 mt-1">
             <label *ngIf="formInput.get('type_payment')?.value == 'CHEQUE'" class="block mb-0">N. Cheque</label>
             <label *ngIf="formInput.get('type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N. Cuenta</label>
-            <input type="text" style="text-transform: uppercase" pInputText
+            <input type="text" pInputText
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_input" placeholder="EJ. "
-              [class.ng-dirty]="validatorsService.inputValid('account_input',formInput)" />
+              [class.ng-dirty]="validatorsService.inputValid('account_input',formInput)" class="text-uppercase"/>
             <small *ngIf="validatorsService.inputValid('account_input',formInput)" class="p-error block">
               {{ validatorsService.inputValidMessage("account_input",formInput) }}
             </small>
           </div>
+        </div>
+      </div>
+      <div class="row mt-3" *ngIf="inputsService.isEdit">
+        <div class="col-12">
+          <label class="block mb-1"><i class="fa-solid fa-pen-to-square mr-1"></i>Motivo de la modificación <span class="text-danger">*</span></label>
+          <textarea pInputTextarea formControlName="audit_reason" rows="3" class="w-100" placeholder="Explique qué se modificará y por qué"></textarea>
+          <small class="p-error block" *ngIf="formInput.get('audit_reason')?.touched && formInput.get('audit_reason')?.invalid">Ingrese un motivo de al menos 5 caracteres. El cambio quedará registrado en la trazabilidad.</small>
         </div>
       </div>
       <div class="row mt-3">

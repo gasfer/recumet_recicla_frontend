@@ -2,7 +2,8 @@ export interface Options {
     label:    string,
     icon:     string, 
     class:    string,
-    tooltip?: string,
+    tooltip:  string,
+    ariaLabel?: string,
     disabled?: boolean,
     style?:    string,
     eventClick?: Function;

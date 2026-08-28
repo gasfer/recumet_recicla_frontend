@@ -1,8 +1,7 @@
 <p-dialog
   [header]="outputService.isEdit ? 'Editar venta: ' + outputService.dataOutputForEdit()?.cod :  'Registro de venta'"
-  [(visible)]="outputService.showModalSaveInput" [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }"
-  [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
-  (onHide)="resetModal()">
+  [(visible)]="outputService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
+  (onHide)="resetModal()" styleClass="app-dialog--md">
   <form [formGroup]="formOutput">
     <div class="m-2">
       <p-messages *ngIf="outputService.isEdit" severity="warn" class="animated fadeInDown">
@@ -122,9 +121,9 @@
                         class="text-danger">*</span>
                     </label>
 
-                    <input type="text" pInputText style="text-transform: uppercase" formControlName="number_registry"
+                    <input type="text" pInputText formControlName="number_registry"
                       placeholder="EJ. 0001" [pKeyFilter]="validatorsService.expRegValidInput"
-                      [class.ng-dirty]="validatorsService.inputValid('output_data.number_registry', formOutput)" />
+                      [class.ng-dirty]="validatorsService.inputValid('output_data.number_registry', formOutput)" class="text-uppercase"/>
 
                     <!-- MENSAJE CUANDO ES SIN FICHA -->
                     <small *ngIf="formOutput.get('output_data.type_registry')?.value == 'SIN FICHA'"
@@ -260,9 +259,9 @@
           </div>
           <div class="col-sm-6 col-12 mt-sm-0 mt-1">
             <label class="block mb-0">Observaciones</label>
-            <textarea pInputTextarea type="text" style="text-transform: uppercase" pInputText
+            <textarea pInputTextarea type="text" pInputText
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="comments" placeholder="EJ. ......"
-              class="mt-1"
+              class="mt-1 text-uppercase"
               [class.ng-dirty]="validatorsService.inputValid('output_data.comments',formOutput)"></textarea>
             <small *ngIf="validatorsService.inputValid('output_data.comments',formOutput)" class="p-error block">
               {{ validatorsService.inputValidMessage("output_data.comments",formOutput) }}
@@ -286,9 +285,9 @@
               Cheque</label>
             <label *ngIf="formOutput.get('output_data.type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N.
               Cuenta</label>
-            <input type="text" style="text-transform: uppercase" pInputText
+            <input type="text" pInputText
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_output" placeholder="EJ. "
-              [class.ng-dirty]="validatorsService.inputValid('output_data.account_output',formOutput)" />
+              [class.ng-dirty]="validatorsService.inputValid('output_data.account_output',formOutput)" class="text-uppercase"/>
             <small *ngIf="validatorsService.inputValid('output_data.account_output',formOutput)" class="p-error block">
               {{ validatorsService.inputValidMessage("output_data.account_output",formOutput) }}
             </small>
@@ -380,20 +379,20 @@
           <div class="row">
             <div class="col-sm-6 col-12">
               <label class="block mb-0">Nº Factura</label>
-              <input type="text" style="text-transform: uppercase" pInputText
+              <input type="text" pInputText
                 [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_factura"
                 placeholder="EJ. 0001" [pKeyFilter]="validatorsService.expRegValidInput"
-                [class.ng-dirty]="validatorsService.inputValid('output_big.number_factura',formOutput)" />
+                [class.ng-dirty]="validatorsService.inputValid('output_big.number_factura',formOutput)" class="text-uppercase"/>
               <small *ngIf="validatorsService.inputValid('output_big.number_factura',formOutput)" class="p-error block">
                 {{ validatorsService.inputValidMessage("output_big.number_factura",formOutput) }}
               </small>
             </div>
             <div class="col-sm-6 col-12">
               <label class="block mb-0">Nº Precinto</label>
-              <input type="text" style="text-transform: uppercase" pInputText
+              <input type="text" pInputText
                 [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_precinto"
                 placeholder="EJ. S/N" [pKeyFilter]="validatorsService.expRegValidInput"
-                [class.ng-dirty]="validatorsService.inputValid('output_big.number_precinto',formOutput)" />
+                [class.ng-dirty]="validatorsService.inputValid('output_big.number_precinto',formOutput)" class="text-uppercase"/>
               <small *ngIf="validatorsService.inputValid('output_big.number_precinto',formOutput)"
                 class="p-error block">
                 {{ validatorsService.inputValidMessage("output_big.number_precinto",formOutput) }}
@@ -416,10 +415,10 @@
             </div>
             <div class="col-sm-6 col-12">
               <label class="block mb-0">Nro.</label>
-              <input type="text" style="text-transform: uppercase" pInputText
+              <input type="text" pInputText
                 [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_contenedor"
                 placeholder="EJ. S/N" [pKeyFilter]="validatorsService.expRegValidInput"
-                [class.ng-dirty]="validatorsService.inputValid('output_big.number_contenedor',formOutput)" />
+                [class.ng-dirty]="validatorsService.inputValid('output_big.number_contenedor',formOutput)" class="text-uppercase"/>
               <small *ngIf="validatorsService.inputValid('output_big.number_contenedor',formOutput)"
                 class="p-error block">
                 {{ validatorsService.inputValidMessage("output_big.number_contenedor",formOutput) }}
@@ -429,10 +428,10 @@
           <div *ngIf="formOutput.get('output_data.open_truck')!.value" class="row animated fadeInDown">
             <div class="col-sm-12 col-12">
               <label class="block mb-0">Póliza de Seguro</label>
-              <input type="text" style="text-transform: uppercase" pInputText
+              <input type="text" pInputText
                 [pKeyFilter]="validatorsService.expRegValidInput" formControlName="poliza_seguro" placeholder="EJ."
                 [pKeyFilter]="validatorsService.expRegValidInput"
-                [class.ng-dirty]="validatorsService.inputValid('output_big.poliza_seguro',formOutput)" />
+                [class.ng-dirty]="validatorsService.inputValid('output_big.poliza_seguro',formOutput)" class="text-uppercase"/>
               <small *ngIf="validatorsService.inputValid('output_big.poliza_seguro',formOutput)" class="p-error block">
                 {{ validatorsService.inputValidMessage("output_big.poliza_seguro",formOutput) }}
               </small>

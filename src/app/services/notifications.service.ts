@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { io, Socket } from 'socket.io-client';
 
@@ -44,6 +44,7 @@ export class NotificationsService {
 
   notifications = signal<AppNotification[]>([]);
   hasDangerAlert = signal<boolean>(false);
+  transferReviewUpdates$ = new Subject<any>();
 
   constructor() {
     this.initSocketConnection();
@@ -81,6 +82,12 @@ export class NotificationsService {
         if (data && data.title) {
           this.showDesktopNotification(data.title, data.message || 'Nueva notificación en el sistema');
         }
+        this.getUnreadNotifications().subscribe({
+          error: (err) => console.warn('Error al refrescar notificaciones:', err)
+        });
+      });
+      this.socket.on('transfer-review-updated', (data: any) => {
+        this.transferReviewUpdates$.next(data);
         this.getUnreadNotifications().subscribe({
           error: (err) => console.warn('Error al refrescar notificaciones:', err)
         });

@@ -49,8 +49,8 @@
             <p-messages severity="info">
               <ng-template pTemplate>
                 <b>ÓRDENES DE SERVICIO &nbsp;<i class="fa-solid fa-screwdriver-wrench"></i></b>
-                <i class="fa-solid fa-file-invoice ms-5 p-text-secondary"
-                   pBadge style="font-size:1.2rem"
+                <i class="fa-solid fa-file-invoice ms-5 p-text-secondary app-u-font-size-1-2rem-101860a"
+                   pBadge
                    value="{{ totalServicios() }}"></i>
               </ng-template>
             </p-messages>
@@ -66,7 +66,7 @@
           [value]="servicios()"
           [loading]="loading()"
           responsiveLayout="scroll"
-          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped app-table-scroll"
           [rowHover]="true"
           [paginator]="true"
           [rows]="10">
@@ -115,15 +115,18 @@
               </td>
               <td class="text-center">
                 <button pButton icon="pi pi-eye"
+                        aria-label="Ver detalle de orden de servicio"
                         class="p-button-rounded p-button-text p-button-info p-button-sm"
                         pTooltip="Ver detalle" tooltipPosition="top"
                         (click)="openDetail(s)"></button>
                 <button pButton icon="pi pi-pencil"
+                        aria-label="Editar orden de servicio"
                         class="p-button-rounded p-button-text p-button-sm"
                         pTooltip="Editar" tooltipPosition="top"
                         (click)="openEdit(s)"
                         [disabled]="s.estado === 'CANCELADO' || s.estado === 'COMPLETADO'"></button>
                 <button pButton icon="pi pi-ban"
+                        aria-label="Cancelar orden de servicio"
                         class="p-button-rounded p-button-text p-button-danger p-button-sm"
                         pTooltip="Cancelar" tooltipPosition="top"
                         (click)="confirmDelete(s)"
@@ -151,9 +154,8 @@
   [modal]="true"
   [closable]="true"
   [header]="isEditing() ? 'Editar Orden de Servicio' : 'Nueva Orden de Servicio'"
-  [style]="{width:'720px'}"
   [draggable]="false"
-  appendTo="body">
+  appendTo="body" styleClass="app-dialog--md">
 
   <form [formGroup]="form">
     <div class="row g-2 mt-0">
@@ -275,6 +277,7 @@
     <button pButton label="Cancelar" icon="pi pi-times"
             class="p-button-text" (click)="closeDialog()"></button>
     <button pButton
+            [attr.aria-label]="isEditing() ? 'Actualizar' : 'Crear orden'"
             [label]="isEditing() ? 'Actualizar' : 'Crear Orden'"
             icon="pi pi-check" (click)="save()"></button>
   </ng-template>
@@ -287,9 +290,8 @@
   [modal]="true"
   [closable]="true"
   header="Detalle de Orden de Servicio"
-  [style]="{width:'520px'}"
   [draggable]="false"
-  appendTo="body">
+  appendTo="body" styleClass="app-dialog--sm">
 
   <ng-container *ngIf="viewDetail() as s">
 

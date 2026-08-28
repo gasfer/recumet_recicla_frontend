@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
+import { DialogAccessibilityModule } from '../core/directives/dialog-accessibility.module';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { ButtonModule } from 'primeng/button';
     AuthRoutingModule,
     DialogModule,
     DropdownModule,
-    ButtonModule
+    ButtonModule,
+    DialogAccessibilityModule
   ]
 })
 export class AuthModule { }

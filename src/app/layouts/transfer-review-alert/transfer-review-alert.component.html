@@ -1,0 +1,53 @@
+<p-dialog
+  header="Recepciones inconclusas"
+  [visible]="reviewService.showAlertDialog()"
+  (visibleChange)="reviewService.setAlertVisibility($event)"
+  [modal]="false"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '92vw', maxWidth: '70rem' }"
+  [breakpoints]="{ '992px': '96vw', '768px': '100vw' }"
+  styleClass="transfer-review-alert-dialog"
+  (onHide)="reviewService.closeAlerts()">
+  <div class="review-intro" role="status">
+    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+    <div>
+      <strong>Hay {{ reviewService.openReviews().length }} notas que requieren atención.</strong>
+      <p>Revise sus diferencias antes de utilizar el stock retenido.</p>
+    </div>
+  </div>
+
+  <div class="review-card-list">
+    <article class="review-card" *ngFor="let review of reviewService.openReviews()">
+      <div class="review-card__header">
+        <div>
+          <strong>{{ review.transfer.cod }} · {{ review.registry_number }}</strong>
+          <span>{{ review.transfer.sucursal_send.name }} → {{ review.transfer.sucursal_received.name }}</span>
+        </div>
+        <p-tag [value]="reviewStatusLabel(review)" [severity]="reviewStatusSeverity(review)"></p-tag>
+      </div>
+      <div class="review-card__summary">
+        <span><b>Antigüedad:</b> {{ review.age_days }} día(s)</span>
+        <span *ngIf="review.pending_items > 0"><b>Productos pendientes:</b> {{ review.pending_items }}</span>
+        <span *ngIf="review.pending_items === 0"><b>Estado:</b> Validación stock–Kardex pendiente</span>
+        <span><b>Responsable:</b> {{ review.assignedUser?.full_names || 'Sin asignar' }}</span>
+      </div>
+      <ul class="review-products">
+        <li *ngFor="let detail of review.details">
+          <span>{{ detail.product.cod }} · {{ detail.product.name }}</span>
+          <strong>{{ differenceLabel(review.type) }}: {{ detail.quantity_difference | number:'1.4-4' }}</strong>
+        </li>
+      </ul>
+    </article>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="continueWorking()">
+      Continuar trabajando
+    </button>
+    <button type="button" class="btn btn-primary btn-sm" (click)="goToInconclusiveReceptions()">
+      <i class="fa-solid fa-list-check me-1" aria-hidden="true"></i>
+      Ir a Recepciones inconclusas
+    </button>
+  </ng-template>
+</p-dialog>

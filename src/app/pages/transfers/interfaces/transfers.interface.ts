@@ -47,6 +47,9 @@ export interface Transfer {
     user_received:         User;
     detailsTransfers:      DetailsTransfer[];
     total_quantity:        number;
+    reconciliation_status: 'EN_REVISION' | 'PARCIAL' | 'COMPLETADO';
+    pending_review_items:  number;
+    review_closure_pending?: boolean;
     options?:              Options[];
 }
 interface Totals {
@@ -94,6 +97,7 @@ export interface FormSearchTransfers {
     id_storage_received?    :number;
     id_user_send?           :number;
     id_user_received?       :number;
+    inconclusive?           :boolean;
 }
 
 //**NEW Transfer FORM */

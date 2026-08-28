@@ -1,7 +1,6 @@
 <p-dialog [header]="!productsService.isEdit ? 'Registro Producto' : 'Modificar Producto'"
-    [(visible)]="productsService.showModal" [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }"
-    [style]="{ width: '40vw' }" [draggable]="false" [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [(visible)]="productsService.showModal" [modal]="true" [draggable]="false" [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true" styleClass="app-dialog--md">
     <form [formGroup]="productForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
@@ -9,9 +8,9 @@
                 <div class="field">
                     <label class="block mb-0">Producto<span class="text-danger">*</span>
                     </label>
-                    <input type="text" style="text-transform: uppercase" pInputText
+                    <input type="text" pInputText
                         [pKeyFilter]="validatorsService.expRegValidInput" formControlName="name" placeholder="EJ. ...."
-                        [class.ng-dirty]="validatorsService.inputValid('name',productForm)" />
+                        [class.ng-dirty]="validatorsService.inputValid('name',productForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('name',productForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("name",productForm) }}
                     </small>
@@ -19,19 +18,19 @@
                 <div class="row mt-1">
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">Código</label>
-                        <input type="text" style="text-transform: uppercase" pInputText
+                        <input type="text" pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="cod"
                             placeholder="EJ. 12586255"
-                            [class.ng-dirty]="validatorsService.inputValid('cod',productForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('cod',productForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('cod',productForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("cod",productForm) }}
                         </small>
                     </div>
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Descripcion / Variantes</label>
-                        <textarea pInputTextarea type="text" style="text-transform: uppercase" pInputText
+                        <textarea pInputTextarea type="text" pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="description"
-                            placeholder="EJ. ......" class="mt-1"
+                            placeholder="EJ. ......" class="mt-1 text-uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('description',productForm)"></textarea>
                         <small *ngIf="validatorsService.inputValid('description',productForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("description",productForm) }}
@@ -159,9 +158,8 @@
                         <p><b>Imagen Producto</b></p>
                         <div class="text-center position-relative">
                             <!-- El Contenedor Dropzone Principal -->
-                            <div #dropzoneElement class="dropzone mt-2 position-relative"
-                                style="cursor: pointer; overflow: hidden; border: 2px dashed #adb5bd; border-radius: 10px; background: #f8f9fa; transition: all 0.2s ease;"
-                                [style.padding]="(imgTempProd || (imgPathProd && imgPathProd !== 'NONE')) && !validatorsService.compressLoading ? '10px' : '30px'">
+                            <div #dropzoneElement class="dropzone mt-2 position-relative app-u-cursor-pointer-3b6a3a6 app-u-overflow-hidden-6982440 app-u-border-2px-dashed-adb5bd-4aeb354 app-u-border-radius-10px-e609a24 app-u-background-f8f9fa-6a8ee5d app-u-transition-all-0-2s-ease-7da31f6"
+                                [class.dropzone--has-image]="(imgTempProd || (imgPathProd && imgPathProd !== 'NONE')) && !validatorsService.compressLoading">
 
                                 <!-- ESTADO: CARGANDO -->
                                 <div *ngIf="validatorsService.compressLoading" class="dz-message w-100 m-0 text-center">
@@ -174,12 +172,12 @@
                                 <div class="dz-message w-100 m-0 text-center" data-dz-message
                                     *ngIf="!validatorsService.compressLoading && !imgTempProd && (!imgPathProd || imgPathProd === 'NONE')">
                                     <div class="mb-2">
-                                        <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary"
-                                            style="color: var(--primary-color, #0d6efd);"></i>
+                                        <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary app-u-color-primary-color-0d6efd-f2fc6c3"
+                                           ></i>
                                     </div>
-                                    <span class="font-bold" style="font-size: 1.1rem;">Arrastra y suelta tu imagen
+                                    <span class="font-bold app-u-font-size-1-1rem-f15bdb6">Arrastra y suelta tu imagen
                                         aquí</span><br>
-                                    <span class="text-muted" style="font-size: 0.9rem;">o haz clic para
+                                    <span class="text-muted app-u-font-size-0-9rem-c821f2f">o haz clic para
                                         seleccionar</span>
                                 </div>
 
@@ -188,14 +186,14 @@
                                     *ngIf="!validatorsService.compressLoading && (imgTempProd || (imgPathProd && imgPathProd !== 'NONE'))">
                                     <!-- Imagen subida/existente -->
                                     <img *ngIf="!imgTempProd" [src]="imgPathProd | image: 'products'"
-                                        style="max-height: 180px; width: auto; max-width: 100%; border-radius: 8px; object-fit: contain;"
-                                        class="shadow-sm mb-3" />
+
+                                        class="shadow-sm mb-3 app-u-max-height-180px-914b95b app-u-width-auto-30e741d app-u-max-width-100-27aeb61 app-u-border-radius-8px-28a50dd app-u-object-fit-contain-d3c7ccc" />
                                     <img *ngIf="imgTempProd" [src]="imgTempProd"
-                                        style="max-height: 180px; width: auto; max-width: 100%; border-radius: 8px; object-fit: contain;"
-                                        class="shadow-sm mb-3" />
+
+                                        class="shadow-sm mb-3 app-u-max-height-180px-914b95b app-u-width-auto-30e741d app-u-max-width-100-27aeb61 app-u-border-radius-8px-28a50dd app-u-object-fit-contain-d3c7ccc" />
 
                                     <!-- Overlay / Botón Quitar -->
-                                    <div class="mt-2 text-center" style="position: relative; z-index: 10;">
+                                    <div class="mt-2 text-center position-relative app-u-z-index-10-25f4b6c">
                                         <button pButton pRipple type="button" label="Cambiar Imagen"
                                             icon="fa-solid fa-pen"
                                             class="p-button-sm p-button-outlined p-button-primary mr-2"
@@ -219,9 +217,7 @@
                     <div class="col">
                         <p-tag [rounded]="true"
                             [icon]="productForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                            [style]="productForm.get('status')!.value
-                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
-                                          : { 'background-color': 'red', color: '#ffffff' }"
+                            [styleClass]="productForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
                             [value]="productForm.get('status')!.value ? 'Activo' : 'Inactivo'">
                         </p-tag>
                     </div>

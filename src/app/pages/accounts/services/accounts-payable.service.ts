@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AccountPayable, FormSearchAccountsPayables, GetAllAccountsPayable, NewAbonoAccountPayable, ResponseNewAbono } from '../interfaces/accounts-payable.interface';
@@ -11,6 +11,7 @@ const base_url = environment.base_url;
   providedIn: 'root'
 })
 export class AccountsPayableService {
+  private mutationOptions() { return { headers: new HttpHeaders({ 'Idempotency-Key': globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}` }) }; }
   private http   = inject(HttpClient);
   detailsSubs$: EventEmitter<AccountPayable> = new EventEmitter<AccountPayable>();
   showModalDetailsAccountPayable: boolean = false;
@@ -34,12 +35,12 @@ export class AccountsPayableService {
 
   postNewAbonoAccountPayable(data:NewAbonoAccountPayable): Observable<ResponseNewAbono> {
     const url = `${base_url}/accounts_payable/new-abono`;
-    return this.http.post<ResponseNewAbono>(url, data);
+    return this.http.post<ResponseNewAbono>(url, data, this.mutationOptions());
   }
 
-  deleteAbonoAccountPayable(id_abono_account_payable: number) {
-    const url = `${base_url}/accounts_payable/destroy-abono/${id_abono_account_payable}`;
-    return this.http.delete(url);
+  deleteAbonoAccountPayable(id_abono_account_payable: number, reason: string) {
+    const url = `${base_url}/accounts_payable/void-payment/${id_abono_account_payable}`;
+    return this.http.delete(url, { ...this.mutationOptions(), body: { reason } });
   }
   //* Reportes */
   getReportAccountsPayablePdf(params:FormSearchAccountsPayables,field_sort:string = 'id',order:string = 'DESC') {

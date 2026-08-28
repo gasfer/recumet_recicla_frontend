@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Sucursal } from 'src/app/pages/managements/interfaces/sucursales.interface';
 import { SucursalesService } from 'src/app/pages/managements/services/sucursales.service';
+import { TransferReviewService } from 'src/app/services/transfer-review.service';
 
 @Component({
   selector: 'app-login',
@@ -27,6 +28,7 @@ export class LoginComponent implements OnInit {
   sucursales  = signal<Sucursal[]>([]);
   showWorkContext = signal(false);
   sucursalService   = inject(SucursalesService);
+  transferReviewService = inject(TransferReviewService);
 
   loginForm: FormGroup = this.fb.group({
     email: [localStorage.getItem('email') || '', [ Validators.required, Validators.pattern(this.validatorsService.emailPattern())]],
@@ -97,6 +99,10 @@ export class LoginComponent implements OnInit {
           this.contextForm.patchValue({ id_sucursal: initialSucursal?.id ?? null, id_storage: idStorage });
           this.showWorkContext.set(true);
         },
+        error: () => {
+          this.loading.set(false);
+          Swal.fire('No se pudo cargar el contexto', 'El usuario fue autenticado, pero no se pudieron cargar las sucursales. Intente nuevamente.', 'warning');
+        },
       });
     }
 
@@ -118,7 +124,11 @@ export class LoginComponent implements OnInit {
     if (!this.validatorsService.setWorkContext(this.sucursales(), id_sucursal, id_storage)) return;
     this.showWorkContext.set(false);
     this.validatorsService.reload_sucursal_storages$.next(true);
+    this.transferReviewService.beginSession();
+    this.loading.set(false);
     this.router.navigateByUrl('/');
+    // Las alertas operativas no deben bloquear el ingreso al sistema.
+    queueMicrotask(() => this.transferReviewService.checkCurrentContext(true).subscribe());
   }
 
   cancelWorkContext() {

@@ -1,7 +1,7 @@
 <p-dialog [header]="'Modificar compañía'" [(visible)]="companiesService.showModal"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="companyForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
@@ -9,9 +9,9 @@
                 <div class="field">
                     <label class="block mb-0">Nombre Compañía<span class="text-danger">*</span>
                     </label>
-                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="name" placeholder="EJ. RECUMET" 
-                        [class.ng-dirty]="validatorsService.inputValid('name',companyForm)" />
+                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. RECUMET"
+                        [class.ng-dirty]="validatorsService.inputValid('name',companyForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('name',companyForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("name",companyForm) }}
                     </small>
@@ -35,8 +35,8 @@
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Razón social<span class="text-danger">*</span>
                         </label>
-                        <input type="text" pInputText 
-                            formControlName="razon_social" 
+                        <input type="text" pInputText
+                            formControlName="razon_social"
                             [class.ng-dirty]="validatorsService.inputValid('razon_social',companyForm)" />
                         <small *ngIf="validatorsService.inputValid('razon_social',companyForm)" class="p-error block">
                             {{ 'Razón social no valido' }}
@@ -62,8 +62,8 @@
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Correo<span class="text-danger">*</span>
                         </label>
-                        <input type="text" pInputText 
-                            formControlName="email" 
+                        <input type="text" pInputText
+                            formControlName="email"
                             [class.ng-dirty]="validatorsService.inputValid('email',companyForm)" />
                         <small *ngIf="validatorsService.inputValid('email',companyForm)" class="p-error block">
                             {{ 'Correo no valido' }}
@@ -88,7 +88,7 @@
                     <!-- <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Logo<span class="text-danger">*</span>
                         </label>
-                       
+
                     </div> -->
                 </div>
             </div>
@@ -97,12 +97,12 @@
                 </label>
                 <textarea pInputTextarea
                     type="text"
-                    style="text-transform: uppercase"
+
                     pInputText
                     [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="address"
                     placeholder="EJ. ......"
-                    class="mt-1"
+                    class="mt-1 text-uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('address',companyForm)"
                 ></textarea>
                 <small *ngIf="validatorsService.inputValid('address',companyForm)" class="p-error block">

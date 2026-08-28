@@ -44,12 +44,14 @@ base_url | http://localhost:3000/api/v1 | url backend recument
 ## 2. ✅ To start app, run the following
 
 ```bash
-    ng serve -o ||
-    npm run dev 
+    npm start
 ```
 
 ## 3. 🥳✅ verify start app
 
 [http://localhost:4200/](http://localhost:4200/)
+
+El navegador se abre manualmente. No use `ng serve -o`: la opcion `-o`
+intenta iniciar otro proceso en Windows y puede fallar con `spawn EPERM`.
 
 http://localhost:${PORT}/

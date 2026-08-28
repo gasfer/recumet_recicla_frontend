@@ -1,5 +1,5 @@
 <!--Pos config modal-->
-<app-modal-config-input></app-modal-config-input> 
+<app-modal-config-input></app-modal-config-input>
 <!--Pos Data modal save-->
 <app-modal-save-input [id_storage]="formReport.get('id_storage')?.value"></app-modal-save-input>
 <!--provider new modal-->
@@ -26,7 +26,7 @@
                     (onBtnNew)="newProvider()" [icon]="'fa-solid fa-truck-moving'" [btnNew]="this.validatorsService.withPermission('PROVEEDORES','create')"
                     [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un proveedor aquí....'">
                 </app-input-search>
-                <div style="position: absolute; z-index: 999; width: 90%;">
+                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
                     <ul *ngIf="loadingSearchProvider()" class="list-group shadow">
                         <li class="list-group-item list-group-item-action">
                             <span class='fw-bold'>Cargando....</span>
@@ -64,7 +64,10 @@
             <div class="col-sm-1 col-12">
                 <div class="d-flex justify-content-end">
                     <i class="cursor-pointer fa-solid fa-gear" pTooltip="Config. Modo de compra" tooltipPosition="left"
-                        (click)="inputsService.showModalConfigInput = true">
+                        role="button" tabindex="0" aria-label="Configurar modo de compra"
+                        (click)="inputsService.showModalConfigInput = true"
+                        (keydown.enter)="inputsService.showModalConfigInput = true"
+                        (keydown.space)="$event.preventDefault(); inputsService.showModalConfigInput = true">
                     </i>
                 </div>
             </div>
@@ -81,14 +84,14 @@
                         <p-messages severity="info">
                             <ng-template pTemplate>
                                 <b>ITEMS A COMPRAR <i class="fa-solid fa-cart-arrow-down"></i></b>
-                                <i class="fa-solid fa-tags ms-5 p-text-secondary" pBadge style="font-size: 1.2rem;"
+                                <i class="fa-solid fa-tags ms-5 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
                                     value="{{totalItems()}}"></i>
                             </ng-template>
                         </p-messages>
                         <app-input-search *ngIf="!inputsService._inputConfig.viewCardProducts" (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
                             [icon]="'fa-solid fa-cart-plus'"
                             [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                        <div style="position: absolute; z-index: 999; width: 96%;">
+                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
                             <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
                                 <li class="list-group-item list-group-item-action">
                                     <span class='fw-bold'>Cargando....</span>
@@ -115,15 +118,15 @@
             <app-table-input-details></app-table-input-details>
         </div>
     </div>
-    
+
     <div *ngIf="inputsService._inputConfig.viewCardProducts" class="col-sm-12 col-md-5">
-        <app-dataview-products  
+        <app-dataview-products
             [typeFrom]="'INPUT'"
             [isInput]="true"
-            [isViewQuantity]="true" 
-            [id_sucursal]="formReport.get('id_sucursal')?.value" 
-            [id_storage]="formReport.get('id_storage')?.value" 
-            (onProductSelect)="addItemCarByViewProduct($event)" 
+            [isViewQuantity]="true"
+            [id_sucursal]="formReport.get('id_sucursal')?.value"
+            [id_storage]="formReport.get('id_storage')?.value"
+            (onProductSelect)="addItemCarByViewProduct($event)"
             (onProductByCod)="addItemCarByCodProduct($event)">
         </app-dataview-products>
     </div>

@@ -170,6 +170,26 @@
     font-family: 'Courier New', monospace;
     letter-spacing: 0.5px;
   }
+
+  &--prominent {
+    left: 8px;
+    right: 8px;
+
+    .badge-code {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 7px 10px;
+      font-size: clamp(0.9rem, 1.1vw, 1rem);
+      font-weight: 800;
+      line-height: 1.25;
+      text-align: center;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      letter-spacing: 0.6px;
+    }
+  }
 }
 
 /* =====================================================

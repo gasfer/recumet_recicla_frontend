@@ -14,8 +14,10 @@ export class ModalUserComponent implements OnInit, OnDestroy {
   userService       = inject( UsersService );
   fb                = inject( FormBuilder );
   loading           = signal(false);
+  changePassword    = signal(false);
   roles = signal([
     { name: 'ADMINISTRADOR/A', code: 'ADMINISTRADOR'},
+    { name: 'ENCARGADO/A', code: 'ENCARGADO'},
     { name: 'OPERADOR/A', code: 'OPERADOR'},
   ]);
   sex = signal([
@@ -39,6 +41,7 @@ export class ModalUserComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isEditSub$ = this.userService.editSubs.subscribe(resp => {
+      this.changePassword.set(false);
       this.userForm.reset({
         id: resp.id,
         full_names: resp.full_names,
@@ -52,6 +55,7 @@ export class ModalUserComponent implements OnInit, OnDestroy {
         role: resp.role,
         status: resp.status,
       });
+      this.configurePasswordControl(false);
     });
   }
   ngOnDestroy(): void {
@@ -100,7 +104,32 @@ export class ModalUserComponent implements OnInit, OnDestroy {
     });
   }
 
+  togglePasswordChange(changePassword: boolean) {
+    this.changePassword.set(changePassword);
+    this.configurePasswordControl(changePassword);
+  }
+
+  private configurePasswordControl(required: boolean) {
+    const passwordControl = this.userForm.get('password');
+    if (!passwordControl) return;
+
+    passwordControl.reset('');
+    if (required) {
+      passwordControl.setValidators([
+        Validators.required,
+        Validators.minLength(8),
+        this.validatorsService.isSpacesInPassword,
+      ]);
+      passwordControl.enable();
+    } else {
+      passwordControl.clearValidators();
+      passwordControl.disable();
+    }
+    passwordControl.updateValueAndValidity();
+  }
+
   resetModal() { 
+    this.changePassword.set(false);
     this.userForm.reset({
       full_names: '',
       number_document: '',
@@ -113,5 +142,6 @@ export class ModalUserComponent implements OnInit, OnDestroy {
       role: '',
       status: true,
     });
+    this.configurePasswordControl(true);
   }
 }

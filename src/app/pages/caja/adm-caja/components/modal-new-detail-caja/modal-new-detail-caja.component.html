@@ -2,12 +2,10 @@
     [header]="cajaService.type_movement == 'INGRESO' ? 'Nuevo ingreso' : 'Registrar nuevo gasto'"
     [(visible)]="cajaService.showModalMovementCaja"
     [modal]="true"
-    [breakpoints]="{ '960px': '85vw', '576px': '98%' }"
-    [style]="{ width: '60vw' }"
     [draggable]="false"
     [resizable]="false"
     (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--md">
 
     <form [formGroup]="form">
         <app-alert-notify></app-alert-notify>
@@ -137,7 +135,7 @@
                             [class.ng-dirty]="validatorsService.inputValid('clasificacionGasto', form)">
                             <ng-template pTemplate="item" let-item>
                                 <div class="flex align-items-center gap-2">
-                                    <i class="fa-solid fa-circle" style="color:#136dec;width:10px"></i>
+                                    <i class="fa-solid fa-circle app-u-color-136dec-5afdd06 app-u-width-10px-5e26c93"></i>
                                     <span>{{ item.label }}</span>
                                 </div>
                             </ng-template>
@@ -184,7 +182,7 @@
                             [class.ng-dirty]="validatorsService.inputValid('areaSolicitante', form)">
                             <ng-template pTemplate="item" let-item>
                                 <div class="flex align-items-center gap-2">
-                                    <i class="fa-solid fa-circle-dot" style="color:#136dec;font-size:10px"></i>
+                                    <i class="fa-solid fa-circle-dot app-u-color-136dec-5afdd06 app-u-font-size-10px-0d5be05"></i>
                                     <span>{{ item.label }}</span>
                                 </div>
                             </ng-template>
@@ -213,7 +211,7 @@
                             [class.ng-dirty]="validatorsService.inputValid('vehiculo', form)">
                             <ng-template pTemplate="item" let-item>
                                 <div class="flex align-items-center gap-2">
-                                    <i class="fa-solid {{item.icono}}" style="color:#136dec;width:16px"></i>
+                                    <i class="fa-solid {{item.icono}} app-u-color-136dec-5afdd06 app-u-width-16px-7375d50"></i>
                                     <span>{{ item.nombre }}</span>
                                 </div>
                             </ng-template>
@@ -242,7 +240,7 @@
                             [class.ng-dirty]="validatorsService.inputValid('maquinaria', form)">
                             <ng-template pTemplate="item" let-item>
                                 <div class="flex align-items-center gap-2">
-                                    <i class="fa-solid fa-gears" style="color:#136dec;width:16px"></i>
+                                    <i class="fa-solid fa-gears app-u-color-136dec-5afdd06 app-u-width-16px-7375d50"></i>
                                     <span>{{ item.nombre }}</span>
                                 </div>
                             </ng-template>
@@ -272,20 +270,18 @@
                             [class.ng-dirty]="validatorsService.inputValid('equipoAsignado', form)">
                             <ng-template pTemplate="item" let-item>
                                 <!-- Separador de grupo -->
-                                <div *ngIf="item.tipo === 'SEPARADOR'"
-                                     style="font-size:11px;font-weight:600;color:var(--text-color-secondary);
-                                            padding:4px 0;letter-spacing:.5px;pointer-events:none">
+                                <div *ngIf="item.tipo === 'SEPARADOR'" class="app-u-font-size-11px-11a5081 app-u-font-weight-600-eed0f8f app-u-color-text-color-secondary-7419a6a app-u-padding-4px-0-b7c21f2 app-u-letter-spacing-5px-e08616e app-u-pointer-events-none-8b13642">
                                     {{ item.nombre }}
                                 </div>
                                 <!-- Vehículo -->
                                 <div *ngIf="item.tipo === 'VEHICULO'" class="flex align-items-center gap-2">
-                                    <i class="fa-solid {{item.icono}}" style="color:#136dec;width:16px"></i>
+                                    <i class="fa-solid {{item.icono}} app-u-color-136dec-5afdd06 app-u-width-16px-7375d50"></i>
                                     <span>{{ item.nombre }}</span>
                                     <span class="badge-tipo badge-vehiculo">Vehículo</span>
                                 </div>
                                 <!-- Maquinaria -->
                                 <div *ngIf="item.tipo === 'MAQUINARIA'" class="flex align-items-center gap-2">
-                                    <i class="fa-solid fa-gears" style="color:#e07d10;width:16px"></i>
+                                    <i class="fa-solid fa-gears app-u-color-e07d10-f44df86 app-u-width-16px-7375d50"></i>
                                     <span>{{ item.nombre }}</span>
                                     <span class="badge-tipo badge-maquinaria">Maquinaria</span>
                                 </div>
@@ -358,10 +354,10 @@
                             type="text"
                             formControlName="proveedorNombre"
                             placeholder="Razón social"
-                            style="text-transform:uppercase"
+
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             [class.ng-dirty]="validatorsService.inputValid('proveedorNombre', form)"
-                            class="input-full" />
+                            class="input-full text-uppercase" />
                         <small *ngIf="validatorsService.inputValid('proveedorNombre', form)" class="p-error">
                             {{ validatorsService.inputValidMessage('proveedorNombre', form) }}
                         </small>
@@ -494,10 +490,10 @@
                             type="text"
                             formControlName="conceptoGasto"
                             placeholder="Ej: COMPRA DE INSUMOS DE PAPELERÍA"
-                            style="text-transform:uppercase"
+
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             [class.ng-dirty]="validatorsService.inputValid('conceptoGasto', form)"
-                            class="input-full" />
+                            class="input-full text-uppercase" />
                         <small *ngIf="validatorsService.inputValid('conceptoGasto', form)" class="p-error">
                             {{ validatorsService.inputValidMessage('conceptoGasto', form) }}
                         </small>
@@ -512,11 +508,11 @@
                         <textarea
                             pInputTextarea
                             [rows]="3"
-                            style="text-transform:uppercase; resize:vertical"
+
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="description"
                             placeholder="PROPORCIONE INFORMACIÓN ADICIONAL SOBRE ESTE GASTO..."
-                            class="input-full"
+                            class="input-full text-uppercase app-u-resize-vertical-9d0af0f"
                             [class.ng-dirty]="validatorsService.inputValid('description', form)">
                         </textarea>
                         <small *ngIf="validatorsService.inputValid('description', form)" class="p-error">

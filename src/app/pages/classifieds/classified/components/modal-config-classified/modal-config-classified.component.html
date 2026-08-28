@@ -1,6 +1,6 @@
 <p-dialog [header]="'Configuración de clasificados'" [(visible)]="classifiedService.showModalConfigClassified"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true">
+    [modal]="true" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--sm">
     <app-alert-notify [subTitle]="'Configurar los aspectos del módulo de clasificados.'" [subTitle2]="'Por favor, tenga en cuenta que los casilleros de verificación se consideran como afirmativos.'" [required]="false"></app-alert-notify>
     <div [formGroup]="formConfig">
         <div class="field-checkbox">

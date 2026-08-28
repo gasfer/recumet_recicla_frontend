@@ -1,7 +1,7 @@
 <p-dialog [header]="'Registro de nuevo sector'" [(visible)]="providersService.showModalNewSector"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="sectorForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
@@ -9,9 +9,9 @@
                 <div class="field">
                     <label class="block mb-0">Nombre<span class="text-danger">*</span>
                     </label>
-                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="name" placeholder="EJ. NORTE" 
-                        [class.ng-dirty]="validatorsService.inputValid('name',sectorForm)" />
+                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. NORTE"
+                        [class.ng-dirty]="validatorsService.inputValid('name',sectorForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('name',sectorForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("name",sectorForm) }}
                     </small>

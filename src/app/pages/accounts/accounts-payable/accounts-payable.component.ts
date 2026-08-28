@@ -603,6 +603,10 @@ export class AccountsPayableComponent implements OnInit {
       title: `¿Esta seguro de anular Abono?`,
       text: `Esta apunto de anular el abono de: ${monto}`,
       icon: `warning`,
+      input: 'textarea',
+      inputLabel: 'Motivo obligatorio',
+      inputPlaceholder: 'Explique por qué se anula este abono',
+      inputValidator: value => String(value || '').trim().length < 5 ? 'Ingrese un motivo de al menos 5 caracteres.' : undefined,
       confirmButtonText: `Si, Anular!`,
       showLoaderOnConfirm: true,
       showCancelButton: true,
@@ -611,10 +615,10 @@ export class AccountsPayableComponent implements OnInit {
       cancelButtonColor: '#d33',
       cancelButtonText: 'Cancelar',
       customClass: { container: 'sweetalert2' },
-      preConfirm: () => {
+      preConfirm: (reason) => {
         if(multiple){
           return new Promise((resolve, reject) => {
-            this.abonosAccountPayableAllService.deleteAbonoAccountPayableMultiple(id_abono).subscribe({
+            this.abonosAccountPayableAllService.deleteAbonoAccountPayableMultiple(id_abono, String(reason).trim()).subscribe({
               complete: () => resolve(true),
               error: (err) => {
                 resolve(false);
@@ -623,7 +627,7 @@ export class AccountsPayableComponent implements OnInit {
           });
         } else {
           return new Promise((resolve, reject) => {
-            this.accountsPayableService.deleteAbonoAccountPayable(id_abono).subscribe({
+            this.accountsPayableService.deleteAbonoAccountPayable(id_abono, String(reason).trim()).subscribe({
               complete: () => resolve(true),
               error: (err) => {
                 resolve(false);

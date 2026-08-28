@@ -1,7 +1,7 @@
 <p-dialog [header]="!userService.isEdit ? 'Registro Usuario' : 'Modificar Usuario'" [(visible)]="userService.showModal"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="userForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
@@ -9,9 +9,9 @@
                 <div class="field">
                     <label class="block mb-0">Nombre Completo<span class="text-danger">*</span>
                     </label>
-                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="full_names" placeholder="EJ. DANIEL CASTRO QUIROGA" 
-                        [class.ng-dirty]="validatorsService.inputValid('full_names',userForm)" />
+                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="full_names" placeholder="EJ. DANIEL CASTRO QUIROGA"
+                        [class.ng-dirty]="validatorsService.inputValid('full_names',userForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('full_names',userForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("full_names",userForm) }}
                     </small>
@@ -20,9 +20,9 @@
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">N. Carnet<span class="text-danger">*</span>
                         </label>
-                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="number_document" placeholder="EJ. 93....4"
-                            [class.ng-dirty]="validatorsService.inputValid('number_document',userForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('number_document',userForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('number_document',userForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("number_document",userForm) }}
                         </small>
@@ -47,12 +47,12 @@
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">Sex<span class="text-danger">*</span>
                         </label>
-                        <p-dropdown [options]="sex()" 
-                          placeholder="Selecciona un sex" 
+                        <p-dropdown [options]="sex()"
+                          placeholder="Selecciona un sex"
                           optionLabel="name"
                           optionValue="code"
                           appendTo="body"
-                          formControlName="sex" 
+                          formControlName="sex"
                           [class.ng-dirty]="validatorsService.inputValid('sex',userForm)"
                         >
                         </p-dropdown>
@@ -63,9 +63,9 @@
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Posición<span class="text-danger">*</span>
                         </label>
-                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="position" placeholder="ALMACENERO"
-                            [class.ng-dirty]="validatorsService.inputValid('position',userForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('position',userForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('position',userForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("position",userForm) }}
                         </small>
@@ -75,15 +75,15 @@
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">Correo<span class="text-danger">*</span>
                         </label>
-                        <input type="text" pInputText 
-                            formControlName="email" 
+                        <input type="text" pInputText
+                            formControlName="email"
                             [class.ng-dirty]="validatorsService.inputValid('email',userForm)" />
                         <small *ngIf="validatorsService.inputValid('email',userForm)" class="p-error block">
                             {{ 'Correo no valido' }}
                         </small>
                     </div>
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Contraseña<span class="text-danger">*</span>
+                        <label class="block mb-0">Contraseña<span *ngIf="!userService.isEdit || changePassword()" class="text-danger">*</span>
                         </label>
                         <p-password  [toggleMask]="true"
                                     formControlName="password"
@@ -92,18 +92,26 @@
                         <small *ngIf="validatorsService.inputValid('password',userForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("password",userForm) }}
                         </small>
+                        <div *ngIf="userService.isEdit" class="mt-2 flex align-items-center gap-2">
+                            <p-inputSwitch
+                                [ngModel]="changePassword()"
+                                [ngModelOptions]="{standalone: true}"
+                                (onChange)="togglePasswordChange($event.checked)">
+                            </p-inputSwitch>
+                            <label>Cambiar contraseña</label>
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-1">
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">Role<span class="text-danger">*</span>
                         </label>
-                        <p-dropdown [options]="roles()" 
-                            placeholder="Selecciona un rol" 
+                        <p-dropdown [options]="roles()"
+                            placeholder="Selecciona un rol"
                             optionLabel="name"
                             optionValue="code"
                             appendTo="body"
-                            formControlName="role" 
+                            formControlName="role"
                             [class.ng-dirty]="validatorsService.inputValid('role',userForm)"
                         ></p-dropdown>
                         <small *ngIf="validatorsService.inputValid('role',userForm)" class="p-error block">
@@ -119,15 +127,13 @@
                                 <p-inputSwitch formControlName="status"></p-inputSwitch>
                             </div>
                             <div class="col">
-                                <p-tag  [rounded]="true" 
-                                        [icon]="userForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
-                                        [style]="userForm.get('status')!.value
-                                                  ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
-                                                  : { 'background-color': 'red', color: '#ffffff' }" 
+                                <p-tag  [rounded]="true"
+                                        [icon]="userForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                                        [styleClass]="userForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
                                         [value]="userForm.get('status')!.value ? 'Activo' : 'Inactivo'">
                                 </p-tag>
                             </div>
-                        </div>    
+                        </div>
                     </div>
                 </div>
             </div>

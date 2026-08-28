@@ -19,8 +19,8 @@
                         tooltipPosition="top"
                         optionLabel="name"
                         optionValue="code"
-                        [style]="{'width':'100%'}"
-                        (onChange)="changeSearchProductBy($event)">
+
+                        (onChange)="changeSearchProductBy($event)" class="app-u-width-100-0466783">
                     </p-dropdown>
                 </div>
 
@@ -31,14 +31,14 @@
                         placeholder="Selecciona una categoría"
                         optionLabel="name"
                         optionValue="code"
-                        [style]="{'width':'100%'}"
+
                         (onChange)="searchByCategory($event)"
                         [showClear]="true"
                         appendTo="body"
                         [filter]="true"
                         filterBy="name"
                         [virtualScrollItemSize]="38"
-                        [lazy]="true">
+                        [lazy]="true" class="app-u-width-100-0466783">
                     </p-dropdown>
 
                     <app-input-search
@@ -66,7 +66,7 @@
         </div>
 
         <!-- LISTADO DE PRODUCTOS -->
-        <p-scrollPanel *ngIf="!loading()" [style]="{width: '100%', height: '450px'}">
+        <p-scrollPanel *ngIf="!loading()" class="app-u-width-100-0466783 app-u-height-450px-25e06cd">
             <div class="container mt-2">
                 <div class="row">
 
@@ -78,7 +78,11 @@
                         <div class="cardProduct">
 
                             <!-- CONTENEDOR DE IMAGEN CON BADGES -->
-                            <div class="image-container" (click)="addListDetailPos(product)">
+                            <div class="image-container" role="button" tabindex="0"
+                                [attr.aria-label]="'Añadir ' + product.name"
+                                (click)="addListDetailPos(product)"
+                                (keydown.enter)="addListDetailPos(product)"
+                                (keydown.space)="$event.preventDefault(); addListDetailPos(product)">
 
                                 <!-- IMAGEN -->
                                 <img
@@ -87,7 +91,7 @@
                                     alt="{{product.name}}">
 
                                 <!-- BADGE CÓDIGO (superior izquierda) -->
-                                <div class="top-badges">
+                                <div class="top-badges" [class.top-badges--prominent]="prominentProductCode">
                                     <span class="badge-code">{{ product.cod }}</span>
                                 </div>
 
@@ -110,7 +114,11 @@
                                 <!-- NOMBRE CON TOOLTIP -->
                                 <h6
                                     class="product-name"
+                                    role="button" tabindex="0"
+                                    [attr.aria-label]="'Añadir ' + product.name"
                                     (click)="addListDetailPos(product)"
+                                    (keydown.enter)="addListDetailPos(product)"
+                                    (keydown.space)="$event.preventDefault(); addListDetailPos(product)"
                                     [title]="product.name"
                                     [pTooltip]="product.name"
                                     tooltipPosition="top">
@@ -120,7 +128,6 @@
                                 <!-- DESCRIPCIÓN OCULTA - SOLO TOOLTIP -->
                                 <span
                                     class="product-description-tooltip"
-                                    (click)="addListDetailPos(product)"
                                     *ngIf="product.description"
                                     [pTooltip]="product.description"
                                     tooltipPosition="bottom">
@@ -129,21 +136,33 @@
                                 <!-- BADGES DE PRECIO Y STOCK -->
                                 <div class="product-badges">
                                     <p-badge
+                                        role="button" tabindex="0"
+                                        [attr.aria-label]="'Añadir ' + product.name"
                                         (click)="addListDetailPos(product)"
+                                        (keydown.enter)="addListDetailPos(product)"
+                                        (keydown.space)="$event.preventDefault(); addListDetailPos(product)"
                                         *ngIf="!isViewPrice"
                                         severity="success"
                                         value="Costo: {{ product.costo | number: decimal()}}">
                                     </p-badge>
 
                                     <p-badge
+                                        role="button" tabindex="0"
+                                        [attr.aria-label]="'Añadir ' + product.name"
                                         (click)="addListDetailPos(product)"
+                                        (keydown.enter)="addListDetailPos(product)"
+                                        (keydown.space)="$event.preventDefault(); addListDetailPos(product)"
                                         *ngIf="isViewPrice"
                                         severity="success"
                                         value="Precio: {{ product.prices[0].price | number: decimal()}}">
                                     </p-badge>
 
                                     <p-badge
+                                        role="button" tabindex="0"
+                                        [attr.aria-label]="'Añadir ' + product.name"
                                         (click)="addListDetailPos(product)"
+                                        (keydown.enter)="addListDetailPos(product)"
+                                        (keydown.space)="$event.preventDefault(); addListDetailPos(product)"
                                         *ngIf="isViewQuantity"
                                         value="Stock: {{product.total_stock | number: decimal()}}"
                                         [severity]="product.total_stock === 0 ? 'danger' : 'primary'">
@@ -156,6 +175,7 @@
                                         <div class="row mt-2">
                                             <div class="col-auto pe-0">
                                                 <p-button
+                                                    ariaLabel="Añadir producto con cantidad"
                                                     icon="fa-solid fa-arrow-left"
                                                     (click)="addListDetailPosQuantity(product)"
                                                     [rounded]="true"
@@ -206,10 +226,9 @@
     [visible]="displayImageModal()"
     (visibleChange)="displayImageModal.set($event)"
     [modal]="true"
-    [style]="{ width: '95vw', maxWidth: '1200px' }"
     [draggable]="false"
     [resizable]="false"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--xl">
 
     <div class="modal-product-detail" *ngIf="selectedProductImage()">
 

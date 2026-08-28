@@ -2,17 +2,20 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ClassifiedComponent } from './classified/classified.component';
 import { QueryClassifiedsComponent } from './query-classifieds/query-classifieds.component';
+import { NAVIGATION_DESTINATIONS as NAV, childPath, routeData } from 'src/app/core/constants/application-navigation.constants';
 
-const routes: Routes = [
-  { path: 'classified', component: ClassifiedComponent, 
-    data: { data: [ { title: 'Entradas' },{ title: 'Clasificados' },{ title: 'Realizar Clasificados' , active: true }], name:'CLASIFICADOS', action:'create'}},
-  { path: 'query-classifieds', component: QueryClassifiedsComponent, 
-    data: { data: [ { title: 'Entradas' },{ title: 'Clasificados' },{ title: 'Consultar Clasificados' , active: true }], name:'CLASIFICADOS', action:'view'}},
+const breadcrumb = (title: string) => [{ title: 'Entradas' }, { title: 'Clasificados' }, { title, active: true }];
+
+export const CLASSIFIED_ROUTES: Routes = [
+  { path: childPath(NAV.createClassified, '/classifieds'), component: ClassifiedComponent,
+    data: routeData(NAV.createClassified, breadcrumb(NAV.createClassified.title)) },
+  { path: childPath(NAV.queryClassifieds, '/classifieds'), component: QueryClassifiedsComponent,
+    data: routeData(NAV.queryClassifieds, breadcrumb(NAV.queryClassifieds.title)) },
   { path: '**', redirectTo: 'classified'},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [RouterModule.forChild(CLASSIFIED_ROUTES)],
   exports: [RouterModule]
 })
 export class ClassifiedsRoutingModule { }

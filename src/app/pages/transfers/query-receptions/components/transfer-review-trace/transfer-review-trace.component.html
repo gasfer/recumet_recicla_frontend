@@ -1,0 +1,406 @@
+<p-dialog
+  header="Revision de recepcion"
+  [visible]="reviewService.showTraceDialog()"
+  (visibleChange)="setVisibility($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '96vw', maxWidth: '96rem' }"
+  [breakpoints]="{ '1100px': '98vw', '768px': '100vw' }"
+  styleClass="transfer-review-trace-dialog">
+  <div class="review-loading" *ngIf="reviewService.traceLoading()" role="status">
+    <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+    Cargando trazabilidad...
+  </div>
+
+  <ng-container *ngIf="reviewService.traceability() as trace">
+    <section class="trace-header" aria-label="Resumen del traslado">
+      <div><span>Traslado</span><strong>{{ trace.cod }}</strong></div>
+      <div><span>Origen</span><strong>{{ trace.sucursal_send.name }} · {{ trace.storage_send.name }}</strong></div>
+      <div><span>Destino</span><strong>{{ trace.sucursal_received.name }} · {{ trace.storage_received.name }}</strong></div>
+      <div><span>Responsables</span><strong>{{ trace.user_send.full_names }} → {{ trace.user_received.full_names }}</strong></div>
+      <div><span>Envio</span><strong>{{ trace.date_send | date:'dd/MM/yyyy HH:mm' }}</strong></div>
+      <div><span>Recepcion</span><strong>{{ trace.date_received | date:'dd/MM/yyyy HH:mm' }}</strong></div>
+    </section>
+
+    <section class="trace-section trace-products-section">
+      <div class="trace-section-heading">
+        <i class="fa-solid fa-truck-ramp-box" aria-hidden="true"></i>
+        <div>
+          <h4>Valores originales de la recepcion</h4>
+          <p>Se muestran como referencia y nunca se modifican durante esta revision.</p>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr><th>Producto</th><th>Enviado</th><th>Recibido</th><th>Diferencia</th><th>Observacion</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let detail of trace.detailsTransfers">
+              <td>{{ detail.product.cod }} · {{ detail.product.name }}</td>
+              <td>{{ detail.quantity | number:'1.4-4' }}</td>
+              <td>{{ detail.quantity_received | number:'1.4-4' }}</td>
+              <td>{{ (+detail.quantity_received - +detail.quantity) | number:'1.4-4' }}</td>
+              <td>{{ detail.observation || '—' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section
+      class="trace-section review-case"
+      [class.review-case--completed]="note.reconciliation_status === 'COMPLETADO'"
+      *ngFor="let note of visibleReviewNotes(trace.reviewNotes)">
+      <div class="trace-section__title review-case__title">
+        <div>
+                        <span class="review-case__eyebrow">Boleta de revision</span>
+          <h4 class="review-note-number">{{ note.registry_number }}</h4>
+          <p class="review-note-type">{{ differenceLabel(note.type) }}</p>
+          <p>Responsable: <strong>{{ note.assignedUser?.full_names || 'Se asignara al confirmar' }}</strong></p>
+        </div>
+        <p-tag [value]="statusLabel(note.reconciliation_status)" [severity]="statusSeverity(note.reconciliation_status)"></p-tag>
+      </div>
+
+      <div class="review-next-step" *ngIf="note.reconciliation_status !== 'COMPLETADO'; else reviewClosed">
+        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+        <div>
+          <strong>
+            Falta documentar {{ pendingDetailsCount(note) }}
+            {{ pendingDetailsCount(note) === 1 ? 'diferencia' : 'diferencias' }}.
+          </strong>
+          <p>Presione <b>Conciliar diferencia</b>. El sistema mostrará las soluciones válidas y sus efectos antes de confirmar.</p>
+        </div>
+      </div>
+      <ng-template #reviewClosed>
+        <div class="review-next-step review-next-step--completed">
+          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          <div>
+            <strong>Revision documental cerrada.</strong>
+            <p>Las diferencias y las operaciones aplicadas permanecen trazables.</p>
+          </div>
+        </div>
+      </ng-template>
+
+      <div
+        *ngIf="noteNotice()?.noteId === note.id"
+        class="review-inline-message"
+        [class.review-inline-message--error]="noteNotice()?.type === 'error'"
+        role="status">
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+        {{ noteNotice()?.text }}
+      </div>
+
+      <section *ngIf="note.reconciliation_status !== 'COMPLETADO'" class="review-assignment-step" [class.review-assignment-step--editing]="assignmentNoteId() === note.id">
+        <div class="review-assignment-step__summary">
+          <span>Paso previo opcional</span>
+          <div>
+            <strong>Derivación de tarea</strong>
+            <p>
+              Responsable actual:
+              <b>{{ note.assignedUser?.full_names || 'Sin asignar' }}</b>.
+              La derivación registra usuario, observación y fecha en la trazabilidad.
+            </p>
+          </div>
+        </div>
+        <button
+          *ngIf="assignmentNoteId() !== note.id && validatorsService.withPermission('TRANSFER_REVIEW','create')"
+          type="button"
+          class="btn btn-review-secondary"
+          (click)="beginAssignment(note)">
+          <i class="fa-solid fa-user-tag" aria-hidden="true"></i>
+          {{ note.assignedUser ? 'Cambiar responsable' : 'Derivar tarea' }}
+        </button>
+        <div *ngIf="assignmentNoteId() === note.id" class="review-assignment-form" [formGroup]="assignmentForm">
+          <label>
+            Responsable <span aria-hidden="true">*</span>
+            <p-dropdown
+              formControlName="id_assigned_user"
+              [options]="reviewService.assignableUsers()"
+              optionLabel="full_names"
+              optionValue="id"
+              [filter]="true"
+              filterBy="full_names"
+              placeholder="Buscar responsable"
+              appendTo="body">
+            </p-dropdown>
+          </label>
+          <label class="review-assignment-form__observation">
+            Observación de la derivación <span aria-hidden="true">*</span>
+            <textarea
+              rows="2"
+              class="form-control"
+              formControlName="assignment_observation"
+              maxlength="500"
+              placeholder="Indique qué debe revisar o realizar el responsable"></textarea>
+            <small *ngIf="assignmentForm.controls.assignment_observation.touched && assignmentForm.controls.assignment_observation.invalid" class="field-error">
+              Escriba una observación de al menos 5 caracteres.
+            </small>
+          </label>
+          <div *ngIf="assignmentError()" class="field-error" role="alert">{{ assignmentError() }}</div>
+          <div class="review-assignment-form__actions">
+            <button type="button" class="btn btn-review-secondary" [disabled]="assignmentSaving()" (click)="cancelAssignment()">Cancelar</button>
+            <button type="button" class="btn btn-review-confirm" [disabled]="assignmentSaving()" (click)="assignReview(note)">
+              <i class="fa-solid" [class.fa-spinner]="assignmentSaving()" [class.fa-spin]="assignmentSaving()" [class.fa-user-check]="!assignmentSaving()" aria-hidden="true"></i>
+              {{ assignmentSaving() ? 'Registrando...' : 'Derivar y registrar' }}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div class="table-responsive review-differences-table">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Producto observado</th><th>Tipo</th><th>Diferencia</th><th>Pendiente</th>
+              <th>Retenido</th><th>Estado</th><th>Accion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let detail of note.details">
+              <tr
+                [class.review-detail--pending]="detail.reconciliation_status !== 'COMPLETADO'"
+                [class.review-detail--completed]="detail.reconciliation_status === 'COMPLETADO'">
+                <td>{{ detail.product.cod }} · {{ detail.product.name }}</td>
+                <td>{{ differenceLabel(note.type) }}</td>
+                <td>{{ detail.quantity_difference | number:'1.4-4' }}</td>
+                <td class="review-detail__remaining">{{ remainingQuantity(detail) | number:'1.4-4' }}</td>
+                <td>
+                  <span class="review-retained-label">{{ retainedQuantity(detail) | number:'1.4-4' }}</span>
+                </td>
+                <td>
+                  <span class="review-detail-status" [class.review-detail-status--completed]="detail.reconciliation_status === 'COMPLETADO'">
+                    {{ detail.reconciliation_status === 'COMPLETADO' ? 'Cerrada' : 'Pendiente' }}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    *ngIf="detail.reconciliation_status !== 'COMPLETADO' && validatorsService.withPermission('TRANSFER_REVIEW','update')"
+                    type="button"
+                    class="btn btn-review-primary"
+                    [disabled]="saving()"
+                    (click)="selectDocumentaryClose(note, detail)">
+                    <i class="fa-solid fa-file-circle-check" aria-hidden="true"></i>
+                    Conciliar diferencia
+                  </button>
+                  <span *ngIf="detail.reconciliation_status === 'COMPLETADO'" class="review-detail-done">
+                    <i class="fa-solid fa-shield-check" aria-hidden="true"></i>
+                    Regularización verificada
+                  </span>
+                </td>
+              </tr>
+
+              <tr *ngIf="selectedDetail()?.id === detail.id && selectedNote()?.id === note.id" class="documentary-close-row">
+                <td colspan="7">
+                  <section class="documentary-close-panel" [formGroup]="documentaryForm">
+                    <div class="documentary-close-panel__header">
+                      <div>
+                        <span>Resolver ahora</span>
+                        <h5>{{ detail.product.cod }} · {{ differenceLabel(note.type) }} {{ remainingQuantity(detail) | number:'1.4-4' }}</h5>
+                        <p>Confirme la diferencia o cree automáticamente la devolución o clasificación correspondiente.</p>
+                      </div>
+                      <div class="documentary-close-panel__no-inventory">
+                        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                        <span><strong>Operación transaccional</strong>Documento, stock, Kardex e historial se guardan juntos.</span>
+                      </div>
+                    </div>
+
+                    <div class="documentary-form-grid">
+                      <label>
+                        Motivo comprobado <span aria-hidden="true">*</span>
+                        <p-dropdown
+                          formControlName="reason_code"
+                          [options]="cases(note.type)"
+                          optionLabel="label"
+                          optionValue="value"
+                          placeholder="Seleccione el caso comprobado"
+                          (onChange)="onReasonChange(note.type)"
+                          appendTo="body">
+                        </p-dropdown>
+                        <small *ngIf="documentaryForm.controls.reason_code.touched && documentaryForm.controls.reason_code.invalid" class="field-error">
+                          Seleccione el caso que ocurrió.
+                        </small>
+                      </label>
+                      <label>
+                        Solución automática <span aria-hidden="true">*</span>
+                        <p-dropdown
+                          formControlName="solution_code"
+                          [options]="availableSolutions()"
+                          optionLabel="label"
+                          optionValue="code"
+                          [disabled]="!documentaryForm.controls.reason_code.value"
+                          [placeholder]="documentaryForm.controls.reason_code.value ? 'Seleccione la operación a crear' : 'Primero seleccione el motivo'"
+                          (onChange)="onSolutionChange()"
+                          appendTo="body">
+                        </p-dropdown>
+                        <small *ngIf="documentaryForm.controls.solution_code.touched && documentaryForm.controls.solution_code.invalid" class="field-error">
+                          Seleccione la solución correspondiente.
+                        </small>
+                        <small *ngIf="!documentaryForm.controls.reason_code.value" class="field-help">
+                          Las soluciones aparecerán según el motivo comprobado.
+                        </small>
+                      </label>
+                      <label>
+                        Autoriza <span aria-hidden="true">*</span>
+                        <p-dropdown
+                          formControlName="id_authorizer_user"
+                          [options]="authorizers()"
+                          optionLabel="full_names"
+                          optionValue="id"
+                          [filter]="true"
+                          filterBy="full_names"
+                          placeholder="Seleccione Administrador o Encargado"
+                          appendTo="body">
+                        </p-dropdown>
+                        <small class="field-help">Se registrará por separado quién ejecuta y quién autoriza.</small>
+                        <small *ngIf="documentaryForm.controls.id_authorizer_user.touched && documentaryForm.controls.id_authorizer_user.invalid" class="field-error">
+                          Seleccione al responsable que autoriza la conciliación.
+                        </small>
+                      </label>
+                      <label *ngIf="selectedAutomaticSolution()?.requires_target_product">
+                        Producto destino de la clasificación <span aria-hidden="true">*</span>
+                        <p-dropdown
+                          formControlName="id_target_product"
+                          [options]="targetProducts()"
+                          optionLabel="display_name"
+                          optionValue="id"
+                          [filter]="true"
+                          filterBy="display_name"
+                          [loading]="targetProductsLoading()"
+                          placeholder="Busque por código o nombre"
+                          appendTo="body">
+                        </p-dropdown>
+                        <small class="field-help">Seleccione el producto al que se convertirá el excedente.</small>
+                      </label>
+                      <label class="documentary-form-grid__wide">
+                        Justificación operativa <span aria-hidden="true">*</span>
+                        <textarea
+                          rows="3"
+                          class="form-control"
+                          formControlName="operational_justification"
+                          placeholder="Explique técnicamente por qué existe la diferencia de kg"></textarea>
+                        <small *ngIf="documentaryForm.controls.operational_justification.touched && documentaryForm.controls.operational_justification.invalid" class="field-error">
+                          Escriba una justificación de al menos 10 caracteres.
+                        </small>
+                      </label>
+                    </div>
+
+                    <section *ngIf="documentReferenceControls().length" class="documentary-references" formArrayName="document_references">
+                      <div class="documentary-references__heading">
+                        <strong>Respaldos obligatorios</strong>
+                        <p>Registre el documento que comprueba el motivo seleccionado.</p>
+                      </div>
+                      <div *ngFor="let reference of documentReferenceControls(); let i = index" class="documentary-reference-row" [formGroupName]="i">
+                        <strong>{{ documentTypeLabel(reference.controls['document_type'].value) }}</strong>
+                        <label>
+                          Número del documento <span aria-hidden="true">*</span>
+                          <input type="text" class="form-control" formControlName="document_number" maxlength="100" placeholder="Ej. ACT-000123">
+                        </label>
+                        <label>
+                          Fecha <span aria-hidden="true">*</span>
+                          <input type="date" class="form-control" formControlName="document_date">
+                        </label>
+                      </div>
+                    </section>
+
+                    <section *ngIf="previewLoading()" class="documentary-case-action">
+                      <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+                      <div><strong>Preparando operación</strong><p>Validando remanente, recorrido y opciones permitidas.</p></div>
+                    </section>
+                    <section *ngIf="automaticPreview() as preview" class="documentary-case-action">
+                      <i class="fa-solid fa-route" aria-hidden="true"></i>
+                      <div><strong>Previsualización autoritativa</strong><p>{{ selectedAutomaticSolution()?.warning || preview.warning }}</p><small>Pendiente: {{ preview.pending_quantity | number:'1.4-4' }}</small></div>
+                    </section>
+                    <section *ngIf="selectedAutomaticSolution() as solution" class="documentary-case-action">
+                      <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
+                      <div>
+                        <strong>{{ solution.label }}</strong>
+                        <p>Producto fuente: {{ solution.product?.cod || note.registeredProduct.cod }} - {{ solution.product?.name || note.registeredProduct.name }}</p>
+                        <p *ngIf="solution.target_product">Producto destino: {{ solution.target_product.cod }} - {{ solution.target_product.name }}</p>
+                        <p *ngIf="solution.route">Ruta: {{ solution.route.source }} → {{ solution.route.target }} · {{ solution.route.target_storage }}</p>
+                        <small>Cantidad: {{ solution.quantity | number:'1.4-4' }}</small>
+                      </div>
+                    </section>
+
+                    <div class="documentary-partial-toggle">
+                      <p-checkbox formControlName="resolve_partial" [binary]="true" inputId="partial-{{ detail.id }}" (onChange)="onPartialChange()"></p-checkbox>
+                      <label for="partial-{{ detail.id }}">
+                        Conciliar solo una parte
+                        <small>Use esta opcion unicamente si todavia queda una cantidad por investigar.</small>
+                      </label>
+                      <label *ngIf="documentaryForm.value.resolve_partial" class="documentary-partial-quantity">
+                        Cantidad a conciliar
+                        <p-inputNumber
+                          formControlName="quantity"
+                          [min]="0.0001"
+                          [max]="remainingQuantity(detail)"
+                          [minFractionDigits]="4"
+                          [maxFractionDigits]="4">
+                        </p-inputNumber>
+                      </label>
+                    </div>
+
+                    <div *ngIf="formError()" class="review-form-error" role="alert">
+                      <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                      <div>
+                        <strong>No se puede conciliar todavía</strong><span>{{ formError() }}</span>
+                        <button *ngIf="automaticPreview()?.status !== 'READY'" type="button" class="btn btn-link review-refresh-action" (click)="selectDocumentaryClose(note, detail)">
+                          <i class="fa-solid fa-rotate" aria-hidden="true"></i> Actualizar estado
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="documentary-close-panel__actions">
+                      <button type="button" class="btn btn-review-secondary" [disabled]="saving()" (click)="cancelDocumentaryClose()">
+                        Cancelar
+                      </button>
+                      <button type="button" class="btn btn-review-confirm"
+                        [disabled]="saving() || previewLoading() || automaticPreview()?.status !== 'READY'"
+                        (click)="confirmDocumentaryClose(note)">
+                        <i class="fa-solid" [class.fa-spinner]="saving()" [class.fa-spin]="saving()" [class.fa-circle-check]="!saving()" aria-hidden="true"></i>
+                        {{ saving()
+                          ? 'Guardando conciliación...'
+                          : documentaryForm.value.resolve_partial
+                            ? 'Crear operación parcial'
+                            : selectedAutomaticSolution()?.operation_type === 'CONFIRMATION'
+                              ? 'Confirmar diferencia'
+                              : 'Crear operación y conciliar' }}
+                      </button>
+                    </div>
+                  </section>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+
+      <details class="review-history">
+        <summary>
+          <span><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Ver trazabilidad</span>
+          <small>{{ note.events.length }} registros</small>
+        </summary>
+        <ol class="trace-timeline">
+          <li *ngFor="let event of note.events">
+            <span class="trace-timeline__marker" aria-hidden="true"></span>
+            <div>
+              <strong>{{ eventLabel(event.event_type) }}</strong>
+              <p>{{ event.description }}</p>
+              <div *ngIf="event.metadata?.inventory_effect === 'NONE' || event.metadata?.inventory_effect === 'VERIFIED_EXISTING_OPERATION'" class="trace-event-reference">
+                <span>{{ event.metadata?.inventory_effect === 'VERIFIED_EXISTING_OPERATION' ? 'Operación existente verificada' : 'Sin ajuste de inventario' }}</span>
+                <span *ngIf="event.metadata?.reason_code">Motivo: {{ reasonLabel(event.metadata?.reason_code || '') }}</span>
+                <span *ngIf="event.metadata?.note_or_reference && !event.metadata?.document_references?.length">Referencia: {{ event.metadata?.note_or_reference }}</span>
+                <span *ngIf="event.metadata?.operational_justification">Justificación: {{ event.metadata?.operational_justification }}</span>
+                <span *ngFor="let reference of event.metadata?.document_references">
+                  {{ documentTypeLabel(reference.document_type) }}: {{ reference.document_number }} · {{ reference.document_date | date:'dd/MM/yyyy':'UTC' }}
+                </span>
+              </div>
+              <small>{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ event.user.full_names }}</small>
+            </div>
+          </li>
+        </ol>
+      </details>
+    </section>
+  </ng-container>
+</p-dialog>

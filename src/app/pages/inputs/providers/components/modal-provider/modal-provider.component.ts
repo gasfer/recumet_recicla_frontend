@@ -5,6 +5,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { ProvidersService } from '../../../services/providers.service';
 import Swal from 'sweetalert2';
 import { CategoriesService } from 'src/app/pages/inventories/services/categories.service';
+import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 
 @Component({
   selector: 'app-modal-provider',
@@ -18,6 +19,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   categoriesService = inject( CategoriesService );
   fb                = inject( FormBuilder );
   loading           = signal(false);
+  readonly productContext = ProductAccessContext.Purchases;
   isEditSub$!: Subscription;
   isReloadSub$!: Subscription;
   types = signal<{name:string, code:string, id:string}[]>([]);
@@ -105,7 +107,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   getAllCategories() {
     this.categories.set([]);
-    this.categoriesService.getAllAndSearch(1,1000,true).subscribe(resp => {
+    this.categoriesService.getAllAndSearch(1,1000,true,'','', '', 'id', 'DESC', this.productContext).subscribe(resp => {
       const formattedCategory = resp.categories.data.map(category => ({
         name: category.name,
         code: category.id!.toString()

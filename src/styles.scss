@@ -16,6 +16,25 @@
     z-index: 999999 !important;
 }
 
+.swal2-container.reconciliation-confirmation {
+    z-index: 1000000 !important;
+}
+
+body .p-dialog {
+    max-width: calc(100vw - 1rem);
+}
+
+body .p-dialog .p-dialog-content {
+    font-size: clamp(.82rem, .77rem + .16vw, .96rem);
+}
+
+body .p-dialog .p-dropdown,
+body .p-dialog .p-inputnumber,
+body .p-dialog .p-inputtext,
+body .p-dialog textarea {
+    max-width: 100%;
+}
+
 .p-inputgroup p-dropdown {
     display: flex;
     align-items: center;

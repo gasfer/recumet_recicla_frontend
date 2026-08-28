@@ -1,10 +1,10 @@
 <p-dialog [header]="'Asignación de turnos'" [(visible)]="userService.showModalAssignShifts"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '65vw' }" [draggable]="false"
-    [resizable]="false" 
-    [dismissableMask]="true">
+    [modal]="true" [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true" styleClass="app-dialog--lg">
     <form [formGroup]="formGroup">
         <app-alert-notify [subTitle]="'Selecciona los horarios de asignación por dia.'" [subTitle2]="'Se restringirá el acceso'" [required]="false" ></app-alert-notify>
-        
+
         <div class="row" >
             <div class="col-xl-4 col-md-6">
                 <div class="card">
@@ -16,7 +16,7 @@
                         </div>
                         <div class="text-center mb-3">
                             <h6 class="font-size-15 mt-3 mb-1">DOMINGO</h6>
-                            
+
                         </div>
                         <div class="hstack gap-2 justify-content-start">
                             <div class="d-flex align-items-center justify-content-start">
@@ -57,7 +57,7 @@
                         </div>
                         <div class="text-center mb-3">
                             <h6 class="font-size-15 mt-3 mb-1">LUNES</h6>
-                            
+
                         </div>
                         <div class="hstack gap-2 justify-content-start">
                             <div class="d-flex align-items-center justify-content-start">
@@ -98,7 +98,7 @@
                         </div>
                         <div class="text-center mb-3">
                             <h6 class="font-size-15 mt-3 mb-1">MARTES</h6>
-                            
+
                         </div>
                         <div class="hstack gap-2 justify-content-start">
                             <div class="d-flex align-items-center justify-content-start">
@@ -179,7 +179,7 @@
                         </div>
                         <div class="text-center mb-3">
                             <h6 class="font-size-15 mt-3 mb-1">JUEVES</h6>
-                            
+
                         </div>
                         <div class="hstack gap-2 justify-content-start">
                             <div class="d-flex align-items-center justify-content-start">
@@ -220,7 +220,7 @@
                         </div>
                         <div class="text-center mb-3">
                             <h6 class="font-size-15 mt-3 mb-1">VIERNES</h6>
-                            
+
                         </div>
                         <div class="hstack gap-2 justify-content-start">
                             <div class="d-flex align-items-center justify-content-start">
@@ -261,7 +261,7 @@
                         </div>
                         <div class="text-center mb-3">
                             <h6 class="font-size-15 mt-3 mb-1">SÁBADO</h6>
-                            
+
                         </div>
                         <div class="hstack gap-2 justify-content-start">
                             <div class="d-flex align-items-center justify-content-start">

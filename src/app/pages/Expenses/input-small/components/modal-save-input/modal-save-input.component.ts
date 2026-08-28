@@ -73,6 +73,7 @@ export class ModalSaveInputComponent implements OnInit {
     referral_sources: ['', [Validators.required]],
     old_customer: [false],
     with_pickup: [false],
+    audit_reason: ['', [Validators.minLength(5)]],
   });
 
   ngOnInit(): void {
@@ -140,6 +141,13 @@ export class ModalSaveInputComponent implements OnInit {
     });
   }
   editInput() {
+    const auditReason = String(this.formInput.get('audit_reason')?.value || '').trim();
+    if (auditReason.length < 5) {
+      this.formInput.get('audit_reason')?.setErrors({ minlength: true });
+      this.formInput.get('audit_reason')?.markAsTouched();
+      Swal.fire('Motivo requerido', 'Explique en al menos 5 caracteres por qué se modifica la compra.', 'warning');
+      return;
+    }
     this.formInput.patchValue({
       id_provider: this.providerSelect()?.id,
       id_storage: this.id_storage,

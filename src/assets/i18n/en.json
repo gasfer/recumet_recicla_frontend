@@ -101,7 +101,8 @@
       "LIST": {
         "REALIZARTRASLADOS": "Make Transfers",
         "CONSULTARTRASLADOS": "View Transfers",
-        "CONSULTARRECEPCIONES": "View Receptions"
+        "CONSULTARRECEPCIONES": "View Receptions",
+        "CONCILIACIONES": "Reconciliations"
       }
     },
     "INVENTARIO": { "TEXT": "Inventory" },

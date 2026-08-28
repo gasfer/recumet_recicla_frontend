@@ -70,6 +70,7 @@ export class ModalSaveOutputComponent implements OnInit {
     { name: 'MAERSK' },
     { name: 'COSCOQ' },
     { name: 'GRENN PEACE' },
+    { name: 'ONE' },
   ]);
   types_containers = signal([
     { name: '20 PIES' },

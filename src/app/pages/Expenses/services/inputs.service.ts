@@ -2,16 +2,19 @@ import { EventEmitter, Injectable, inject, signal } from '@angular/core';
 import { FormSearchInputs, GetAllInputs, GetOneInput, Input, InputConfig, NewInputForm } from '../interfaces/input.interface';
 import { Product } from '../../inventories/interfaces/products.interface';
 import { Provider } from '../interfaces/provider.interface';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
+import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
 const base_url = environment.base_url;
 
 @Injectable({
   providedIn: 'root'
 })
 export class InputsService {
+  private traceabilityApi = inject(PurchaseTraceabilityApiService);
+  private mutationOptions() { return { headers: new HttpHeaders({ 'Idempotency-Key': globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}` }) }; }
   detailShopping   = signal<Product[]>([]);
   providerSelect   = signal<Provider|undefined>(undefined);
   dataInputForEdit = signal<Input|undefined>(undefined);
@@ -63,17 +66,25 @@ export class InputsService {
 
   postNewInput(data:NewInputForm): Observable<{ok:string,msg:string,id_input:number}> {
     const url = `${base_url}/input`;
-    return this.http.post<{ok:string,msg:string,id_input:number}>(url, data);
+    return this.http.post<{ok:string,msg:string,id_input:number}>(url, data, this.mutationOptions());
   }
 
   putUpdateInput(id_input:number,data:NewInputForm): Observable<{ok:string,msg:string,id_input:number}> {
     const url = `${base_url}/input/${id_input}`;
-    return this.http.put<{ok:string,msg:string,id_input:number}>(url, data);
+    return this.http.put<{ok:string,msg:string,id_input:number}>(url, data, this.mutationOptions());
   }
 
-  deleteInput(id_input: number) {
+  previewVoidInput(id_input: number): Observable<any> {
+    return this.http.get(`${base_url}/input/anular/${id_input}/preview`);
+  }
+
+  deleteInput(id_input: number, reason: string) {
     const url = `${base_url}/input/anular/${id_input}`;
-    return this.http.delete(url);
+    return this.http.delete(url, { ...this.mutationOptions(), body: { reason } });
+  }
+
+  getPurchaseTraceability(id_input: number, page = 1, limit = 50): Observable<any> {
+    return this.traceabilityApi.getPurchase(id_input, page, limit);
   }
 
   resetInput() {
@@ -186,15 +197,21 @@ export class InputsService {
 
             // ✅ Abrir en iframe oculto y lanzar print() automáticamente
             const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
+            iframe.classList.add('app-print-frame--hidden');
             iframe.src = fileURL;
+            const cleanupPrintFrame = () => {
+              iframe.remove();
+              URL.revokeObjectURL(fileURL);
+            };
             document.body.appendChild(iframe);
 
             iframe.onload = () => {
               iframe.contentWindow?.focus();
               iframe.contentWindow?.print();
               Swal.close();
+              setTimeout(cleanupPrintFrame, 1000);
             };
+            iframe.onerror = cleanupPrintFrame;
           },
           error: () => Swal.close()
         });

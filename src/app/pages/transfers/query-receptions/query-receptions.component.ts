@@ -10,6 +10,8 @@ import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/Options
 import { MenuItem } from 'primeng/api';
 import * as moment from 'moment';
 import Swal from 'sweetalert2';
+import { TransferReviewService } from 'src/app/services/transfer-review.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-query-receptions',
@@ -22,6 +24,8 @@ export class QueryReceptionsComponent implements OnInit {
   validatorsService      = inject(ValidatorsService);
   transfersService       = inject(TransfersService);
   sucursalService        = inject(SucursalesService);
+  reviewService          = inject(TransferReviewService);
+  route                  = inject(ActivatedRoute);
 
   loading         = signal(false);
   rows            = signal(50);
@@ -54,7 +58,8 @@ export class QueryReceptionsComponent implements OnInit {
       label: 'Recepciones Pendientes', icon: 'fa-solid fa-clock-rotate-left',
       iconStyle: { 'color': '#14A44D'},
       command: () => {
-        this.paramsSearch().status = 'PENDING';
+        this.activeSearchItem.set(this.searchItems()[0]);
+        this.paramsSearch.update(params => ({ ...params, status: 'PENDING', inconclusive: undefined }));
         this.getAllAndSearchTransfers(1,this.rows());
       }
     },
@@ -62,11 +67,22 @@ export class QueryReceptionsComponent implements OnInit {
       label: 'Recepciones Aprobadas', icon: 'fa-solid fa-circle-check',
       iconStyle: { 'color': '#3B71CA'},
       command: () => {
-        this.paramsSearch().status = 'RECEIVED';
+        this.activeSearchItem.set(this.searchItems()[1]);
+        this.paramsSearch.update(params => ({ ...params, status: 'RECEIVED', inconclusive: undefined }));
+        this.getAllAndSearchTransfers(1,this.rows());
+      }
+    },
+    {
+      label: 'Recepciones Inconclusas', icon: 'fa-solid fa-triangle-exclamation',
+      iconStyle: { 'color': '#dc2626'},
+      command: () => {
+        this.activeSearchItem.set(this.searchItems()[2]);
+        this.paramsSearch.update(params => ({ ...params, status: 'RECEIVED', inconclusive: true }));
         this.getAllAndSearchTransfers(1,this.rows());
       }
     },
   ]);
+  activeSearchItem = signal<MenuItem | undefined>(undefined);
   formReport:UntypedFormGroup = this.fb.group({
     filterBy: ['MONTH'],
     dates: [new Date(), [Validators.required]],
@@ -92,6 +108,13 @@ export class QueryReceptionsComponent implements OnInit {
 
 
   ngOnInit(): void {
+    const openInconclusive = this.route.snapshot.queryParamMap.get('view') === 'inconclusive';
+    if (openInconclusive) {
+      this.paramsSearch.update(params => ({ ...params, status: 'RECEIVED', inconclusive: true }));
+      this.activeSearchItem.set(this.searchItems()[2]);
+    } else {
+      this.activeSearchItem.set(this.searchItems()[0]);
+    }
     this.getAllAndSearchTransfers(1,this.rows());
     this.getAllSucursales();
   }
@@ -133,7 +156,7 @@ export class QueryReceptionsComponent implements OnInit {
             },
             {
               label:'',icon:'fas fa-print',
-              tooltip: 'Imprimir guía de traslado',
+              tooltip: 'Imprimir guía de traslado (vertical)',
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -150,9 +173,18 @@ export class QueryReceptionsComponent implements OnInit {
                 this.transfersService.showModalDetailsTransfer = true;
               }
             },
+            ...(this.paramsSearch().inconclusive
+              && (Number(transfer.pending_review_items || 0) > 0 || transfer.review_closure_pending) ? [{
+              label:'',
+              icon:'fa-solid fa-clipboard-list',
+              tooltip: 'Revisar notas inconclusas',
+              ariaLabel: `Revisar notas inconclusas del traslado ${transfer.cod}`,
+              class:'p-button-rounded p-button-warning p-button-sm ms-1',
+              eventClick: () => this.reviewService.openTrace(transfer.id)
+            }] : []),
             {
               label:'',icon:'fas fa-print',
-              tooltip: 'Imprimir guía de traslado',
+              tooltip: 'Imprimir guía de traslado (vertical)',
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -161,7 +193,7 @@ export class QueryReceptionsComponent implements OnInit {
             },
             {
               label:'',icon:'fas fa-clipboard-check',
-              tooltip: 'Imprimir guía de recepción',
+              tooltip: 'Imprimir guía de recepción (horizontal)',
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
@@ -186,6 +218,7 @@ export class QueryReceptionsComponent implements OnInit {
         id_sucursal_send: id_sucursal_send ? id_sucursal_send : '' ,
         filterBy: filterBy,
         status: params.status,
+        ...(params.inconclusive ? { inconclusive: true } : {}),
         date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
       }
@@ -314,7 +347,13 @@ export class QueryReceptionsComponent implements OnInit {
       { field: `sucursal_send.name`, header: 'SUCURSAL ORIGEN' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
       { field: 'observations_send', header: 'OBS. ENVIÓ' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
       { field: 'observations_received', header: 'OBS. RECEPCIÓN' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
-      { field: 'options', header: 'OPCIONES', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }
+      { field: 'reconciliation_status', header: 'CONCILIACIÓN', style:'min-width:110px;max-width:130px;', isTag: true,
+        tagValue: (status:string) => status === 'EN_REVISION' ? 'EN REVISIÓN' : status,
+        tagColor: (status:string) => status === 'EN_REVISION' ? 'danger' : status === 'PARCIAL' ? 'warning' : 'success',
+        tagIcon: () => ''
+      },
+      { field: 'pending_review_items', header: 'PENDIENTES', style:'min-width:90px;max-width:100px;text-align:center;', tooltip: true},
+      { field: 'options', header: 'OPCIONES', style:'min-width:180px;max-width:180px', isButton:true, activeSortable: false }
     ]);
   }
 }

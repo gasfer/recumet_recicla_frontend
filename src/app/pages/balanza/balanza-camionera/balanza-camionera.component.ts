@@ -119,6 +119,7 @@ const MOCK_PESAJES: PesajeCamionera[] = [
 @Component({
   selector: 'app-balanza-camionera',
   templateUrl: './balanza-camionera.component.html',
+  styleUrls: ['./balanza-camionera.component.scss'],
 })
 export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
 
@@ -636,10 +637,10 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
     return new Date().toLocaleTimeString('es-BO', { hour12: false });
   }
 
-  getSeverity(estado: string): 'success' | 'warn' | 'danger' | 'info' {
+  getSeverity(estado: string): 'success' | 'warning' | 'danger' | 'info' {
     const map: Record<string, any> = {
       COMPLETO    : 'success',
-      PRIMER_PESO : 'warn',
+      PRIMER_PESO : 'warning',
       ANULADO     : 'danger',
     };
     return map[estado] ?? 'info';

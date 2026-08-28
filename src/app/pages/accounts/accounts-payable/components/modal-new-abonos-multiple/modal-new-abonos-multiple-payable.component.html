@@ -1,36 +1,35 @@
 <p-dialog [header]="'Abono multiple a : ' + nameProvider()"
-    [(visible)]="accountsPayableService.showModalAccountsProvider" [modal]="true"
-    [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '70vw' }" [draggable]="false"
-    [resizable]="false" (onHide)="resetModal()" [dismissableMask]="true">
+    [(visible)]="accountsPayableService.showModalAccountsProvider" [modal]="true" [draggable]="false"
+    [resizable]="false" (onHide)="resetModal()" [dismissableMask]="true" styleClass="app-dialog--lg">
     <form [formGroup]="abonoForm" (submit)="!loading() ? newAbono() : null">
         <app-alert-notify></app-alert-notify>
         <p-tag styleClass="m-2 ms-0 mb-1" value="CUENTA DE: {{nameProvider()}} " [rounded]="true"></p-tag>
         <div class="row">
             <div class="col-7">
                 <div class="table-responsive">
-                    <table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm">
+                    <table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm app-table-scroll" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
                         <thead>
                             <tr>
-                                <th style="background-color: var(--bg-primary);min-width:80px;max-width:100px"
-                                    class="text-white">COMPRA</th>
-                                <th style="background-color: var(--bg-primary);min-width:100px;" class="text-white">
+                                <th
+                                    class="text-white background-primary app-u-min-width-80px-c3c7cd9 app-u-max-width-100px-d579dc3">COMPRA</th>
+                                <th class="text-white background-primary app-u-min-width-100px-e79a03c">
                                     FECHA</th>
-                                <th style="background-color: var(--bg-primary);min-width:100px;" class="text-white">
+                                <th class="text-white background-primary app-u-min-width-100px-e79a03c">
                                     NUMERO</th>
-                                <th style="background-color: var(--bg-primary)" class="text-white">A CUENTA</th>
-                                <th style="background-color: var(--bg-primary)" class="text-white">SALDO</th>
-                                <th style="background-color: var(--bg-primary)" class="text-white">TOTAL</th>
+                                <th class="text-white background-primary">A CUENTA</th>
+                                <th class="text-white background-primary">SALDO</th>
+                                <th class="text-white background-primary">TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let abono of accountsPayableProvider()?.data">
-                                <td style="min-width:80px;max-width:110px;">{{abono.input.cod}}</td>
-                                <td style="min-width:80px;max-width:80px">{{abono.input.date_voucher|
+                                <td class="app-u-min-width-80px-c3c7cd9 app-u-max-width-110px-91245b1">{{abono.input.cod}}</td>
+                                <td class="app-u-min-width-80px-c3c7cd9 app-u-max-width-80px-151dcb2">{{abono.input.date_voucher|
                                     date:'dd/MM/yyyy'}}</td>
-                                <td style="min-width:110px;">{{abono.input.registry_number }}</td>
-                                <td style="min-width:110px;">{{abono.monto_abonado | number:decimal()}}</td>
-                                <td style="min-width:110px;">{{abono.monto_restante | number:decimal()}}</td>
-                                <td style="min-width:110px;">{{abono.total | number:decimal()}}</td>
+                                <td class="app-u-min-width-110px-365391b">{{abono.input.registry_number }}</td>
+                                <td class="app-u-min-width-110px-365391b">{{abono.monto_abonado | number:decimal()}}</td>
+                                <td class="app-u-min-width-110px-365391b">{{abono.monto_restante | number:decimal()}}</td>
+                                <td class="app-u-min-width-110px-365391b">{{abono.total | number:decimal()}}</td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -91,9 +90,9 @@
                     </div>
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label class="block mb-0">Concepto</label>
-                        <textarea pInputTextarea type="text" style="text-transform: uppercase" pInputText
+                        <textarea pInputTextarea type="text" pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="comments"
-                            placeholder="EJ. ......" class="mt-1"
+                            placeholder="EJ. ......" class="mt-1 text-uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('comments',abonoForm)"></textarea>
                         <small *ngIf="validatorsService.inputValid('comments',abonoForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("comments",abonoForm) }}
@@ -119,10 +118,9 @@
                   </div>
                   <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                       <label *ngIf="abonoForm.get('type_payment')?.value == 'TRANSFERENCIA' || abonoForm.get('type_payment')?.value == 'QR'" class="block mb-0">N. Cuenta origen<span class="text-danger">*</span></label>
-                      <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                      <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                           formControlName="account_origin" placeholder="EJ. "
-                          [class.ng-dirty]="validatorsService.inputValid('account_origin',abonoForm)"
-                      />
+                          [class.ng-dirty]="validatorsService.inputValid('account_origin',abonoForm)" class="text-uppercase"/>
                       <small *ngIf="validatorsService.inputValid('account_origin',abonoForm)" class="p-error block">
                           {{ validatorsService.inputValidMessage("account_origin",abonoForm) }}
                       </small>
@@ -149,10 +147,10 @@
                             Cheque</label>
                         <label *ngIf="abonoForm.get('type_payment')?.value == 'TRANSFERENCIA' || abonoForm.get('type_payment')?.value == 'QR'" class="block mb-0">N.
                             Cuenta destino<span class="text-danger">*</span></label>
-                        <input type="text" style="text-transform: uppercase" pInputText
+                        <input type="text" pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_output"
                             placeholder="EJ. "
-                            [class.ng-dirty]="validatorsService.inputValid('account_output',abonoForm)" />
+                            [class.ng-dirty]="validatorsService.inputValid('account_output',abonoForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('account_output',abonoForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("account_output",abonoForm) }}
                         </small>
@@ -161,22 +159,26 @@
                 <div *ngIf="abonoForm.get('type_payment')?.value == 'TRANSFERENCIA' || abonoForm.get('type_payment')?.value == 'QR'" class="row mt-1 animated fadeInDown">
                   <div class="col-sm-6 col-12">
                     <label class="block mb-0">Nro. de Transferencia<span class="text-danger">*</span></label>
-                    <input type="text" style="text-transform: uppercase" pInputText
+                    <input type="text" pInputText
                       formControlName="number_transaction" placeholder="EJ. 123456"
-                      [class.ng-dirty]="validatorsService.inputValid('number_transaction',abonoForm)" />
+                      [class.ng-dirty]="validatorsService.inputValid('number_transaction',abonoForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('number_transaction',abonoForm)" class="p-error block">
                       {{ validatorsService.inputValidMessage("number_transaction",abonoForm) }}
                     </small>
                   </div>
                   <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                     <label class="block mb-0">Comprobante de Pago (Opcional)</label>
-                    <div class="input-group mt-1" style="display: flex; align-items: center; gap: 8px;">
-                      <input type="file" #fileInputMultiple (change)="onVoucherFileChange($event)" style="display: none;" accept="image/*,.pdf" />
+                    <div class="input-group mt-1 d-flex align-items-center app-u-gap-8px-33fcd4c">
+                      <input type="file" #fileInputMultiple (change)="onVoucherFileChange($event)" accept="image/*,.pdf" class="d-none"/>
                       <button type="button" pButton (click)="fileInputMultiple.click()" label="Subir Comprobante" icon="fa-solid fa-upload" class="p-button-sm p-button-outlined p-button-secondary"></button>
                       <span class="text-muted ms-2" *ngIf="!voucherFile">No se seleccionó comprobante</span>
-                      <div *ngIf="voucherFile" style="display: flex; align-items: center; gap: 4px; background: #e8f5e9; padding: 4px 10px; border-radius: 20px; border: 1px solid #c8e6c9;">
-                        <span class="text-success" style="font-size: 13px; font-weight: 500;">{{ voucherFile.name }}</span>
-                        <i class="fa-solid fa-circle-xmark text-danger cursor-pointer ms-1" (click)="removeVoucherFile()" pTooltip="Eliminar comprobante"></i>
+                      <div *ngIf="voucherFile" class="d-flex align-items-center app-u-gap-4px-d767683 app-u-background-e8f5e9-e72e7db app-u-padding-4px-10px-b121b66 app-u-border-radius-20px-ac1e13f app-u-border-1px-solid-c8e6c9-a1d28af">
+                        <span class="text-success app-u-font-size-13px-5e0faad app-u-font-weight-500-02a2d33">{{ voucherFile.name }}</span>
+                        <i class="fa-solid fa-circle-xmark text-danger cursor-pointer ms-1" role="button" tabindex="0"
+                          aria-label="Eliminar comprobante" (click)="removeVoucherFile()"
+                          (keydown.enter)="removeVoucherFile()"
+                          (keydown.space)="$event.preventDefault(); removeVoucherFile()"
+                          pTooltip="Eliminar comprobante"></i>
                       </div>
                     </div>
                   </div>

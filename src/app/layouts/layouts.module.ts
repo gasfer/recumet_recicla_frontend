@@ -16,6 +16,10 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DropdownModule } from 'primeng/dropdown';
 import { ReactiveFormsModule } from '@angular/forms';
+import { A11yModule } from '@angular/cdk/a11y';
+import { DialogModule } from 'primeng/dialog';
+import { TagModule } from 'primeng/tag';
+import { TransferReviewAlertComponent } from './transfer-review-alert/transfer-review-alert.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +31,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     SidebarComponent,
     TopbarComponent,
     VerticalComponent,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    TransferReviewAlertComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +41,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     RouterModule,
     BsDropdownModule.forRoot(),
     SimplebarAngularModule,
-    DropdownModule
+    DropdownModule,
+    A11yModule,
+    DialogModule,
+    TagModule
   ],
   exports: [],
   providers: [LanguageService]

@@ -1,20 +1,41 @@
 <div id="layout-wrapper">
 
-    <app-topbar (settingsButtonClicked)="onSettingsButtonClicked()" (mobileMenuButtonClicked)="onToggleMobileMenu()">
+    <app-topbar
+      [mobileMenuOpen]="isMobileSidebarOpen"
+      [mobileMenuControls]="sidebarId"
+      (settingsButtonClicked)="onSettingsButtonClicked()"
+      (mobileMenuButtonClicked)="onToggleMobileMenu()">
     </app-topbar>
-  
-    <app-sidebar></app-sidebar>
-  
+
+    <app-sidebar
+      [id]="sidebarId"
+      [isCondensed]="isDesktopCondensed"
+      [attr.aria-hidden]="isMobileViewport && !isMobileSidebarOpen ? 'true' : null"
+      [attr.inert]="isMobileViewport && !isMobileSidebarOpen ? '' : null"
+      [cdkTrapFocus]="isMobileViewport && isMobileSidebarOpen"
+      [cdkTrapFocusAutoCapture]="isMobileViewport && isMobileSidebarOpen">
+    </app-sidebar>
+
+    <button
+      type="button"
+      class="app-sidebar-backdrop"
+      [class.is-visible]="isMobileSidebarOpen"
+      [attr.aria-hidden]="!isMobileSidebarOpen"
+      [attr.tabindex]="isMobileSidebarOpen ? 0 : -1"
+      aria-label="Cerrar menú de navegación"
+      (click)="closeMobileSidebar(true)">
+    </button>
+
     <div class="main-content">
       <div class="page-content">
         <!-- content -->
         <app-breadcrumb [breadcrumbs]="breadcrumbs"></app-breadcrumb>
-        <router-outlet *ngIf="validatorsService.id_sucursal() && !validatorsService.reload()"></router-outlet>
+        <router-outlet *ngIf="validatorsService.id_sucursal() && !validatorsService.reload() && reviewService.contextReady()"></router-outlet>
       </div>
       <!-- footer -->
       <app-footer></app-footer>
     </div>
   </div>
-  
+
   <app-rightsidebar></app-rightsidebar>
-  
+  <app-transfer-review-alert></app-transfer-review-alert>

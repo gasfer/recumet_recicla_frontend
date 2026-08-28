@@ -404,6 +404,11 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   @Input() includeSearch: boolean = true;
   @Input() sortField: string = 'id';
   @Input() sortOrder: 'ASC' | 'DESC' = 'DESC';
+  @Input() responsiveStrategy: 'stack' | 'scroll' = 'stack';
+
+  get responsiveTableClass(): string {
+    return `p-datatable-sm p-datatable-striped animated fadeIn app-table--${this.responsiveStrategy} ${this.responsiveStrategy === 'scroll' ? 'app-table-scroll' : ''}`.trim();
+  }
   @Output() rows!: number;
   @Output() rows$: EventEmitter<{ rows: number, page: number }> = new EventEmitter;
   @Output() search$: EventEmitter<{ type: string, query: string }> = new EventEmitter;

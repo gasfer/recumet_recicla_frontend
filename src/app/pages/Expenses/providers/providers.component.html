@@ -2,7 +2,7 @@
   <div class="card shadow mb-4 icon-box ">
     <div class="card-body">
       <div class="title mb-1">
-        <h3 style="color: var(--bg-2665C); text-align: center; flex: 1; margin-right: auto;">
+        <h3 class="app-u-color-bg-2665c-99da769 text-center app-u-flex-1-97445a8 app-u-margin-right-auto-471df91">
           <b>CONSULTA DE PROVEEDORES</b>
         </h3>
         <div *ngIf="validatorsService.withPermission('PROVEEDORES','create')" class="ms-1">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <div class="text-end">
-                    <p-button  *ngIf="validatorsService.withPermission('COMPRAS','reports')" (click)="!loading() ? this.printPdfReport() : null" 
+                    <p-button  *ngIf="validatorsService.withPermission('COMPRAS','reports')" (click)="!loading() ? this.printPdfReport() : null"
                     styleClass="p-button-rounded p-button-success p-button-sm" label="Exportar excel"
                       icon="fas fa-file-excel" [loading]="loadingReport()"></p-button>
                   </div>
@@ -39,10 +39,10 @@
 
   </div>
 </div>
-<app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+<app-table responsiveStrategy="scroll" *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
   (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
 </app-table>
-<app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+<app-table responsiveStrategy="scroll" *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
   (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
 </app-table>
 

@@ -9,6 +9,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { Product } from '../../inventories/interfaces/products.interface';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 
 @Component({
   selector: 'app-classified',
@@ -17,6 +18,7 @@ import { Router } from '@angular/router';
   ]
 })
 export class ClassifiedComponent implements OnInit {
+  readonly productContext = ProductAccessContext.Classifieds;
   fb                = inject( FormBuilder  );
   productService    = inject( ProductsService );
   classifiedService = inject( ClassifiedService );
@@ -59,7 +61,7 @@ export class ClassifiedComponent implements OnInit {
     this.loadingSearchProduct.set(true);
     this.txtSearchProduct.set(txtSearchProduct);
     this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value, this.formReport.get('id_storage')?.value)
+    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'id','DESC',false,'',this.productContext)
         .subscribe({
           next: (resp) => {
             this.suggestedProducts.set(resp.products.data);
@@ -102,7 +104,7 @@ export class ClassifiedComponent implements OnInit {
     this.loadingSearchProductClassified.set(true);
     this.txtSearchProductClassified.set(txtSearchProduct);
     this.suggestedProductsClassified.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,this.formReport.get('id_sucursal')?.value, this.formReport.get('id_storage')?.value)
+    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'id','DESC',false,'',this.productContext)
         .subscribe({
           next: (resp) => {
             this.suggestedProductsClassified.set(resp.products.data);

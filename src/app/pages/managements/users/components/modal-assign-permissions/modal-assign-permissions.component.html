@@ -1,18 +1,16 @@
 <p-dialog [header]="'Asignación de permisos a:'"
   [(visible)]="userService.showModalAssignPermissions"
   [modal]="true"
-  [breakpoints]="{ '960px': '75vw', '576px': '95%' }"
-  [style]="{ width: '70vw' }"
   [draggable]="false"
   [resizable]="false"
   (onHide)="onHideModal()"
-  [dismissableMask]="true">
+  [dismissableMask]="true" styleClass="app-dialog--lg">
 
   <form *ngIf="permissionsForm" [formGroup]="permissionsForm">
 
     <!-- Información del usuario -->
-    <div class="mb-3 p-3"
-      style="background-color: #f8f9fa; border-left: 4px solid var(--bg-primary); border-radius: 4px;">
+    <div class="mb-3 p-3 app-u-background-color-f8f9fa-ba50009 app-u-border-left-4px-solid-bg-primary-fc1d5d8 app-u-border-radius-4px-c290c56"
+     >
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-user text-primary fs-12"></i>
         <div>
@@ -30,13 +28,49 @@
       [required]="false">
     </app-alert-notify>
 
-    <div class="permissions-container" style="max-height: 550px; overflow-y: auto;">
+    <div class="permissions-container app-u-max-height-550px-7bb2723 app-u-overflow-y-auto-03df744">
+
+      <div class="mb-3">
+        <div class="group-header p-3 background-primary app-u-border-radius-8px-28a50dd">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked text-white fs-5"></i>
+            <span class="text-white fw-bold">ACCESO A PRODUCTOS POR TIPO</span>
+          </div>
+        </div>
+
+        <div *ngIf="formArray.length > 0" formArrayName="permissions" class="mt-2">
+          <p-table [value]="productAccessRows" styleClass="p-datatable-sm p-datatable-striped app-table-scroll" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="app-u-background-color-f8f9fa-ba50009 app-u-min-width-200px-47b618f">Módulo</th>
+                <th *ngFor="let categoryType of productCategoryTypes" class="text-center">
+                  {{ categoryType.label }}
+                </th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-context>
+              <tr [formGroupName]="getPermissionIndexByModule(context.value)">
+                <td><span class="fw-medium">{{ context.label }}</span></td>
+                <td *ngFor="let categoryType of productCategoryTypes" class="text-center">
+                  <p-checkbox
+                    [binary]="true"
+                    [ngModel]="isCategoryTypeAllowed(context.value, categoryType.value)"
+                    [ngModelOptions]="{ standalone: true }"
+                    (onChange)="setCategoryTypeAllowed(context.value, categoryType.value, $event.checked)">
+                  </p-checkbox>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
 
       <div *ngFor="let group of permissionGroups(); let groupIdx = index" class="mb-3">
 
         <!-- Encabezado -->
-        <div class="group-header p-3 cursor-pointer"
-             style="background-color: var(--bg-primary); border-radius: 8px;"
+        <div class="group-header p-3 cursor-pointer background-primary app-u-border-radius-8px-28a50dd"
+
              (click)="toggleGroup(groupIdx)">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
@@ -53,8 +87,7 @@
 
         <!-- Tabla -->
         <div *ngIf="group.expanded && formArray.length > 0"
-             class="mt-2"
-             style="animation: fadeIn 0.3s;">
+             class="mt-2 app-fade-in">
 
           <!-- CONTEXTO CORRECTO DEL FORM ARRAY -->
           <div formArrayName="permissions">
@@ -62,12 +95,12 @@
             <p-table [value]="group.permissions"
                      [scrollable]="true"
                      scrollHeight="300px"
-                     [styleClass]="'p-datatable-sm p-datatable-striped'">
+                     styleClass="p-datatable-sm p-datatable-striped app-table-scroll" responsiveLayout="scroll">
 
               <!-- HEADER -->
               <ng-template pTemplate="header">
                 <tr>
-                  <th style="background-color: #f8f9fa; min-width: 200px;">Módulo</th>
+                  <th class="app-u-background-color-f8f9fa-ba50009 app-u-min-width-200px-47b618f">Módulo</th>
                   <th class="text-center">Ver</th>
                   <th class="text-center">Crear</th>
                   <th class="text-center">Modificar</th>
@@ -82,13 +115,16 @@
 
                   <td>
                     <span class="fw-medium">{{ permission.module }}</span>
+                    <small *ngIf="permission.module === 'TRANSFER_REVIEW'" class="d-block text-muted">
+                      Ver=leer · Crear=asignar · Modificar=resolver · Eliminar=reabrir · Reporte=aprobar
+                    </small>
                   </td>
 
                   <td class="text-center">
                     <div class="d-flex justify-content-center gap-2">
                       <p-checkbox formControlName="view" [binary]="true"></p-checkbox>
-                      <i class="fa-solid"
-                         style="color: #008000;"
+                      <i class="fa-solid app-u-color-008000-e081247"
+
                          [ngClass]="permission.view ? 'fa-eye' : 'fa-xmark'"></i>
                     </div>
                   </td>
@@ -96,8 +132,8 @@
                   <td class="text-center">
                     <div class="d-flex justify-content-center gap-2">
                       <p-checkbox formControlName="create" [binary]="true"></p-checkbox>
-                      <i class="fa-solid"
-                         style="color: #0D89EC;"
+                      <i class="fa-solid app-u-color-0d89ec-1617ed2"
+
                          [ngClass]="permission.create ? 'fa-circle-plus' : 'fa-xmark'"></i>
                     </div>
                   </td>
@@ -105,8 +141,8 @@
                   <td class="text-center">
                     <div class="d-flex justify-content-center gap-2">
                       <p-checkbox formControlName="update" [binary]="true"></p-checkbox>
-                      <i class="fa-solid"
-                         style="color: #FAB710;"
+                      <i class="fa-solid app-u-color-fab710-0a24320"
+
                          [ngClass]="permission.update ? 'fa-edit' : 'fa-xmark'"></i>
                     </div>
                   </td>
@@ -114,8 +150,8 @@
                   <td class="text-center">
                     <div class="d-flex justify-content-center gap-2">
                       <p-checkbox formControlName="delete" [binary]="true"></p-checkbox>
-                      <i class="fa-solid"
-                         style="color: #C02929;"
+                      <i class="fa-solid app-u-color-c02929-a3af8db"
+
                          [ngClass]="permission.delete ? 'fa-trash-can' : 'fa-xmark'"></i>
                     </div>
                   </td>
@@ -123,8 +159,8 @@
                   <td class="text-center">
                     <div class="d-flex justify-content-center gap-2">
                       <p-checkbox formControlName="reports" [binary]="true"></p-checkbox>
-                      <i class="fa-solid"
-                         style="color: #56717D;"
+                      <i class="fa-solid app-u-color-56717d-0e16e2e"
+
                          [ngClass]="permission.reports ? 'fa-file-pdf' : 'fa-xmark'"></i>
                     </div>
                   </td>

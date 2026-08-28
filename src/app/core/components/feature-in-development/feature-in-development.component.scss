@@ -1,0 +1,69 @@
+:host {
+  display: block;
+}
+
+.development-page {
+  display: grid;
+  min-height: min(65vh, 38rem);
+  padding: 1.5rem;
+  place-items: center;
+}
+
+.development-card {
+  width: min(100%, 42rem);
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 5vw, 3.5rem);
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  box-shadow: 0 0.75rem 2rem rgba(31, 41, 55, 0.08);
+}
+
+.development-icon {
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: 0 auto 1.25rem;
+  color: #fff;
+  font-size: 1.75rem;
+  background: #526be6;
+  border-radius: 50%;
+  place-items: center;
+}
+
+.development-eyebrow {
+  margin-bottom: 0.5rem;
+  color: #526be6;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin-bottom: 0.75rem;
+  color: #25304a;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 700;
+}
+
+.development-message {
+  margin-bottom: 0.75rem;
+  color: #00a44f;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  font-weight: 700;
+}
+
+.development-description {
+  max-width: 32rem;
+  margin: 0 auto;
+  color: #667085;
+  line-height: 1.6;
+}
+
+@media (max-width: 575.98px) {
+  .development-page {
+    min-height: 55vh;
+    padding: 0.75rem;
+  }
+}

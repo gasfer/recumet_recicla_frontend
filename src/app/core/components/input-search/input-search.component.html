@@ -1,23 +1,23 @@
 <form (ngSubmit)="searchForEnter()" autocomplete="off">
     <div class="p-inputgroup">
-        <span class="p-inputgroup-addon"><i [class]="icon" style="line-height: 1.25;"></i></span>   
+        <span class="p-inputgroup-addon"><i [class]="icon" class="app-u-line-height-1-25-f7ff121"></i></span>
         <span class=" d-flex input-group">
-            <input 
-                type="text" 
+            <input
+                type="text"
                 #txtTermino
-                pInputText 
+                pInputText
                 [pKeyFilter]="validatorsService.expRegValidInput"
-                style="text-transform: uppercase"
+
                 [formControl]="termino"
                 (input)="searchTyping()"
-                [placeholder]="placeholder"
-            > 
-            
-            <button type="button" class="input-group-addon btn bg-transparent" (click)="clearInput()" style="margin-left: -40px; z-index: 100; border: none;">
+                [placeholder]="placeholder" class="text-uppercase">
+
+            <button aria-label="Limpiar búsqueda" type="button" class="input-group-addon btn bg-transparent app-u-margin-left-40px-0648bea app-u-z-index-100-07af68e app-u-border-none-2eda1da" (click)="clearInput()">
               <i class="fa-solid fa-circle-xmark"></i>
             </button>
         </span>
-        <button *ngIf="btnNew" type="button" pButton pRipple [icon]="iconBtnNew" (click)="clickBtnNew()" ></button>      
+        <button *ngIf="btnNew" type="button" pButton pRipple [icon]="iconBtnNew"
+            [attr.aria-label]="btnNewAriaLabel" (click)="clickBtnNew()"></button>
     </div>
 </form>
 

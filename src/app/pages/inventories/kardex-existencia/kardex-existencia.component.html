@@ -2,7 +2,7 @@
     <div class="card shadow mb-4 icon-box ">
         <div class="card-body">
             <div class="row text-center">
-                <h3 style="color: var(--bg-2665C);"><b>CONSULTA DETALLE KARDEX -</b> "{{productSelect()?.name ?? 'SELECCIONE UN PRODUCTO'}}"</h3>
+                <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DETALLE KARDEX -</b> "{{productSelect()?.name ?? 'SELECCIONE UN PRODUCTO'}}"</h3>
             </div>
             <p-accordion [activeIndex]="1">
                 <p-accordionTab header="Filtros">
@@ -92,11 +92,11 @@
                                                 (onLazyLoad)="onLazyLoad($event)"
                                                 [loading]="loadingSearchProduct()"
                                                 placeholder="Busque un producto aquí..."
-                                                [style]="{'width':'100%'}"
+
                                                 appendTo="body"
                                                 optionLabel="name"
                                                 [scrollHeight]="'450px'"
-                                                [panelStyle]="{'max-height': '500px', 'min-width': '450px'}">
+                                                [panelStyle]="{'max-height': '500px', 'min-width': '450px'}" class="app-u-width-100-0466783">
 
                                                 <ng-template pTemplate="selectedItem">
                                                     <div *ngIf="productSelect()" class="flex align-items-center gap-2">
@@ -193,14 +193,14 @@
     </div>
 </form>
 
-<app-table  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'DESC'" [sortField]="'date'"
+<app-table responsiveStrategy="scroll"  [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'DESC'" [sortField]="'date'"
   [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)"
   [data]="kardexes()" [loading]="loading()">
     <tr >
         <th  colspan="3"></th>
-        <th style="background-color: var(--bg-primary)"  colspan="3"  class="text-center text-white">FÍSICO</th>
+        <th  colspan="3"  class="text-center text-white background-primary">FÍSICO</th>
         <th  colspan="1"></th>
-        <th style="background-color: var(--bg-primary)" colspan="3" class="text-center text-white">VALORADO</th>
+        <th colspan="3" class="text-center text-white background-primary">VALORADO</th>
         <th  colspan="1"></th>
     </tr>
 </app-table>

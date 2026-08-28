@@ -1,0 +1,19 @@
+{
+  "bindings": {
+    "src/app/core/components/table/table.component.html": {
+      "styleBinding": 15,
+      "ngStyle": 0,
+      "reason": "Column widths, overlay widths, tag colors and button presentation are runtime configuration supplied by each table consumer."
+    },
+    "src/app/core/components/view-image/view-image.component.html": {
+      "styleBinding": 1,
+      "ngStyle": 0,
+      "reason": "The image viewer width is an open runtime value selected by the shared component service."
+    },
+    "src/app/pages/inventories/list-costs-product/components/table-list-costs-products/table-list-costs-products.component.html": {
+      "styleBinding": 1,
+      "ngStyle": 0,
+      "reason": "Column width and alignment are provided by the runtime column definition."
+    }
+  }
+}

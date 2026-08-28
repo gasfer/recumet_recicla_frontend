@@ -18,11 +18,11 @@
     <app-modal-chauffeurs></app-modal-chauffeurs>
     <app-modal-cargo-trucks></app-modal-cargo-trucks>
     <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
-    <app-table *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)"
+    <app-table responsiveStrategy="scroll" *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)"
       [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
       [data]="trasportCompanies()" [loading]="loading()">
     </app-table>
-    <app-table *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)"
+    <app-table responsiveStrategy="scroll" *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)"
       [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
       [data]="trasportCompanies()" [loading]="loading()">
     </app-table>

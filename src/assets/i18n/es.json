@@ -108,7 +108,8 @@
       "LIST": {
         "REALIZARTRASLADOS": "Realizar Traslados",
         "CONSULTARTRASLADOS": "Consultar Traslados",
-        "CONSULTARRECEPCIONES": "Consultar Recepción"
+        "CONSULTARRECEPCIONES": "Consultar Recepción",
+        "CONCILIACIONES": "Conciliaciones"
       }
     },
     "INVENTARIO": { "TEXT": "Inventario" },

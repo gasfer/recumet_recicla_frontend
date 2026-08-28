@@ -45,6 +45,14 @@ export class UsersComponent implements OnInit, OnDestroy {
   fieldSort = signal('');
   order     = signal('');
 
+  isAdministrator(): boolean {
+    return this.validatorsService.user()?.role === 'ADMINISTRADOR';
+  }
+
+  canManageAssignedUser(user: User): boolean {
+    return this.isAdministrator() && user.role !== 'ADMINISTRADOR';
+  }
+
   ngOnInit(): void {
     this.getAllAndSearchUsers(1,this.rows(),true);
     this.save$ = this.userService.save$.subscribe(resp => this.getAllAndSearchUsers(this.page(),this.rows(),this.status()));
@@ -65,7 +73,7 @@ export class UsersComponent implements OnInit, OnDestroy {
             { 
               label:'',icon:'fa-solid fa-key', 
               tooltip: 'Asignar de permisos',
-              disabled: user.role != 'ADMINISTRADOR',
+              disabled: this.canManageAssignedUser(user),
               class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
                 this.userService.showModalAssignPermissions = true;
@@ -75,7 +83,7 @@ export class UsersComponent implements OnInit, OnDestroy {
             { 
               label:'',icon:'fa-solid fa-warehouse', 
               tooltip: 'Asignar de sucursales',
-              disabled: user.role != 'ADMINISTRADOR',
+              disabled: this.canManageAssignedUser(user),
               class:'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.userService.showModalSucursales = true;
@@ -85,7 +93,7 @@ export class UsersComponent implements OnInit, OnDestroy {
             { 
               label:'',icon:'fa-solid fa-business-time', 
               tooltip: 'Asignar turnos',
-              disabled: user.role != 'ADMINISTRADOR',
+              disabled: this.canManageAssignedUser(user),
               class:'p-button-rounded p-button-secondary p-button-sm ms-1',
               eventClick: () => {
                 this.userService.showModalAssignShifts = true;
@@ -95,7 +103,7 @@ export class UsersComponent implements OnInit, OnDestroy {
             { 
               label:'',icon:'fas fa-edit', 
               tooltip: 'Editar',
-              disabled: this.validatorsService.withPermission('USUARIOS','update'),
+              disabled: this.isAdministrator(),
               class:'p-button-rounded p-button-warning p-button-sm ms-1',
               eventClick: () => {
                 this.editShowModal(user);
@@ -104,7 +112,7 @@ export class UsersComponent implements OnInit, OnDestroy {
             {
               label:'',icon:'fa-solid fa-trash-can', 
               tooltip: 'Inactivar',
-              disabled: this.validatorsService.withPermission('USUARIOS','delete'),
+              disabled: this.canManageAssignedUser(user),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
               eventClick: () => {
                 this.updateStatus(user,false);
@@ -114,7 +122,7 @@ export class UsersComponent implements OnInit, OnDestroy {
             {
               label:'',icon:'fa-solid fa-circle-check',
               tooltip: 'Activar',
-              disabled: this.validatorsService.withPermission('USUARIOS','delete'),
+              disabled: this.canManageAssignedUser(user),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
                 this.updateStatus(user,true);

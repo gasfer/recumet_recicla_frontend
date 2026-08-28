@@ -2,7 +2,7 @@
     <div class="card shadow mb-4 icon-box ">
         <div class="card-body">
             <div class="row text-center">
-                <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE VENTAS</b></h3>
+                <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE VENTAS</b></h3>
             </div>
             <p-accordion [activeIndex]="1">
                 <p-accordionTab header="Filtros">
@@ -92,7 +92,7 @@
                                             <app-input-search  (onEnters)="suggestedsClient($event)" (onDebounce)="suggestedsClient($event)"
                                                 [icon]="'fa-solid fa-magnifying-glass-arrow-right'"
                                                 [placeholder]="'Busque un cliente aquí....'"></app-input-search>
-                                            <div style="position: absolute; z-index: 999; width: 96%;">
+                                            <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
                                                 <ul *ngIf="loadingSearchClient()" class="list-group shadow">
                                                   <li class="list-group-item list-group-item-action">
                                                       <span class='fw-bold'>Cargando....</span>
@@ -163,7 +163,7 @@
             [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
 </form>
-<app-table [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+<app-table responsiveStrategy="scroll" [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
     [data]="outputs()" [loading]="loading()" (customSort$)="customSort($event)">
 </app-table>
 

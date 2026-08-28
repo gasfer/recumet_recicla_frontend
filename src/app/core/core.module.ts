@@ -10,7 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
 import { PaginatorModule } from 'primeng/paginator';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -24,6 +24,9 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DataviewProductsComponent } from './components/dataview-products/dataview-products.component';
 import { BadgeModule } from 'primeng/badge';
 import { ModalUpdateBsSusComponent } from './components/modal-update-bs-sus/modal-update-bs-sus.component';
+import { FeatureInDevelopmentComponent } from './components/feature-in-development/feature-in-development.component';
+import { DialogAccessibilityModule } from './directives/dialog-accessibility.module';
+import { PurchaseTraceabilityTimelineComponent } from './components/purchase-traceability-timeline/purchase-traceability-timeline.component';
 @NgModule({
   declarations: [
     TableComponent,
@@ -34,7 +37,9 @@ import { ModalUpdateBsSusComponent } from './components/modal-update-bs-sus/moda
     ViewImageComponent,
     InputSearchComponent,
     DataviewProductsComponent,
-    ModalUpdateBsSusComponent
+    ModalUpdateBsSusComponent,
+    FeatureInDevelopmentComponent,
+    PurchaseTraceabilityTimelineComponent
   ],
   imports: [
     CommonModule,
@@ -44,6 +49,7 @@ import { ModalUpdateBsSusComponent } from './components/modal-update-bs-sus/moda
     PaginatorModule,
     OverlayPanelModule,
     ReactiveFormsModule,
+    FormsModule,
     ButtonModule,
     SkeletonModule,
     InputTextModule,
@@ -51,7 +57,8 @@ import { ModalUpdateBsSusComponent } from './components/modal-update-bs-sus/moda
     DialogModule,
     KeyFilterModule,
     ScrollPanelModule,
-    BadgeModule
+    BadgeModule,
+    DialogAccessibilityModule
   ],
   exports: [
     TableComponent,
@@ -60,7 +67,10 @@ import { ModalUpdateBsSusComponent } from './components/modal-update-bs-sus/moda
     LoadingComponent,
     InputSearchComponent,
     DataviewProductsComponent,
-    ModalUpdateBsSusComponent
+    ModalUpdateBsSusComponent,
+    FeatureInDevelopmentComponent,
+    DialogAccessibilityModule,
+    PurchaseTraceabilityTimelineComponent
   ]
 })
 export class CoreModule { }

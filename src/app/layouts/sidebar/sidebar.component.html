@@ -29,19 +29,19 @@
               <li *ngFor="let subitem of item.subItems">
                 <a routerLink="{{subitem.link}}" *ngIf="!hasItems(subitem)" class="side-nav-link-ref"
                   [attr.data-parent]="subitem.parentId" >
-                  {{ subitem.label | translate}}
+                  {{ subitem.label ?? '' | translate}}
                   <span class="badge rounded-pill bg-{{subitem.badge.variant}} float-end" *ngIf="subitem.badge">{{subitem.badge.text |
                     translate}}</span>
                 </a>
                 <a *ngIf="hasItems(subitem)" class="side-nav-link-a-ref has-arrow" href="javascript:void(0);"
                   [attr.data-parent]="subitem.parentId">
-                  {{ subitem.label | translate}}
+                  {{ subitem.label ?? '' | translate}}
                 </a>
                 <ul *ngIf="hasItems(subitem)" class="sub-menu mm-collapse" aria-expanded="false">
                   <li *ngFor="let subSubitem of subitem.subItems">
                     <a [attr.data-parent]="subSubitem.parentId" routerLink="{{subSubitem.link}}"
                       class="side-nav-link-ref">
-                      {{ subSubitem.label | translate }}
+                      {{ subSubitem.label ?? '' | translate }}
                     </a>
                   </li>
                 </ul>

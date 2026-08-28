@@ -23,6 +23,7 @@ import { ListCostsProductComponent } from './list-costs-product/list-costs-produ
 import { PaginatorModule } from 'primeng/paginator';
 import { TableListCostsProductsComponent } from './list-costs-product/components/table-list-costs-products/table-list-costs-products.component';
 import { TotalStockRecumetComponent } from './total-stock-recumet/total-stock-recumet.component';
+import { StockDiagnosticComponent } from './stock-diagnostic/stock-diagnostic.component';
 import { InputsModule } from '../inputs/inputs.module';
 import { OutputsModule } from '../outputs/outputs.module';
 import { ClassifiedsModule } from '../classifieds/classifieds.module';
@@ -48,7 +49,8 @@ import { TransfersModule } from '../transfers/transfers.module';
     ModalProvidersProductComponent,
     ListCostsProductComponent,
     TableListCostsProductsComponent,
-    TotalStockRecumetComponent
+    TotalStockRecumetComponent,
+    StockDiagnosticComponent
   ],
   imports: [
     CommonModule,

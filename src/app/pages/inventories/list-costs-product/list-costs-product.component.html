@@ -2,7 +2,7 @@
     <div class="card shadow mb-4 icon-box ">
       <div class="card-body">
         <div class="row text-center">
-          <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE LISTA DE PRECIOS</b></h3>
+          <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE LISTA DE PRECIOS</b></h3>
         </div>
         <div class="p-fluid grid mt-sm-3 mt-md-0 ps-md-4 pe-md-4">
           <div class="field col-12">
@@ -11,13 +11,13 @@
                 <div class="row">
                   <div class="col-12 col-sm-6">
                     <label class="block mb-1">Categoría</label>
-                    <p-dropdown [options]="categories()" 
+                    <p-dropdown [options]="categories()"
                                 [showClear]="true"
-                                placeholder="Selecciona una opción" 
+                                placeholder="Selecciona una opción"
                                 optionLabel="name"
                                 optionValue="code"
                                 appendTo="body"
-                                formControlName="id_category" 
+                                formControlName="id_category"
                     ></p-dropdown>
                   </div>
                 </div>
@@ -33,7 +33,7 @@
           [menuStyle]="{'width':'10em'}"
           [size]="'small'"
           [rounded]="true"
-          [severity]="'danger'"    
+          [severity]="'danger'"
           (onClick)="!loading() ? this.printPdfReport() : null" styleClass="ms-1">
           <app-loading></app-loading>
         </p-splitButton>
@@ -47,6 +47,5 @@
   </form>
   <app-table-list-costs-products [cols]="cols()" (customSort$)="customSort($event)"
     [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
-    [data]="productsCosts()" [loading]="loading()" (saveProduct$)="saveProductCostUpdate($event)"> 
+    [data]="productsCosts()" [loading]="loading()" (saveProduct$)="saveProductCostUpdate($event)">
   </app-table-list-costs-products>
-  

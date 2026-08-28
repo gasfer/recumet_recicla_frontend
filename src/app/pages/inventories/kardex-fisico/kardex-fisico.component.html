@@ -2,7 +2,7 @@
   <div class="card shadow mb-4 icon-box ">
     <div class="card-body">
       <div class="row text-center">
-        <h3 style="color: var(--bg-2665C);"><b>{{ title() }}</b></h3>
+        <h3 class="app-u-color-bg-2665c-99da769"><b>{{ title() }}</b></h3>
       </div>
       <p-accordion [activeIndex]="1">
         <p-accordionTab header="Filtros">
@@ -85,8 +85,8 @@
                 <label class="block mb-1">Categorías</label>
                 <p-multiSelect [options]="dropdownCategories()" [(ngModel)]="selectedCategoryValues"
                   (onChange)="onCategoryChange($event.value)" optionLabel="name" optionValue="id"
-                  placeholder="Seleccione categorías..." [style]="{'width':'100%'}" appendTo="body" [filter]="true"
-                  filterBy="name" [loading]="loadingCategories()" [showClear]="true" display="chip">
+                  placeholder="Seleccione categorías..." appendTo="body" [filter]="true"
+                  filterBy="name" [loading]="loadingCategories()" [showClear]="true" display="chip" class="app-u-width-100-0466783">
                 </p-multiSelect>
               </div>
 
@@ -99,12 +99,12 @@
                       (onFilter)="filterProduct($event)" [loading]="loadingSearchProduct()"
 
                       placeholder="Busque un producto aquí..."
-                      [style]="{'width':'100%'}" appendTo="body" optionLabel="name" optionValue="id"
-                      [scrollHeight]="'450px'" [panelStyle]="{'max-height': '500px', 'min-width': '450px'}">
+                      appendTo="body" optionLabel="name" optionValue="id"
+                      [scrollHeight]="'450px'" [panelStyle]="{'max-height': '500px', 'min-width': '450px'}" class="app-u-width-100-0466783">
 
                       <ng-template pTemplate="selectedItem" let-product>
                         <div *ngIf="product" class="flex align-items-center gap-2">
-                          <span class="text-muted" style="font-size: 0.85em;">{{ product.cod }}</span>
+                          <span class="text-muted app-u-font-size-0-85em-a4178a4">{{ product.cod }}</span>
                           <span class="mx-1">|</span>
                           <span class="fw-bold">{{ product.name }}</span>
                         </div>
@@ -114,11 +114,11 @@
                       </ng-template>
 
                       <ng-template let-product pTemplate="item">
-                        <div class="flex align-items-center gap-2" style="padding: 4px 0;">
+                        <div class="flex align-items-center gap-2 app-u-padding-4px-0-b7c21f2">
                           <div>
-                            <span class="fw-bold" style="font-size: 0.9em;">{{ product.cod }}</span>
+                            <span class="fw-bold app-u-font-size-0-9em-65025e9">{{ product.cod }}</span>
                             <br>
-                            <span class="text-muted fw-normal" style="font-size: 0.85em;">{{ product.name }}</span>
+                            <span class="text-muted fw-normal app-u-font-size-0-85em-a4178a4">{{ product.name }}</span>
                           </div>
                         </div>
                       </ng-template>
@@ -183,11 +183,11 @@
       [activeItem]="searchItems()[0]"></p-tabMenu>
   </div>
 </form>
-<app-table [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.cod'"
+<app-table responsiveStrategy="scroll" [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.cod'"
   [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)" [data]="kardexes()"
   [groupRowsBy]="'product.category.name'" [loading]="loading()">
   <tr>
     <th colspan="4"></th>
-    <th style="background-color: var(--bg-primary)" colspan="3" class="text-white text-center">FÍSICO</th>
+    <th colspan="3" class="text-white text-center background-primary">FÍSICO</th>
   </tr>
 </app-table>

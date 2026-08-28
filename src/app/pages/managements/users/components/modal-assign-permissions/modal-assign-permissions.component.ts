@@ -5,6 +5,10 @@ import { User } from '../../../interfaces/user.interface';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Permission } from '../../../interfaces/permissions.interfaces';
 import Swal from 'sweetalert2';
+import {
+  PRODUCT_ACCESS_CONTEXT_OPTIONS,
+  PRODUCT_CATEGORY_TYPE_OPTIONS,
+} from 'src/app/core/constants/product-category-access.constants';
 
 interface PermissionGroup {
   name: string;
@@ -13,12 +17,24 @@ interface PermissionGroup {
   permissions: Permission[];
 }
 
+export const updateAllowedCategoryTypes = (
+  currentTypes: string[] | null | undefined,
+  categoryType: string,
+  checked: boolean,
+): string[] => {
+  const types = new Set(Array.isArray(currentTypes) ? currentTypes : []);
+  checked ? types.add(categoryType) : types.delete(categoryType);
+  return [...types];
+};
+
 @Component({
   selector: 'app-modal-assign-permissions',
   templateUrl: './modal-assign-permissions.component.html',
   styles: []
 })
 export class ModalAssignPermissionsComponent implements OnInit, OnDestroy {
+  readonly productAccessRows = [...PRODUCT_ACCESS_CONTEXT_OPTIONS];
+  readonly productCategoryTypes = [...PRODUCT_CATEGORY_TYPE_OPTIONS];
   loading = signal(false);
   userService = inject(UsersService);
   fb = inject(FormBuilder);
@@ -90,6 +106,7 @@ permissionGroups = signal<PermissionGroup[]>([
       { id_user: null, module: "TRASLADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CONSULTAR TRASLADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "RECEPCIONES", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "TRANSFER_REVIEW", view: false, create: false, update: false, delete: false, reports: false, status: true },
     ]
   },
 
@@ -165,6 +182,7 @@ ngOnInit(): void {
           group.permissions[targetIndex].update = userPermission.update;
           group.permissions[targetIndex].delete = userPermission.delete;
           group.permissions[targetIndex].reports = userPermission.reports;
+          group.permissions[targetIndex].allowed_category_types = userPermission.allowed_category_types ?? [];
         }
       });
     });
@@ -197,7 +215,8 @@ ngOnInit(): void {
           create: false,
           update: false,
           delete: false,
-          reports: false
+          reports: false,
+          allowed_category_types: []
         }))
       }))
     );
@@ -217,7 +236,12 @@ ngOnInit(): void {
 
   sendNewPermissions() {
     this.loading.set(true);
-    let permissions: Permission[] = this.formArray.value;
+    const permissions: Permission[] = this.formArray.getRawValue().map(permission => ({
+      ...permission,
+      allowed_category_types: Array.isArray(permission.allowed_category_types)
+        ? [...new Set(permission.allowed_category_types)]
+        : []
+    }));
     permissions.forEach(permission => {
       permission.id_user = this.user()!.id;
     });
@@ -234,7 +258,15 @@ ngOnInit(): void {
         this.userService.save$.next(true);
         this.loading.set(false);
       },
-      error: (err) => this.loading.set(false)
+      error: (err) => {
+        this.loading.set(false);
+        Swal.fire({
+          title: 'No se guardaron los permisos',
+          text: err?.error?.errors?.[0]?.msg ?? 'Verifica la configuración e inténtalo nuevamente.',
+          icon: 'error',
+          showClass: { popup: 'animated animate fadeInDown' },
+        });
+      }
     });
   }
 
@@ -247,6 +279,7 @@ ngOnInit(): void {
       update: [permission.update],
       delete: [permission.delete],
       reports: [permission.reports],
+      allowed_category_types: [permission.allowed_category_types ?? []],
       status: [permission.status]
     });
     this.formArray.push(permissionGroup);
@@ -259,6 +292,33 @@ ngOnInit(): void {
       globalIndex += this.permissionGroups()[i].permissions.length;
     }
     return globalIndex + permissionIndex;
+  }
+
+  getPermissionIndexByModule(module: string): number {
+    let globalIndex = 0;
+    for (const group of this.permissionGroups()) {
+      const permissionIndex = group.permissions.findIndex(permission => permission.module === module);
+      if (permissionIndex !== -1) return globalIndex + permissionIndex;
+      globalIndex += group.permissions.length;
+    }
+    return -1;
+  }
+
+  isCategoryTypeAllowed(module: string, categoryType: string): boolean {
+    const permissionIndex = this.getPermissionIndexByModule(module);
+    if (permissionIndex < 0) return false;
+    const types = this.formArray.at(permissionIndex)?.get('allowed_category_types')?.value;
+    return Array.isArray(types) && types.includes(categoryType);
+  }
+
+  setCategoryTypeAllowed(module: string, categoryType: string, checked: boolean): void {
+    const permissionIndex = this.getPermissionIndexByModule(module);
+    if (permissionIndex < 0) return;
+    const control = this.formArray.at(permissionIndex)?.get('allowed_category_types');
+    if (!control) return;
+    control.setValue(updateAllowedCategoryTypes(control.value, categoryType, checked));
+    control.markAsDirty();
+    control.markAsTouched();
   }
 
   onHideModal() {

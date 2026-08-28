@@ -16,11 +16,11 @@
     </p-toolbar>
     <app-modal-scale></app-modal-scale>
     <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
-    <app-table *ngIf="!status()" [cols]="cols()"  (customSort$)="customSort($event)"
+    <app-table responsiveStrategy="stack" *ngIf="!status()" [cols]="cols()"  (customSort$)="customSort($event)"
       [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
       [data]="scales()" [loading]="loading()">
     </app-table>
-    <app-table *ngIf="status()" [cols]="cols()"  (customSort$)="customSort($event)"
+    <app-table responsiveStrategy="stack" *ngIf="status()" [cols]="cols()"  (customSort$)="customSort($event)"
       [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
       [data]="scales()" [loading]="loading()">
     </app-table>

@@ -198,9 +198,9 @@
         <!-- ── TOTAL SALDO CIERRE ────────────────────── -->
         <div class="cst-row cst-row--total cst-row--cierre">
           <div class="cst-cell cst-cell--label">
-            <i class="fa-solid fa-lock" style="font-size:13px;color:var(--cp)"></i>
+            <i class="fa-solid fa-lock app-u-font-size-13px-5e0faad app-u-color-cp-60cf5f3"></i>
             <div class="cst-label-group">
-              <span class="cst-label-main" style="font-weight:700;font-size:13px;">Total Saldo Cierre Caja</span>
+              <span class="cst-label-main fw-bold app-u-font-size-13px-5e0faad">Total Saldo Cierre Caja</span>
             </div>
           </div>
           <div class="cst-cell cst-cell--val">
@@ -230,7 +230,7 @@
               <span class="cst-label-sub">Dinero físico en caja</span>
             </div>
           </div>
-          <div class="cst-cell cst-cell--val cst-cell--income" style="grid-column: 2 / -1; justify-content:flex-end">
+          <div class="cst-cell cst-cell--val cst-cell--income app-u-grid-column-2-1-80a2efc justify-content-end">
             <span class="cst-curr">BS</span>
             <span class="cst-amount cst-amount--lg">{{ totalMovements()?.monto_apertura_mas_saldo | number: decimal() }}</span>
           </div>
@@ -247,7 +247,7 @@
               <span class="cst-label-sub">Banco y transferencias</span>
             </div>
           </div>
-          <div class="cst-cell cst-cell--val cst-cell--saldo-bank" style="grid-column: 2 / -1; justify-content:flex-end">
+          <div class="cst-cell cst-cell--val cst-cell--saldo-bank app-u-grid-column-2-1-80a2efc justify-content-end">
             <span class="cst-curr">BS</span>
             <span class="cst-amount cst-amount--lg">{{ ($any(totalMovements())?.total_transferencia ?? 0) | number: decimal() }}</span>
           </div>
@@ -322,17 +322,17 @@
         <div class="caja-chart-legend fade-in"
              *ngIf="!loading() && chartMode === 'efectivo'">
           <span class="caja-legend-item">
-            <span class="caja-legend-dot" style="background:#93c5fd"></span>
+            <span class="caja-legend-dot app-u-background-93c5fd-2dbb23c"></span>
             <span class="caja-legend-label">Inicial</span>
             <span class="caja-legend-value">Bs {{ totalMovements()?.monto_apertura | number: decimal() }}</span>
           </span>
           <span class="caja-legend-item">
-            <span class="caja-legend-dot" style="background:#86efac"></span>
+            <span class="caja-legend-dot app-u-background-86efac-7ded4e7"></span>
             <span class="caja-legend-label">Ingresos</span>
             <span class="caja-legend-value">Bs {{ totalMovements()?.total_ingresos | number: decimal() }}</span>
           </span>
           <span class="caja-legend-item">
-            <span class="caja-legend-dot" style="background:#fca5a5"></span>
+            <span class="caja-legend-dot app-u-background-fca5a5-cd230a4"></span>
             <span class="caja-legend-label">Gastos</span>
             <span class="caja-legend-value">Bs {{ totalMovements()?.total_gastos | number: decimal() }}</span>
           </span>
@@ -342,12 +342,12 @@
         <div class="caja-chart-legend fade-in"
              *ngIf="!loading() && chartMode === 'banco'">
           <span class="caja-legend-item">
-            <span class="caja-legend-dot" style="background:#6ee7b7"></span>
+            <span class="caja-legend-dot app-u-background-6ee7b7-4512325"></span>
             <span class="caja-legend-label">Ing. Transf.</span>
             <span class="caja-legend-value">Bs {{ $any(totalMovements())?.total_ingresos_transferencia ?? 0 | number: decimal() }}</span>
           </span>
           <span class="caja-legend-item">
-            <span class="caja-legend-dot" style="background:#fdba74"></span>
+            <span class="caja-legend-dot app-u-background-fdba74-9e706e4"></span>
             <span class="caja-legend-label">Gas. Transf.</span>
             <span class="caja-legend-value">Bs {{ $any(totalMovements())?.total_gastos_transferencia ?? 0 | number: decimal() }}</span>
           </span>
@@ -386,7 +386,7 @@
   </div>
 
   <div class="caja-movements-table">
-    <app-table
+    <app-table responsiveStrategy="stack"
         [cols]="cols()"
         [isCustomSort]="false"
         [includeSearch]="false"

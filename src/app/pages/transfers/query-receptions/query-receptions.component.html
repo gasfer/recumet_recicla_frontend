@@ -2,7 +2,7 @@
     <div class="card shadow mb-4 icon-box ">
       <div class="card-body">
         <div class="row text-center">
-          <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE RECEPCIONES</b></h3>
+          <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE RECEPCIONES</b></h3>
         </div>
         <p-accordion [activeIndex]="1">
           <p-accordionTab header="Filtros">
@@ -75,11 +75,12 @@
         </p-accordion>
       </div>
       <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
-        [activeItem]="searchItems()[0]"></p-tabMenu>
+        [activeItem]="activeSearchItem()"></p-tabMenu>
     </div>
   </div>
-  <app-table [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+  <app-table responsiveStrategy="scroll" [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
     [data]="transfers()" [loading]="loading()" (customSort$)="customSort($event)">
   </app-table>
   <app-modal-view-details-transfer></app-modal-view-details-transfer>
   <app-modal-approved-transfer [id_transfer]="id_transfer()" (save$)="this.getAllAndSearchTransfers(1,this.rows())"></app-modal-approved-transfer>
+  <app-transfer-review-trace (reviewChanged)="getAllAndSearchTransfers(1, rows())"></app-transfer-review-trace>

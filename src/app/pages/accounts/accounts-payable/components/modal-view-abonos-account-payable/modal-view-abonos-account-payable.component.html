@@ -1,10 +1,9 @@
-<p-dialog [header]="'Detalle cuenta por pagar: '+ accountPayable()?.cod" [(visible)]="accountsPayableService.showModalDetailsAccountPayable" [modal]="true"
-    [breakpoints]="{ '960px': '85vw', '576px': '95%' }" [style]="{ width: '60vw' }" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true">
+<p-dialog [header]="'Detalle cuenta por pagar: '+ accountPayable()?.cod" [(visible)]="accountsPayableService.showModalDetailsAccountPayable" [modal]="true" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--md">
     <form>
         <p-tag styleClass="m-2 ms-0 mb-1" value="CUENTA: {{accountPayable()?.cod}} " [rounded]="true"></p-tag>
         <div class="table-responsive">
-            <table class="table table-xxs table-sm">
+            <table class="table table-xxs table-sm app-table-scroll" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
                 <tbody class="border-solid">
                     <tr>
                         <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA</td>
@@ -29,7 +28,7 @@
                         <td colspan="3" width="80%">{{accountPayable()?.total | number:decimal()}}</td>
                     </tr>
                 </tbody>
-            </table>     
+            </table>
         </div>
         <div class="justify-content-between d-flex">
             <p-tag styleClass="m-2 ms-0 mb-1" severity="success" value="LISTADO DE ABONOS" [rounded]="true"></p-tag>
@@ -37,63 +36,67 @@
                 styleClass="p-button-primary p-button-rounded mb-1" label="Nuevo abono"></p-button>
         </div>
         <div class="table-responsive">
-			<table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm">
+			<table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm app-table-scroll" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
 				<thead>
 					<tr>
-						<th style="background-color: var(--bg-primary);min-width:150px;max-width:150px" class="text-white"> Fecha abono </th>
-						<th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Monto abonado </th>
-						<!-- <th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Total abonado</th> -->
-						<!-- <th style="background-color: var(--bg-primary);min-width:130px;" class="text-white"> Restante</th> -->
-						<th style="background-color: var(--bg-primary)" class="text-white"> Abonado por</th>
-						<th style="background-color: var(--bg-primary)" class="text-white"> Concepto</th>
-						<th style="background-color: var(--bg-primary)" class="text-white"> Pago</th>
-						<th style="background-color: var(--bg-primary);min-width:80px;max-width:80px" class="text-white"> Opción</th>
+						<th class="text-white background-primary app-u-min-width-150px-c6cca58 app-u-max-width-150px-7eba571"> Fecha abono </th>
+						<th class="text-white background-primary app-u-min-width-130px-b62dc2d"> Monto abonado </th>
+						<!-- <th class="text-white background-primary app-u-min-width-130px-b62dc2d"> Total abonado</th> -->
+						<!-- <th class="text-white background-primary app-u-min-width-130px-b62dc2d"> Restante</th> -->
+						<th class="text-white background-primary"> Abonado por</th>
+						<th class="text-white background-primary"> Concepto</th>
+						<th class="text-white background-primary"> Pago</th>
+						<th class="text-white background-primary app-u-min-width-80px-c3c7cd9 app-u-max-width-80px-151dcb2"> Opción</th>
 					</tr>
 				</thead>
 				<tbody>
                     <tr *ngFor="let abono of accountPayable()?.abonosAccountsPayable" >
-                        <td style="min-width:150px;max-width:150px">{{abono.date_abono | date:'dd/MM/yyyy, HH:mm:ss'}}</td>
-                        <td style="min-width:100px;">{{abono.monto_abono      | number:decimal()}}</td>
-                        <!-- <td style="min-width:130px;">{{abono.total_abonado    | number:decimal()}}</td> -->
-                        <!-- <td style="min-width:130px;">{{abono.restante_credito | number:decimal()}}</td> -->
+                        <td class="app-u-min-width-150px-c6cca58 app-u-max-width-150px-7eba571">{{abono.date_abono | date:'dd/MM/yyyy, HH:mm:ss'}}</td>
+                        <td class="app-u-min-width-100px-e79a03c">{{abono.monto_abono      | number:decimal()}}</td>
+                        <!-- <td class="app-u-min-width-130px-b62dc2d">{{abono.total_abonado    | number:decimal()}}</td> -->
+                        <!-- <td class="app-u-min-width-130px-b62dc2d">{{abono.restante_credito | number:decimal()}}</td> -->
                         <td [pTooltip]="abono.user.full_names" >{{abono.user.full_names | slice:0:23}}</td>
                         <td [pTooltip]="abono.comments" >{{abono.comments}}</td>
                         <td [pTooltip]="abono.type_payment" >{{abono.type_payment }}</td>
                         <td>
-                            <button 
-                                pButton label="" 
+                            <button
+                                pButton label=""
+                                aria-label="Imprimir comprobante del abono"
                                 pTooltip ="Comprobante" tooltipPosition="bottom"
-                                (click)="accountsPayableService.printVoucherAbonoAccountPayablePdf(abono.id);" 
-                                pRipple icon="fas fa-print" 
+                                (click)="accountsPayableService.printVoucherAbonoAccountPayablePdf(abono.id);"
+                                pRipple icon="fas fa-print"
                                 class="p-button-rounded p-button-sm">
                             </button>
-                            <button 
-                                pButton label="" 
+                            <button
+                                pButton label=""
+                                aria-label="Anular abono"
                                 pTooltip ="Anular abono" tooltipPosition="bottom"
-                                (click)="deleteAbono(abono.id,abono.monto_abono)" 
-                                pRipple icon="fa-solid fa-trash-can" 
+                                (click)="deleteAbono(abono.id,abono.monto_abono)"
+                                pRipple icon="fa-solid fa-trash-can"
                                 class="p-button-rounded p-button-danger p-button-sm ms-1">
                             </button>
-                            <input 
-                                type="file" 
-                                [id]="'file-upload-' + abono.id" 
-                                style="display: none" 
-                                (change)="onFileSelected($event, abono.id)" 
-                                accept="image/*,application/pdf">
-                            <button 
+                            <input
+                                type="file"
+                                [id]="'file-upload-' + abono.id"
+
+                                (change)="onFileSelected($event, abono.id)"
+                                accept="image/*,application/pdf" class="d-none">
+                            <button
                                 *ngIf="(abono.type_payment === 'TRANSFERENCIA' || abono.type_payment === 'QR') && !abono.payment_voucher"
-                                pButton label="" 
+                                pButton label=""
+                                aria-label="Adjuntar comprobante del abono"
                                 pTooltip ="Adjuntar comprobante" tooltipPosition="bottom"
-                                (click)="triggerFileUpload(abono.id)" 
-                                pRipple icon="fa-solid fa-file-arrow-up" 
+                                (click)="triggerFileUpload(abono.id)"
+                                pRipple icon="fa-solid fa-file-arrow-up"
                                 class="p-button-rounded p-button-warning p-button-sm ms-1">
                             </button>
-                            <button 
+                            <button
                                 *ngIf="(abono.type_payment === 'TRANSFERENCIA' || abono.type_payment === 'QR') && abono.payment_voucher"
-                                pButton label="" 
+                                pButton label=""
+                                aria-label="Ver comprobante adjunto del abono"
                                 pTooltip ="Ver comprobante adjunto" tooltipPosition="bottom"
-                                (click)="viewAttachedVoucher(abono.payment_voucher)" 
-                                pRipple icon="fa-solid fa-file-invoice" 
+                                (click)="viewAttachedVoucher(abono.payment_voucher)"
+                                pRipple icon="fa-solid fa-file-invoice"
                                 class="p-button-rounded p-button-info p-button-sm ms-1">
                             </button>
                         </td>

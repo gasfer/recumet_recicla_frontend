@@ -128,7 +128,7 @@ export class QueryTransfersComponent implements OnInit {
             },
             { 
               label:'',icon:'fas fa-print', 
-              tooltip: 'Imprimir boleta',
+              tooltip: 'Imprimir guía de traslado (vertical)',
               disabled: this.validatorsService.withPermission('TRASLADOS','reports'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -156,7 +156,7 @@ export class QueryTransfersComponent implements OnInit {
             },
             { 
               label:'',icon:'fas fa-print', 
-              tooltip: 'Imprimir boleta',
+              tooltip: 'Imprimir guía de traslado (vertical)',
               disabled: this.validatorsService.withPermission('TRASLADOS','reports'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {

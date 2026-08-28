@@ -1,10 +1,9 @@
-<p-dialog [header]="'Detalle Compra: '+ input()?.cod" [(visible)]="inputService.showModalDetailsInput" [modal]="true"
-    [breakpoints]="{ '960px': '85vw', '576px': '95%' }" [style]="{ width: '55vw' }" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true">
+<p-dialog [header]="'Detalle Compra: '+ input()?.cod" [(visible)]="inputService.showModalDetailsInput" [modal]="true" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--md">
     <form>
         <p-tag styleClass="m-2 ms-0 mb-1" value="COMPRA: {{input()?.cod}} " [rounded]="true"></p-tag>
         <div class="table-responsive">
-            <table class="table table-xxs table-sm">
+            <table class="table table-xxs table-sm app-table-scroll" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
                 <tbody class="border-solid">
                     <tr>
                         <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA COMPRA</td>
@@ -49,45 +48,46 @@
                         <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">COMPROBANTE</td>
                         <td colspan="3" width="80%">
                             <div *ngIf="input()?.payment_voucher" class="d-flex align-items-center gap-2">
-                                <button 
-                                    pButton 
+                                <button
+                                    pButton
                                     type="button"
-                                    label="Ver Comprobante Adjunto" 
+                                    label="Ver Comprobante Adjunto"
                                     pTooltip="Ver comprobante de pago" tooltipPosition="bottom"
-                                    (click)="viewAttachedVoucher(input()?.payment_voucher)" 
-                                    pRipple icon="fa-solid fa-file-invoice" 
+                                    (click)="viewAttachedVoucher(input()?.payment_voucher)"
+                                    pRipple icon="fa-solid fa-file-invoice"
                                     class="p-button-rounded p-button-info p-button-sm">
                                 </button>
-                                <input 
-                                    type="file" 
-                                    [id]="'file-upload-input-' + input()?.id" 
-                                    style="display: none" 
-                                    (change)="onFileSelected($event, input()?.id)" 
-                                    accept="image/*,application/pdf">
-                                <button 
-                                    pButton 
+                                <input
+                                    type="file"
+                                    [id]="'file-upload-input-' + input()?.id"
+
+                                    (change)="onFileSelected($event, input()?.id)"
+                                    accept="image/*,application/pdf" class="d-none">
+                                <button
+                                    pButton
                                     type="button"
+                                    aria-label="Cambiar comprobante de pago"
                                     pTooltip="Cambiar comprobante" tooltipPosition="bottom"
-                                    (click)="triggerFileUpload(input()?.id)" 
-                                    pRipple icon="fa-solid fa-file-arrow-up" 
+                                    (click)="triggerFileUpload(input()?.id)"
+                                    pRipple icon="fa-solid fa-file-arrow-up"
                                     class="p-button-rounded p-button-warning p-button-sm ms-1">
                                 </button>
                             </div>
                             <div *ngIf="!input()?.payment_voucher" class="d-flex align-items-center gap-2">
                                 <span class="text-muted me-2">Sin comprobante</span>
-                                <input 
-                                    type="file" 
-                                    [id]="'file-upload-input-' + input()?.id" 
-                                    style="display: none" 
-                                    (change)="onFileSelected($event, input()?.id)" 
-                                    accept="image/*,application/pdf">
-                                <button 
-                                    pButton 
+                                <input
+                                    type="file"
+                                    [id]="'file-upload-input-' + input()?.id"
+
+                                    (change)="onFileSelected($event, input()?.id)"
+                                    accept="image/*,application/pdf" class="d-none">
+                                <button
+                                    pButton
                                     type="button"
-                                    label="Adjuntar Comprobante" 
+                                    label="Adjuntar Comprobante"
                                     pTooltip="Subir comprobante de pago" tooltipPosition="bottom"
-                                    (click)="triggerFileUpload(input()?.id)" 
-                                    pRipple icon="fa-solid fa-file-arrow-up" 
+                                    (click)="triggerFileUpload(input()?.id)"
+                                    pRipple icon="fa-solid fa-file-arrow-up"
                                     class="p-button-rounded p-button-warning p-button-sm">
                                 </button>
                             </div>
@@ -99,20 +99,20 @@
         <p-tag styleClass="m-2 ms-0 mb-1" severity="success" value="DETALLE DE COMPRA: {{input()?.cod}} "
             [rounded]="true"></p-tag>
         <div class="table-responsive">
-            <table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm">
+            <table id="tbldetalle" class="table table-striped table-xxs table-hover table-sm app-table-scroll" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
                 <thead>
                     <tr>
-                        <th style="background-color: var(--bg-primary)" class="text-white"> Producto </th>
-                        <th style="background-color: var(--bg-primary)" class="text-white"> Cantidad </th>
-                        <th style="background-color: var(--bg-primary)" class="text-white"> Costo </th>
-                        <th style="background-color: var(--bg-primary)" class="text-white"> Importe </th>
+                        <th class="text-white background-primary"> Producto </th>
+                        <th class="text-white background-primary"> Cantidad </th>
+                        <th class="text-white background-primary"> Costo </th>
+                        <th class="text-white background-primary"> Importe </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let detail of input()?.detailsInput">
-                        <td style="max-width: 200px;">
+                        <td class="app-u-max-width-200px-a828909">
                             <h5 class="m-0 p-0">{{detail.product.name}}</h5>
-                            <p style="font-size: 10px;" class="text-muted">{{detail.product.description}}<br
+                            <p class="text-muted app-u-font-size-10px-0d5be05">{{detail.product.description}}<br
                                     *ngIf="detail.product.description"> <span
                                     class="text-black">{{detail.product.cod}}</span></p>
                         </td>
@@ -138,8 +138,8 @@
                         <td></td>
                         <td></td>
                         <td width="10%" class="table-active fw-bold">TOTAL</td>
-                        <td id="total"> <p-tag [style]="{'font-size': '15px'}"
-                                value="{{input()?.total | number:decimal()}}" [rounded]="true"></p-tag> </td>
+                        <td id="total"> <p-tag
+                                value="{{input()?.total | number:decimal()}}" [rounded]="true" class="app-u-font-size-15px-de00808"></p-tag> </td>
                     </tr>
                 </tfoot>
             </table>

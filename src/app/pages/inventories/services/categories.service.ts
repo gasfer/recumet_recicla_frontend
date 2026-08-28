@@ -3,6 +3,7 @@ import { EventEmitter, Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Category, GetAllCategories } from '../interfaces/categories.interface';
 import { environment } from 'src/environments/environment';
+import { PRODUCT_ACCESS_ROUTE_SEGMENTS, ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -15,12 +16,15 @@ export class CategoriesService {
   save$: Subject<boolean> = new Subject();
   editSubs: EventEmitter<Category> = new EventEmitter<Category>();
 
-  getAllAndSearch(page: number, limit: number, status: boolean, type: string = '', query?: string, category_type: string = '', field_sort: string = 'id', order: string = 'DESC'): Observable<GetAllCategories> {
+  getAllAndSearch(page: number, limit: number, status: boolean, type: string = '', query?: string, category_type: string = '', field_sort: string = 'id', order: string = 'DESC', productContext: ProductAccessContext | '' = ''): Observable<GetAllCategories> {
     let url = '';
+    const endpoint = productContext
+      ? `category/operational/${PRODUCT_ACCESS_ROUTE_SEGMENTS[productContext]}`
+      : 'category';
     if (type === '') {
-      url = `${base_url}/category?page=${page}&limit=${limit}&status=${status}&category_type=${category_type}&field_sort=${field_sort}&order=${order}`;
+      url = `${base_url}/${endpoint}?page=${page}&limit=${limit}&status=${status}&category_type=${category_type}&field_sort=${field_sort}&order=${order}`;
     } else {
-      url = `${base_url}/category?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&category_type=${category_type}&field_sort=${field_sort}&order=${order}`;
+      url = `${base_url}/${endpoint}?page=${page}&limit=${limit}&type=${type}&query=${query}&status=${status}&category_type=${category_type}&field_sort=${field_sort}&order=${order}`;
     }
     return this.http.get<GetAllCategories>(url);
   }
@@ -41,8 +45,11 @@ export class CategoriesService {
     return this.http.put(url, { status });
   }
 
-  getCategorySelect(category_type: string = ''): Observable<any> {
-    const url = `${base_url}/category/select?category_type=${category_type}`;
+  getCategorySelect(category_type: string = '', productContext: ProductAccessContext | '' = ''): Observable<any> {
+    const endpoint = productContext
+      ? `category/operational/${PRODUCT_ACCESS_ROUTE_SEGMENTS[productContext]}/select`
+      : 'category/select';
+    const url = `${base_url}/${endpoint}?category_type=${category_type}`;
     return this.http.get<any>(url);
   }
 }

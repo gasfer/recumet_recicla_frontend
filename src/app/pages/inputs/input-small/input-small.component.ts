@@ -8,7 +8,7 @@ import { Product } from '../../inventories/interfaces/products.interface';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { AuthService } from 'src/app/auth/auth.service';
+import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 
 @Component({
   selector: 'app-input-small',
@@ -27,8 +27,8 @@ export class InputSmallComponent  {
   inputsService    = inject( InputsService );
   componentService = inject( ComponentsService );
   validatorsService = inject( ValidatorsService );
-  authService       = inject( AuthService );
   fb                = inject( FormBuilder  );
+  readonly productContext = ProductAccessContext.Purchases;
   suggestedProviders    = signal<Provider[]>([]);
   suggestedProducts     = signal<Product[]>([]);
   txtSearchProvider     = signal('');
@@ -38,15 +38,6 @@ export class InputSmallComponent  {
   totalItems            = computed(() => this.inputsService.detailShopping().length);
   providerSelect        = computed(() => this.inputsService.providerSelect());
   providerSelectName    = computed(() => `${this.inputsService.providerSelect()?.number_document ?? '0'} / ${this.providerSelect()?.full_names}`);
-
-  get isOperador(): boolean {
-    const role = this.validatorsService.user()?.role || this.authService.getUser?.role;
-    return role ? role !== 'ADMINISTRADOR' : false;
-  }
-
-  get categoryType(): string {
-    return this.isOperador ? 'RAW_MATERIAL' : '';
-  }
 
   formReport:UntypedFormGroup = this.fb.group({
     id_sucursal: ['',[Validators.required]],
@@ -108,7 +99,7 @@ export class InputSmallComponent  {
     this.loadingSearchProduct.set(true);
     this.txtSearchProduct.set(txtSearchProduct);
     this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true, this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'id','DESC',false,this.categoryType)
+    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true, this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'id','DESC',false,'',this.productContext)
         .subscribe({
           next: (resp) => {
             this.suggestedProducts.set(resp.products.data);

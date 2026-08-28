@@ -1,15 +1,14 @@
-<p-dialog [header]="'Cambio Dolar a Bolivianos'" [(visible)]="componentsService.setShowModalBsSus" [modal]="true"
-    [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
-    [resizable]="false" (onShow)="focusOnInput()" [dismissableMask]="true">
+<p-dialog [header]="'Cambio Dolar a Bolivianos'" [(visible)]="componentsService.setShowModalBsSus" [modal]="true" [draggable]="false"
+    [resizable]="false" (onShow)="focusOnInput()" [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="updateBsForm">
         <div class="row">
           <div class="col">
                 <div class="field">
-                    <label class="text-center" style="margin-right: 10px;">Cambio actual Bs. $</label><br>
+                    <label class="text-center app-u-margin-right-10px-6b0d456">Cambio actual Bs. $</label><br>
                     <!-- <h2 class="text-primary text-center">{{this.company()?.change_bs_sus}}</h2> -->
                     <p-inputNumber
                       formControlName="actual_cambio"
-                      [style]="{'height': '35px'}"
+
                       [size]="5"
                       locale="en-US"
                       mode="decimal"
@@ -19,8 +18,7 @@
                       incrementButtonClass="p-button-primary"
                       [min]="0"
                       (onInput)="newCambio()"
-                      [max]="9999999999999.99"
-                    ></p-inputNumber>
+                      [max]="9999999999999.99" class="app-u-height-35px-11d06a7"></p-inputNumber>
                 </div>
             </div>
             <div class="col">

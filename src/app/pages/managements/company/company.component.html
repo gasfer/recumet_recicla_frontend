@@ -6,7 +6,7 @@
     </p-toolbar>
     <app-modal-company></app-modal-company>
     <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
-    <app-table [cols]="cols()" [isCustomSort]="false"
+    <app-table responsiveStrategy="scroll" [cols]="cols()" [isCustomSort]="false"
       [data]="companies()" [loading]="loading()">
     </app-table>
 </div>

@@ -2,12 +2,10 @@
   [header]="componentsService.nameImg()"
   [(visible)]="componentsService.setShowImg"
   [modal]="true"
-  [breakpoints]="{ '960px': '75vw', '576px': '95%' }"
   [style]="{ width: componentsService.withModal}"
   [draggable]="false"
   [resizable]="false"
-  [dismissableMask]="true"
->
+  [dismissableMask]="true" styleClass="app-dialog--md">
   <form>
     <div class="p-fluid grid">
       <p-tag
@@ -17,14 +15,14 @@
           icon="fa-solid fa-image"
       ></p-tag>
         <div class="text-center">
-            <img class="img-fluid" [src]="componentsService.srcImg() | image: componentsService.typeImg()" 
-              style="border-radius: 10px;" alt="">
+            <img class="img-fluid app-u-border-radius-10px-e609a24" [src]="componentsService.srcImg() | image: componentsService.typeImg()"
+              alt="">
         </div>
     </div>
   </form>
   <ng-template pTemplate="footer">
-    <p-button (click)="componentsService.setShowImg = false;" 
-      label="Ok, Cerrar" 
+    <p-button (click)="componentsService.setShowImg = false;"
+      label="Ok, Cerrar"
       styleClass="p-button-outlined p-button-sm p-button-rounded">
     </p-button>
   </ng-template>

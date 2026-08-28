@@ -8,23 +8,23 @@
         </div>
     </div>
 </div>
-<p-table *ngIf="transfersService.detailTransfer().length !== 0" [value]="transfersService.detailTransfer()" styleClass="p-datatable-sm" responsiveLayout="scroll">
+<p-table *ngIf="transfersService.detailTransfer().length !== 0" [value]="transfersService.detailTransfer()" styleClass="p-datatable-sm app-table-scroll" responsiveLayout="scroll">
     <ng-template pTemplate="header">
         <tr>
-            <th class="text-white" style="min-width: 120px; max-width: 300px; background-color: var(--bg-primary)">Producto</th>
-            <th class="text-white text-center" style=" background-color: var(--bg-primary);">Cantidad</th>
-            <th class="text-white text-center" style="min-width: 60px; max-width: 60px;  background-color: var(--bg-primary)">Quitar</th>
+            <th class="text-white app-u-min-width-120px-651945a app-u-max-width-300px-aef3df2 background-primary">Producto</th>
+            <th class="text-white text-center background-primary">Cantidad</th>
+            <th class="text-white text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838 background-primary">Quitar</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product>
         <tr>
-            <td style="min-width: 120px;  max-width: 300px; ">
+            <td class="app-u-min-width-120px-651945a app-u-max-width-300px-aef3df2">
                 <h5 class="m-0 p-0">{{product.name}}</h5>
-                <p style="font-size: 10px;" class="text-muted">{{product.description}} <br *ngIf="product.description"> <span class="text-black">{{product.cod}} / {{product.category.name}} / {{product.unit.name}}</span></p>
+                <p class="text-muted app-u-font-size-10px-0d5be05">{{product.description}} <br *ngIf="product.description"> <span class="text-black">{{product.cod}} / {{product.category.name}} / {{product.unit.name}}</span></p>
             </td>
             <td  class="text-center">
                 <p-inputNumber
-                    [style]="{'height': '38px'}"
+
                     [size]="5"
                     locale="en-US"
                     mode="decimal"
@@ -37,11 +37,11 @@
                     [max]="product.total_stock"
                     [inputId]="product.id"
                     [(ngModel)] = "product.quantity"
-                    (onInput)="updateQuantityProduct($event, product)">
+                    (onInput)="updateQuantityProduct($event, product)" class="app-u-height-38px-3b84911">
                 </p-inputNumber>
             </td>
-            <td class="text-center" style="min-width: 60px; max-width: 60px;">
-                <p-button
+            <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
+                <p-button ariaLabel="Eliminar"
                     (click)="deleteProductForDetailSale(product.id)"
                     icon="fa-regular fa-trash-can"
                     styleClass=" p-button-sm p-button-danger p-button-rounded">
@@ -51,9 +51,9 @@
     </ng-template>
     <ng-template pTemplate="footer">
         <tr>
-            <th colspan="1" class="text-end text-white pt-1" style=" background-color: var(--bg-primary)"><h4>Total: &nbsp;</h4></th>
-            <th colspan="1" class="text-center text-white pt-1" style=" background-color: var(--bg-primary)"><h4>{{ totalSummary()  | number:decimal() }}</h4></th>
-            <th colspan="1" style=" background-color: var(--bg-primary)"></th>
+            <th colspan="1" class="text-end text-white pt-1 background-primary"><h4>Total: &nbsp;</h4></th>
+            <th colspan="1" class="text-center text-white pt-1 background-primary"><h4>{{ totalSummary()  | number:decimal() }}</h4></th>
+            <th colspan="1" class="background-primary"></th>
         </tr>
         <tr>
             <td colspan="2" class="text-end bg-white">

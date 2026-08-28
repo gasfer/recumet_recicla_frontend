@@ -11,6 +11,9 @@ const routes: Routes = [
   { path: 'managements',loadChildren: () => import('./managements/managements.module').then(m => m.ManagementsModule) },
   { path: 'accounts',loadChildren: () => import('./accounts/accounts.module').then(m => m.AccountsModule) },
   { path: 'caja',loadChildren: () => import('./caja/caja.module').then(m => m.CajaModule) },
+  { path: 'providers', loadChildren: () => import('./providers/providers.module').then(m => m.ProvidersModule) },
+  { path: 'assets', loadChildren: () => import('./assets/assets.module').then(m => m.AssetsModule) },
+  { path: 'scale', loadChildren: () => import('./balanza/balanza.module').then(m => m.BalanzaModule) },
   { path: 'notifications', loadChildren: () => import('./notifications/notifications.module').then(m => m.NotificationsModule) },
   { path: '**', redirectTo: 'dashboard'}
 ];

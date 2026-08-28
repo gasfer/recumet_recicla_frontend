@@ -1,10 +1,10 @@
-<p-table #dt id="tableloading" [value]="cols" responsiveLayout="scroll" 
-       scrollHeight="400px"  styleClass=" p-datatable-sm p-datatable-striped animated fadeIn" >
+<p-table #dt id="tableloading" [value]="cols" responsiveLayout="scroll"
+       scrollHeight="400px"  styleClass=" p-datatable-sm p-datatable-striped animated fadeIn app-table-scroll" >
         <ng-template pTemplate="header">
             <tr>
                 <th *ngFor="let col of cols"
-                style="background-color: var(--bg-primary)"
-                class="text-white">
+
+                class="text-white background-primary">
                     {{col.header}}
                     <p-sortIcon></p-sortIcon>
                 </th>

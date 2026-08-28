@@ -2,7 +2,7 @@
     <div class="card shadow mb-4 icon-box ">
       <div class="card-body">
         <div class="row text-center">
-          <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE CUENTAS POR PAGAR</b></h3>
+          <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE CUENTAS POR PAGAR</b></h3>
         </div>
         <p-accordion [activeIndex]="1">
           <p-accordionTab header="Filtros">
@@ -100,17 +100,17 @@
     </div>
   </div>
   @if (!isTableAbonos()) {
-    <app-table [cols]="cols()"  (customSort$)="customSort($event)" [searchTxt]="txtSearch()" [sortOrder]="'DESC'" [sortField]="'input.date_voucher'"
+    <app-table responsiveStrategy="scroll" [cols]="cols()"  (customSort$)="customSort($event)" [searchTxt]="txtSearch()" [sortOrder]="'DESC'" [sortField]="'input.date_voucher'"
       [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
       [data]="accountsPayable()" [loading]="loading()">
     </app-table>
   } @else {
-    <app-table [cols]="colsAbonos()"  (customSort$)="customSort($event)" [sortOrder]="'DESC'" [sortField]="'date_abono'"
+    <app-table responsiveStrategy="scroll" [cols]="colsAbonos()"  (customSort$)="customSort($event)" [sortOrder]="'DESC'" [sortField]="'date_abono'"
       [searchFor]="searchForAbonos()" (rows$)="paginate($event)"  [includeSearch]="true"
       [data]="abonosAccountsPayable()" [loading]="loading()" (search$)="search($event)">
     </app-table>
   }
-  <input type="file" #mainFileInput style="display: none" (change)="onMainFileSelected($event)" accept="image/*,application/pdf">
+  <input type="file" #mainFileInput (change)="onMainFileSelected($event)" accept="image/*,application/pdf" class="d-none">
   <app-modal-view-abonos-account-payable></app-modal-view-abonos-account-payable>
   <app-modal-new-abono-account-payable></app-modal-new-abono-account-payable>
   <app-modal-new-abonos-multiple-payable></app-modal-new-abonos-multiple-payable>

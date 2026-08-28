@@ -4,6 +4,7 @@ import { Product } from 'src/app/pages/inventories/interfaces/products.interface
 import { CategoriesService } from 'src/app/pages/inventories/services/categories.service';
 import { ProductsService } from 'src/app/pages/inventories/services/products.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
+import { ProductAccessContext } from '../../constants/product-category-access.constants';
 
 @Component({
   selector: 'app-dataview-products',
@@ -26,6 +27,8 @@ export class DataviewProductsComponent implements OnInit, OnChanges {
   @Input() withStock : boolean = false;
   @Input() typeFrom : ''|'INPUT' | 'OUTPUT' = '';
   @Input() categoryType : string = '';
+  @Input() productContext: ProductAccessContext | '' = '';
+  @Input() prominentProductCode: boolean = false;
   products          = signal<Product[]>([]);
   categories        = signal<{name:string,code:string}[]>([]);
   productsService   = inject(ProductsService);
@@ -49,7 +52,8 @@ export class DataviewProductsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['categoryType'] && !changes['categoryType'].firstChange) {
+    if ((changes['categoryType'] && !changes['categoryType'].firstChange)
+      || (changes['productContext'] && !changes['productContext'].firstChange)) {
       this.getAllAndSearchProducts(1, this.rows, true);
       this.getAllCategories();
     }
@@ -82,7 +86,7 @@ export class DataviewProductsComponent implements OnInit, OnChanges {
 
   getAllAndSearchProducts(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
     if(!query) {this.loading.set(true);} //not loading in search
-    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage,'name','ASC',this.withStock,this.categoryType).subscribe({
+    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage,'name','ASC',this.withStock,this.categoryType,this.productContext).subscribe({
       next: (resp) => {
         this.products.set(resp.products.data);
         this.total = resp.products.total;
@@ -127,7 +131,7 @@ export class DataviewProductsComponent implements OnInit, OnChanges {
 
   getAllCategories() {
     this.categories.set([]);
-    this.categoriesService.getAllAndSearch(1,10000,true,'','',this.categoryType).subscribe(resp => {
+    this.categoriesService.getAllAndSearch(1,10000,true,'','',this.categoryType,'id','DESC',this.productContext).subscribe(resp => {
       const formattedCategory = resp.categories.data.map(category => ({
         name: category.name,
         code: category.id!.toString()

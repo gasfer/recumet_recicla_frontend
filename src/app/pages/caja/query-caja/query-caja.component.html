@@ -2,7 +2,7 @@
     <div class="card shadow mb-4 icon-box ">
         <div class="card-body">
             <div class="row text-center">
-                <h3 style="color: var(--bg-2665C);"><b>CONSULTA DE CAJA</b></h3>
+                <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE CAJA</b></h3>
             </div>
             <p-accordion [activeIndex]="1">
                 <p-accordionTab header="Filtros">
@@ -77,8 +77,8 @@
         </div>
     </div>
 </form>
-<app-table  [cols]="cols()"  (customSort$)="customSort($event)"
-  [includeSearch]="false" (rows$)="paginate($event)" 
+<app-table responsiveStrategy="scroll"  [cols]="cols()"  (customSort$)="customSort($event)"
+  [includeSearch]="false" (rows$)="paginate($event)"
   [data]="cajasSmall()" [loading]="loading()">
 </app-table>
 <app-modal-open-close-edit-apertura-caja (save$)="getAllAndSearchCajasSmall(1,this.rows());" [totalMovements]="totalMovements()"></app-modal-open-close-edit-apertura-caja>

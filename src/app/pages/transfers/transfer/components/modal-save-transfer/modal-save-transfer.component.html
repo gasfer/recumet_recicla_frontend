@@ -1,16 +1,16 @@
 <p-dialog [header]="'Registro de traslado'" [(visible)]="transfersService.showModalSaveTransfer"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '40vw' }" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true" (onHide)="resetModal()">
+    [modal]="true" [draggable]="false"
+    [resizable]="false" [dismissableMask]="true" (onHide)="resetModal()" styleClass="app-dialog--md">
     <form [formGroup]="formTransferData">
         <div class="p-fluid grid">
             <div class="field col-12">
                 <div class="row mt-1">
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">Sucursal destino<span class="text-danger">*</span></label>
-                        <p-dropdown [options]="sucursales()" 
+                        <p-dropdown [options]="sucursales()"
                         optionLabel="name" optionValue="id"
                         [showClear]="false" appendTo="body"
-                        [virtualScrollItemSize]="38" [lazy]="true" 
+                        [virtualScrollItemSize]="38" [lazy]="true"
                         formControlName="id_sucursal_received"
                         [class.ng-dirty]="validatorsService.inputValid('id_sucursal_received',formTransferData)"
                         placeholder="SELECCIONA SUCURSAL"></p-dropdown>
@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-sm-6 col-12">
                         <div class="row">
-                            
+
                             <div class="col-sm-6 col-12">
                                 <label class="block mb-0">Cantidad Productos</label><br>
                                 <p-tag [rounded]="true" [severity]="'success'"
@@ -39,7 +39,7 @@
                             appendTo="body"
                             dateFormat="dd/mm/yy"
                             [showIcon]="true"
-                            [showTime]="true" 
+                            [showTime]="true"
                             [hourFormat]="'24'"
                             [class.ng-dirty]="validatorsService.inputValid('date_send',formTransferData)">
                         </p-calendar>
@@ -52,14 +52,14 @@
                         <label class="block mb-0">Observaciones de envió</label>
                         <textarea pInputTextarea
                             type="text"
-                            style="text-transform: uppercase"
+
                             pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="observations_send"
                             placeholder="EJ. ......"
-                            class="mt-1"
+                            class="mt-1 text-uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('observations_send',formTransferData)"
-                        ></textarea> 
+                        ></textarea>
                         <small *ngIf="validatorsService.inputValid('observations_send',formTransferData)" class="p-error block">
                             {{ validatorsService.inputValidMessage("observations_send",formTransferData) }}
                         </small>
@@ -99,11 +99,10 @@
                     @if (formTransferData.get('type_registry')?.value != 'SIN FICHA') {
                         <div class="col-sm-6 col-12 animated fadeInDown">
                             <label class="block mb-0">Nro. Pesaje</label>
-                            <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                            <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                                 formControlName="registry_number" placeholder="EJ. 0001"
                                 [pKeyFilter]="validatorsService.expRegValidInput"
-                                [class.ng-dirty]="validatorsService.inputValid('registry_number',formTransferData)"
-                            />
+                                [class.ng-dirty]="validatorsService.inputValid('registry_number',formTransferData)" class="text-uppercase"/>
                             <small *ngIf="validatorsService.inputValid('registry_number',formTransferData)" class="p-error block">
                                 {{ validatorsService.inputValidMessage("registry_number",formTransferData) }}
                             </small>
@@ -116,8 +115,8 @@
                         </div>
                     }
                 </div>
-            </div> 
-        </div> 
+            </div>
+        </div>
       </form>
       <ng-template pTemplate="footer">
         <p-button (click)="loading() ? null : saveTransfer()" styleClass="p-button-sm p-button-rounded"

@@ -1,11 +1,13 @@
+import { PermissionAction } from 'src/app/core/constants/application-navigation.constants';
+
 export interface MenuItem {
     name?: string ;
-    action?: 'view'|'create'|'update'|'delete'|'reports' ;
+    action?: PermissionAction;
     id?: number;
     label?: string;
     icon?: string;
     link?: string;
-    subItems?: any;
+    subItems?: MenuItem[];
     view?: boolean;
     isTitle?: boolean;
     badge?: any;

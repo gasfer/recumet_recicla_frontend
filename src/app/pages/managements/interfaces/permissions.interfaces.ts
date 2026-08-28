@@ -6,5 +6,6 @@ export interface Permission {
     update:  boolean;
     delete:  boolean;
     reports: boolean;
+    allowed_category_types?: string[];
     status:  boolean;
 }

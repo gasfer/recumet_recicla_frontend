@@ -42,8 +42,8 @@
             <p-messages severity="info">
               <ng-template pTemplate>
                 <b>PESAJES MANUALES &nbsp;<i class="fa-solid fa-scale-balanced"></i></b>
-                <i class="fa-solid fa-clipboard-list ms-5 p-text-secondary"
-                   pBadge style="font-size:1.2rem"
+                <i class="fa-solid fa-clipboard-list ms-5 p-text-secondary app-u-font-size-1-2rem-101860a"
+                   pBadge
                    value="{{ totalRegistros() }}"></i>
               </ng-template>
             </p-messages>
@@ -59,7 +59,7 @@
           [value]="pesajes()"
           [loading]="loading()"
           responsiveLayout="scroll"
-          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped app-table-scroll"
           [rowHover]="true"
           [paginator]="true"
           [rows]="10">
@@ -99,11 +99,13 @@
               </td>
               <td class="text-center">
                 <button pButton icon="pi pi-pencil"
+                        aria-label="Editar pesaje manual"
                         class="p-button-rounded p-button-text p-button-sm"
                         pTooltip="Editar" tooltipPosition="top"
                         (click)="openEdit(p)"
                         [disabled]="p.estado === 'ANULADO'"></button>
                 <button pButton icon="pi pi-ban"
+                        aria-label="Anular pesaje manual"
                         class="p-button-rounded p-button-text p-button-danger p-button-sm"
                         pTooltip="Anular" tooltipPosition="top"
                         (click)="confirmAnular(p)"
@@ -131,9 +133,8 @@
   [modal]="true"
   [closable]="true"
   [header]="isEditing() ? 'Editar Pesaje Manual' : 'Nuevo Pesaje Manual'"
-  [style]="{width:'620px'}"
   [draggable]="false"
-  appendTo="body">
+  appendTo="body" styleClass="app-dialog--md">
 
   <form [formGroup]="form">
     <div class="row g-2 mt-0">
@@ -218,6 +219,7 @@
     <button pButton label="Cancelar" icon="pi pi-times"
             class="p-button-text" (click)="closeDialog()"></button>
     <button pButton
+            [attr.aria-label]="isEditing() ? 'Actualizar' : 'Registrar'"
             [label]="isEditing() ? 'Actualizar' : 'Registrar'"
             icon="pi pi-check" (click)="save()"></button>
   </ng-template>

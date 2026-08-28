@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { Provider } from '../interfaces/provider.interface';
+import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'app-query-inputs',
   templateUrl: './query-inputs.component.html',
@@ -162,6 +163,8 @@ export class QueryInputsComponent implements OnInit {
     {name: 'USUARIO', code: 'user.full_names'},
   ]);
   loading      = signal(false);
+  traceabilityVisible = signal(false);
+  traceabilityData = signal<any>(null);
   rows         = signal(50);
   page         = signal(1);
   type         = signal('');
@@ -262,6 +265,12 @@ export class QueryInputsComponent implements OnInit {
               }
             },
             {
+              label:'',icon:'fa-solid fa-clock-rotate-left',
+              tooltip: 'Ver trazabilidad',
+              class:'p-button-rounded p-button-info p-button-sm ms-1',
+              eventClick: () => this.showTraceability(input)
+            },
+            {
               label:'',icon:'fas fa-edit',
               tooltip: this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,30) ? 'La fecha límite de edición ha sido superada.' : 'Editar',
               disabled:  !this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,30) ? this.validatorsService.withPermission('COMPRAS','update') : false,
@@ -323,6 +332,12 @@ export class QueryInputsComponent implements OnInit {
                 this.inputsService.showModalDetailsInput = true;
               }
             },
+            {
+              label:'',icon:'fa-solid fa-clock-rotate-left',
+              tooltip: 'Ver trazabilidad',
+              class:'p-button-rounded p-button-info p-button-sm ms-1',
+              eventClick: () => this.showTraceability(input)
+            },
           ] ;
         });
         const totalInput = resp.inputs?.totals?.totalInput ?? 0;
@@ -336,12 +351,52 @@ export class QueryInputsComponent implements OnInit {
 
   }
 
-  anularInput(input: Input) {
-    Swal.fire({
-      title: `¿Esta seguro de anular Compra?`,
-      text: `Esta apunto de anular la compra: ${input.cod} - ${input.registry_number}`,
+  private escapeHtml(value: unknown): string {
+    return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char] || char));
+  }
+
+  async showTraceability(input: Input) {
+    Swal.fire({ title: 'Cargando trazabilidad', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
+    try {
+      const response = await firstValueFrom(this.inputsService.getPurchaseTraceability(input.id));
+      Swal.close();
+      this.traceabilityData.set(response.traceability);
+      this.traceabilityVisible.set(true);
+      return;
+      const trace = response.traceability;
+      const events = trace.events || [];
+      const html = events.length ? events.map((event: any) => {
+        const actor = this.escapeHtml(event.actor?.full_names || 'Usuario no disponible');
+        const authorizer = event.authorizer ? `<div><b>Autorizó:</b> ${this.escapeHtml(event.authorizer.full_names)}</div>` : '';
+        const changes = (event.changed_fields || []).map((change: any) => `<li><b>${this.escapeHtml(change.field)}</b>: ${this.escapeHtml(change.before ?? '—')} → ${this.escapeHtml(change.after ?? '—')}</li>`).join('');
+        return `<article style="border-left:4px solid #0ea5e9;padding:.65rem .9rem;margin:.6rem 0;background:#f8fafc;text-align:left;border-radius:6px">
+          <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap"><b>${this.escapeHtml(event.event_type)}</b><span>${this.escapeHtml(new Date(event.createdAt).toLocaleString())}</span></div>
+          <div><b>Realizó:</b> ${actor}</div>${authorizer}
+          ${event.reason ? `<div><b>Motivo:</b> ${this.escapeHtml(event.reason)}</div>` : ''}
+          ${event.historical_incomplete ? '<div style="color:#b45309"><b>Antecedente general:</b> no existe detalle anterior disponible.</div>' : ''}
+          ${changes ? `<ul style="margin:.4rem 0 0;padding-left:1.2rem">${changes}</ul>` : ''}</article>`;
+      }).join('') : '<p>No existen eventos de trazabilidad para esta boleta.</p>';
+      await Swal.fire({ title: `Trazabilidad · ${this.escapeHtml(input.cod)}`, html, width: 'min(980px, 96vw)', confirmButtonText: 'Cerrar', customClass: { container: 'sweetalert2' } });
+    } catch {
+      await Swal.fire('Atención', 'No se pudo consultar la trazabilidad de la compra.', 'error');
+    }
+  }
+
+  async anularInput(input: Input) {
+    try {
+      const response = await firstValueFrom(this.inputsService.previewVoidInput(input.id));
+      const preview = response.preview;
+      const materials = (preview.materials || []).map((item: any) => `<li>${this.escapeHtml(item.product?.cod)} · ${this.escapeHtml(item.product?.name)}: ${this.escapeHtml(item.quantity)} kg</li>`).join('');
+      const account = preview.account_payable ? `<p><b>Cuenta por pagar:</b> ${this.escapeHtml(preview.account_payable.cod)} · Pendiente Bs ${this.escapeHtml(preview.account_payable.pending)}</p>` : '<p>Sin cuenta por pagar.</p>';
+      const result = await Swal.fire({
+      title: `Anular compra ${this.escapeHtml(input.cod)}`,
+      html: `<div style="text-align:left"><p>Esta acción conservará la auditoría y descontará el stock correspondiente.</p><p><b>Proveedor:</b> ${this.escapeHtml(preview.purchase.provider?.full_names)}</p>${account}<b>Materiales:</b><ul>${materials}</ul></div>`,
       icon: `warning`,
-      confirmButtonText: `Si, Anular!`,
+      input: 'textarea',
+      inputLabel: 'Motivo obligatorio',
+      inputPlaceholder: 'Explique por qué se anula esta compra',
+      inputValidator: value => String(value || '').trim().length < 5 ? 'Ingrese un motivo de al menos 5 caracteres.' : undefined,
+      confirmButtonText: `Sí, anular compra`,
       showLoaderOnConfirm: true,
       showCancelButton: true,
       backdrop:true,
@@ -349,23 +404,15 @@ export class QueryInputsComponent implements OnInit {
       cancelButtonColor: '#d33',
       cancelButtonText: 'Cancelar',
       customClass: { container: 'sweetalert2'},
-      preConfirm: () => {
-        return new Promise((resolve, reject) => {
-          this.inputsService.deleteInput(input.id).subscribe({
-            complete: () => resolve(true),
-            error: (err) => {
-              Swal.showValidationMessage(`Ops...! Lamentablemente no se puedo realizar la solicitud`);
-              resolve(false);
-            }
-          });
-        });
+      preConfirm: async (reason) => {
+        try { await firstValueFrom(this.inputsService.deleteInput(input.id, String(reason).trim())); return true; }
+        catch (error: any) { Swal.showValidationMessage(error?.error?.errors?.[0]?.msg || 'No se pudo anular la compra.'); return false; }
       },
       allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-      if(!result.isConfirmed) return;
-      if(result.value) {
+      });
+      if(result.isConfirmed && result.value) {
         this.getAllAndSearchInputs(1,this.rows());
-        Swal.fire({
+        await Swal.fire({
           title: 'Éxito!',
           text: `La compra fue anulada correctamente, Disponible en la sección de anulados`,
           icon: 'success',
@@ -373,7 +420,9 @@ export class QueryInputsComponent implements OnInit {
           customClass: { container: 'sweetalert2'},
         });
       }
-    });
+    } catch {
+      await Swal.fire('Atención', 'No se pudo preparar la anulación de la compra.', 'error');
+    }
   }
 
   formParamsByForm() {
@@ -448,24 +497,36 @@ export class QueryInputsComponent implements OnInit {
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
     this.formParamsByForm();
+
+    // Reserve the tab during the user gesture. Opening it after the HTTP
+    // response is commonly blocked by the browser as an unsolicited popup.
+    const previewWindow = window.open('', '_blank');
+    if (!previewWindow) {
+      Swal.fire('Previsualización bloqueada', 'Permita ventanas emergentes para visualizar el PDF de compras.', 'warning');
+      return;
+    }
+    previewWindow.document.title = 'Generando reporte de compras';
+    previewWindow.document.body.innerHTML = '<p style="font-family:Arial;padding:24px">Generando reporte de compras…</p>';
+
     Swal.fire({
       title: 'Generando Reporte!',
       html: `Con los parámetros seleccionados`,
+      allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.inputsService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
-            error: (err) => {
-              Swal.close();
-            },
-          });
-        });
+      },
+    });
+
+    this.inputsService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
+      next: (data) => {
+        const fileURL = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
+        previewWindow.location.replace(fileURL);
+        Swal.close();
+        setTimeout(() => URL.revokeObjectURL(fileURL), 120000);
+      },
+      error: () => {
+        previewWindow.close();
+        Swal.fire('No se pudo generar el PDF', 'Revise los filtros e intente nuevamente.', 'error');
       },
     });
   }

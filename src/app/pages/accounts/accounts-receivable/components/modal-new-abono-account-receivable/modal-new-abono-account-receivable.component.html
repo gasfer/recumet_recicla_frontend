@@ -1,7 +1,7 @@
 <p-dialog [header]="'Nuevo abono a ' + accountReceivable()?.client?.full_names" [(visible)]="accountsReceivableService.showModalNewAbono"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="abonoForm" (submit)="!loading() ? newAbono() : null">
         <app-alert-notify></app-alert-notify>
         <p-tag styleClass="m-2 ms-0 mb-1" value="CUENTA: {{accountReceivable()?.cod}} " [rounded]="true"></p-tag>
@@ -10,11 +10,11 @@
                 <div class="field">
                     <label class="block mb-0">Fecha abono<span class="text-danger">*</span>
                     </label>
-                    <p-calendar 
+                    <p-calendar
                         formControlName="date_abono"
                         appendTo="body"
-                        dateFormat="dd/mm/yy" 
-                        [showIcon]="true" 
+                        dateFormat="dd/mm/yy"
+                        [showIcon]="true"
                         [showTime]="true"
                         [class.ng-dirty]="validatorsService.inputValid('date_abono',abonoForm)">
                     </p-calendar>
@@ -53,14 +53,14 @@
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">Pago en<span class="text-danger">*</span>
                         </label>
-                        <p-dropdown [options]="types_pay()" 
-                          placeholder="Selecciona una opción" 
+                        <p-dropdown [options]="types_pay()"
+                          placeholder="Selecciona una opción"
                           optionLabel="name"
                           optionValue="code"
                           appendTo="body"
-                          (onChange)="selectTypePay()"  
+                          (onChange)="selectTypePay()"
                           [virtualScrollItemSize]="38" [lazy]="true"
-                          formControlName="type_payment" 
+                          formControlName="type_payment"
                           [class.ng-dirty]="validatorsService.inputValid('type_payment',abonoForm)"
                         ></p-dropdown>
                         <small *ngIf="validatorsService.inputValid('type_payment',abonoForm)" class="p-error block">
@@ -71,14 +71,14 @@
                         <label class="block mb-0">Concepto</label>
                         <textarea pInputTextarea
                             type="text"
-                            style="text-transform: uppercase"
+
                             pInputText
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="comments"
                             placeholder="EJ. ......"
-                            class="mt-1"
+                            class="mt-1 text-uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('comments',abonoForm)"
-                        ></textarea> 
+                        ></textarea>
                         <small *ngIf="validatorsService.inputValid('comments',abonoForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("comments",abonoForm) }}
                         </small>
@@ -88,13 +88,13 @@
                     <div class="col-sm-6 col-12">
                         <label class="block mb-0">Banco<span class="text-danger">*</span>
                         </label>
-                        <p-dropdown [options]="banks()" 
-                          placeholder="Selecciona una opción" 
+                        <p-dropdown [options]="banks()"
+                          placeholder="Selecciona una opción"
                           optionLabel="name"
                           optionValue="id"
-                          appendTo="body"  
+                          appendTo="body"
                           [virtualScrollItemSize]="38" [lazy]="true"
-                          formControlName="id_bank" 
+                          formControlName="id_bank"
                           [class.ng-dirty]="validatorsService.inputValid('id_bank',abonoForm)"
                         ></p-dropdown>
                         <small *ngIf="validatorsService.inputValid('id_bank',abonoForm)" class="p-error block">
@@ -104,13 +104,12 @@
                     <div class="col-sm-6 col-12 mt-sm-0 mt-1">
                         <label *ngIf="abonoForm.get('type_payment')?.value == 'CHEQUE'" class="block mb-0">N. Cheque</label>
                         <label *ngIf="abonoForm.get('type_payment')?.value == 'TRANSFERENCIA'" class="block mb-0">N. Cuenta</label>
-                        <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="account_input" placeholder="EJ. " 
-                            [class.ng-dirty]="validatorsService.inputValid('account_input',abonoForm)" 
-                        />
+                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                            formControlName="account_input" placeholder="EJ. "
+                            [class.ng-dirty]="validatorsService.inputValid('account_input',abonoForm)" class="text-uppercase"/>
                         <small *ngIf="validatorsService.inputValid('account_input',abonoForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("account_input",abonoForm) }}
-                        </small>    
+                        </small>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import { ComponentsService } from 'src/app/core/services/components.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import Swal from 'sweetalert2';
 import { Product } from '../../inventories/interfaces/products.interface';
+import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 
 @Component({
   selector: 'app-transfer',
@@ -19,6 +20,7 @@ import { Product } from '../../inventories/interfaces/products.interface';
   ]
 })
 export class TransferComponent implements OnInit {
+  readonly productContext = ProductAccessContext.Transfers;
   fb                = inject( FormBuilder  );
   productService    = inject( ProductsService );
   transfersService  = inject( TransfersService );
@@ -53,7 +55,7 @@ export class TransferComponent implements OnInit {
     this.loadingSearchProduct.set(true);
     this.txtSearchProduct.set(txtSearchProduct);
     this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'name','ASC', true)
+    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'name','ASC',true,'',this.productContext)
         .subscribe({
           next: (resp) => {
             this.suggestedProducts.set(resp.products.data);

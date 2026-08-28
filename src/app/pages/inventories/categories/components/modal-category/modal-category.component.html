@@ -1,7 +1,6 @@
 <p-dialog [header]="!categoriesService.isEdit ? 'Registro Categoría' : 'Modificar Categoría'"
-    [(visible)]="categoriesService.showModal" [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }"
-    [style]="{ width: '35vw' }" [draggable]="false" [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [(visible)]="categoriesService.showModal" [modal]="true" [draggable]="false" [resizable]="false" (onHide)="resetModal()"
+    [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="categoryForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
@@ -9,10 +8,10 @@
                 <div class="field">
                     <label class="block mb-0">Nombre<span class="text-danger">*</span>
                     </label>
-                    <input type="text" style="text-transform: uppercase" pInputText
+                    <input type="text" pInputText
                         [pKeyFilter]="validatorsService.expRegValidInput" formControlName="name"
                         placeholder="EJ. METALES FERROSOS"
-                        [class.ng-dirty]="validatorsService.inputValid('name',categoryForm)" />
+                        [class.ng-dirty]="validatorsService.inputValid('name',categoryForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('name',categoryForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("name",categoryForm) }}
                     </small>
@@ -20,9 +19,9 @@
                 <div class="field mt-2">
                     <label class="block mb-0">Descripcion<span class="text-danger">*</span>
                     </label>
-                    <textarea pInputTextarea type="text" style="text-transform: uppercase" pInputText
+                    <textarea pInputTextarea type="text" pInputText
                         [pKeyFilter]="validatorsService.expRegValidInput" formControlName="description"
-                        placeholder="EJ. ......" class="mt-1"
+                        placeholder="EJ. ......" class="mt-1 text-uppercase"
                         [class.ng-dirty]="validatorsService.inputValid('description',categoryForm)"></textarea>
                     <small *ngIf="validatorsService.inputValid('description',categoryForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("description",categoryForm) }}
@@ -31,7 +30,7 @@
                 <div class="field mt-2">
                     <label class="block mb-0">Tipo<span class="text-danger">*</span></label>
                     <p-dropdown [options]="types" formControlName="type" optionLabel="label" optionValue="value"
-                        placeholder="Seleccione un tipo" [style]="{width: '100%'}" appendTo="body">
+                        placeholder="Seleccione un tipo" appendTo="body" class="app-u-width-100-0466783">
                     </p-dropdown>
                     <small *ngIf="validatorsService.inputValid('type', categoryForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("type", categoryForm) }}
@@ -47,9 +46,7 @@
                     <div class="col">
                         <p-tag [rounded]="true"
                             [icon]="categoryForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                            [style]="categoryForm.get('status')!.value
-                                          ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
-                                          : { 'background-color': 'red', color: '#ffffff' }"
+                            [styleClass]="categoryForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
                             [value]="categoryForm.get('status')!.value ? 'Activo' : 'Inactivo'">
                         </p-tag>
                     </div>

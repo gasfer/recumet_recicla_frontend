@@ -1,0 +1,27 @@
+.bg-purple {
+  background-color: #6f42c1 !important;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.bg-danger-subtle {
+  background-color: #f8d7da !important;
+}
+
+.bg-success-subtle {
+  background-color: #d1e7dd !important;
+}
+
+.bg-warning-subtle {
+  background-color: #fff3cd !important;
+}
+
+.bg-info-subtle {
+  background-color: #cff4fc !important;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.65rem 0.75rem;
+}

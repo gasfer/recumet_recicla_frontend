@@ -1,0 +1,1140 @@
+{
+  "generatedBy": "npm run responsive:inventory",
+  "viewports": [
+    320,
+    360,
+    390,
+    768,
+    1024,
+    1366
+  ],
+  "totals": {
+    "routes": 56,
+    "dialogs": 62,
+    "tables": 38,
+    "tableConsumers": 46,
+    "stackTableConsumers": 16,
+    "scrollTableConsumers": 30,
+    "literalStyles": 0,
+    "styleBindings": 17,
+    "ngStyleBindings": 0,
+    "domStyleAssignments": 0
+  },
+  "routes": [
+    "/accounts/accounts-payable",
+    "/accounts/accounts-receivable",
+    "/assets/inputs/purchase-management",
+    "/assets/inputs/purchase-order",
+    "/assets/inputs/purchase-request",
+    "/assets/outputs/consumables",
+    "/assets/outputs/output-management",
+    "/assets/outputs/tools",
+    "/caja/adm-caja",
+    "/caja/expenses",
+    "/caja/major-transfers",
+    "/caja/query-caja",
+    "/classifieds/classified",
+    "/classifieds/query-classifieds",
+    "/dashboard/home",
+    "/inputs/input-small",
+    "/inputs/providers",
+    "/inputs/query-inputs",
+    "/inventories/categories",
+    "/inventories/fixed-assets/furniture-office",
+    "/inventories/fixed-assets/machinery",
+    "/inventories/fixed-assets/supplies",
+    "/inventories/fixed-assets/vehicles",
+    "/inventories/kardex-fisico/all",
+    "/inventories/kardex-fisico/ar",
+    "/inventories/kardex-fisico/mp",
+    "/inventories/kardex-fisico/pt",
+    "/inventories/products",
+    "/inventories/scales",
+    "/inventories/total-stock-recumet",
+    "/inventories/units",
+    "/managements/company",
+    "/managements/storages",
+    "/managements/sucursales",
+    "/managements/trasport_company",
+    "/managements/users",
+    "/outputs/clients",
+    "/outputs/output",
+    "/outputs/query-outputs",
+    "/providers/accounts",
+    "/providers/certify",
+    "/providers/purchases",
+    "/providers/schedule-pickup",
+    "/scale/drivers/query",
+    "/scale/drivers/register",
+    "/scale/manual-scale/query",
+    "/scale/manual-scale/register",
+    "/scale/service/query",
+    "/scale/service/register",
+    "/scale/truck-scale/query",
+    "/scale/truck-scale/register",
+    "/scale/trucks/query",
+    "/scale/trucks/register",
+    "/transfers/query-receptions",
+    "/transfers/query-transfers",
+    "/transfers/transfer"
+  ],
+  "dialogs": [
+    {
+      "file": "src/app/auth/login/login.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/core/components/dataview-products/dataview-products.component.html",
+      "variant": "xl",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/core/components/modal-update-bs-sus/modal-update-bs-sus.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/core/components/table/table.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/core/components/view-image/view-image.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": true
+    },
+    {
+      "file": "src/app/pages/Expenses/input-small/components/modal-config-input/modal-config-input.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/Expenses/input-small/components/modal-save-input/modal-save-input.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/Expenses/providers/components/modal-new-sector/modal-new-sector.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/Expenses/providers/components/modal-provider/modal-provider.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/Expenses/providers/components/modal-sectors/modal-sectors.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/Expenses/query-inputs/components/modal-view-details/modal-view-details.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-payable/components/modal-new-abono-account-payable/modal-new-abono-account-payable.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-payable/components/modal-new-abonos-multiple/modal-new-abonos-multiple-payable.component.html",
+      "variant": "lg",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-payable/components/modal-view-abonos-account-payable/modal-view-abonos-account-payable.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-receivable/components/modal-new-abono-account-receivable/modal-new-abono-account-receivable.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-receivable/components/modal-new-abonos-multiple/modal-new-abonos-multiple-receivable.component.html",
+      "variant": "lg",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-receivable/components/modal-view-abonos-account-receivable/modal-view-abonos-account-receivable.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/balanza/balanza-camionera/balanza-camionera.component.html",
+      "variant": "lg",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/balanza/balanza-camionera/balanza-camionera.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/balanza/balanza-camionera/balanza-camionera.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/balanza/balanza-manual/balanza-manual.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/balanza/servicio-balanza/servicio-balanza.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/balanza/servicio-balanza/servicio-balanza.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/caja/adm-caja/components/modal-new-detail-caja/modal-new-detail-caja.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/caja/adm-caja/components/modal-open-close-edit-apertura-caja/modal-open-close-edit-apertura-caja.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/classifieds/classified/components/modal-config-classified/modal-config-classified.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/classifieds/classified/components/modal-save-classified/modal-save-classified.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/classifieds/query-classifieds/components/modal-view-details/modal-view-details.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inputs/input-small/components/modal-config-input/modal-config-input.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inputs/input-small/components/modal-save-input/modal-save-input.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inputs/providers/components/modal-new-sector/modal-new-sector.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inputs/providers/components/modal-provider/modal-provider.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inputs/providers/components/modal-sectors/modal-sectors.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inputs/query-inputs/components/modal-view-details/modal-view-details.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inventories/categories/components/modal-category/modal-category.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inventories/products/components/modal-assign-sucursales-products/modal-assign-sucursales-products.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inventories/products/components/modal-new-price/modal-new-price.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inventories/products/components/modal-prices/modal-prices.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inventories/products/components/modal-product/modal-product.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inventories/products/components/modal-providers-product/modal-providers-product.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inventories/scales/components/modal-scale/modal-scale.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/inventories/units/components/modal-unit/modal-unit.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/company/components/modal-company/modal-company.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/storages/components/modal-storage/modal-storage.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/sucursales/components/modal-sucursal/modal-sucursal.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/components/modal-cargo-trucks/modal-cargo-trucks.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/components/modal-chauffeurs/modal-chauffeurs.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/components/modal-new-cargo-trucks/modal-new-cargo-trucks.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/components/modal-new-chauffeur/modal-new-chauffeur.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/components/modal-trasport-company/modal-trasport-company.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/users/components/modal-assign-permissions/modal-assign-permissions.component.html",
+      "variant": "lg",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/users/components/modal-assign-shifts/modal-assign-shifts.component.html",
+      "variant": "lg",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/users/components/modal-assign-sucursales/modal-assign-sucursales.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/managements/users/components/modal-user/modal-user.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/outputs/clients/components/modal-client/modal-client.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/outputs/output/components/modal-config-output/modal-config-output.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/outputs/output/components/modal-save-output/modal-save-output.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/outputs/query-outputs/components/modal-view-details/modal-view-details.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/transfers/components/modal-view-details/modal-view-details.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/transfers/query-receptions/components/modal-approved-transfer/modal-approved-transfer.component.html",
+      "variant": "lg",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/transfers/transfer/components/modal-config-transfer/modal-config-transfer.component.html",
+      "variant": "sm",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    },
+    {
+      "file": "src/app/pages/transfers/transfer/components/modal-save-transfer/modal-save-transfer.component.html",
+      "variant": "md",
+      "source": "class",
+      "hasBreakpoints": false,
+      "hasExplicitWidth": false
+    }
+  ],
+  "tables": [
+    {
+      "file": "src/app/core/components/table/table.component.html",
+      "kind": "primeng",
+      "strategy": "consumer-controlled",
+      "source": "bound-input"
+    },
+    {
+      "file": "src/app/core/components/table/table.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/core/components/table/table.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/core/components/table/table.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/core/components/table/table.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/core/components/table-loading/table-loading.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/Expenses/input-small/components/table-input-details/table-input-details.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/Expenses/query-inputs/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/Expenses/query-inputs/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-payable/components/modal-new-abonos-multiple/modal-new-abonos-multiple-payable.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-payable/components/modal-view-abonos-account-payable/modal-view-abonos-account-payable.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-payable/components/modal-view-abonos-account-payable/modal-view-abonos-account-payable.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-receivable/components/modal-new-abonos-multiple/modal-new-abonos-multiple-receivable.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-receivable/components/modal-view-abonos-account-receivable/modal-view-abonos-account-receivable.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-receivable/components/modal-view-abonos-account-receivable/modal-view-abonos-account-receivable.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/balanza/balanza-camionera/balanza-camionera.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/balanza/balanza-manual/balanza-manual.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/balanza/servicio-balanza/servicio-balanza.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/classifieds/classified/components/table-classified-details/table-classified-details.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/classifieds/query-classifieds/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/classifieds/query-classifieds/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/inputs/input-small/components/table-input-details/table-input-details.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/inputs/query-inputs/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/inputs/query-inputs/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/inventories/list-costs-product/components/table-list-costs-products/table-list-costs-products.component.html",
+      "kind": "primeng",
+      "strategy": "stack",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/inventories/products/components/modal-assign-sucursales-products/modal-assign-sucursales-products.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/inventories/total-stock-recumet/total-stock-recumet.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/managements/users/components/modal-assign-permissions/modal-assign-permissions.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/managements/users/components/modal-assign-permissions/modal-assign-permissions.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/managements/users/components/modal-assign-sucursales/modal-assign-sucursales.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/notifications/notifications.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/outputs/output/components/table-output-details/table-output-details.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/outputs/query-outputs/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/outputs/query-outputs/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/transfers/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/transfers/components/modal-view-details/modal-view-details.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/transfers/query-receptions/components/modal-approved-transfer/modal-approved-transfer.component.html",
+      "kind": "html",
+      "strategy": "scroll",
+      "source": "explicit"
+    },
+    {
+      "file": "src/app/pages/transfers/transfer/components/table-transfer-details/table-transfer-details.component.html",
+      "kind": "primeng",
+      "strategy": "scroll",
+      "source": "explicit"
+    }
+  ],
+  "tableConsumers": [
+    {
+      "file": "src/app/pages/Expenses/providers/components/modal-sectors/modal-sectors.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/Expenses/providers/providers.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/Expenses/providers/providers.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/Expenses/query-inputs/query-inputs.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-payable/accounts-payable.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-payable/accounts-payable.component.html",
+      "occurrence": 2,
+      "colsBinding": "colsAbonos()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-receivable/accounts-receivable.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/accounts/accounts-receivable/accounts-receivable.component.html",
+      "occurrence": 2,
+      "colsBinding": "colsAbonos()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/caja/adm-caja/adm-caja.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/caja/query-caja/query-caja.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/classifieds/query-classifieds/query-classifieds.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/dashboard/home/home.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inputs/providers/components/modal-sectors/modal-sectors.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inputs/providers/providers.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inputs/providers/providers.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inputs/query-inputs/query-inputs.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/categories/categories.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/categories/categories.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/kardex/kardex.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/kardex-existencia/kardex-existencia.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/kardex-fisico/kardex-fisico.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/products/components/modal-prices/modal-prices.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/products/components/modal-providers-product/modal-providers-product.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/products/products.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/products/products.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/scales/scales.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/scales/scales.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/total-stock-recumet/total-stock-recumet.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/units/units.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/inventories/units/units.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/company/company.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/storages/storages.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/storages/storages.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/sucursales/sucursales.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/sucursales/sucursales.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/components/modal-cargo-trucks/modal-cargo-trucks.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/components/modal-chauffeurs/modal-chauffeurs.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "stack",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/trasport-company.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/trasport-company/trasport-company.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/users/users.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/managements/users/users.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/outputs/clients/clients.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "!status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/outputs/clients/clients.component.html",
+      "occurrence": 2,
+      "colsBinding": "cols()",
+      "condition": "status()",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/outputs/query-outputs/query-outputs.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/transfers/query-receptions/query-receptions.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    },
+    {
+      "file": "src/app/pages/transfers/query-transfers/query-transfers.component.html",
+      "occurrence": 1,
+      "colsBinding": "cols()",
+      "condition": "",
+      "strategy": "scroll",
+      "source": "explicit-input"
+    }
+  ],
+  "inlineStyles": [
+    {
+      "file": "src/app/core/components/table/table.component.html",
+      "literal": 0,
+      "styleBinding": 15,
+      "ngStyle": 0,
+      "domStyle": 0
+    },
+    {
+      "file": "src/app/core/components/view-image/view-image.component.html",
+      "literal": 0,
+      "styleBinding": 1,
+      "ngStyle": 0,
+      "domStyle": 0
+    },
+    {
+      "file": "src/app/pages/inventories/list-costs-product/components/table-list-costs-products/table-list-costs-products.component.html",
+      "literal": 0,
+      "styleBinding": 1,
+      "ngStyle": 0,
+      "domStyle": 0
+    }
+  ]
+}

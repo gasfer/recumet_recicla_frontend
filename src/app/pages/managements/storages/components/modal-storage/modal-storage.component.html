@@ -1,7 +1,7 @@
 <p-dialog [header]="!storageService.isEdit ? 'Registro almacén' : 'Modificar almacén'" [(visible)]="storageService.showModal"
-    [modal]="true" [breakpoints]="{ '960px': '75vw', '576px': '95%' }" [style]="{ width: '35vw' }" [draggable]="false"
+    [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true">
+    [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="storageForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
@@ -9,9 +9,9 @@
                 <div class="field">
                     <label class="block mb-0">Nombre area / almacén:<span class="text-danger">*</span>
                     </label>
-                    <input type="text" style="text-transform: uppercase" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="name" placeholder="EJ. ALMACEN 1" 
-                        [class.ng-dirty]="validatorsService.inputValid('name',storageForm)" />
+                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="name" placeholder="EJ. ALMACEN 1"
+                        [class.ng-dirty]="validatorsService.inputValid('name',storageForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('name',storageForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("name",storageForm) }}
                     </small>
@@ -25,15 +25,13 @@
                     <p-inputSwitch formControlName="status"></p-inputSwitch>
                 </div>
                 <div class="col">
-                    <p-tag  [rounded]="true" 
-                            [icon]="storageForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'" 
-                            [style]="storageForm.get('status')!.value
-                                      ? { 'background-color': 'var(--bg-primary)', color: '#ffffff' }
-                                      : { 'background-color': 'red', color: '#ffffff' }" 
+                    <p-tag  [rounded]="true"
+                            [icon]="storageForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                            [styleClass]="storageForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
                             [value]="storageForm.get('status')!.value ? 'Activo' : 'Inactivo'">
                     </p-tag>
                 </div>
-            </div>  
+            </div>
         </div>
     </form>
     <ng-template pTemplate="footer">

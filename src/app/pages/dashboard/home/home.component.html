@@ -22,7 +22,7 @@
         <h3 class="text-center">Últimos Eventos</h3>
         <div class="row mt-2">
             <div class="col-12">
-                <app-table [cols]="cols()" [isCustomSort]="false"
+                <app-table responsiveStrategy="stack" [cols]="cols()" [isCustomSort]="false"
                     [includeSearch]="false" [customPagination]="true"
                     [data]="histories()" [loading]="loading()">
                 </app-table>
