@@ -9,6 +9,10 @@ import {
   PRODUCT_ACCESS_CONTEXT_OPTIONS,
   PRODUCT_CATEGORY_TYPE_OPTIONS,
 } from 'src/app/core/constants/product-category-access.constants';
+import {
+  permissionModuleLabel,
+  TRANSFER_REVIEW_ACTION_HELP,
+} from 'src/app/core/constants/permission-presentation.constants';
 
 interface PermissionGroup {
   name: string;
@@ -35,6 +39,7 @@ export const updateAllowedCategoryTypes = (
 export class ModalAssignPermissionsComponent implements OnInit, OnDestroy {
   readonly productAccessRows = [...PRODUCT_ACCESS_CONTEXT_OPTIONS];
   readonly productCategoryTypes = [...PRODUCT_CATEGORY_TYPE_OPTIONS];
+  readonly transferReviewActionHelp = TRANSFER_REVIEW_ACTION_HELP;
   loading = signal(false);
   userService = inject(UsersService);
   fb = inject(FormBuilder);
@@ -148,7 +153,7 @@ permissionGroups = signal<PermissionGroup[]>([
 
   // ⚙️ ADMINISTRACION
   {
-    name: 'ADMINISTRACION',
+    name: 'ADMINISTRACIÓN',
     icon: 'fa-gear',
     expanded: true,
     permissions: [
@@ -292,6 +297,10 @@ ngOnInit(): void {
       globalIndex += this.permissionGroups()[i].permissions.length;
     }
     return globalIndex + permissionIndex;
+  }
+
+  permissionLabel(module: string): string {
+    return permissionModuleLabel(module);
   }
 
   getPermissionIndexByModule(module: string): number {

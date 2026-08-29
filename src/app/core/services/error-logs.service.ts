@@ -2,14 +2,22 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
+export const PERMISSION_DENIED_FALLBACK = 'No tiene permiso para realizar esta acción. Comuníquese con soporte para solicitar la habilitación.';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorLogsService {
 
   private router = inject(Router);
+  private handledErrors = new WeakSet<object>();
 
   logDeErrores(e: any): void {
+    if (e && typeof e === 'object') {
+      if (this.handledErrors.has(e)) return;
+      this.handledErrors.add(e);
+    }
+
     if(e.status === 422) {
       this.notifications(
         e?.error?.errors[0]?.msg ? e?.error?.errors[0]?.msg : 'Los datos no son validos, Intenta nuevamente',
@@ -24,18 +32,26 @@ export class ErrorLogsService {
         showClass: { popup: 'animated animate fadeInDown' },
         customClass: { container: 'swal-alert'},
       });
+    } else if (e.status === 403) {
+      Swal.fire({
+        title: 'Sin permiso',
+        text: e?.error?.errors?.[0]?.msg || PERMISSION_DENIED_FALLBACK,
+        icon: 'warning',
+        showClass: { popup: 'animated animate fadeInDown' },
+        customClass: { container: 'swal-alert'},
+      });
     } else if ( e.status === 0) {
       Swal.fire({
-        title: 'Oops...',
-        text: 'Ocurrió un imprevisto presiona F5 | Revisa tu conexión a internet',
+        title: 'Sin conexión',
+        text: 'No fue posible conectar con el servicio. Revise su conexión a internet e inténtelo nuevamente.',
         icon: 'warning',
         showClass: { popup: 'animated animate fadeInDown' },
         customClass: { container: 'swal-alert'},
       });
     } else if ( e.status === 400 || e.status === 404){
       Swal.fire({
-        title: 'Error!',
-        text: 'Error dato no encontrado | pagina y/o servicio no existente',
+        title: 'Solicitud no disponible',
+        text: e?.error?.errors?.[0]?.msg || 'No se encontró el dato, la página o el servicio solicitado.',
         icon: 'warning',
         showClass: { popup: 'animated animate fadeInDown' },
         customClass: { container: 'swal-alert'},
@@ -50,8 +66,8 @@ export class ErrorLogsService {
       });
     } else {
       Swal.fire({
-        title: 'Oops...',
-        text: 'Ocurrió un imprevisto presiona F5',
+        title: 'No se pudo completar la solicitud',
+        text: e?.error?.errors?.[0]?.msg || 'Ocurrió un problema inesperado. Si persiste, comuníquese con soporte.',
         icon: 'error',
         showClass: { popup: 'animated animate fadeInDown' },
         customClass: { container: 'swal-alert'},

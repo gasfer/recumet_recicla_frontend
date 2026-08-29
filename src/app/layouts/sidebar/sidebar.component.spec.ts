@@ -1,5 +1,6 @@
 import { SidebarComponent } from './sidebar.component';
 import { MENU } from './menu';
+import Swal from 'sweetalert2';
 
 describe('SidebarComponent title filtering', () => {
   it('ignores matching menu entries without subitems', () => {
@@ -37,7 +38,6 @@ describe('SidebarComponent permission filtering', () => {
       validateUserWithPermissions: () => true,
       withPermission: allowed,
     } as any;
-    (component as any).authService = { logout: jasmine.createSpy('logout') };
     return component;
   };
 
@@ -73,5 +73,19 @@ describe('SidebarComponent permission filtering', () => {
     component.initialize();
 
     expect(MENU.find((item) => item.id === 21)?.subItems?.length).toBe(originalProviderCount);
+  });
+
+  it('keeps the session available when the user has no assigned permissions', () => {
+    const component = createComponent('OPERADOR', () => false);
+    component.validatorsService.validateUserWithPermissions = () => false;
+    const alert = spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as never));
+
+    component.initialize();
+
+    expect(component.menuItems).toEqual([]);
+    expect(alert).toHaveBeenCalledWith(jasmine.objectContaining({
+      title: 'Sin permisos asignados',
+      text: 'No tiene permisos habilitados. Comuníquese con soporte para solicitar la habilitación.',
+    }));
   });
 });

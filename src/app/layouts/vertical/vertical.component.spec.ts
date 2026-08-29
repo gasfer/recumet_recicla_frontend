@@ -1,9 +1,10 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { EventService } from 'src/app/core/services/event.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
+import { TransferReviewService } from 'src/app/services/transfer-review.service';
 import { VerticalComponent } from './vertical.component';
 
 describe('VerticalComponent responsive shell', () => {
@@ -23,6 +24,7 @@ describe('VerticalComponent responsive shell', () => {
         { provide: Router, useValue: { events: routerEvents.asObservable() } },
         { provide: EventService, useValue: {} },
         { provide: ValidatorsService, useValue: {} },
+        { provide: TransferReviewService, useValue: { checkCurrentContext: () => of([]) } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

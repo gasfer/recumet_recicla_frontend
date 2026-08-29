@@ -8,6 +8,7 @@ import { LanguageService } from 'src/app/core/services/language.service';
 import { SucursalesService } from 'src/app/pages/managements/services/sucursales.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
+import { TransferReviewService } from 'src/app/services/transfer-review.service';
 import { TopbarComponent } from './topbar.component';
 
 describe('TopbarComponent responsive context', () => {
@@ -27,6 +28,7 @@ describe('TopbarComponent responsive context', () => {
         { provide: SucursalesService, useValue: {} },
         { provide: ValidatorsService, useValue: {} },
         { provide: NotificationsService, useValue: {} },
+        { provide: TransferReviewService, useValue: {} },
       ],
     })
       .overrideComponent(TopbarComponent, { set: { template: '' } })

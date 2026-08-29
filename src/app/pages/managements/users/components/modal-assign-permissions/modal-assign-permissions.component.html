@@ -114,9 +114,9 @@
                 <tr [formGroupName]="getPermissionIndex(groupIdx, i)">
 
                   <td>
-                    <span class="fw-medium">{{ permission.module }}</span>
+                    <span class="fw-medium">{{ permissionLabel(permission.module) }}</span>
                     <small *ngIf="permission.module === 'TRANSFER_REVIEW'" class="d-block text-muted">
-                      Ver=leer · Crear=asignar · Modificar=resolver · Eliminar=reabrir · Reporte=aprobar
+                      {{ transferReviewActionHelp }}
                     </small>
                   </td>
 

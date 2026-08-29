@@ -145,6 +145,15 @@ export class TransferReviewService {
   }
 
   checkCurrentContext(force = false): Observable<TransferReview[]> {
+    if (!this.validators.withPermission('TRANSFER_REVIEW', 'view')) {
+      this.contextCache.clear();
+      this.activeContextKey = '';
+      this.openReviews.set([]);
+      this.showAlertDialog.set(false);
+      this.loading.set(false);
+      this.contextReady.set(true);
+      return of([]);
+    }
     const idSucursal = this.validators.id_sucursal();
     const idStorage = this.validators.id_storage();
     if (!idSucursal || !idStorage) {

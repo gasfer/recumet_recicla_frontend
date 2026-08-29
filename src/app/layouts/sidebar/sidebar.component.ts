@@ -15,7 +15,6 @@ import { TranslateService } from '@ngx-translate/core';
 import MetisMenu from 'metismenujs';
 import { ValidatorsService } from '../../services/validators.service';
 import Swal from 'sweetalert2';
-import { AuthService } from 'src/app/auth/auth.service';
 import { MENU } from './menu';
 @Component({
   selector: 'app-sidebar',
@@ -121,7 +120,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
   menuItems: MenuItem[] = [];
 
   @ViewChild('sideMenu') sideMenu?: ElementRef;
-  authService = inject(AuthService);
 
   constructor(
     private eventService: EventService,
@@ -251,12 +249,13 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
     const isAdmin = this.validatorsService.user()?.role == 'ADMINISTRADOR';
     if (!this.validatorsService.validateUserWithPermissions() && !isAdmin) {
       Swal.fire({
-        title: 'Ops! No tienes permisos asignados',
-        text: `Indica al administrador que se te asigne`,
+        title: 'Sin permisos asignados',
+        text: 'No tiene permisos habilitados. Comuníquese con soporte para solicitar la habilitación.',
         icon: 'warning',
         showClass: { popup: 'animated animate fadeInDown' },
         customClass: { container: 'swal-alert' },
-      }).then(() => this.authService.logout());
+      });
+      this.menuItems = [];
       return;
     }
     this.menuItems = this.cloneMenuDefinition();

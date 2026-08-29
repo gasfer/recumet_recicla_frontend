@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import Swal from 'sweetalert2';
-import { AuthService } from 'src/app/auth/auth.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { permissionGuard } from './permission.guard';
 
@@ -13,11 +12,9 @@ class GuardedTestComponent {}
 describe('permissionGuard routing', () => {
   let router: Router;
   let withPermission: jasmine.Spy;
-  let logout: jasmine.Spy;
 
   beforeEach(async () => {
     withPermission = jasmine.createSpy('withPermission');
-    logout = jasmine.createSpy('logout');
     spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as never));
 
     await TestBed.configureTestingModule({
@@ -33,13 +30,17 @@ describe('permissionGuard routing', () => {
                 component: GuardedTestComponent,
                 data: { name: 'GASTOS', action: 'view' },
               },
+              {
+                path: 'dashboard/home',
+                component: GuardedTestComponent,
+                data: { name: 'INIT' },
+              },
             ],
           },
         ]),
       ],
       providers: [
         { provide: ValidatorsService, useValue: { withPermission } },
-        { provide: AuthService, useValue: { logout } },
       ],
     }).compileComponents();
 
@@ -52,14 +53,24 @@ describe('permissionGuard routing', () => {
     expect(await router.navigateByUrl('/protected-feature')).toBeTrue();
     expect(router.url).toBe('/protected-feature');
     expect(withPermission).toHaveBeenCalledWith('GASTOS', 'view');
-    expect(logout).not.toHaveBeenCalled();
   });
 
-  it('rejects direct navigation when the user lacks the route permission', async () => {
+  it('redirects direct navigation without permission and preserves the authenticated area', async () => {
     withPermission.and.returnValue(false);
 
-    expect(await router.navigateByUrl('/protected-feature')).toBeFalse();
-    expect(router.url).not.toBe('/protected-feature');
-    expect(logout).toHaveBeenCalled();
+    expect(await router.navigateByUrl('/protected-feature')).toBeTrue();
+    expect(router.url).toBe('/dashboard/home');
+    expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({
+      title: 'Sin permiso',
+      text: 'No tiene permiso para ver Gastos. Comuníquese con soporte para solicitar la habilitación.',
+      icon: 'warning',
+    }));
+  });
+
+  it('keeps Administrator bypass behavior supplied by the central validator', async () => {
+    withPermission.and.returnValue(true);
+
+    expect(await router.navigateByUrl('/protected-feature')).toBeTrue();
+    expect(router.url).toBe('/protected-feature');
   });
 });
