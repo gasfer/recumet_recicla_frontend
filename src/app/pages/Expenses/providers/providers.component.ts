@@ -9,6 +9,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { Router } from '@angular/router';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
+import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
 
 @Component({
   selector: 'app-providers',
@@ -67,6 +68,9 @@ export class ProvidersComponent implements OnInit, OnDestroy {
 
   providers = signal<Providers|undefined>(undefined);
   private providersService = inject(ProvidersService);
+  private traceabilityApi = inject(PurchaseTraceabilityApiService);
+  traceabilityVisible = signal(false);
+  traceabilityData = signal<any>(null);
   validatorsService = inject(ValidatorsService);
   router            = inject(Router);
   fb                = inject(FormBuilder);
@@ -96,6 +100,12 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         this.providers.set(resp.providers);
         this.providers()!.data.forEach((provider) => {
           provider.options = provider.status  ? [
+            {
+              label:'', icon:'fa-solid fa-clock-rotate-left', tooltip: 'Ver trazabilidad',
+              disabled: this.validatorsService.withPermission('COMPRAS','view'),
+              class:'p-button-rounded p-button-info p-button-sm',
+              eventClick: () => this.showTraceability(provider),
+            },
             {
               label:'',icon:'fa-solid fa-comment-dollar',
               tooltip: 'Cuentas por pagar',
@@ -138,6 +148,13 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       },
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)
+    });
+  }
+
+  showTraceability(provider: Provider) {
+    this.traceabilityApi.getProvider(provider.id).subscribe(({ traceability }) => {
+      this.traceabilityData.set(traceability);
+      this.traceabilityVisible.set(true);
     });
   }
 

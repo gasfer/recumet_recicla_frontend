@@ -238,7 +238,7 @@ export class KardexFisicoComponent {
         ? this.selectedCategoryIds().join(',')
         : '';
 
-    this.productService.getSelectProducts(
+    this.productService.getInventorySelectProducts(
       this.dropdownFilter(),
       this.dropdownLimit(),
       categoryType,
@@ -276,7 +276,7 @@ export class KardexFisicoComponent {
     this.productSelectValue = null;
     this.productSelect.set(undefined);
 
-    this.categoriesService.getCategorySelect(categoryType).subscribe({
+    this.categoriesService.getInventoryCategorySelect(categoryType).subscribe({
       next: (resp: any) => {
         const categories = resp.categories || [];
         this.dropdownCategories.set(categories);

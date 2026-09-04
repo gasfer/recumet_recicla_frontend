@@ -5,8 +5,39 @@ import { PERMISSION_MODULE_LABELS, permissionModuleLabel, TRANSFER_REVIEW_ACTION
 import { User } from '../../../interfaces/user.interface';
 import { UsersService } from '../../../services/users.service';
 import { ModalAssignPermissionsComponent, updateAllowedCategoryTypes } from './modal-assign-permissions.component';
+import {
+  PRODUCT_ACCESS_CONTEXT_OPTIONS,
+  PRODUCT_ACCESS_MODULE_COLUMN_LABEL,
+  PRODUCT_ACCESS_SECTION_DESCRIPTION,
+  PRODUCT_ACCESS_SECTION_TITLE,
+  PRODUCT_CATEGORY_TYPE_OPTIONS,
+  ProductAccessContext,
+  ProductCategoryType,
+} from 'src/app/core/constants/product-category-access.constants';
 
 describe('ModalAssignPermissionsComponent category type selection', () => {
+  it('uses clear labels without changing internal module or category values', () => {
+    expect(PRODUCT_ACCESS_SECTION_TITLE).toBe('Tipos de producto permitidos por módulo');
+    expect(PRODUCT_ACCESS_SECTION_DESCRIPTION).toContain('no habilita el acceso general al módulo');
+    expect(PRODUCT_ACCESS_MODULE_COLUMN_LABEL).toBe('Módulo de operación');
+    expect(PRODUCT_CATEGORY_TYPE_OPTIONS.map(({ label }) => label)).toEqual([
+      'Materia prima (MP)',
+      'Producto terminado (PT)',
+      'Artículo de reventa (AR)',
+    ]);
+    expect(PRODUCT_CATEGORY_TYPE_OPTIONS.map(({ value }) => value)).toEqual([
+      ProductCategoryType.RawMaterial,
+      ProductCategoryType.FinishedProduct,
+      ProductCategoryType.ResaleItem,
+    ]);
+    expect(PRODUCT_ACCESS_CONTEXT_OPTIONS.map(({ value }) => value)).toEqual([
+      ProductAccessContext.Purchases,
+      ProductAccessContext.Sales,
+      ProductAccessContext.Transfers,
+      ProductAccessContext.Classifieds,
+    ]);
+  });
+
   it('adds a checked database category type without duplicating existing values', () => {
     expect(updateAllowedCategoryTypes(['RAW_MATERIAL'], 'FINISHED_PRODUCT', true))
       .toEqual(['RAW_MATERIAL', 'FINISHED_PRODUCT']);
@@ -84,6 +115,49 @@ describe('ModalAssignPermissionsComponent Spanish permission labels', () => {
     const submitted = save.calls.mostRecent().args[0];
     expect(submitted.find(({ module }) => module === 'TRANSFER_REVIEW')?.view).toBeTrue();
     expect(submitted.some(({ module }) => module === 'Revisión de traslados')).toBeFalse();
+    component.ngOnDestroy();
+  });
+
+  it('submits category codes without granting the general module action', () => {
+    const usersService = TestBed.inject(UsersService);
+    const save = spyOn(usersService, 'postAssignPermissions').and.returnValue(of({}));
+    const component = TestBed.runInInjectionContext(() => new ModalAssignPermissionsComponent());
+    component.ngOnInit();
+    usersService.assignPermisosSubs.emit({
+      id: 8,
+      full_names: 'Usuario de categorías',
+      number_document: '8000001',
+      cellphone: 70000002,
+      sex: 'F',
+      photo: null,
+      position: 'OPERADOR',
+      email: 'categorias@prueba.local',
+      role: 'OPERADOR',
+      status: true,
+      updatedAt: '2026-09-03T00:00:00.000Z',
+      assign_permission: [{
+        id: 2,
+        module: 'COMPRAS',
+        view: true,
+        create: false,
+        update: false,
+        delete: false,
+        reports: false,
+        status: true,
+        allowed_category_types: ['RAW_MATERIAL'],
+      }],
+      assign_shift: [],
+      assign_sucursales: [],
+    } as User);
+
+    component.setCategoryTypeAllowed('COMPRAS', 'FINISHED_PRODUCT', true);
+    component.sendNewPermissions();
+
+    const purchasePermission = save.calls.mostRecent().args[0]
+      .find(({ module }) => module === 'COMPRAS');
+    expect(purchasePermission?.allowed_category_types).toEqual(['RAW_MATERIAL', 'FINISHED_PRODUCT']);
+    expect(purchasePermission?.update).toBeFalse();
+    expect(save.calls.mostRecent().args[0].some(({ module }) => module === 'Compras')).toBeFalse();
     component.ngOnDestroy();
   });
 });

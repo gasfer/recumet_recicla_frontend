@@ -19,10 +19,15 @@ export enum ProductCategoryType {
 }
 
 export const PRODUCT_CATEGORY_TYPE_OPTIONS = [
-  { label: 'MP - Materia prima', value: ProductCategoryType.RawMaterial },
-  { label: 'PT - Producto terminado', value: ProductCategoryType.FinishedProduct },
-  { label: 'AR - Artículo de reventa', value: ProductCategoryType.ResaleItem },
+  { label: 'Materia prima (MP)', value: ProductCategoryType.RawMaterial },
+  { label: 'Producto terminado (PT)', value: ProductCategoryType.FinishedProduct },
+  { label: 'Artículo de reventa (AR)', value: ProductCategoryType.ResaleItem },
 ] as const;
+
+export const PRODUCT_ACCESS_SECTION_TITLE = 'Tipos de producto permitidos por módulo';
+export const PRODUCT_ACCESS_SECTION_DESCRIPTION =
+  'Define qué tipos de producto podrá ver, seleccionar y utilizar el usuario en cada módulo. Esta configuración no habilita el acceso general al módulo.';
+export const PRODUCT_ACCESS_MODULE_COLUMN_LABEL = 'Módulo de operación';
 
 export const PRODUCT_ACCESS_CONTEXT_OPTIONS = [
   { label: 'Compras', value: ProductAccessContext.Purchases },

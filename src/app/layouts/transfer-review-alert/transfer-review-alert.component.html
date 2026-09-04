@@ -12,10 +12,46 @@
   <div class="review-intro" role="status">
     <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
     <div>
-      <strong>Hay {{ reviewService.openReviews().length }} notas que requieren atención.</strong>
-      <p>Revise sus diferencias antes de utilizar el stock retenido.</p>
+      <strong>
+        Hay {{ reviewService.openReviews().length }} conciliación(es) inconclusa(s)
+        y {{ reviewService.stockKardexIrregularities().length }} irregularidad(es) Stock–Kardex.
+      </strong>
+      <p>Revise la causa y la evidencia antes de corregir cualquiera de los dos saldos.</p>
     </div>
   </div>
+
+  <section *ngIf="reviewService.stockKardexIrregularities().length" class="stock-kardex-alert" aria-labelledby="stock-kardex-alert-title">
+    <div class="stock-kardex-alert__heading">
+      <i class="fa-solid fa-scale-unbalanced-flip" aria-hidden="true"></i>
+      <div>
+        <strong id="stock-kardex-alert-title">Irregularidades de inventario detectadas</strong>
+        <p>Estos productos no pueden considerarse conciliados hasta verificar cuál saldo corresponde al inventario real.</p>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle stock-kardex-table">
+        <thead>
+          <tr><th>Producto</th><th>Stock físico</th><th>Kardex</th><th>Diferencia</th><th>Posible origen</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of reviewService.stockKardexIrregularities()">
+            <td><strong>{{ item.cod }}</strong><span>{{ item.name }}</span></td>
+            <td>{{ item.physical_stock | number:'1.4-4' }}</td>
+            <td>{{ item.kardex_balance | number:'1.4-4' }}</td>
+            <td>
+              <strong>{{ item.physical_kardex_difference > 0 ? '+' : '' }}{{ item.physical_kardex_difference | number:'1.4-4' }}</strong>
+              <span>{{ irregularityLabel(item.difference_direction) }}</span>
+            </td>
+            <td>
+              <span *ngIf="!item.traceable_transfers.length">Sin traslado identificado automáticamente</span>
+              <span *ngFor="let transfer of item.traceable_transfers | slice:0:4" class="traceable-transfer">{{ transfer.transfer_cod }}</span>
+              <span *ngIf="item.traceable_transfers.length > 4">y {{ item.traceable_transfers.length - 4 }} traslado(s) más</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   <div class="review-card-list">
     <article class="review-card" *ngFor="let review of reviewService.openReviews()">
@@ -45,7 +81,7 @@
     <button type="button" class="btn btn-outline-secondary btn-sm" (click)="continueWorking()">
       Continuar trabajando
     </button>
-    <button type="button" class="btn btn-primary btn-sm" (click)="goToInconclusiveReceptions()">
+    <button *ngIf="reviewService.openReviews().length" type="button" class="btn btn-primary btn-sm" (click)="goToInconclusiveReceptions()">
       <i class="fa-solid fa-list-check me-1" aria-hidden="true"></i>
       Ir a Recepciones inconclusas
     </button>

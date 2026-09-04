@@ -1,11 +1,13 @@
 import {
   Component,
+  DestroyRef,
   Input,
   OnInit,
   computed,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InputsService } from '../../../services/inputs.service';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
@@ -16,6 +18,15 @@ import { Bank } from 'src/app/pages/managements/interfaces/bank.interface';
 import { NewInputForm } from '../../../interfaces/input.interface';
 import Swal from 'sweetalert2';
 import { ComponentsService } from 'src/app/core/services/components.service';
+import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
+import { Router } from '@angular/router';
+import { isPurchaseEditPermissionDenied } from 'src/app/core/utils/purchase-edit-access';
+import {
+  INITIAL_PRICING_GRACE_HOURS,
+  isPurchaseEditAuthorizationRequired,
+  purchaseEditAuthorizationMessage,
+  resolvePurchasePricingDecision,
+} from 'src/app/core/utils/purchase-pricing-authorization';
 
 @Component({
   selector: 'app-modal-save-input',
@@ -23,12 +34,23 @@ import { ComponentsService } from 'src/app/core/services/components.service';
   styles: [],
 })
 export class ModalSaveInputComponent implements OnInit {
+  readonly pricingGraceHours = INITIAL_PRICING_GRACE_HOURS;
   inputsService = inject(InputsService);
   bankService = inject(BankService);
   scalesService = inject(ScalesService);
   validatorsService = inject(ValidatorsService);
   componentService = inject(ComponentsService);
   fb = inject(FormBuilder);
+  private authorizationApi = inject(PurchaseTraceabilityApiService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+  private policyRefreshEnabled = false;
+  private authorizersLoaded = false;
+  private serverRequiresAuthorization = false;
+  authorizers = signal<{ id: number; label: string }[]>([]);
+  loadingAuthorizers = signal(false);
+  authorizersError = signal('');
+  editAuthorizationRequired = signal(false);
   types_pay = signal([
     { name: 'EFECTIVO', code: 'EFECTIVO' },
     { name: 'CHEQUE', code: 'CHEQUE' },
@@ -74,12 +96,20 @@ export class ModalSaveInputComponent implements OnInit {
     old_customer: [false],
     with_pickup: [false],
     audit_reason: ['', [Validators.minLength(5)]],
+    id_authorizer_user: [null],
   });
 
   ngOnInit(): void {
     this.getAllScalas();
     this.getAllBanks();
     this.onOldCustomerChange();
+    this.formInput.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.policyRefreshEnabled && this.inputsService.isEdit) {
+          this.refreshEditAuthorizationPolicy();
+        }
+      });
   }
 
   saveInput() {
@@ -133,7 +163,7 @@ export class ModalSaveInputComponent implements OnInit {
           this.inputsService._inputConfig.printAfter &&
           this.canPrintAfterSave()
         ) {
-          this.inputsService.printPdfReportAuto(resp.id_input);
+          this.inputsService.printPdfReport(resp.id_input);
         }
       },
       complete: () => this.loading.set(false),
@@ -141,17 +171,26 @@ export class ModalSaveInputComponent implements OnInit {
     });
   }
   editInput() {
-    const auditReason = String(this.formInput.get('audit_reason')?.value || '').trim();
-    if (auditReason.length < 5) {
-      this.formInput.get('audit_reason')?.setErrors({ minlength: true });
-      this.formInput.get('audit_reason')?.markAsTouched();
-      Swal.fire('Motivo requerido', 'Explique en al menos 5 caracteres por qué se modifica la compra.', 'warning');
-      return;
-    }
     this.formInput.patchValue({
       id_provider: this.providerSelect()?.id,
       id_storage: this.id_storage,
-    });
+    }, { emitEvent: false });
+    this.refreshEditAuthorizationPolicy();
+    if (this.editAuthorizationRequired()) {
+      const authorization = this.formInput.get('id_authorizer_user');
+      if (!authorization?.value) {
+        authorization?.setErrors({ required: true });
+        authorization?.markAsTouched();
+        return;
+      }
+      const auditReason = String(this.formInput.get('audit_reason')?.value || '').trim();
+      if (auditReason.length < 5) {
+        this.formInput.get('audit_reason')?.setErrors({ minlength: true });
+        this.formInput.get('audit_reason')?.markAsTouched();
+        Swal.fire('Motivo requerido', 'Explique en al menos 5 caracteres por qué se modifica la compra.', 'warning');
+        return;
+      }
+    }
     this.formInput.markAllAsTouched();
     if (!this.formInput.valid) return;
     this.loading.set(true);
@@ -191,11 +230,16 @@ export class ModalSaveInputComponent implements OnInit {
             this.inputsService._inputConfig.printAfter &&
             this.canPrintAfterSave()
           ) {
-            this.inputsService.printPdfReportAuto(resp.id_input);
+            this.inputsService.printPdfReport(resp.id_input);
           }
         },
         complete: () => this.loading.set(false),
-        error: () => this.loading.set(false),
+        error: (error) => {
+          this.loading.set(false);
+          if (isPurchaseEditAuthorizationRequired(error)) {
+            this.handlePurchaseEditAuthorizationError(error);
+          }
+        },
       });
   }
 
@@ -259,6 +303,7 @@ export class ModalSaveInputComponent implements OnInit {
 
   onShowModal() {
     Swal.close();
+    this.policyRefreshEnabled = false;
     this.formInput.patchValue({
       sumas: this.totalSummary(),
       total: this.totalSummary(),
@@ -296,6 +341,8 @@ export class ModalSaveInputComponent implements OnInit {
       this.onChangeDescuento();
       this.onOldCustomerChange();
     }
+    this.policyRefreshEnabled = true;
+    this.refreshEditAuthorizationPolicy();
   }
 
   selectTypeRegistry() {
@@ -311,6 +358,12 @@ export class ModalSaveInputComponent implements OnInit {
     }
   }
   resetModal() {
+    this.policyRefreshEnabled = false;
+    this.serverRequiresAuthorization = false;
+    this.authorizersLoaded = false;
+    this.editAuthorizationRequired.set(false);
+    this.authorizers.set([]);
+    this.authorizersError.set('');
     this.formInput.reset({
       id_provider: '',
       id_scales: 1,
@@ -333,6 +386,8 @@ export class ModalSaveInputComponent implements OnInit {
       referral_sources: '',
       old_customer: false,
       with_pickup: false,
+      audit_reason: '',
+      id_authorizer_user: null,
     });
 
     // ✅ BOLETA por defecto → habilitar registry_number
@@ -357,5 +412,81 @@ export class ModalSaveInputComponent implements OnInit {
       referralSourcesControl?.setValidators([Validators.required]);
     }
     referralSourcesControl?.updateValueAndValidity();
+  }
+
+  refreshEditAuthorizationPolicy(): void {
+    if (!this.inputsService.isEdit) {
+      this.configureAuthorizationFields(false);
+      return;
+    }
+    const currentInput = {
+      ...this.formInput.getRawValue(),
+      id_provider: this.providerSelect()?.id,
+      id_storage: this.id_storage ?? this.formInput.get('id_storage')?.value,
+    };
+    const decision = resolvePurchasePricingDecision(
+      this.inputsService.dataInputForEdit(),
+      currentInput,
+      this.inputsService.detailShopping(),
+    );
+    const required = this.serverRequiresAuthorization || decision.requiresAuthorization;
+    this.configureAuthorizationFields(required);
+    if (required) this.loadAuthorizers();
+  }
+
+  private configureAuthorizationFields(required: boolean): void {
+    this.editAuthorizationRequired.set(required);
+    const reason = this.formInput.get('audit_reason');
+    const authorization = this.formInput.get('id_authorizer_user');
+    reason?.setValidators(required ? [Validators.required, Validators.minLength(5)] : []);
+    authorization?.setValidators(required ? [Validators.required] : []);
+    if (!required) {
+      reason?.setValue('', { emitEvent: false });
+      authorization?.setValue(null, { emitEvent: false });
+    }
+    reason?.updateValueAndValidity({ emitEvent: false });
+    authorization?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  handlePurchaseEditAuthorizationError(error: unknown): void {
+    this.serverRequiresAuthorization = true;
+    this.configureAuthorizationFields(true);
+    this.loadAuthorizers();
+    void Swal.fire({
+      title: 'Autorización requerida',
+      text: purchaseEditAuthorizationMessage(error),
+      icon: 'warning',
+      customClass: { container: 'swal-alert' },
+    });
+  }
+
+  loadAuthorizers(): void {
+    if (this.authorizersLoaded || this.loadingAuthorizers()) return;
+    this.loadingAuthorizers.set(true);
+    this.authorizersError.set('');
+    this.authorizers.set([]);
+    this.authorizationApi.getAuthorizers().subscribe({
+      next: ({ users }) => {
+        this.authorizersLoaded = true;
+        this.authorizers.set(users.map(user => ({
+          id: user.id, label: user.full_names + ' · ' + (user.role === 'ADMINISTRADOR' ? 'Administrador' : 'Encargado')
+        })));
+        if (!users.length) this.authorizersError.set('No hay administradores o encargados activos disponibles.');
+        this.loadingAuthorizers.set(false);
+      },
+      error: (error) => {
+        this.authorizersLoaded = false;
+        if (isPurchaseEditPermissionDenied(error)) {
+          this.loadingAuthorizers.set(false);
+          this.inputsService.showModalSaveInput = false;
+          this.inputsService.isEdit = false;
+          this.inputsService.resetInput();
+          void this.router.navigateByUrl('/inputs/query-inputs');
+          return;
+        }
+        this.authorizersError.set('No se pudo cargar la lista de responsables. Intente nuevamente.');
+        this.loadingAuthorizers.set(false);
+      }
+    });
   }
 }

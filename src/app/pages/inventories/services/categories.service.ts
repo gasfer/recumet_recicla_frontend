@@ -52,4 +52,8 @@ export class CategoriesService {
     const url = `${base_url}/${endpoint}?category_type=${category_type}`;
     return this.http.get<any>(url);
   }
+
+  getInventoryCategorySelect(category_type: string = ''): Observable<any> {
+    return this.http.get<any>(`${base_url}/category/inventory/select?category_type=${category_type}`);
+  }
 }

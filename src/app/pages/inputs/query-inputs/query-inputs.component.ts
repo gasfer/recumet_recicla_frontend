@@ -12,6 +12,7 @@ import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { Provider } from '../interfaces/provider.interface';
 import { firstValueFrom } from 'rxjs';
+import { PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app/core/utils/purchase-edit-access';
 @Component({
   selector: 'app-query-inputs',
   templateUrl: './query-inputs.component.html',
@@ -244,6 +245,54 @@ export class QueryInputsComponent implements OnInit {
     this.formReport.get('id_provider')?.setValue(null);
   }
 
+  purchaseEditEligibility(input: Input): PurchaseEditEligibility {
+    return resolvePurchaseEditEligibility(
+      this.validatorsService.withPermission('COMPRAS', 'update'),
+      this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher, 30),
+    );
+  }
+
+  requestPurchaseEdit(input: Input): void {
+    const eligibility = this.purchaseEditEligibility(input);
+    if (!eligibility.allowed) {
+      void Swal.fire({
+        title: eligibility.title,
+        text: eligibility.message,
+        icon: 'warning',
+        customClass: { container: 'swal-alert' },
+      });
+      return;
+    }
+
+    this.inputsService.resetInput();
+    this.inputsService.isEdit = true;
+    input.detailsInput.forEach(resp => {
+      this.inputsService.detailShopping.update((details) => [
+        ...details,
+        {
+          id: resp.product.id,
+          cod: resp.product.cod,
+          costo: Number(resp.cost),
+          quantity: Number(resp.quantity),
+          import: Number(resp.total),
+          category: resp.product.category,
+          unit: resp.product.unit,
+          description: resp.product.description,
+          id_category: resp.product.category.id,
+          id_unit: resp.product.unit.id,
+          img: resp.product.img,
+          name: resp.product.name,
+          inventariable: resp.product.inventariable,
+          status: true,
+          prices: [],
+        },
+      ]);
+    });
+    this.inputsService.providerSelect.set(input.provider);
+    this.inputsService.dataInputForEdit.set(input);
+    void this.router.navigateByUrl('/inputs/input-small');
+  }
+
   getAllAndSearchInputs(page: number, limit: number,type: string = '', query: string = '') {
     this.formReport.get('id_sucursal')?.setValue(this.validatorsService.id_sucursal());
     this.formReport.markAllAsTouched();
@@ -272,38 +321,13 @@ export class QueryInputsComponent implements OnInit {
             },
             {
               label:'',icon:'fas fa-edit',
-              tooltip: this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,30) ? 'La fecha límite de edición ha sido superada.' : 'Editar',
-              disabled:  !this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher,30) ? this.validatorsService.withPermission('COMPRAS','update') : false,
-              class:'p-button-rounded p-button-warning p-button-sm  ms-1',
-              eventClick: () => {
-                this.inputsService.resetInput();
-                this.inputsService.isEdit = true;
-                input.detailsInput.forEach(resp => {
-                  this.inputsService.detailShopping.update((details) => [
-                    ...details,
-                    {
-                      id: resp.product.id,
-                      cod: resp.product.cod,
-                      costo: Number(resp.cost),
-                      quantity: Number(resp.quantity),
-                      import: Number(resp.total),
-                      category: resp.product.category,
-                      unit: resp.product.unit,
-                      description: resp.product.description,
-                      id_category: resp.product.category.id,
-                      id_unit: resp.product.unit.id,
-                      img: resp.product.img,
-                      name: resp.product.name,
-                      inventariable: resp.product.inventariable,
-                      status: true,
-                      prices: [],
-                    },
-                  ]);
-                });
-                this.inputsService.providerSelect.set(input.provider);
-                this.inputsService.dataInputForEdit.set(input);
-                this.router.navigateByUrl('/inputs/input-small');
-              }
+              tooltip: this.purchaseEditEligibility(input).tooltip,
+              ariaLabel: this.purchaseEditEligibility(input).ariaLabel,
+              ariaDisabled: !this.purchaseEditEligibility(input).allowed,
+              class: this.purchaseEditEligibility(input).allowed
+                ? 'p-button-rounded p-button-warning p-button-sm ms-1'
+                : 'p-button-rounded p-button-secondary p-button-outlined p-button-sm ms-1',
+              eventClick: () => this.requestPurchaseEdit(input),
             },
             {
               label:'',icon:'fas fa-print',

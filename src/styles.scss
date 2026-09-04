@@ -22,6 +22,19 @@
 
 body .p-dialog {
     max-width: calc(100vw - 1rem);
+    
+    &.app-dialog--sm {
+        width: min(var(--app-dialog-sm, 42rem), 96vw) !important;
+    }
+    &.app-dialog--md {
+        width: min(var(--app-dialog-md, 65rem), 96vw) !important;
+    }
+    &.app-dialog--lg {
+        width: min(var(--app-dialog-lg, 84rem), 96vw) !important;
+    }
+    &.app-dialog--xl {
+        width: min(var(--app-dialog-xl, 98rem), 98vw) !important;
+    }
 }
 
 body .p-dialog .p-dialog-content {

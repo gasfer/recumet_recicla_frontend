@@ -66,4 +66,14 @@ describe('CategoriesService operational catalog', () => {
     expect(request.request.method).toBe('GET');
     request.flush({ ok: true, categories: [] });
   });
+
+  it('uses the inventory catalog instead of the administrative category route', () => {
+    service.getInventoryCategorySelect('FINISHED_PRODUCT').subscribe();
+
+    const request = http.expectOne(req =>
+      req.url.includes('/category/inventory/select')
+      && req.urlWithParams.includes('category_type=FINISHED_PRODUCT'));
+    expect(request.request.method).toBe('GET');
+    request.flush({ ok: true, categories: [] });
+  });
 });

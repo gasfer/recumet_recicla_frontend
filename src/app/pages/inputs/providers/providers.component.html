@@ -47,3 +47,5 @@
 </app-table>
 
 <app-modal-provider></app-modal-provider>
+<app-purchase-traceability-timeline mode="provider" [data]="traceabilityData()" [visible]="traceabilityVisible()"
+  (visibleChange)="traceabilityVisible.set($event)"></app-purchase-traceability-timeline>

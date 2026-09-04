@@ -35,6 +35,12 @@ export class TransferReviewAlertComponent {
     return type === 'EXCEDENTE_PARA_REVISION' ? 'Excedente' : 'Faltante';
   }
 
+  irregularityLabel(direction: string): string {
+    return direction === 'STOCK_GREATER_THAN_KARDEX'
+      ? 'Stock mayor que Kardex'
+      : 'Kardex mayor que stock';
+  }
+
   goToInconclusiveReceptions(): void {
     this.reviewService.closeAlerts();
     this.router.navigate(['/transfers/query-receptions'], {

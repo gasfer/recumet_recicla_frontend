@@ -10,21 +10,23 @@ Esta línea base cubre desbordamiento global, scroll local de tablas, shell, con
 
 | Auditor | Fecha y zona horaria | Versión de Chrome | Evidencia (capturas/video) |
 |---|---|---|---|
-| Pendiente | Pendiente | Pendiente | Pendiente |
+| Codex (navegador integrado) | 2026-09-02, America/La_Paz | Chromium integrado; Chrome real no disponible | EV-2026-09-02-HK: recorrido interactivo de 11 rutas |
 
 | Área representativa | Destino | Horizontal móvil | Solo teclado | Zoom real 200 % | Resultado | Incidencia / resolución |
 |---|---|---|---|---|---|---|
-| Shell y Dashboard | `/dashboard/home` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Cuentas | `/accounts/accounts-payable` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Inventarios | `/inventories/products` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Compras | `/inputs/input-small` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Ventas | `/outputs/output` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Traslados | `/transfers/transfer` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Clasificados | `/classifieds/classified` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Balanza | `/scale/truck-scale/register` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Caja | `/caja/adm-caja` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Gestión | `/managements/users` | Pendiente | Pendiente | Pendiente | Pendiente | — |
-| Notificaciones | `/notifications` | Pendiente | Pendiente | Pendiente | Pendiente | — |
+| Shell y Dashboard | `/dashboard/home` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Cuentas | `/accounts/accounts-payable` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Inventarios | `/inventories/products` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Tabla contenida localmente; zoom real requiere Chrome |
+| Compras | `/inputs/input-small` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Ventas | `/outputs/output` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Traslados | `/transfers/transfer` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Clasificados | `/classifieds/classified` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Balanza | `/scale/truck-scale/register` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Caja | `/caja/adm-caja` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Gestión | `/managements/users` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+| Notificaciones | `/notifications` | OK (EV-2026-09-02-HK) | OK (EV-2026-09-02-HK) | Pendiente | Parcial | Zoom real requiere Chrome |
+
+La repetición del 2026-09-02 no detectó desbordamiento horizontal global ni contenido esencial inaccesible en las 11 rutas. El menú móvil abrió mediante `Espacio`, cerró con `Escape` y devolvió el foco al control de apertura. No se registraron incidencias nuevas que requieran corrección. El navegador integrado no aplicó zoom mediante `Ctrl+0`/`Ctrl++`; por ello la columna de zoom permanece pendiente y no se sustituye con la aproximación de viewport estrecho.
 
 ## Criterios
 

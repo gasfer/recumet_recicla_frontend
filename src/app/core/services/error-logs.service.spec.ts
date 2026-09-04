@@ -62,6 +62,21 @@ describe('ErrorLogsService permission feedback', () => {
     expect(fire).toHaveBeenCalledTimes(1);
   });
 
+  it('delega al modal el error de autorización de edición de compra', () => {
+    const notifications = spyOn(service, 'notifications');
+
+    service.logDeErrores({
+      status: 422,
+      error: {
+        code: 'PURCHASE_EDIT_AUTHORIZATION_REQUIRED',
+        errors: [{ msg: 'La ventana de regularización venció.' }],
+      },
+    });
+
+    expect(notifications).not.toHaveBeenCalled();
+    expect(fire).not.toHaveBeenCalled();
+  });
+
   it('mantiene separado el cierre de sesión para HTTP 401', () => {
     service.logDeErrores({ status: 401 });
 

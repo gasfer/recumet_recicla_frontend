@@ -1,7 +1,7 @@
 <p-dialog
   [header]="inputsService.isEdit ? 'Editar compra: ' + inputsService.dataInputForEdit()?.cod :  'Registro de compra'"
   [(visible)]="inputsService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
-  (onHide)="resetModal()" styleClass="app-dialog--md">
+  (onHide)="resetModal()" styleClass="app-dialog--xl">
   <form [formGroup]="formInput">
     <div class="m-2">
       <p-messages *ngIf="inputsService.isEdit" severity="warn" class="animated fadeInDown">
@@ -228,11 +228,30 @@
           </div>
         </div>
       </div>
-      <div class="row mt-3" *ngIf="inputsService.isEdit">
+      <div class="row mt-3" *ngIf="inputsService.isEdit && !editAuthorizationRequired()">
+        <div class="col-12">
+          <div class="alert alert-info mb-0" role="status">
+            Esta compra tiene costos pendientes y está dentro de la ventana de {{ pricingGraceHours }} horas. Puede completar uno o varios costos; la trazabilidad se conservará sin exigir motivo ni responsable.
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3" *ngIf="inputsService.isEdit && editAuthorizationRequired()">
         <div class="col-12">
           <label class="block mb-1"><i class="fa-solid fa-pen-to-square mr-1"></i>Motivo de la modificación <span class="text-danger">*</span></label>
           <textarea pInputTextarea formControlName="audit_reason" rows="3" class="w-100" placeholder="Explique qué se modificará y por qué"></textarea>
           <small class="p-error block" *ngIf="formInput.get('audit_reason')?.touched && formInput.get('audit_reason')?.invalid">Ingrese un motivo de al menos 5 caracteres. El cambio quedará registrado en la trazabilidad.</small>
+          <label class="block mt-3 mb-1" for="purchase-authorizer">Responsable de autorización <span class="text-danger">*</span></label>
+          <p-dropdown inputId="purchase-authorizer" [options]="authorizers()" optionLabel="label" optionValue="id"
+            formControlName="id_authorizer_user" placeholder="Seleccione un Administrador o Encargado"
+            [filter]="true" filterBy="label" appendTo="body" [loading]="loadingAuthorizers()"
+            emptyMessage="No hay responsables disponibles" emptyFilterMessage="No se encontraron usuarios"
+            [class.ng-dirty]="formInput.get('id_authorizer_user')?.touched && formInput.get('id_authorizer_user')?.invalid">
+          </p-dropdown>
+          <small class="p-error block" *ngIf="formInput.get('id_authorizer_user')?.touched && formInput.get('id_authorizer_user')?.invalid">Seleccione quién autoriza esta edición.</small>
+          <div *ngIf="authorizersError()" class="mt-1" role="alert">
+            <small class="p-error">{{ authorizersError() }}</small>
+            <button type="button" pButton class="p-button-text p-button-sm" label="Reintentar" (click)="loadAuthorizers()" [disabled]="loadingAuthorizers()"></button>
+          </div>
         </div>
       </div>
       <div class="row mt-3">

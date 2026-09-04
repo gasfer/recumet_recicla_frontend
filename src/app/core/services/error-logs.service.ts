@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { isPurchaseEditAuthorizationRequired } from '../utils/purchase-pricing-authorization';
 
 export const PERMISSION_DENIED_FALLBACK = 'No tiene permiso para realizar esta acción. Comuníquese con soporte para solicitar la habilitación.';
 
@@ -13,6 +14,8 @@ export class ErrorLogsService {
   private handledErrors = new WeakSet<object>();
 
   logDeErrores(e: any): void {
+    if (isPurchaseEditAuthorizationRequired(e)) return;
+
     if (e && typeof e === 'object') {
       if (this.handledErrors.has(e)) return;
       this.handledErrors.add(e);

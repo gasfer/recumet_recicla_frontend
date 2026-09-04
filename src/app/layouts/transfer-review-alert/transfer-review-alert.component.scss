@@ -60,6 +60,53 @@
   margin-top: 1rem;
 }
 
+.stock-kardex-alert {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #f59e0b;
+  border-radius: .75rem;
+  background: #fffbeb;
+}
+
+.stock-kardex-alert__heading {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  color: #78350f;
+}
+
+.stock-kardex-alert__heading i {
+  margin-top: .15rem;
+  font-size: 1.1rem;
+}
+
+.stock-kardex-alert__heading p {
+  margin: .2rem 0 .8rem;
+  color: #92400e;
+}
+
+.stock-kardex-table {
+  min-width: 50rem;
+  margin-bottom: 0;
+  background: #ffffff;
+}
+
+.stock-kardex-table td span {
+  display: block;
+  color: #64748b;
+  font-size: .75rem;
+}
+
+.stock-kardex-table .traceable-transfer {
+  display: inline-flex;
+  margin: .1rem .2rem .1rem 0;
+  padding: .15rem .4rem;
+  border-radius: 999px;
+  color: #1e3a8a;
+  background: #dbeafe;
+  font-weight: 700;
+}
+
 .review-card {
   padding: 1rem;
   border: 1px solid #e2e8f0;

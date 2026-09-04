@@ -63,4 +63,34 @@ describe('TransferReviewService automatic context loading', () => {
     request.flush({ ok: true, reviews: [] });
     expect(reviews).toEqual([]);
   });
+
+  it('abre el panel cuando existe una irregularidad Stock–Kardex aunque no haya notas abiertas', () => {
+    withPermission.and.returnValue(true);
+
+    service.checkCurrentContext(true).subscribe();
+
+    const request = http.expectOne((candidate) => candidate.url === `${environment.base_url}/transfer-review-notes/open`);
+    request.flush({
+      ok: true,
+      reviews: [],
+      stock_kardex_irregularities: [{
+        cod: 'MP-AL-PER-001',
+        name: 'ALUMINIO PERFIL MIXTO',
+        id_product: 304,
+        id_sucursal: 2,
+        id_storage: 4,
+        physical_stock: 21422.35,
+        stock_in_review: 0,
+        available_stock: 21422.35,
+        kardex_balance: 21411.55,
+        physical_kardex_difference: 10.8,
+        difference_direction: 'STOCK_GREATER_THAN_KARDEX',
+        traceable_transfers: [],
+      }],
+    });
+
+    expect(service.openReviews()).toEqual([]);
+    expect(service.stockKardexIrregularities().length).toBe(1);
+    expect(service.showAlertDialog()).toBeTrue();
+  });
 });

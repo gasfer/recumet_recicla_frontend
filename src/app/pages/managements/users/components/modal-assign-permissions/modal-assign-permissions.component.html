@@ -34,15 +34,19 @@
         <div class="group-header p-3 background-primary app-u-border-radius-8px-28a50dd">
           <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-boxes-stacked text-white fs-5"></i>
-            <span class="text-white fw-bold">ACCESO A PRODUCTOS POR TIPO</span>
+            <span class="text-white fw-bold">{{ productAccessSectionTitle }}</span>
           </div>
         </div>
+
+        <p class="text-muted fs-12 mt-2 mb-2">
+          {{ productAccessSectionDescription }}
+        </p>
 
         <div *ngIf="formArray.length > 0" formArrayName="permissions" class="mt-2">
           <p-table [value]="productAccessRows" styleClass="p-datatable-sm p-datatable-striped app-table-scroll" responsiveLayout="scroll">
             <ng-template pTemplate="header">
               <tr>
-                <th class="app-u-background-color-f8f9fa-ba50009 app-u-min-width-200px-47b618f">Módulo</th>
+                <th class="app-u-background-color-f8f9fa-ba50009 app-u-min-width-200px-47b618f">{{ productAccessModuleColumnLabel }}</th>
                 <th *ngFor="let categoryType of productCategoryTypes" class="text-center">
                   {{ categoryType.label }}
                 </th>

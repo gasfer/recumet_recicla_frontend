@@ -6,7 +6,10 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Permission } from '../../../interfaces/permissions.interfaces';
 import Swal from 'sweetalert2';
 import {
+  PRODUCT_ACCESS_MODULE_COLUMN_LABEL,
   PRODUCT_ACCESS_CONTEXT_OPTIONS,
+  PRODUCT_ACCESS_SECTION_DESCRIPTION,
+  PRODUCT_ACCESS_SECTION_TITLE,
   PRODUCT_CATEGORY_TYPE_OPTIONS,
 } from 'src/app/core/constants/product-category-access.constants';
 import {
@@ -39,6 +42,9 @@ export const updateAllowedCategoryTypes = (
 export class ModalAssignPermissionsComponent implements OnInit, OnDestroy {
   readonly productAccessRows = [...PRODUCT_ACCESS_CONTEXT_OPTIONS];
   readonly productCategoryTypes = [...PRODUCT_CATEGORY_TYPE_OPTIONS];
+  readonly productAccessSectionTitle = PRODUCT_ACCESS_SECTION_TITLE;
+  readonly productAccessSectionDescription = PRODUCT_ACCESS_SECTION_DESCRIPTION;
+  readonly productAccessModuleColumnLabel = PRODUCT_ACCESS_MODULE_COLUMN_LABEL;
   readonly transferReviewActionHelp = TRANSFER_REVIEW_ACTION_HELP;
   loading = signal(false);
   userService = inject(UsersService);

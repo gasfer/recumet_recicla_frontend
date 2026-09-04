@@ -1,5 +1,5 @@
 <p-dialog
-  header="Revision de recepcion"
+  [header]="reviewService.historyOnly() ? 'Histórico de conciliación' : 'Revisión de recepción'"
   [visible]="reviewService.showTraceDialog()"
   (visibleChange)="setVisibility($event)"
   [modal]="true"
@@ -18,17 +18,18 @@
       <div><span>Traslado</span><strong>{{ trace.cod }}</strong></div>
       <div><span>Origen</span><strong>{{ trace.sucursal_send.name }} · {{ trace.storage_send.name }}</strong></div>
       <div><span>Destino</span><strong>{{ trace.sucursal_received.name }} · {{ trace.storage_received.name }}</strong></div>
-      <div><span>Responsables</span><strong>{{ trace.user_send.full_names }} → {{ trace.user_received.full_names }}</strong></div>
-      <div><span>Envio</span><strong>{{ trace.date_send | date:'dd/MM/yyyy HH:mm' }}</strong></div>
-      <div><span>Recepcion</span><strong>{{ trace.date_received | date:'dd/MM/yyyy HH:mm' }}</strong></div>
+      <div><span>Registró el envío</span><strong>{{ trace.user_send.full_names }}</strong></div>
+      <div><span>Recibió</span><strong>{{ trace.user_received?.full_names || 'Pendiente de recepción' }}</strong></div>
+      <div><span>Fecha de envío</span><strong>{{ trace.date_send | date:'dd/MM/yyyy HH:mm' }}</strong></div>
+      <div><span>Fecha de recepción</span><strong>{{ (trace.date_received | date:'dd/MM/yyyy HH:mm') || 'Pendiente' }}</strong></div>
     </section>
 
     <section class="trace-section trace-products-section">
       <div class="trace-section-heading">
         <i class="fa-solid fa-truck-ramp-box" aria-hidden="true"></i>
         <div>
-          <h4>Valores originales de la recepcion</h4>
-          <p>Se muestran como referencia y nunca se modifican durante esta revision.</p>
+          <h4>Artículos y cantidades de la recepción</h4>
+          <p>Valores originales de envío y recepción, conservados como referencia.</p>
         </div>
       </div>
       <div class="table-responsive">
@@ -40,8 +41,8 @@
             <tr *ngFor="let detail of trace.detailsTransfers">
               <td>{{ detail.product.cod }} · {{ detail.product.name }}</td>
               <td>{{ detail.quantity | number:'1.4-4' }}</td>
-              <td>{{ detail.quantity_received | number:'1.4-4' }}</td>
-              <td>{{ (+detail.quantity_received - +detail.quantity) | number:'1.4-4' }}</td>
+              <td>{{ trace.status === 'PENDING' ? 'Pendiente' : (detail.quantity_received | number:'1.4-4') }}</td>
+              <td>{{ trace.status === 'PENDING' ? '—' : ((+detail.quantity_received - +detail.quantity) | number:'1.4-4') }}</td>
               <td>{{ detail.observation || '—' }}</td>
             </tr>
           </tbody>
@@ -49,6 +50,31 @@
       </div>
     </section>
 
+    <section *ngIf="trace.stock_kardex_irregularities.length" class="stock-kardex-alert trace-section" aria-labelledby="trace-stock-kardex-title">
+      <div class="stock-kardex-alert__heading">
+        <i class="fa-solid fa-scale-unbalanced-flip" aria-hidden="true"></i>
+        <div>
+          <strong id="trace-stock-kardex-title">La recepción tiene una irregularidad Stock–Kardex relacionada</strong>
+          <p>La conciliación debe permanecer inconclusa hasta verificar el inventario físico y regularizar el saldo correcto.</p>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle stock-kardex-table">
+          <thead><tr><th>Producto</th><th>Stock físico</th><th>Kardex</th><th>Diferencia</th><th>Diagnóstico</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let item of trace.stock_kardex_irregularities">
+              <td><strong>{{ item.cod }}</strong><span>{{ item.name }}</span></td>
+              <td>{{ item.physical_stock | number:'1.4-4' }}</td>
+              <td>{{ item.kardex_balance | number:'1.4-4' }}</td>
+              <td><strong>{{ item.physical_kardex_difference > 0 ? '+' : '' }}{{ item.physical_kardex_difference | number:'1.4-4' }}</strong></td>
+              <td>{{ irregularityLabel(item.difference_direction) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p *ngIf="reviewService.historyOnly() && !trace.reviewNotes.length">Esta recepción no tiene conciliaciones registradas.</p>
     <section
       class="trace-section review-case"
       [class.review-case--completed]="note.reconciliation_status === 'COMPLETADO'"
@@ -70,7 +96,7 @@
             Falta documentar {{ pendingDetailsCount(note) }}
             {{ pendingDetailsCount(note) === 1 ? 'diferencia' : 'diferencias' }}.
           </strong>
-          <p>Presione <b>Conciliar diferencia</b>. El sistema mostrará las soluciones válidas y sus efectos antes de confirmar.</p>
+          <p *ngIf="!reviewService.historyOnly()">Presione <b>Conciliar diferencia</b>. El sistema mostrará las soluciones válidas y sus efectos antes de confirmar.</p>
         </div>
       </div>
       <ng-template #reviewClosed>
@@ -92,7 +118,7 @@
         {{ noteNotice()?.text }}
       </div>
 
-      <section *ngIf="note.reconciliation_status !== 'COMPLETADO'" class="review-assignment-step" [class.review-assignment-step--editing]="assignmentNoteId() === note.id">
+      <section *ngIf="!reviewService.historyOnly() && note.reconciliation_status !== 'COMPLETADO'" class="review-assignment-step" [class.review-assignment-step--editing]="assignmentNoteId() === note.id">
         <div class="review-assignment-step__summary">
           <span>Paso previo opcional</span>
           <div>
@@ -176,7 +202,7 @@
                 </td>
                 <td>
                   <button
-                    *ngIf="detail.reconciliation_status !== 'COMPLETADO' && validatorsService.withPermission('TRANSFER_REVIEW','update')"
+                    *ngIf="!reviewService.historyOnly() && detail.reconciliation_status !== 'COMPLETADO' && validatorsService.withPermission('TRANSFER_REVIEW','update')"
                     type="button"
                     class="btn btn-review-primary"
                     [disabled]="saving()"
@@ -191,7 +217,7 @@
                 </td>
               </tr>
 
-              <tr *ngIf="selectedDetail()?.id === detail.id && selectedNote()?.id === note.id" class="documentary-close-row">
+              <tr *ngIf="!reviewService.historyOnly() && selectedDetail()?.id === detail.id && selectedNote()?.id === note.id" class="documentary-close-row">
                 <td colspan="7">
                   <section class="documentary-close-panel" [formGroup]="documentaryForm">
                     <div class="documentary-close-panel__header">
@@ -376,9 +402,27 @@
         </table>
       </div>
 
-      <details class="review-history">
+      <section *ngIf="reviewService.historyOnly() && note.resolutionActions?.length" class="trace-section">
+        <h4>Operaciones realizadas</h4>
+        <article *ngFor="let action of note.resolutionActions" class="review-history">
+          <strong>{{ historyActionLabel(action.strategy) }}</strong> · {{ action.quantity | number:'1.4-4' }} kg
+          <p>Realizó: {{ action.user?.full_names || 'No registrado' }} · Autorizó: {{ action.approvedUser?.full_names || 'No registrado' }}</p>
+          <p>{{ action.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ historyActionLabel(action.operation_status || '') }}</p>
+          <p *ngIf="action.observations">{{ action.observations }}</p>
+          <p *ngIf="action.operation_id">Documento: {{ historyActionLabel(action.operation_type || '') }} #{{ action.operation_id }}</p>
+          <p *ngIf="action.reversal_reason">Motivo de reversión: {{ action.reversal_reason }}</p>
+          <div *ngFor="let link of action.movementLinks">
+            <p *ngIf="link.kardexMovement as movement">Kardex: {{ movement.type === 'INPUT' ? 'Ingreso' : 'Salida' }} · {{ movement.quantity | number:'1.4-4' }} kg · {{ movement.details }}</p>
+          </div>
+        </article>
+      </section>
+      <section *ngIf="reviewService.historyOnly() && note.evidences?.length" class="trace-section">
+        <h4>Evidencias registradas</h4>
+        <p *ngFor="let evidence of note.evidences">{{ evidence.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ evidence.description || evidence.evidence_type }}</p>
+      </section>
+      <details class="review-history" [open]="reviewService.historyOnly()">
         <summary>
-          <span><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Ver trazabilidad</span>
+          <span><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Histórico de conciliación</span>
           <small>{{ note.events.length }} registros</small>
         </summary>
         <ol class="trace-timeline">
@@ -387,8 +431,8 @@
             <div>
               <strong>{{ eventLabel(event.event_type) }}</strong>
               <p>{{ event.description }}</p>
-              <div *ngIf="event.metadata?.inventory_effect === 'NONE' || event.metadata?.inventory_effect === 'VERIFIED_EXISTING_OPERATION'" class="trace-event-reference">
-                <span>{{ event.metadata?.inventory_effect === 'VERIFIED_EXISTING_OPERATION' ? 'Operación existente verificada' : 'Sin ajuste de inventario' }}</span>
+              <div *ngIf="event.metadata" class="trace-event-reference">
+                <span *ngIf="event.metadata?.inventory_effect === 'NONE' || event.metadata?.inventory_effect === 'VERIFIED_EXISTING_OPERATION'">{{ event.metadata?.inventory_effect === 'VERIFIED_EXISTING_OPERATION' ? 'Operación existente verificada' : 'Sin ajuste de inventario' }}</span>
                 <span *ngIf="event.metadata?.reason_code">Motivo: {{ reasonLabel(event.metadata?.reason_code || '') }}</span>
                 <span *ngIf="event.metadata?.note_or_reference && !event.metadata?.document_references?.length">Referencia: {{ event.metadata?.note_or_reference }}</span>
                 <span *ngIf="event.metadata?.operational_justification">Justificación: {{ event.metadata?.operational_justification }}</span>
@@ -396,7 +440,7 @@
                   {{ documentTypeLabel(reference.document_type) }}: {{ reference.document_number }} · {{ reference.document_date | date:'dd/MM/yyyy':'UTC' }}
                 </span>
               </div>
-              <small>{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ event.user.full_names }}</small>
+              <small>{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ event.user?.full_names || 'Usuario no disponible' }}</small>
             </div>
           </li>
         </ol>

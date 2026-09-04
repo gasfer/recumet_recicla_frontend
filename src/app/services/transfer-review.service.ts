@@ -8,6 +8,26 @@ import { NotificationsService } from './notifications.service';
 export type ReviewStatus = 'EN_REVISION' | 'PARCIAL' | 'COMPLETADO';
 
 export interface ReviewProduct { id: number; cod: string; name: string; }
+export interface StockKardexIrregularity {
+  cod: string;
+  name: string;
+  id_product: number;
+  id_sucursal: number;
+  id_storage: number;
+  physical_stock: number;
+  stock_in_review: number;
+  available_stock: number;
+  kardex_balance: number;
+  physical_kardex_difference: number;
+  difference_direction: 'STOCK_GREATER_THAN_KARDEX' | 'KARDEX_GREATER_THAN_STOCK';
+  traceable_transfers: Array<{
+    transfer_id: number;
+    transfer_cod: string;
+    review_note_id?: number | null;
+    review_note_registry?: string | null;
+    review_note_status?: ReviewStatus | null;
+  }>;
+}
 export interface AssignableReviewUser { id: number; full_names: string; role: string; can_authorize?: boolean; }
 export interface ReviewDetail {
   id: number;
@@ -63,14 +83,14 @@ export interface TransferTraceability {
   id: number;
   cod: string;
   date_send: string;
-  date_received: string;
+  date_received: string | null;
   status: string;
   sucursal_send: { name: string };
   sucursal_received: { id: number; name: string };
   storage_send: { name: string };
   storage_received: { name: string };
   user_send: { full_names: string };
-  user_received: { full_names: string };
+  user_received: { full_names: string } | null;
   detailsTransfers: Array<{
     id: number;
     quantity: string;
@@ -110,8 +130,16 @@ export interface TransferTraceability {
       user: { full_names: string };
     }>;
     evidences: Array<{ id: number; evidence_type: string; description?: string; file_url?: string; createdAt: string }>;
-    resolutionActions: Array<{ id: number; strategy: string; quantity: string; observations?: string; createdAt: string }>;
+    resolutionActions: Array<{ id: number; strategy: string; quantity: string; observations?: string; createdAt: string;
+      user?: { full_names: string }; approvedUser?: { full_names: string }; operation_type?: string; operation_id?: number;
+      operation_status?: string; reversal_reason?: string; movementLinks?: Array<{ kardexMovement?: { type: string; quantity: string; details: string } }> }>;
   }>;
+  stock_kardex_irregularities: StockKardexIrregularity[];
+}
+
+interface OpenReviewContext {
+  reviews: TransferReview[];
+  stock_kardex_irregularities: StockKardexIrregularity[];
 }
 
 const baseUrl = environment.base_url;
@@ -121,15 +149,18 @@ export class TransferReviewService {
   private readonly http = inject(HttpClient);
   private readonly validators = inject(ValidatorsService);
   private readonly notifications = inject(NotificationsService);
-  private readonly contextCache = new Map<string, TransferReview[]>();
+  private readonly contextCache = new Map<string, OpenReviewContext>();
   private readonly dismissedReviewIdsByContext = new Map<string, Set<number>>();
+  private readonly dismissedIrregularitiesByContext = new Map<string, Set<string>>();
   private activeContextKey = '';
 
   readonly contextReady = signal(false);
   readonly loading = signal(false);
   readonly openReviews = signal<TransferReview[]>([]);
+  readonly stockKardexIrregularities = signal<StockKardexIrregularity[]>([]);
   readonly showAlertDialog = signal(false);
   readonly showTraceDialog = signal(false);
+  readonly historyOnly = signal(false);
   readonly traceLoading = signal(false);
   readonly traceability = signal<TransferTraceability | null>(null);
   readonly focusedReviewNoteId = signal<number | null>(null);
@@ -149,6 +180,7 @@ export class TransferReviewService {
       this.contextCache.clear();
       this.activeContextKey = '';
       this.openReviews.set([]);
+      this.stockKardexIrregularities.set([]);
       this.showAlertDialog.set(false);
       this.loading.set(false);
       this.contextReady.set(true);
@@ -164,21 +196,23 @@ export class TransferReviewService {
     this.activeContextKey = key;
     const cached = this.contextCache.get(key);
     if (!force && cached) {
-      this.applyOpenReviews(cached, key);
+      this.applyOpenContext(cached, key);
       this.contextReady.set(true);
-      return of(cached);
+      return of(cached.reviews);
     }
     this.contextReady.set(false);
     this.loading.set(true);
     const params = new HttpParams().set('id_sucursal', idSucursal).set('id_storage', idStorage);
-    return this.http.get<{ ok: boolean; reviews: TransferReview[] }>(`${baseUrl}/transfer-review-notes/open`, { params }).pipe(
-      map(({ reviews }) => reviews),
-      tap((reviews) => {
-        this.contextCache.set(key, reviews);
-        this.applyOpenReviews(reviews, key);
+    return this.http.get<{ ok: boolean; reviews: TransferReview[]; stock_kardex_irregularities?: StockKardexIrregularity[] }>(`${baseUrl}/transfer-review-notes/open`, { params }).pipe(
+      map(({ reviews, stock_kardex_irregularities = [] }) => ({ reviews, stock_kardex_irregularities })),
+      tap((context) => {
+        this.contextCache.set(key, context);
+        this.applyOpenContext(context, key);
       }),
+      map(({ reviews }) => reviews),
       catchError(() => {
         this.openReviews.set([]);
+        this.stockKardexIrregularities.set([]);
         return of([]);
       }),
       finalize(() => {
@@ -188,7 +222,8 @@ export class TransferReviewService {
     );
   }
 
-  openTrace(transferId: number, reviewNoteId: number | null = null): void {
+  openTrace(transferId: number, reviewNoteId: number | null = null, historyOnly = false): void {
+    this.historyOnly.set(historyOnly);
     this.showAlertDialog.set(false);
     this.focusedReviewNoteId.set(reviewNoteId);
     this.showTraceDialog.set(true);
@@ -203,7 +238,7 @@ export class TransferReviewService {
           const content = document.querySelector('.transfer-review-trace-dialog .p-dialog-content');
           if (content) content.scrollTop = 0;
         });
-        this.loadAssignableUsers(traceability.sucursal_received.id).subscribe();
+        if (!historyOnly) this.loadAssignableUsers(traceability.sucursal_received.id).subscribe();
       },
       error: () => this.showTraceDialog.set(false),
     });
@@ -341,12 +376,17 @@ export class TransferReviewService {
   closeAlerts(): void {
     if (this.activeContextKey) {
       this.dismissedReviewIdsByContext.set(this.activeContextKey, new Set(this.openReviews().map(({ id }) => id)));
+      this.dismissedIrregularitiesByContext.set(
+        this.activeContextKey,
+        new Set(this.stockKardexIrregularities().map((item) => this.irregularityKey(item))),
+      );
     }
     this.showAlertDialog.set(false);
   }
 
   beginSession(): void {
     this.dismissedReviewIdsByContext.clear();
+    this.dismissedIrregularitiesByContext.clear();
     this.showAlertDialog.set(false);
   }
 
@@ -355,7 +395,7 @@ export class TransferReviewService {
       this.closeAlerts();
       return;
     }
-    this.showAlertDialog.set(this.openReviews().length > 0);
+    this.showAlertDialog.set(this.openReviews().length > 0 || this.stockKardexIrregularities().length > 0);
   }
 
   setTraceVisibility(visible: boolean): void {
@@ -363,16 +403,27 @@ export class TransferReviewService {
     if (!visible) this.focusedReviewNoteId.set(null);
   }
 
-  private applyOpenReviews(reviews: TransferReview[], contextKey: string): void {
+  private applyOpenContext(context: OpenReviewContext, contextKey: string): void {
+    const { reviews, stock_kardex_irregularities: irregularities } = context;
     this.openReviews.set(reviews);
-    if (reviews.length === 0) {
+    this.stockKardexIrregularities.set(irregularities);
+    if (reviews.length === 0 && irregularities.length === 0) {
       this.dismissedReviewIdsByContext.delete(contextKey);
+      this.dismissedIrregularitiesByContext.delete(contextKey);
       this.showAlertDialog.set(false);
       return;
     }
 
     const dismissedIds = this.dismissedReviewIdsByContext.get(contextKey) || new Set<number>();
-    this.showAlertDialog.set(reviews.some(({ id }) => !dismissedIds.has(id)));
+    const dismissedIrregularities = this.dismissedIrregularitiesByContext.get(contextKey) || new Set<string>();
+    this.showAlertDialog.set(
+      reviews.some(({ id }) => !dismissedIds.has(id))
+      || irregularities.some((item) => !dismissedIrregularities.has(this.irregularityKey(item))),
+    );
+  }
+
+  private irregularityKey(item: StockKardexIrregularity): string {
+    return `${item.id_product}:${item.id_sucursal}:${item.id_storage}:${item.physical_kardex_difference}`;
   }
 
   private refreshCurrentTrace(): void {

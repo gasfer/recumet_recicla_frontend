@@ -54,6 +54,12 @@ export class ProductsService {
     return this.http.get<any>(url);
   }
 
+  getInventorySelectProducts(query: string = '', limit: number = 10, category_type: string = '', category_ids: string = ''): Observable<any> {
+    const id_sucursal = this.validatorsService.id_sucursal() || '';
+    const url = `${base_url}/product/inventory/select?query=${query}&limit=${limit}&category_type=${category_type}&category_ids=${category_ids}&id_sucursal=${id_sucursal}`;
+    return this.http.get<any>(url);
+  }
+
   getDifferenceProducts(query: string = '', limit: number = 100): Observable<{ ok: boolean, products: Product[] }> {
     const url = `${base_url}/product/differences/select?query=${query}&limit=${limit}`;
     return this.http.get<{ ok: boolean, products: Product[] }>(url);

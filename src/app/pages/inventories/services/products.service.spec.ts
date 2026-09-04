@@ -90,4 +90,17 @@ describe('ProductsService operational catalog', () => {
     expect(request.request.method).toBe('GET');
     request.flush({ ok: true, products: [] });
   });
+
+  it('uses the inventory catalog instead of the administrative product route', () => {
+    service.getInventorySelectProducts('cobre', 20, 'FINISHED_PRODUCT', '1,2').subscribe();
+
+    const request = http.expectOne(req =>
+      req.url.includes('/product/inventory/select')
+      && req.urlWithParams.includes('query=cobre')
+      && req.urlWithParams.includes('limit=20')
+      && req.urlWithParams.includes('category_type=FINISHED_PRODUCT')
+      && req.urlWithParams.includes('category_ids=1,2'));
+    expect(request.request.method).toBe('GET');
+    request.flush({ ok: true, products: [] });
+  });
 });

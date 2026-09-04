@@ -49,6 +49,9 @@ export interface Transfer {
     total_quantity:        number;
     reconciliation_status: 'EN_REVISION' | 'PARCIAL' | 'COMPLETADO';
     pending_review_items:  number;
+    has_reconciliation_history?: boolean;
+    approved_reconciliations?: number;
+    reconciliation_history_label?: string;
     review_closure_pending?: boolean;
     options?:              Options[];
 }

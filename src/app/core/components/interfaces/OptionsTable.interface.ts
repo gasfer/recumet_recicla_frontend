@@ -4,6 +4,7 @@ export interface Options {
     class:    string,
     tooltip:  string,
     ariaLabel?: string,
+    ariaDisabled?: boolean,
     disabled?: boolean,
     style?:    string,
     eventClick?: Function;

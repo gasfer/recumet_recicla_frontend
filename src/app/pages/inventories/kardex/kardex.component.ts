@@ -256,7 +256,7 @@ export class KardexComponent implements OnInit {
               icon: 'fa-regular fa-file-lines',
               class: 'p-button-sm p-button-outlined',
               tooltip: kardex.review_note.registry_number,
-              disabled: false,
+              disabled: true,
               eventClick: () => this.printTransferReviewNote(kardex.review_note.id),
             }];
           });

@@ -143,8 +143,23 @@ export class TransferReviewTraceComponent {
     return type === 'EXCEDENTE_PARA_REVISION' ? 'Excedente' : 'Faltante';
   }
 
+  irregularityLabel(direction: string): string {
+    return direction === 'STOCK_GREATER_THAN_KARDEX'
+      ? 'El stock físico es mayor que el Kardex'
+      : 'El Kardex es mayor que el stock físico';
+  }
+
   pendingDetailsCount(note: TransferReview): number {
     return note.details.filter(({ reconciliation_status }) => reconciliation_status !== 'COMPLETADO').length;
+  }
+
+  historyActionLabel(value: string): string {
+    return ({ CONFIRM_DIFFERENCE: 'Confirmación sin movimiento adicional', TRANSFER_RETURN: 'Devolución al origen',
+      CLASSIFY_EXCESS: 'Clasificación de excedente', CLASSIFY_SHORTAGE: 'Clasificación de faltante',
+      TRANSFER: 'Traslado', CLASSIFIED: 'Clasificación', CONFIRMATION: 'Confirmación',
+      ACTIVE: 'Activa', REVERSED: 'Revertida', REVERSAL_PENDING: 'Reversión pendiente',
+      PENDING_RECEPTION: 'Pendiente de recepción', MANUAL_INTERVENTION_REQUIRED: 'Requiere gestión manual',
+    } as Record<string, string>)[value] || value.replace(/_/g, ' ') || 'Sin estado registrado';
   }
 
   visibleReviewNotes(notes: TransferTraceability['reviewNotes']): TransferTraceability['reviewNotes'] {

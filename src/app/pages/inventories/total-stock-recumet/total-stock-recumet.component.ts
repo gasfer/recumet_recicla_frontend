@@ -202,8 +202,8 @@ export class TotalStockRecumetComponent implements OnInit {
     this.dropdownProducts.set([]);
 
     forkJoin({
-      rawMaterial: this.categoriesService.getCategorySelect('RAW_MATERIAL'),
-      finishedProduct: this.categoriesService.getCategorySelect('FINISHED_PRODUCT')
+      rawMaterial: this.categoriesService.getInventoryCategorySelect('RAW_MATERIAL'),
+      finishedProduct: this.categoriesService.getInventoryCategorySelect('FINISHED_PRODUCT')
     }).subscribe({
       next: (resp: any) => {
         const raw = resp.rawMaterial.categories || [];
@@ -240,7 +240,7 @@ export class TotalStockRecumetComponent implements OnInit {
         ? this.selectedCategoryIds().join(',')
         : '';
 
-    this.productService.getSelectProducts('', 5000, '', categoryIds).subscribe({
+    this.productService.getInventorySelectProducts('', 5000, '', categoryIds).subscribe({
       next: (resp: any) => {
         const products = resp.products || [];
         this.dropdownProducts.set(products);
