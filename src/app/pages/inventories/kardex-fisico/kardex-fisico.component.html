@@ -56,7 +56,7 @@
               </div>
 
               <!-- Filtrar Saldos -->
-              <div class="col-12 col-md-3">
+              <div class="col-12 col-md-3" *ngIf="activeView() === PHYSICAL_SUMMARY">
                 <label class="block mb-1">Filtrar Saldos</label>
 
                 <div class="d-flex align-items-center gap-3 mt-2">
@@ -81,9 +81,10 @@
             <div class="row mt-3">
 
               <!-- Categorías Multiselect -->
-              <div class="col-12 col-sm-6">
+              <div class="col-12 col-sm-6" *ngIf="activeView() === PHYSICAL_SUMMARY">
                 <label class="block mb-1">Categorías</label>
                 <p-multiSelect [options]="dropdownCategories()" [(ngModel)]="selectedCategoryValues"
+                  [ngModelOptions]="{standalone: true}"
                   (onChange)="onCategoryChange($event.value)" optionLabel="name" optionValue="id"
                   placeholder="Seleccione categorías..." appendTo="body" [filter]="true"
                   filterBy="name" [loading]="loadingCategories()" [showClear]="true" display="chip" class="app-u-width-100-0466783">
@@ -95,6 +96,7 @@
                   <div class="col-12 col-sm-6">
                     <label class="block mb-1">Producto</label>
                     <p-dropdown [options]="dropdownProducts()" [(ngModel)]="productSelectValue"
+                      [ngModelOptions]="{standalone: true}"
                       (onChange)="onProductSelect($event.value)" [filter]="true" filterBy="name,cod" [showClear]="true"
                       (onFilter)="filterProduct($event)" [loading]="loadingSearchProduct()"
 
@@ -180,13 +182,90 @@
       </p-accordion>
     </div>
     <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
-      [activeItem]="searchItems()[0]"></p-tabMenu>
+      [activeItem]="activeSearchItem()"></p-tabMenu>
   </div>
 </form>
-<app-table responsiveStrategy="scroll" [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.cod'"
-  [includeSearch]="false" (rows$)="paginate($event)" (search$)="search($event)" [data]="kardexes()"
-  [groupRowsBy]="'product.category.name'" [loading]="loading()">
-  <tr>
+
+<div *ngIf="isAllProductsRoute() && activeView() === ALL_HISTORY" class="alert alert-info py-2 mb-2" role="note">
+  <i class="fa-solid fa-circle-info me-2"></i>
+  Muestra movimientos que modificaron existencias. Los cambios administrativos sin cantidad permanecen en la auditoría general.
+</div>
+
+<section *ngIf="activeView() === ALL_HISTORY" class="valued-kardex" aria-label="Kardex general valorado">
+  <div class="valued-kardex__desktop" tabindex="0" aria-label="Tabla de movimientos con desplazamiento horizontal">
+    <p-table [value]="kardexes()?.data || []" [loading]="loading()" sortField="date" [sortOrder]="-1"
+      (onSort)="historySort($event)" styleClass="p-datatable-sm valued-kardex-table">
+      <ng-template pTemplate="header">
+        <tr class="valued-kardex-groups">
+          <th rowspan="2" class="kardex-index">Nº</th>
+          <th rowspan="2" pSortableColumn="date">FECHA Y HORA <p-sortIcon field="date"></p-sortIcon></th>
+          <th rowspan="2">PRODUCTO Y UBICACIÓN</th>
+          <th rowspan="2">CONCEPTO Y DOCUMENTO</th>
+          <th colspan="3" class="group-input"><i class="fa-solid fa-circle" aria-hidden="true"></i> ENTRADAS (INGRESOS)</th>
+          <th colspan="3" class="group-output"><i class="fa-solid fa-circle" aria-hidden="true"></i> SALIDAS (EGRESOS)</th>
+          <th colspan="3" class="group-balance"><i class="fa-solid fa-circle" aria-hidden="true"></i> SALDOS TOTALES</th>
+          <th rowspan="2">RESPONSABLE</th>
+        </tr>
+        <tr class="valued-kardex-subheaders">
+          <th class="group-input">CANT.</th><th class="group-input">C. UNIT.</th><th class="group-input">TOTAL BS.</th>
+          <th class="group-output">CANT.</th><th class="group-output">C. UNIT.</th><th class="group-output">TOTAL BS.</th>
+          <th class="group-balance">STOCK</th><th class="group-balance">C. PROM.</th><th class="group-balance">VALOR BS.</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-sourceRow>
+        <tr *ngIf="asValuedMovement(sourceRow) as row">
+          <td class="kardex-index">{{ row.index }}</td>
+          <td class="kardex-date"><strong>{{ row.date | date:'EEEE, d MMMM y':'':'es-BO' }}</strong><small>{{ row.date | date:'HH:mm':'':'es-BO' }}</small></td>
+          <td class="kardex-product">
+            <a [routerLink]="['/inventories/kardex-existencia']" [queryParams]="{p: row.id_product}">{{ row.product?.name }}</a>
+            <span><b>{{ row.product?.cod }}</b> · {{ row.product?.unit?.siglas }} · <i class="fa-regular fa-building" aria-hidden="true"></i> {{ row.storage?.name }}</span>
+            <small>{{ row.sucursal?.name }}</small>
+          </td>
+          <td class="kardex-concept">
+            <span class="kardex-event" [ngClass]="movementClass(row)"><i [class]="movementIcon(row)" aria-hidden="true"></i>{{ row.event_label || 'OTRO MOVIMIENTO' }}</span>
+            <strong>{{ row.registry_number || 'SIN DOCUMENTO' }}</strong>
+            <small>{{ row.sub_detail || row.detail }}</small>
+          </td>
+          <td class="value-input">{{ hasQuantity(row.quantity_input) ? (row.quantity_input | number:decimal():'es-BO') : '—' }}</td>
+          <td class="value-input">{{ hasQuantity(row.quantity_input) ? valuedAmount(row, row.valuation?.applied_unit_cost) : '—' }}</td>
+          <td class="value-input value-total">{{ hasQuantity(row.quantity_input) ? valuedAmount(row, row.valuation?.input_value) : '—' }}</td>
+          <td class="value-output">{{ hasQuantity(row.quantity_output) ? (row.quantity_output | number:decimal():'es-BO') : '—' }}</td>
+          <td class="value-output">{{ hasQuantity(row.quantity_output) ? valuedAmount(row, row.valuation?.applied_unit_cost) : '—' }}</td>
+          <td class="value-output value-total">{{ hasQuantity(row.quantity_output) ? valuedAmount(row, row.valuation?.output_value) : '—' }}</td>
+          <td class="value-balance">{{ row.saldo | number:decimal():'es-BO' }}</td>
+          <td class="value-balance">{{ valuedAmount(row, row.valuation?.average_unit_cost_after) }}</td>
+          <td class="value-balance value-total" [pTooltip]="row.valuation?.reason || ''">{{ valuedAmount(row, row.valuation?.balance_value_after) }}</td>
+          <td class="kardex-user"><span aria-hidden="true">{{ responsibleInitial(row) }}</span><small>{{ row.responsible?.name || 'RESPONSABLE NO DISPONIBLE' }}</small></td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage"><tr><td colspan="14" class="text-center py-5">No se encontraron movimientos para los filtros seleccionados.</td></tr></ng-template>
+    </p-table>
+  </div>
+
+  <div class="valued-kardex__mobile">
+    <article *ngFor="let sourceRow of kardexes()?.data || []" class="kardex-card">
+      <ng-container *ngIf="asValuedMovement(sourceRow) as row">
+        <header><span class="kardex-card__index" aria-label="Número de registro">#{{ row.index }}</span><span class="kardex-event" [ngClass]="movementClass(row)"><i [class]="movementIcon(row)"></i>{{ row.event_label }}</span><time>{{ row.date | date:'dd/MM/y HH:mm':'':'es-BO' }}</time></header>
+        <h3>{{ row.product?.name }}</h3><p>{{ row.product?.cod }} · {{ row.storage?.name }} · {{ row.sucursal?.name }}</p>
+        <div class="kardex-card__movement"><strong>{{ row.registry_number || 'SIN DOCUMENTO' }}</strong><small>{{ row.sub_detail || row.detail }}</small></div>
+        <div class="kardex-card__values">
+          <section class="value-input"><b>ENTRADA</b><span>{{ row.quantity_input | number:decimal():'es-BO' }}</span><small>{{ valuedAmount(row, row.valuation?.input_value) }} Bs.</small></section>
+          <section class="value-output"><b>SALIDA</b><span>{{ row.quantity_output | number:decimal():'es-BO' }}</span><small>{{ valuedAmount(row, row.valuation?.output_value) }} Bs.</small></section>
+          <section class="value-balance"><b>SALDO</b><span>{{ row.saldo | number:decimal():'es-BO' }}</span><small>{{ valuedAmount(row, row.valuation?.balance_value_after) }} Bs.</small></section>
+        </div>
+        <footer><span class="kardex-user"><i aria-hidden="true">{{ responsibleInitial(row) }}</i>{{ row.responsible?.name || 'RESPONSABLE NO DISPONIBLE' }}</span></footer>
+      </ng-container>
+    </article>
+  </div>
+  <p-paginator [first]="((kardexes()?.currentPage || 1) - 1) * rows()" [rows]="rows()"
+    [totalRecords]="kardexes()?.total || 0" [rowsPerPageOptions]="[10, 25, 50, 100]"
+    (onPageChange)="historyPageChange($event)"></p-paginator>
+</section>
+
+<app-table *ngIf="activeView() === PHYSICAL_SUMMARY" responsiveStrategy="scroll" [cols]="cols()" (customSort$)="customSort($event)"
+  [sortOrder]="'ASC'" [sortField]="'product.cod'" [includeSearch]="false" (rows$)="paginate($event)"
+  (search$)="search($event)" [data]="kardexes()" [groupRowsBy]="'product.category.name'" [loading]="loading()">
+  <tr *ngIf="activeView() === PHYSICAL_SUMMARY">
     <th colspan="4"></th>
     <th colspan="3" class="text-white text-center background-primary">FÍSICO</th>
   </tr>

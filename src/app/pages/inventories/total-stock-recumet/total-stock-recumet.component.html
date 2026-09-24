@@ -118,8 +118,8 @@
               [loading]="loading()">
             </p-button>
 
-            <p-splitButton *ngIf="validatorsService.withPermission('KARDEX','reports')" icon="fas fa-print"
-              label="Imprimir" [model]="this.buttonItems" [menuStyle]="{'width':'8em'}" [size]="'small'"
+            <p-splitButton *ngIf="validatorsService.withPermission('KARDEX','reports')" icon="fas fa-file-export"
+              label="Exportar reportes" [model]="this.buttonItems" [menuStyle]="{'min-width':'18em'}" [size]="'small'"
               [rounded]="true" [severity]="'danger'" (onClick)="!loading() ? this.printPdfReport() : null"
               styleClass="ms-1">
             </p-splitButton>

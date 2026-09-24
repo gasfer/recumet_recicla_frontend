@@ -5,9 +5,9 @@
   [modal]="true"
   [draggable]="false"
   [resizable]="false"
-  [style]="{ width: '96vw', maxWidth: '96rem' }"
+  [style]="{ width: '98vw', maxWidth: '110rem' }"
   [breakpoints]="{ '1100px': '98vw', '768px': '100vw' }"
-  styleClass="transfer-review-trace-dialog">
+  styleClass="transfer-review-trace-dialog app-dialog--xl">
   <div class="review-loading" *ngIf="reviewService.traceLoading()" role="status">
     <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
     Cargando trazabilidad...
@@ -28,27 +28,144 @@
       <div class="trace-section-heading">
         <i class="fa-solid fa-truck-ramp-box" aria-hidden="true"></i>
         <div>
-          <h4>Artículos y cantidades de la recepción</h4>
-          <p>Valores originales de envío y recepción, conservados como referencia.</p>
+          <h4>Recepción y conciliación por artículo</h4>
+          <p>Una sola vista para comparar lo enviado, lo recibido y el estado de cada diferencia.</p>
         </div>
       </div>
+      <div *ngIf="trace.historical_difference_reconciliation as reconciliation" class="historical-summary" aria-label="Resumen de conciliación">
+        <span>Exactos <strong>{{ reconciliation.summary.exact }}</strong></span>
+        <span>Excedentes <strong>{{ reconciliation.summary.surplus }}</strong></span>
+        <span>Faltantes <strong>{{ reconciliation.summary.shortage }}</strong></span>
+        <span *ngIf="reconciliation.summary.actionable">Por regularizar <strong>{{ reconciliation.summary.actionable }}</strong></span>
+      </div>
+      <div *ngIf="historicalNotice()" class="review-inline-message historical-notice" role="status">
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+        {{ historicalNotice() }}
+      </div>
       <div class="table-responsive">
-        <table class="table table-sm align-middle">
+        <table class="table table-sm align-middle trace-products-table">
           <thead>
-            <tr><th>Producto</th><th>Enviado</th><th>Recibido</th><th>Diferencia</th><th>Observacion</th></tr>
+            <tr>
+              <th>Producto</th>
+              <th class="text-center">Enviado</th>
+              <th class="text-center">Físico recibido</th>
+              <th class="text-center">Base Kardex</th>
+              <th class="text-center">Diferencia</th>
+              <th class="text-center">Situación / disponible</th>
+              <th class="text-center">Integridad</th>
+              <th class="text-center">Estado de conciliación</th>
+              <th>Observación</th>
+            </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let detail of trace.detailsTransfers">
-              <td>{{ detail.product.cod }} · {{ detail.product.name }}</td>
-              <td>{{ detail.quantity | number:'1.4-4' }}</td>
-              <td>{{ trace.status === 'PENDING' ? 'Pendiente' : (detail.quantity_received | number:'1.4-4') }}</td>
-              <td>{{ trace.status === 'PENDING' ? '—' : ((+detail.quantity_received - +detail.quantity) | number:'1.4-4') }}</td>
-              <td>{{ detail.observation || '—' }}</td>
-            </tr>
+            <ng-container *ngFor="let detail of trace.detailsTransfers">
+              <ng-container *ngIf="historicalItemForProduct(trace.historical_difference_reconciliation, detail.product.id) as historicalItem">
+                <tr [class.historical-row--warning]="historicalItem.reconciliation_status !== 'COMPLETO'" [class.historical-row--complete]="historicalItem.reconciliation_status === 'COMPLETO'">
+                  <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td>
+                  <td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:'1.4-4' }}</td>
+                  <td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:'1.4-4') }}</td>
+                  <td class="text-center">{{ detail.quantity_normal_received | number:'1.4-4' }}</td>
+                  <td class="text-center" [class.text-danger]="historicalItem.difference_type === 'FALTANTE'" [class.text-warning]="historicalItem.difference_type === 'EXCEDENTE'">
+                    <strong>{{ historicalTypeLabel(historicalItem.difference_type) }}</strong>
+                    <small *ngIf="historicalItem.difference_expected">{{ historicalItem.difference_expected | number:'1.4-4' }} kg</small>
+                  </td>
+                  <td class="text-center">
+                    <ng-container *ngIf="historicalItem.difference_type === 'FALTANTE'; else historicalRetained">
+                      <strong class="text-danger">Faltante: {{ historicalItem.difference_expected | number:'1.4-4' }}</strong>
+                      <small class="d-block">Físico disponible: {{ detail.quantity_available | number:'1.4-4' }}</small>
+                    </ng-container>
+                    <ng-template #historicalRetained>{{ detail.quantity_held | number:'1.4-4' }} / {{ detail.quantity_available | number:'1.4-4' }}</ng-template>
+                  </td>
+                  <td class="text-center"><span [class.text-danger]="detail.inventory_integrity !== 'INTEGRA'">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</span></td>
+                  <td class="text-center">
+                    <button *ngIf="historicalItem.allowed_action && !reviewService.historyOnly() && validatorsService.withPermission('TRANSFER_REVIEW','update'); else historicalReadOnlyStatus" type="button" class="btn btn-review-primary historical-action" [disabled]="historicalSaving()" (click)="beginHistoricalCompletion(historicalItem)">
+                      {{ historicalItem.allowed_action.label }}
+                    </button>
+                    <ng-template #historicalReadOnlyStatus>
+                      <span class="historical-status" [class.historical-status--complete]="historicalItem.reconciliation_status === 'COMPLETO'">{{ historicalStatusLabel(historicalItem) }}</span>
+                    </ng-template>
+                    <small *ngIf="detail.blocked_document">{{ detail.blocked_document.registry_number }}</small>
+                  </td>
+                  <td>{{ detail.observation || historicalItem.message || '—' }}</td>
+                </tr>
+                <tr *ngIf="historicalSelectedItem()?.id === historicalItem.id" class="historical-completion-row"><td colspan="9">
+                  <ng-container *ngTemplateOutlet="historicalCompletion; context: { $implicit: historicalItem }"></ng-container>
+                </td></tr>
+              </ng-container>
+              <tr *ngIf="!historicalItemForProduct(trace.historical_difference_reconciliation, detail.product.id)">
+                <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td><td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:'1.4-4' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:'1.4-4') }}</td><td class="text-center">{{ detail.quantity_normal_received | number:'1.4-4' }}</td><td class="text-center">{{ detail.quantity_blocked_difference | number:'1.4-4' }}</td><td class="text-center"><ng-container *ngIf="detail.is_shortage; else standardRetained"><strong class="text-danger">Faltante: {{ detail.quantity_shortage_pending | number:'1.4-4' }}</strong><small class="d-block">Físico disponible: {{ detail.quantity_available | number:'1.4-4' }}</small></ng-container><ng-template #standardRetained>{{ detail.quantity_held | number:'1.4-4' }} / {{ detail.quantity_available | number:'1.4-4' }}</ng-template></td><td class="text-center">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : 'Contabilizado' }}</td><td>{{ detail.observation || '—' }}</td>
+              </tr>
+            </ng-container>
           </tbody>
         </table>
       </div>
     </section>
+
+    <ng-template #historicalCompletion let-item>
+      <section class="historical-completion-panel" [formGroup]="historicalCompletionForm">
+                    <div class="historical-completion-panel__heading">
+                      <div>
+                        <span>Completar registro omitido</span>
+                        <h5>{{ item.allowed_action?.label }}</h5>
+                        <p>La boleta y sus pesos históricos no se modificarán.</p>
+                      </div>
+                      <button type="button" class="btn btn-review-secondary" [disabled]="historicalSaving()" (click)="cancelHistoricalCompletion()">Cancelar</button>
+                    </div>
+                    <div class="historical-completion-form">
+                      <label *ngIf="item.allowed_action?.requires_merma_product">
+                        Producto Merma traslado <span aria-hidden="true">*</span>
+                        <p-dropdown
+                          formControlName="id_merma_product"
+                          [options]="historicalMermaProducts()"
+                          optionLabel="display_name"
+                          optionValue="id"
+                          [filter]="true"
+                          filterBy="display_name"
+                          [loading]="historicalMermaProductsLoading()"
+                          placeholder="Seleccione producto MERMAS"
+                          (onChange)="onHistoricalMermaChange()"
+                          appendTo="body">
+                        </p-dropdown>
+                      </label>
+                      <label>
+                        Motivo del completado <span aria-hidden="true">*</span>
+                        <textarea
+                          class="form-control"
+                          rows="2"
+                          maxlength="500"
+                          formControlName="reason"
+                          placeholder="Explique por qué este registro histórico estaba incompleto"></textarea>
+                        <small *ngIf="historicalCompletionForm.controls.reason.touched && historicalCompletionForm.controls.reason.invalid" class="field-error">
+                          Escriba un motivo de al menos 5 caracteres.
+                        </small>
+                      </label>
+                    </div>
+                    <div *ngIf="historicalPreviewLoading()" class="historical-preview-loading" role="status">
+                      <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Preparando previsualización...
+                    </div>
+                    <div *ngIf="historicalPreview() as preview" class="historical-preview">
+                      <div><span>Producto</span><strong>{{ preview.product?.cod }} · {{ preview.product?.name }}</strong></div>
+                      <div><span>Cantidad</span><strong>{{ preview.action.quantity | number:'1.4-4' }} kg</strong></div>
+                      <div><span>Stock</span><strong>{{ preview.inventory?.before_stock | number:'1.4-4' }} → {{ preview.inventory?.after_stock | number:'1.4-4' }}</strong></div>
+                      <div><span>Kardex</span><strong>{{ preview.inventory?.before_kardex | number:'1.4-4' }} → {{ preview.inventory?.after_kardex | number:'1.4-4' }}</strong></div>
+                      <div class="historical-preview__allocations">
+                        <span>Ítems cubiertos</span>
+                        <strong *ngFor="let allocation of preview.allocations">{{ allocation.product.cod }}: {{ allocation.quantity | number:'1.4-4' }} kg</strong>
+                      </div>
+                    </div>
+                    <div *ngIf="historicalError()" class="field-error" role="alert">{{ historicalError() }}</div>
+                    <div class="historical-completion-panel__actions">
+                      <button
+                        type="button"
+                        class="btn btn-review-confirm"
+                        [disabled]="historicalSaving() || historicalPreviewLoading() || !historicalPreview()"
+                        (click)="confirmHistoricalCompletion()">
+                        <i class="fa-solid" [class.fa-spinner]="historicalSaving()" [class.fa-spin]="historicalSaving()" [class.fa-check]="!historicalSaving()" aria-hidden="true"></i>
+                        {{ historicalSaving() ? 'Registrando...' : 'Revisar y completar' }}
+                      </button>
+                    </div>
+      </section>
+    </ng-template>
 
     <section *ngIf="trace.stock_kardex_irregularities.length" class="stock-kardex-alert trace-section" aria-labelledby="trace-stock-kardex-title">
       <div class="stock-kardex-alert__heading">
@@ -179,16 +296,17 @@
         <table class="table align-middle">
           <thead>
             <tr>
-              <th>Producto observado</th><th>Tipo</th><th>Diferencia</th><th>Pendiente</th>
+              <th><input type="checkbox" [checked]="selectedDetailIds().length === pendingDetailsCount(note) && pendingDetailsCount(note) > 0" (change)="toggleAllDetails(note, $any($event.target).checked)" aria-label="Seleccionar todos"></th><th>Producto observado</th><th>Tipo</th><th>Diferencia</th><th>Pendiente</th>
               <th>Retenido</th><th>Estado</th><th>Accion</th>
             </tr>
           </thead>
           <tbody>
+            <tr *ngIf="!reviewService.historyOnly() && selectedDetailIds().length"><td colspan="8"><button type="button" class="btn btn-review-primary" [disabled]="previewLoading()" (click)="beginBulkReconciliation(note)">Conciliar seleccionados ({{ selectedDetailIds().length }})</button><small *ngIf="previewLoading()"> Validando detalles seleccionados…</small><small *ngIf="bulkPreview() && !bulkPreview()!.ready" class="field-error">La selección contiene diferencias que requieren corrección antes de confirmar.</small></td></tr>
             <ng-container *ngFor="let detail of note.details">
               <tr
                 [class.review-detail--pending]="detail.reconciliation_status !== 'COMPLETADO'"
                 [class.review-detail--completed]="detail.reconciliation_status === 'COMPLETADO'">
-                <td>{{ detail.product.cod }} · {{ detail.product.name }}</td>
+                <td><input *ngIf="detail.reconciliation_status !== 'COMPLETADO'" type="checkbox" [checked]="isDetailSelected(detail)" (change)="toggleDetailSelection(detail, $any($event.target).checked)" [attr.aria-label]="'Seleccionar ' + detail.product.cod"></td><td>{{ detail.product.cod }} · {{ detail.product.name }}</td>
                 <td>{{ differenceLabel(note.type) }}</td>
                 <td>{{ detail.quantity_difference | number:'1.4-4' }}</td>
                 <td class="review-detail__remaining">{{ remainingQuantity(detail) | number:'1.4-4' }}</td>
@@ -218,7 +336,7 @@
               </tr>
 
               <tr *ngIf="!reviewService.historyOnly() && selectedDetail()?.id === detail.id && selectedNote()?.id === note.id" class="documentary-close-row">
-                <td colspan="7">
+                <td colspan="8">
                   <section class="documentary-close-panel" [formGroup]="documentaryForm">
                     <div class="documentary-close-panel__header">
                       <div>
@@ -338,6 +456,18 @@
                       <i class="fa-solid fa-route" aria-hidden="true"></i>
                       <div><strong>Previsualización autoritativa</strong><p>{{ selectedAutomaticSolution()?.warning || preview.warning }}</p><small>Pendiente: {{ preview.pending_quantity | number:'1.4-4' }}</small></div>
                     </section>
+                    <section *ngIf="automaticPreview()?.verification as verification" class="documentary-case-action" [class.review-form-error]="verification.is_blocked">
+                      <i class="fa-solid" [class.fa-circle-check]="!verification.is_blocked" [class.fa-lock]="verification.is_blocked" aria-hidden="true"></i>
+                      <div>
+                        <strong>{{ registrationVerificationLabel(verification.status) }}</strong>
+                        <p>{{ verification.message }}</p>
+                        <small>Boleta: {{ verification.transfer.number || verification.transfer.registry_number || 'Sin correlativo' }} · {{ verification.difference.quantity_expected | number:'1.4-4' }} kg</small>
+                        <small>Producto de registro: {{ verification.registration.product?.cod || 'Pendiente de definir' }} · {{ verification.registration.location.sucursal || 'Sin sucursal' }} / {{ verification.registration.location.storage || 'Sin almacén' }}</small>
+                        <small *ngIf="verification.registration.note_number">Nota: {{ verification.registration.note_number }} · Registrado: {{ verification.registration.quantity_registered | number:'1.4-4' }} kg · Pendiente: {{ verification.registration.quantity_pending | number:'1.4-4' }} kg</small>
+                        <small *ngIf="!verification.registration.note_number && verification.registration.note_assigned_on_confirmation">El correlativo NTR se asignará únicamente al confirmar.</small>
+                        <small *ngIf="verification.inventory as inventory">Stock: {{ inventory.before_stock | number:'1.4-4' }} → {{ inventory.after_stock | number:'1.4-4' }} · Kardex: {{ inventory.before_kardex | number:'1.4-4' }} → {{ inventory.after_kardex | number:'1.4-4' }}</small>
+                      </div>
+                    </section>
                     <section *ngIf="selectedAutomaticSolution() as solution" class="documentary-case-action">
                       <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
                       <div>
@@ -345,6 +475,9 @@
                         <p>Producto fuente: {{ solution.product?.cod || note.registeredProduct.cod }} - {{ solution.product?.name || note.registeredProduct.name }}</p>
                         <p *ngIf="solution.target_product">Producto destino: {{ solution.target_product.cod }} - {{ solution.target_product.name }}</p>
                         <p *ngIf="solution.route">Ruta: {{ solution.route.source }} → {{ solution.route.target }} · {{ solution.route.target_storage }}</p>
+                        <p *ngIf="solution.operation_type === 'KARDEX_ENTRY' || solution.operation_type === 'WASTE_ENTRY'">
+                          Motivo: Error de registro en la recepción. La boleta y la fecha de recepción se vincularán automáticamente.
+                        </p>
                         <small>Cantidad: {{ solution.quantity | number:'1.4-4' }}</small>
                       </div>
                     </section>
@@ -391,6 +524,8 @@
                             ? 'Crear operación parcial'
                             : selectedAutomaticSolution()?.operation_type === 'CONFIRMATION'
                               ? 'Confirmar diferencia'
+                              : selectedAutomaticSolution()?.operation_type === 'KARDEX_ENTRY' || selectedAutomaticSolution()?.operation_type === 'WASTE_ENTRY'
+                                ? 'Registrar y conciliar'
                               : 'Crear operación y conciliar' }}
                       </button>
                     </div>

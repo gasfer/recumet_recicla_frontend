@@ -40,6 +40,13 @@ export class KardexService {
     });
   }
 
+getDailyKardex(page: number, limit: number, params: FormSearchKardex, type: string = '', query: string = '', field_sort: string = 'date', order: string = 'DESC'): Observable<GetAllKardexes> {
+    let url = `${base_url}/kardex/daily?page=${page}&limit=${limit}&field_sort=${field_sort}&order=${order}`;
+    if (type) url += `&type=${type}`;
+    if (query) url += `&query=${query}`;
+    return this.http.get<GetAllKardexes>(url, { params: new HttpParams({ fromObject: { ...params } }) });
+  }
+
   getTransferReviewNotePdf(id: number) {
     return this.http.get(`${base_url}/transfer-review-notes/${id}/pdf`, { responseType: 'blob' });
   }
@@ -99,6 +106,23 @@ export class KardexService {
       url = `${base_url}/kardex/total-stock-recumet/excel?field_sort=${field_sort}&order=${order}`;
     } else {
       url = `${base_url}/kardex/total-stock-recumet/excel?type=${type}&query=${query}&field_sort=${field_sort}&order=${order}`;
+    }
+    return this.http.get(url, {
+      params: new HttpParams({
+        fromObject: {
+          ...params
+        }
+      }),
+      responseType: 'blob',
+    });
+  }
+
+  getReportExcelConsolidatedTotalStock(params: FormSearchKardex, type: string = '', query?: string, field_sort: string = 'product.cod', order: string = 'ASC') {
+    let url = '';
+    if (type === '') {
+      url = `${base_url}/kardex/total-stock-recumet/excel-consolidated?field_sort=${field_sort}&order=${order}`;
+    } else {
+      url = `${base_url}/kardex/total-stock-recumet/excel-consolidated?type=${type}&query=${query}&field_sort=${field_sort}&order=${order}`;
     }
     return this.http.get(url, {
       params: new HttpParams({
@@ -194,4 +218,37 @@ export class KardexService {
       responseType: 'blob',
     });
   }
+
+  detectReconciliationCases(filters: any): Observable<any> {
+    return this.http.post(`${base_url}/kardex/reconciliation-cases/detect`, filters);
+  }
+
+  getReconciliationCases(filters: any): Observable<any> {
+    return this.http.get(`${base_url}/kardex/reconciliation-cases`, { params: filters });
+  }
+
+  getReconciliationCountResponsibles(id_sucursal?: any): Observable<any> {
+    const params: any = {};
+    if (id_sucursal) params.id_sucursal = id_sucursal;
+    return this.http.get(`${base_url}/kardex/reconciliation-count-responsibles`, { params });
+  }
+
+  investigateReconciliationCase(id: any, payload: any): Observable<any> {
+    return this.http.put(`${base_url}/kardex/reconciliation-cases/${id}/investigation`, payload);
+  }
+
+  previewReconciliationCase(id: any): Observable<any> {
+    return this.http.post(`${base_url}/kardex/reconciliation-cases/${id}/preview`, {});
+  }
+
+  getReconciliationAuthorizers(id_sucursal?: any): Observable<any> {
+    const params: any = {};
+    if (id_sucursal) params.id_sucursal = id_sucursal;
+    return this.http.get(`${base_url}/kardex/reconciliation-authorizers`, { params });
+  }
+
+  resolveReconciliationCase(id: any, payload: any): Observable<any> {
+    return this.http.post(`${base_url}/kardex/reconciliation-cases/${id}/resolve`, payload);
+  }
 }
+

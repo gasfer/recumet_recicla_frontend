@@ -45,11 +45,12 @@ export class CategoriesService {
     return this.http.put(url, { status });
   }
 
-  getCategorySelect(category_type: string = '', productContext: ProductAccessContext | '' = ''): Observable<any> {
+  getCategorySelect(category_type: string = '', productContext: ProductAccessContext | '' = '', selectedSucursalId?: number): Observable<any> {
     const endpoint = productContext
       ? `category/operational/${PRODUCT_ACCESS_ROUTE_SEGMENTS[productContext]}/select`
       : 'category/select';
-    const url = `${base_url}/${endpoint}?category_type=${category_type}`;
+    const branchFilter = selectedSucursalId ? `&id_sucursal=${selectedSucursalId}` : '';
+    const url = `${base_url}/${endpoint}?category_type=${category_type}${branchFilter}`;
     return this.http.get<any>(url);
   }
 

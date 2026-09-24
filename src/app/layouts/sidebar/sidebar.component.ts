@@ -23,36 +23,49 @@ import { MENU } from './menu';
     `
       /* Sidebar principal */
       :host ::ng-deep #side-menu {
-        background-color: #32374b; /* Gris oscuro moderno */
-        color: #f9fafb;
+        background: #172033;
+        color: #e9eff9;
         font-family: 'Inter', sans-serif;
+        padding: 10px 8px 24px;
       }
 
-      /* Ítems del menú */
-      :host ::ng-deep .side-nav-link-ref {
+      :host ::ng-deep .vertical-menu,
+      :host ::ng-deep .vertical-menu > ngx-simplebar,
+      :host ::ng-deep .vertical-menu .simplebar-content-wrapper,
+      :host ::ng-deep .vertical-menu .simplebar-content {
+        background: #172033;
+        border-top: 0 !important;
+        box-shadow: none;
+      }
+
+      :host ::ng-deep .side-nav-link-ref,
+      :host ::ng-deep .side-nav-group {
         display: flex;
         align-items: center;
-        padding: 12px 20px;
-        font-size: 0.95rem;
-        color: #f9fafb;
-        border-radius: 8px;
-        transition: all 0.3s ease;
+        gap: 11px;
+        margin: 2px 4px;
+        padding: 10px 12px;
+        font-size: .875rem;
+        color: #c6d2e3;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        transition: background-color .18s ease, color .18s ease, border-color .18s ease;
         position: relative;
       }
 
-      /* Hover animado */
-      :host ::ng-deep .side-nav-link-ref:hover {
-        background: linear-gradient(10deg, #00b04e 0%, #00b04e 100%);
+      :host ::ng-deep .side-nav-link-ref:hover,
+      :host ::ng-deep .side-nav-group:hover {
+        background: #22304a;
+        border-color: #31425f;
         color: #fff;
-        transform: translateX(5px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       }
 
-      /* Ítems activos */
       :host ::ng-deep .side-nav-link-ref.active {
-        background: linear-gradient(10deg, #00b04e 0%, #00b04e 100%);
+        background: linear-gradient(90deg, #007f46, #00a44f);
+        border-color: #32bf77;
         color: #fff;
-        font-weight: 600;
+        font-weight: 700;
+        box-shadow: 0 6px 16px rgba(0, 164, 79, .22);
       }
 
       /* Submenús */
@@ -62,23 +75,39 @@ import { MENU } from './menu';
       }
 
       :host ::ng-deep .sub-menu .side-nav-link-ref {
-        padding-left: 40px;
-        font-size: 0.9rem;
-        color: #e5e7eb;
+        margin-left: 18px;
+        padding-left: 16px;
+        font-size: .82rem;
+        color: #aebdd1;
+      }
+
+      :host ::ng-deep .sub-menu .side-nav-link-ref::after {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #60728f;
+        position: absolute;
+        left: 2px;
       }
 
       /* Íconos */
-      :host ::ng-deep .side-nav-link-ref i {
-        margin-right: 12px;
-        font-size: 1.2rem;
-        transition:
-          transform 0.3s ease,
-          color 0.3s ease;
+      :host ::ng-deep .side-nav-link-ref i,
+      :host ::ng-deep .side-nav-group i {
+        margin-right: 0;
+        font-size: 1rem;
+        color: #81a0c5;
+        transition: color .18s ease;
       }
 
-      :host ::ng-deep .side-nav-link-ref:hover i {
-        transform: rotate(15deg);
-        color: #fff;
+      :host ::ng-deep .side-nav-link-ref:hover i,
+      :host ::ng-deep .side-nav-group:hover i,
+      :host ::ng-deep .side-nav-link-ref.active i { color: #fff; }
+
+      :host ::ng-deep .side-nav-link-ref:focus-visible,
+      :host ::ng-deep .side-nav-group:focus-visible {
+        outline: 3px solid rgba(92, 214, 143, .65);
+        outline-offset: 2px;
       }
 
       /* Animación del submenú */
@@ -106,7 +135,7 @@ import { MENU } from './menu';
       }
 
       :host ::ng-deep .side-nav-link-ref.active::before {
-        background: linear-gradient(10deg, #00b04e 0%, #00b04e 100%);
+        display: none;
       }
     `,
   ],

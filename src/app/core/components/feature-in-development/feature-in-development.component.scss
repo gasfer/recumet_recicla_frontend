@@ -19,16 +19,17 @@
   box-shadow: 0 0.75rem 2rem rgba(31, 41, 55, 0.08);
 }
 
-.development-icon {
-  display: grid;
-  width: 4.5rem;
-  height: 4.5rem;
-  margin: 0 auto 1.25rem;
-  color: #fff;
-  font-size: 1.75rem;
-  background: #526be6;
-  border-radius: 50%;
-  place-items: center;
+.development-robot {
+  display: block;
+  width: min(12rem, 55vw);
+  height: auto;
+  margin: 0 auto 1rem;
+  animation: robot-working 2.8s ease-in-out infinite;
+}
+
+@keyframes robot-working {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-0.35rem) rotate(-1.5deg); }
 }
 
 .development-eyebrow {

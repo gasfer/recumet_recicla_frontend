@@ -29,12 +29,15 @@ export interface ColsTable {
     isImg?:     boolean;
     isText?:     boolean;
     isTextArray?:     boolean;
+    isReviewNotes?:   boolean;
+    isInfoStack?:     boolean;
     isDoubleValue?:  boolean;
     isLink?:     boolean;
     isValueUpdate?: boolean;
     typeImg?:   string;
     toImg?:     string;
     isTag?:     boolean;
+    isSucursalBadge?: boolean;
     activeSortable?: boolean;
     class?: string;
     tagColor?:Function;

@@ -14,6 +14,7 @@ import {
 } from 'src/app/core/constants/product-category-access.constants';
 import {
   permissionModuleLabel,
+  STOCK_RECONCILIATION_ACTION_HELP,
   TRANSFER_REVIEW_ACTION_HELP,
 } from 'src/app/core/constants/permission-presentation.constants';
 
@@ -46,6 +47,7 @@ export class ModalAssignPermissionsComponent implements OnInit, OnDestroy {
   readonly productAccessSectionDescription = PRODUCT_ACCESS_SECTION_DESCRIPTION;
   readonly productAccessModuleColumnLabel = PRODUCT_ACCESS_MODULE_COLUMN_LABEL;
   readonly transferReviewActionHelp = TRANSFER_REVIEW_ACTION_HELP;
+  readonly stockReconciliationActionHelp = STOCK_RECONCILIATION_ACTION_HELP;
   loading = signal(false);
   userService = inject(UsersService);
   fb = inject(FormBuilder);
@@ -55,7 +57,7 @@ export class ModalAssignPermissionsComponent implements OnInit, OnDestroy {
 permissionGroups = signal<PermissionGroup[]>([
   // 📥 ENTRADAS
   {
-    name: 'ENTRADAS',
+    name: 'COMERCIAL',
     icon: 'fa-arrow-down-to-line',
     expanded: true,
     permissions: [
@@ -64,10 +66,20 @@ permissionGroups = signal<PermissionGroup[]>([
       { id_user: null, module: "CERTIFICAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CUENTAS PROVEEDOR", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "COMPRAS PROVEEDOR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "REPORTE COMERCIAL", view: false, create: false, update: false, delete: false, reports: false, status: true },
 
+    ]
+  },
+
+  // 📥 ENTRADAS
+  {
+    name: 'ENTRADAS',
+    icon: 'fa-arrow-down-to-line',
+    expanded: true,
+    permissions: [
       { id_user: null, module: "COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CONSULTAR COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-
+      { id_user: null, module: "REPORTE COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CLASIFICADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CONSULTAR CLASIFICADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
     ]
@@ -75,7 +87,7 @@ permissionGroups = signal<PermissionGroup[]>([
 
   // ⚖️ BALANZA
   {
-    name: 'GESTIÓN BALANZA',
+    name: 'BALANZA',
     icon: 'fa-scale-balanced',
     expanded: true,
     permissions: [
@@ -105,15 +117,8 @@ permissionGroups = signal<PermissionGroup[]>([
       { id_user: null, module: "CLIENTES", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "VENTAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CONSULTAR VENTAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
-    ]
-  },
-
-  // 🔄 TRASLADOS
-  {
-    name: 'TRASLADOS',
-    icon: 'fa-truck-ramp-box',
-    expanded: true,
-    permissions: [
+      { id_user: null, module: "REPORTE VENTAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "DESPACHOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "TRASLADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CONSULTAR TRASLADOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "RECEPCIONES", view: false, create: false, update: false, delete: false, reports: false, status: true },
@@ -123,7 +128,7 @@ permissionGroups = signal<PermissionGroup[]>([
 
   // 💰 CAJA Y FINANZAS
   {
-    name: 'FINANZAS',
+    name: 'ADMINISTRACIÓN DE CAJA',
     icon: 'fa-cash-register',
     expanded: true,
     permissions: [
@@ -135,6 +140,7 @@ permissionGroups = signal<PermissionGroup[]>([
 
       { id_user: null, module: "CUENTAS POR PAGAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CUENTAS POR COBRAR", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "REPORTE FINANZAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
     ]
   },
 
@@ -149,6 +155,8 @@ permissionGroups = signal<PermissionGroup[]>([
       { id_user: null, module: "KARDEX-AR", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "KARDEX-ALL", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "KARDEX-ALL-FILTRO", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "STOCK_RECONCILIATION", view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: "REPORTE KARDEX", view: false, create: false, update: false, delete: false, reports: false, status: true },
 
       { id_user: null, module: "INSUMOS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "AF MAQUINARIA", view: false, create: false, update: false, delete: false, reports: false, status: true },
@@ -173,6 +181,15 @@ permissionGroups = signal<PermissionGroup[]>([
       { id_user: null, module: "SUCURSALES", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "ALMACENES", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "COMP. TRASPORTE", view: false, create: false, update: false, delete: false, reports: false, status: true },
+    ]
+  }
+  ,{
+    name: 'REPORTES',
+    icon: 'fa-chart-column',
+    expanded: true,
+    permissions: [
+      { id_user: null, module: 'REPORTE GERENCIA', view: false, create: false, update: false, delete: false, reports: false, status: true },
+      { id_user: null, module: 'REPORTE CONTABILIDAD', view: false, create: false, update: false, delete: false, reports: false, status: true },
     ]
   }
 ]);

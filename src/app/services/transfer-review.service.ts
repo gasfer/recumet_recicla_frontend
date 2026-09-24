@@ -8,6 +8,104 @@ import { NotificationsService } from './notifications.service';
 export type ReviewStatus = 'EN_REVISION' | 'PARCIAL' | 'COMPLETADO';
 
 export interface ReviewProduct { id: number; cod: string; name: string; }
+export type RegistrationVerificationStatus = 'SIN_REGISTRO_ACTIVO' | 'REGISTRO_EXISTENTE' | 'REGISTRO_PARCIAL' | 'EVIDENCIA_AMBIGUA';
+export interface RegistrationVerification {
+  status: RegistrationVerificationStatus;
+  is_blocked: boolean;
+  message: string;
+  transfer: { id: number; number: string | null; registry_number: string | null };
+  difference: { detail_id: number; type: string; product: ReviewProduct | null; quantity_expected: number };
+  registration: {
+    note_number: string | null;
+    note_assigned_on_confirmation: boolean;
+    product: ReviewProduct | null;
+    location: { id_sucursal: number; id_storage: number; sucursal: string | null; storage: string | null };
+    quantity_registered: number;
+    quantity_pending: number;
+    actions: Array<{ id: number; strategy: string | null; operation_type: string | null; operation_id: number | null; operation_status: string | null; quantity: number; movements: HistoricalDifferenceMovement[] }>;
+    movements: HistoricalDifferenceMovement[];
+  };
+  inventory: { before_stock: number; before_kardex: number; after_stock: number; after_kardex: number } | null;
+}
+export interface AutomaticResolutionPreview {
+  status: 'READY' | 'REGISTRATION_EXISTS' | 'ALREADY_RECONCILED' | 'PENDING_OPERATION' | 'REQUIRES_MANUAL';
+  message?: string;
+  detail_version?: number;
+  pending_quantity: number;
+  reasons: Array<{ code: string; label: string; solution_codes: string[]; required_references: string[] }>;
+  solutions: any[];
+  verification: RegistrationVerification;
+  warning?: string;
+}
+export interface BulkReviewResolutionItem { detail_id: number; solution_code: string; id_target_product?: number | null; reason_code: string; operational_justification: string; document_references: unknown[]; id_authorizer_user: number | null; detail_version?: number; quantity: number; }
+export interface BulkReviewPreview {
+  note_id: number;
+  ready: boolean;
+  items: Array<{ detail_id: number; preview?: AutomaticResolutionPreview; error?: string }>;
+}
+export type HistoricalDifferenceType = 'EXACTO' | 'EXCEDENTE' | 'FALTANTE' | 'INDETERMINADO';
+export type HistoricalReconciliationStatus = 'COMPLETO' | 'EXCEDENTE_PENDIENTE_KARDEX' | 'FALTANTE_PENDIENTE_MERMA' | 'PARCIAL' | 'INDETERMINADO' | 'DIFERENCIA_NO_ATRIBUIBLE';
+export type HistoricalEvidenceConfidence = 'VINCULADA' | 'COINCIDENCIA_UNICA' | 'NO_ENCONTRADA' | 'AMBIGUA';
+export interface HistoricalCompletionAction {
+  code: 'REGISTRAR_EXCEDENTE_OMITIDO' | 'REGISTRAR_FALTANTE_OMITIDO';
+  label: string;
+  quantity: number;
+  scope: 'ITEM' | 'TRANSFER';
+  requires_merma_product: boolean;
+}
+export interface HistoricalDifferenceMovement {
+  id: number;
+  type: string;
+  quantity: number;
+  details: string;
+  registry_number: string;
+  id_product: number;
+  product: ReviewProduct | null;
+  confidence: HistoricalEvidenceConfidence;
+}
+export interface HistoricalDifferenceItem {
+  id: number;
+  id_product: number;
+  product: ReviewProduct;
+  observation?: string | null;
+  difference_type: HistoricalDifferenceType;
+  sent: number;
+  received: number | null;
+  base_expected: number | null;
+  base_found: number | null;
+  base_confidence: HistoricalEvidenceConfidence;
+  difference_expected: number | null;
+  difference_covered: number;
+  difference_pending: number | null;
+  registered_product: ReviewProduct | null;
+  difference_movements: HistoricalDifferenceMovement[];
+  evidence_confidence: HistoricalEvidenceConfidence;
+  stock: number;
+  kardex: number;
+  stock_kardex_difference: number;
+  registered_stock: number | null;
+  registered_kardex: number | null;
+  registered_stock_kardex_difference: number | null;
+  reconciliation_status: HistoricalReconciliationStatus;
+  allowed_action: HistoricalCompletionAction | null;
+  message: string;
+  registration_verification?: RegistrationVerification;
+}
+export interface HistoricalDifferenceProjection {
+  transfer_id: number;
+  fingerprint: string;
+  summary: { exact: number; surplus: number; shortage: number; undetermined: number; actionable: number };
+  items: HistoricalDifferenceItem[];
+}
+export interface HistoricalCompletionPreview {
+  fingerprint: string;
+  action: HistoricalCompletionAction;
+  requires_merma_product?: boolean;
+  product?: ReviewProduct;
+  location?: { id_sucursal: number; id_storage: number };
+  inventory?: { before_stock: number; before_kardex: number; after_stock: number; after_kardex: number };
+  allocations: Array<{ id_detail_transfer: number; product: ReviewProduct; quantity: number }>;
+}
 export interface StockKardexIrregularity {
   cod: string;
   name: string;
@@ -79,6 +177,30 @@ export interface ReconciliationGroup {
   reconciliations: TransferReview[];
 }
 export interface ReconciliationPage { data: ReconciliationGroup[]; total: number; page: number; limit: number; }
+export type ReceptionDifferenceStatus = 'PENDIENTE' | 'PARCIAL' | 'RESUELTA' | 'NO_ATRIBUIBLE';
+export interface ReceptionDifferenceRow {
+  transfer: {
+    id: number; cod: string; registry_number?: string | null; date_received: string;
+    id_sucursal_received: number; id_storage_received: number;
+    sucursal_received: { id: number; name: string } | null;
+    storage_received: { id: number; name: string } | null;
+  };
+  item: HistoricalDifferenceItem;
+  status: ReceptionDifferenceStatus;
+  technical_status: HistoricalReconciliationStatus;
+  has_review_note: boolean;
+  action: HistoricalCompletionAction | null;
+  message: string;
+}
+export interface ReceptionDifferenceGroup {
+  transfer: ReceptionDifferenceRow['transfer'];
+  items: ReceptionDifferenceRow[];
+  summary: Record<'pendiente' | 'parcial' | 'resuelta' | 'no_atribuible', number>;
+}
+export interface ReceptionDifferencePage {
+  data: ReceptionDifferenceGroup[]; total: number; page: number; limit: number;
+  summary: Record<'pendiente' | 'parcial' | 'resuelta' | 'no_atribuible' | 'total', number>;
+}
 export interface TransferTraceability {
   id: number;
   cod: string;
@@ -97,6 +219,20 @@ export interface TransferTraceability {
     quantity_received: string;
     observation?: string;
     product: ReviewProduct;
+    quantity_sent?: number;
+    quantity_physical_received?: number;
+    quantity_normal_received?: number;
+    quantity_blocked_difference?: number;
+    quantity_shortage_pending?: number;
+    is_shortage?: boolean;
+    quantity_held?: number;
+    quantity_available?: number;
+    inventory_integrity?: 'INTEGRA' | 'PENDIENTE_REGULARIZACION';
+    receipt_difference_percentage?: number | null;
+    tolerance_decision?: string;
+    accounting_status?: string;
+    blocked_document?: { id: number; registry_number: string; type: string } | null;
+    release_status?: 'ACEPTADO' | 'BLOQUEADO' | 'LIBERADO' | 'PENDIENTE' | 'NO_APLICA';
   }>;
   reviewNotes: Array<TransferReview & {
     registeredProduct: ReviewProduct;
@@ -135,6 +271,7 @@ export interface TransferTraceability {
       operation_status?: string; reversal_reason?: string; movementLinks?: Array<{ kardexMovement?: { type: string; quantity: string; details: string } }> }>;
   }>;
   stock_kardex_irregularities: StockKardexIrregularity[];
+  historical_difference_reconciliation: HistoricalDifferenceProjection;
 }
 
 interface OpenReviewContext {
@@ -310,8 +447,8 @@ export class TransferReviewService {
     }));
   }
 
-  previewAutomaticResolution(noteId: number, detailId: number): Observable<any> {
-    return this.http.get<{ ok: boolean; preview: any }>(`${baseUrl}/transfer-review-notes/${noteId}/details/${detailId}/automatic-preview`)
+  previewAutomaticResolution(noteId: number, detailId: number): Observable<AutomaticResolutionPreview> {
+    return this.http.get<{ ok: boolean; preview: AutomaticResolutionPreview }>(`${baseUrl}/transfer-review-notes/${noteId}/details/${detailId}/automatic-preview`)
       .pipe(map(({ preview }) => preview));
   }
 
@@ -327,6 +464,47 @@ export class TransferReviewService {
     }));
   }
 
+  confirmBulkResolution(noteId: number, items: BulkReviewResolutionItem[]): Observable<unknown> {
+    const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+    return this.http.post(`${baseUrl}/transfer-review-notes/${noteId}/bulk-resolve`, { items, idempotency_key: idempotencyKey }, { headers: { 'Idempotency-Key': idempotencyKey } }).pipe(tap(() => {
+      this.refreshCurrentTrace(); this.checkCurrentContext(true).subscribe();
+    }));
+  }
+
+  previewBulkResolution(noteId: number, detailIds: number[]): Observable<BulkReviewPreview> {
+    return this.http.post<{ ok: boolean; preview: BulkReviewPreview }>(
+      `${baseUrl}/transfer-review-notes/${noteId}/bulk-preview`,
+      { items: detailIds.map((detail_id) => ({ detail_id })) },
+    ).pipe(map(({ preview }) => preview));
+  }
+
+  previewHistoricalDifference(transferId: number, detailId: number, mermaProductId?: number | null): Observable<HistoricalCompletionPreview> {
+    let params = new HttpParams();
+    if (mermaProductId) params = params.set('id_merma_product', mermaProductId);
+    return this.http.get<{ ok: boolean; preview: HistoricalCompletionPreview }>(
+      `${baseUrl}/transfer-review-notes/transfer/${transferId}/details/${detailId}/historical-completion-preview`,
+      { params },
+    ).pipe(map(({ preview }) => preview));
+  }
+
+  completeHistoricalDifference(
+    transferId: number,
+    detailId: number,
+    payload: { preview_fingerprint: string; reason: string; id_merma_product?: number | null },
+  ): Observable<unknown> {
+    const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    return this.http.post(
+      `${baseUrl}/transfer-review-notes/transfer/${transferId}/details/${detailId}/historical-completion`,
+      { ...payload, idempotency_key: idempotencyKey },
+      { headers: { 'Idempotency-Key': idempotencyKey } },
+    ).pipe(tap(() => {
+      this.refreshCurrentTrace();
+      this.checkCurrentContext(true).subscribe();
+    }));
+  }
+
   listReconciliations(filters: Record<string, string | number | undefined>): Observable<ReconciliationPage> {
     let params = new HttpParams();
     Object.entries(filters).forEach(([key, value]) => {
@@ -334,6 +512,15 @@ export class TransferReviewService {
     });
     return this.http.get<{ ok: boolean; reconciliations: ReconciliationPage | { data: TransferReview[]; total: number; page: number; limit: number } }>(`${baseUrl}/transfer-review-notes/management`, { params })
       .pipe(map(({ reconciliations }) => this.normalizeReconciliationGroups(reconciliations)));
+  }
+
+  listReceptionDifferences(filters: Record<string, string | number | undefined>): Observable<ReceptionDifferencePage> {
+    let params = new HttpParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') params = params.set(key, String(value));
+    });
+    return this.http.get<{ ok: boolean; differences: ReceptionDifferencePage }>(`${baseUrl}/transfer-review-notes/reception-differences`, { params })
+      .pipe(map(({ differences }) => differences));
   }
 
   private normalizeReconciliationGroups(

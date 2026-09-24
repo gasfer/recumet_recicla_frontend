@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { TransfersService } from '../services/transfers.service';
 import { Sucursal } from '../../managements/interfaces/sucursales.interface';
 import { SucursalesService } from '../../managements/services/sucursales.service';
+import { isTransferCancellationAdministrator } from '../utils/transfer-cancellation-actions.util';
 
 @Component({
   selector: 'app-query-transfers',
@@ -135,15 +136,14 @@ export class QueryTransfersComponent implements OnInit {
                 this.transfersService.printPdfReport(transfer.id);
               }
             },
-            {
+            ...(isTransferCancellationAdministrator(this.validatorsService.user()?.role) ? [{
               label:'',icon:'fa-solid fa-trash-can', 
-              tooltip: 'Anular',
-              disabled: this.validatorsService.withPermission('TRASLADOS','delete'),
+              tooltip: 'Dar de baja traslado pendiente',
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
               eventClick: () => {
                 this.destroyTransfer(transfer);
               }
-            },
+            }] : []),
           ] : [
             { 
               label:'',icon:'fas fa-eye', 
@@ -176,7 +176,7 @@ export class QueryTransfersComponent implements OnInit {
   destroyTransfer(transfer: Transfer) {
     Swal.fire({
       title: `¿Esta seguro de anular traslado?`,
-      text: `Esta apunto de anular el traslado: ${transfer.cod}}`,
+      text: `Está a punto de dar de baja el traslado: ${transfer.cod}`,
       icon: `warning`,
       confirmButtonText: `Si, Anular!`,
       showLoaderOnConfirm: true,
@@ -334,7 +334,7 @@ export class QueryTransfersComponent implements OnInit {
         tagColor: (val:number)=> 'warning',
         tagIcon: (val:number)=>  'fas fa-boxes-stacked'
       },
-      { field: `sucursal_received.name`, header: 'SUCURSAL DESTINO' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
+      { field: `sucursal_received.name`, header: 'SUCURSAL DESTINO' , style:'min-width:150px;max-width:200px;', tooltip: true, isSucursalBadge: true },
       { field: 'observations_send', header: 'OBSERVACIÓN ENVIÓ' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
       { field: 'options', header: 'OPCIONES', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }
     ]);
@@ -348,7 +348,7 @@ export class QueryTransfersComponent implements OnInit {
         tagColor: (val:number)=> 'warning',
         tagIcon: (val:number)=>  'fas fa-boxes-stacked'
       },
-      { field: `sucursal_received.name`, header: 'SUCURSAL DESTINO' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
+      { field: `sucursal_received.name`, header: 'SUCURSAL DESTINO' , style:'min-width:150px;max-width:200px;', tooltip: true, isSucursalBadge: true },
       { field: 'observations_send', header: 'OBS. ENVIÓ' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
       { field: 'observations_received', header: 'OBS. RECEPCIÓN' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
       { field: 'options', header: 'OPCIONES', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }

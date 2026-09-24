@@ -1,6 +1,6 @@
 import { EventEmitter, inject, Injectable, signal } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { FormSearchTransfers, GetAllTransfers, GetOneTransfer, NewTransformForm, Transfer, TransferConfig, UpdateTransferToReceived } from '../interfaces/transfers.interface';
+import { FormSearchTransfers, GetAllTransfers, GetOneTransfer, NewTransformForm, Transfer, TransferCancellationResponse, TransferConfig, UpdateTransferToReceived } from '../interfaces/transfers.interface';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import Swal from 'sweetalert2';
@@ -107,6 +107,11 @@ export class TransfersService {
       params: { _: Date.now().toString() },
       responseType: 'blob',
     });
+  }
+
+  cancelReception(id_transfer: number, reason: string): Observable<TransferCancellationResponse> {
+    const url = `${base_url}/transfers/reception/${id_transfer}/cancel`;
+    return this.http.post<TransferCancellationResponse>(url, { reason });
   }
 
   printPdfReport(id_transfer:number) {

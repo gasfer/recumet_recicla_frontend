@@ -2,6 +2,13 @@
   display: block;
 }
 
+:host ::ng-deep #page-topbar,
+:host ::ng-deep .navbar-header,
+:host ::ng-deep .navbar-brand-box {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
 .navbar-header {
   display: grid;
   grid-template-columns: auto minmax(24rem, 1fr) auto;

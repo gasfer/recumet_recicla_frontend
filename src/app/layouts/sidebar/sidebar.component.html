@@ -10,7 +10,7 @@
         <ng-container *ngFor="let item of menuItems">
           <li class="menu-title" *ngIf="item.isTitle">{{ item.label ?? '' | translate }}</li>
           <li *ngIf="!item.isTitle && !item.isLayout">
-            <a *ngIf="hasItems(item)" href="javascript:void(0);" class="is-parent"
+            <a *ngIf="hasItems(item)" href="javascript:void(0);" class="is-parent side-nav-group"
               [ngClass]="{'has-arrow': !item.badge, 'has-dropdown': item.badge}">
               <i class="{{item.icon}}" *ngIf="item.icon"></i>
               <span> {{ item.label ?? '' | translate }}</span>

@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Subscription, finalize } from 'rxjs';
 import Swal from 'sweetalert2';
-import { ReconciliationGroup, TransferReview, TransferReviewService } from 'src/app/services/transfer-review.service';
+import { ReceptionDifferenceGroup, ReceptionDifferenceStatus, ReconciliationGroup, TransferReview, TransferReviewService } from 'src/app/services/transfer-review.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { TransfersService } from '../services/transfers.service';
 import { ClassifiedService } from '../../classifieds/services/classified.service';
+import { getSucursalBadgeStyle } from 'src/app/core/utils/sucursal-badge.util';
 
 @Component({
   selector: 'app-reconciliations',
@@ -13,6 +14,7 @@ import { ClassifiedService } from '../../classifieds/services/classified.service
   styleUrls: ['./reconciliations.component.scss'],
 })
 export class ReconciliationsComponent implements OnInit, OnDestroy {
+  readonly getSucursalBadgeStyle = getSucursalBadgeStyle;
   readonly reviewService = inject(TransferReviewService);
   readonly validators = inject(ValidatorsService);
   private readonly notifications = inject(NotificationsService);
@@ -22,11 +24,16 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
 
   readonly rows = signal<ReconciliationGroup[]>([]);
   readonly total = signal(0);
+  readonly differenceRows = signal<ReceptionDifferenceGroup[]>([]);
+  readonly differenceTotal = signal(0);
+  readonly differenceSummary = signal({ pendiente: 0, parcial: 0, resuelta: 0, no_atribuible: 0, total: 0 });
   readonly loading = signal(false);
   readonly processingNoteId = signal<number | null>(null);
   readonly pageSize = signal(25);
   query = '';
   status = '';
+  differenceStatus: ReceptionDifferenceStatus | '' = 'PENDIENTE';
+  differenceType = '';
   dateFrom = '';
   dateTo = '';
   readonly statuses = [
@@ -34,6 +41,14 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
     { label: 'Activa', value: 'ACTIVA' },
     { label: 'Revertida', value: 'REVERTIDA' },
     { label: 'Eliminada (auditoría)', value: 'ELIMINADA' },
+  ];
+  readonly differenceStatuses: Array<{ label: string; value: ReceptionDifferenceStatus | '' }> = [
+    { label: 'Pendientes', value: 'PENDIENTE' }, { label: 'Parciales', value: 'PARCIAL' },
+    { label: 'Resueltas', value: 'RESUELTA' }, { label: 'No atribuibles', value: 'NO_ATRIBUIBLE' },
+    { label: 'Todos los estados', value: '' },
+  ];
+  readonly differenceTypes = [
+    { label: 'Faltantes y excedentes', value: '' }, { label: 'Faltantes', value: 'FALTANTE' }, { label: 'Excedentes', value: 'EXCEDENTE' },
   ];
 
   ngOnInit(): void {
@@ -58,6 +73,16 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
       error: (error) => { this.loading.set(false); this.showError(error, 'No se pudo cargar la lista de conciliaciones.'); },
       complete: () => this.loading.set(false),
     });
+    this.reviewService.listReceptionDifferences({
+      page, limit: this.pageSize(), query: this.query.trim(), status: this.differenceStatus,
+      type: this.differenceType, date_from: this.dateFrom, date_to: this.dateTo,
+      id_sucursal: this.validators.id_sucursal(), id_storage: this.validators.id_storage(),
+    }).subscribe({
+      next: (result) => {
+        this.differenceRows.set(result.data); this.differenceTotal.set(result.total); this.differenceSummary.set(result.summary);
+      },
+      error: (error) => this.showError(error, 'No se pudo cargar las diferencias de recepción.'),
+    });
   }
 
   paginate(event: { first?: number | null; rows?: number | null }): void {
@@ -67,13 +92,21 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
   }
 
   clearFilters(): void {
-    this.query = ''; this.status = ''; this.dateFrom = ''; this.dateTo = '';
+    this.query = ''; this.status = ''; this.differenceStatus = 'PENDIENTE'; this.differenceType = ''; this.dateFrom = ''; this.dateTo = '';
     this.load(1);
   }
 
   preview(note: TransferReview): void { this.reviewService.openTrace(note.id_transfer, note.id); }
 
   previewGroup(group: ReconciliationGroup): void { this.reviewService.openTrace(group.id_transfer); }
+
+  previewDifference(group: ReceptionDifferenceGroup): void { this.reviewService.openTrace(group.transfer.id); }
+
+  differenceStatusSeverity(status: ReceptionDifferenceStatus): 'success' | 'warning' | 'danger' | 'info' {
+    return status === 'RESUELTA' ? 'success' : status === 'NO_ATRIBUIBLE' ? 'danger' : status === 'PARCIAL' ? 'info' : 'warning';
+  }
+
+  differenceTypeLabel(type: string): string { return type === 'FALTANTE' ? 'Faltante' : 'Excedente'; }
 
   automaticOperations(note: TransferReview): Array<any> {
     return note.details.flatMap(({ resolutionActions }) => resolutionActions || [])

@@ -7,6 +7,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 @Component({
   selector: 'app-modal-view-details-transfer',
   templateUrl: './modal-view-details.component.html',
+  styleUrls: ['./modal-view-details.component.scss'],
 })
 export class ModalViewDetailsComponent implements OnInit, OnDestroy{
   transfersService  = inject(TransfersService);

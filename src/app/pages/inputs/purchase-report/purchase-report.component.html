@@ -1,0 +1,19 @@
+<form [formGroup]="form">
+  <div class="card shadow mb-4 icon-box"><div class="card-body">
+    <h3 class="text-center app-u-color-bg-2665c-99da769"><b>REPORTE DE COMPRAS</b></h3>
+    <p-accordion [activeIndex]="0"><p-accordionTab header="Filtros">
+      <div class="row g-3">
+        <div class="col-12 col-md-3"><label>Sucursal <span class="text-danger">*</span></label><p-multiSelect [options]="branches()" formControlName="id_sucursal" optionLabel="name" optionValue="id" display="chip" [filter]="true" [showClear]="true" [selectionLimit]="1" (onChange)="onBranchChange()" placeholder="Seleccione sucursal"></p-multiSelect></div>
+        <div class="col-12 col-md-3"><label>Área / Almacén</label><p-multiSelect [options]="storages()" formControlName="id_storage" optionLabel="name" optionValue="id" display="chip" [filter]="true" [showClear]="true" placeholder="Seleccione almacenes"></p-multiSelect></div>
+        <div class="col-12 col-md-3"><label>Categorías</label><p-multiSelect [options]="categories()" formControlName="category_ids" optionLabel="name" optionValue="id" display="chip" [filter]="true" [showClear]="true" (onChange)="onCategoryChange()" placeholder="Seleccione categorías"></p-multiSelect></div>
+        <div class="col-12 col-md-3"><label>Productos</label><p-multiSelect [options]="products()" formControlName="id_products" optionLabel="name" optionValue="id" display="chip" [filter]="true" filterBy="name,cod" [showClear]="true" placeholder="Seleccione productos"><ng-template let-product pTemplate="item">{{ product.cod }} · {{ product.name }}</ng-template></p-multiSelect></div>
+        <div class="col-12 col-md-3"><label>Tipo filtrado</label><p-dropdown [options]="filterTypes" formControlName="filterBy" optionLabel="name" optionValue="code" (onChange)="onFilterChange()"></p-dropdown></div>
+        <div class="col-12 col-md-4"><label>Fecha</label><p-calendar *ngIf="form.value.filterBy === 'RANGE'" formControlName="dates" selectionMode="range" dateFormat="dd/mm/yy" [showIcon]="true"></p-calendar><p-calendar *ngIf="form.value.filterBy === 'MONTH'" formControlName="dates" view="month" dateFormat="mm/yy" [showIcon]="true"></p-calendar><p-calendar *ngIf="form.value.filterBy === 'YEAR'" formControlName="dates" view="year" dateFormat="yy" [showIcon]="true"></p-calendar><p-calendar *ngIf="form.value.filterBy === 'DAY'" formControlName="dates" dateFormat="dd/mm/yy" [showIcon]="true"></p-calendar></div>
+      </div>
+      <div class="text-end mt-3"><p-button label="Buscar" icon="fa-solid fa-magnifying-glass" [loading]="loading()" (onClick)="search(true)"></p-button><p-splitButton label="PDF" icon="fa-solid fa-file-pdf" [model]="pdfReports" styleClass="ms-2 p-button-danger" [disabled]="loading()"></p-splitButton><p-splitButton label="Excel" icon="fa-solid fa-file-excel" [model]="excelReports" styleClass="ms-2 p-button-success" [disabled]="loading()"></p-splitButton><p-button label="Limpiar" icon="fa-solid fa-broom" styleClass="ms-2 p-button-secondary" [disabled]="loading()" (onClick)="clear()"></p-button></div>
+    </p-accordionTab></p-accordion>
+  </div></div>
+</form>
+<p-tabMenu [model]="tabs" [styleClass]="loading() ? 'p-disabled mb-3' : 'mb-3'" [activeItem]="activeTab()"></p-tabMenu>
+<app-table responsiveStrategy="scroll" [cols]="cols()" [searchFor]="searchFor()" [data]="inputs()" [loading]="loading()" [sortField]="'date_voucher'" [sortOrder]="'DESC'" (rows$)="paginate($event)" (customSort$)="customSort($event)" (search$)="tableSearch($event)"></app-table>
+<app-modal-view-details-input></app-modal-view-details-input>

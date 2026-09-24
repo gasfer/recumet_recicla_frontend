@@ -8,6 +8,7 @@ import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { ComponentsService } from '../../services/components.service';
 import { Router } from '@angular/router';
 import { ValidatorsService } from 'src/app/services/validators.service';
+import { getSucursalBadgeStyle } from '../../utils/sucursal-badge.util';
 
 @Component({
   selector: 'app-table',
@@ -390,9 +391,46 @@ import { ValidatorsService } from 'src/app/services/validators.service';
       letter-spacing: .75px;
       text-transform: uppercase;
     }
+    .app-table-review-notes { display: grid; gap: .4rem; }
+    :host ::ng-deep .app-table--scroll .p-datatable-thead > tr > th { padding: .72rem .65rem; font-size: .76rem; letter-spacing: .01em; }
+    :host ::ng-deep .app-table--scroll .p-datatable-tbody > tr > td { padding: .78rem .65rem; vertical-align: top; font-size: .88rem; }
+    .app-table-review-note {
+      display: grid; width: 100%; gap: .18rem; padding: .48rem .58rem; border: 1px solid #fed7aa;
+      border-left: .28rem solid #ea580c; border-radius: .42rem; color: #7c2d12; background: #fff7ed;
+      text-align: left; transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .app-table-review-note:hover, .app-table-review-note:focus-visible { transform: translateY(-1px); box-shadow: 0 .2rem .45rem rgb(124 45 18 / 16%); outline: 2px solid #fb923c; outline-offset: 1px; }
+    .app-table-review-note--surplus { border-color: #bbf7d0; border-left-color: #16a34a; color: #166534; background: #f0fdf4; }
+    .app-table-review-note__header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; font-size: .88rem; }
+    .app-table-review-note__header span { padding: .14rem .42rem; border-radius: 999px; color: inherit; background: rgb(255 255 255 / 65%); font-size: .72rem; font-weight: 700; }
+    .app-table-review-note small { color: inherit; font-size: .75rem; font-weight: 700; opacity: .85; }
+    .app-table-review-note > span:not(.app-table-review-note__header) { font-size: .76rem; line-height: 1.35; }
+    .app-table-info-stack { display: grid; gap: .42rem; }
+    .app-table-info-stack__item { display: flex; align-items: flex-start; gap: .4rem; min-width: 0; }
+    .app-table-info-stack__item > i { width: 1.2rem; margin-top: .1rem; color: #64748b; font-size: .92rem; text-align: center; }
+    .app-table-info-stack__item > div { display: grid; min-width: 0; gap: .05rem; }
+    .app-table-info-stack__item small { color: #64748b; font-size: .74rem; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+    .app-table-info-stack__item span { color: #24364b; font-size: .88rem; line-height: 1.35; }
+    .app-table-info-stack__item--primary > i { color: #2563eb; }
+    .app-table-info-stack__item--success > i { color: #16a34a; }
+    .app-table-info-stack__item--warning > i { color: #d97706; }
+    .app-table-info-stack__item--danger > i { color: #dc2626; }
+    .sucursal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1.3;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
   `]
 })
 export class TableComponent implements OnInit, OnDestroy, OnChanges {
+  readonly getSucursalBadgeStyle = getSucursalBadgeStyle;
   @Input() cols: ColsTable[] = [];
   @Input() searchFor: SearchFor[] = [];
   @Input() searchTxt: string = '';
@@ -559,9 +597,16 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
 
   formatTooltip(value: any): string {
     try {
+      if (Array.isArray(value)) {
+        return value
+          .map((item) => item?.label && item?.value ? `${item.label}: ${item.value}` : String(item ?? ''))
+          .filter(Boolean)
+          .join('\n');
+      }
+      if (value && typeof value === 'object') return '';
       if (!isNaN(Number(value))) return this.pipeNumber.transform(value, this.decimal()) || '';
-      return value;
-    } catch { return value; }
+      return String(value ?? '');
+    } catch { return ''; }
   }
 
   getGroupValue(rowData: any): any {

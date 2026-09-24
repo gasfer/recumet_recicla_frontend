@@ -201,4 +201,7 @@ export interface FormSearchInputs {
     id_type_provider: string;
     old_customer: string;
     with_pickup: string;
+    category_ids?: string;
+    id_products?: string;
+    report_filters?: string;
 }

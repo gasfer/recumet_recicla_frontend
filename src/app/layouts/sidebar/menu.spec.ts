@@ -89,6 +89,22 @@ describe('Operational menu navigation contract', () => {
     expect(invalid).toEqual([]);
   });
 
+  it('lists commercial provider workflows directly without a provider submenu', () => {
+    const commercialStart = MENU.findIndex((item) => item.id === 10);
+    const nextSection = MENU.findIndex((item, index) => index > commercialStart && item.isTitle);
+    const commercialItems = MENU.slice(commercialStart + 1, nextSection);
+
+    expect(commercialItems.map((item) => item.label)).toEqual([
+      'Gestión de proveedores',
+      'Compras de proveedor',
+      'Cuentas de proveedor',
+      'Agendar recojos',
+      'Certificaciones',
+      'Reporte comercial',
+    ]);
+    expect(commercialItems.some((item) => item.label === 'Proveedores' && item.subItems)).toBeFalse();
+  });
+
   it('keeps conceptually different pending functions on different URLs', () => {
     const pendingPaths = [
       '/caja/expenses',

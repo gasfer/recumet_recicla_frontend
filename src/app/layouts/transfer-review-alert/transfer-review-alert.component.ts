@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReviewStatus, TransferReview, TransferReviewService } from 'src/app/services/transfer-review.service';
+import { getSucursalBadgeStyle } from 'src/app/core/utils/sucursal-badge.util';
 
 @Component({
   selector: 'app-transfer-review-alert',
@@ -8,6 +9,7 @@ import { ReviewStatus, TransferReview, TransferReviewService } from 'src/app/ser
   styleUrls: ['./transfer-review-alert.component.scss'],
 })
 export class TransferReviewAlertComponent {
+  readonly getSucursalBadgeStyle = getSucursalBadgeStyle;
   readonly reviewService = inject(TransferReviewService);
   private readonly router = inject(Router);
 
@@ -46,6 +48,11 @@ export class TransferReviewAlertComponent {
     this.router.navigate(['/transfers/query-receptions'], {
       queryParams: { view: 'inconclusive' },
     });
+  }
+
+  goToStockReconciliation(): void {
+    this.reviewService.closeAlerts();
+    this.router.navigate(['/inventories/stock-diagnostic'], { queryParams: { view: 'open' } });
   }
 
   continueWorking(): void {

@@ -54,11 +54,27 @@ export class TotalStockRecumetComponent implements OnInit {
 
   buttonItems: MenuItem[] = [
     {
-      label: 'Excel',
+      label: 'Resumen de stock (PDF)',
+      icon: 'fa-regular fa-file-pdf',
+      iconStyle: { color: '#E11D48' },
+      command: () => {
+        this.printPdfReport();
+      },
+    },
+    {
+      label: 'Listado de stock (Excel)',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { color: '#14A44D' },
       command: () => {
         this.printExcelReport();
+      },
+    },
+    {
+      label: 'Consolidado de inventario (Excel)',
+      icon: 'fa-regular fa-file-excel',
+      iconStyle: { color: '#038B21' },
+      command: () => {
+        this.downloadConsolidatedExcelReport();
       },
     },
   ];
@@ -450,6 +466,65 @@ export class TotalStockRecumetComponent implements OnInit {
               },
             });
         });
+      },
+    });
+  }
+
+  getDatePartForFilename(): string {
+    const filterBy = this.formReport.get('filterBy')?.value;
+    const dates = this.formReport.get('dates')?.value;
+    if (filterBy === 'RANGE' && Array.isArray(dates)) {
+      return moment(dates[1] || dates[0]).format('YYYY-MM-DD');
+    }
+    if (filterBy === 'MONTH') {
+      return moment(dates).endOf('month').format('YYYY-MM-DD');
+    }
+    if (filterBy === 'YEAR') {
+      return moment(dates).endOf('year').format('YYYY-MM-DD');
+    }
+    return moment(dates).format('YYYY-MM-DD');
+  }
+
+  downloadConsolidatedExcelReport(): void {
+    this.formReport.markAllAsTouched();
+    if (!this.formReport.valid) return;
+    this.formParamsByForm();
+    Swal.fire({
+      title: 'Generando Reporte!',
+      html: `Construyendo consolidado de inventario...`,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+        this.kardexService
+          .getReportExcelConsolidatedTotalStock(
+            this.paramsSearch(),
+            this.type(),
+            this.query(),
+            this.fieldSort(),
+            this.order(),
+          )
+          .subscribe({
+            next: (data: Blob) => {
+              const fileURL = window.URL.createObjectURL(data);
+              const anchor = document.createElement('a');
+              anchor.href = fileURL;
+              const datePart = this.getDatePartForFilename();
+              anchor.download = `consolidado_inventario_${datePart}.xlsx`;
+              document.body.appendChild(anchor);
+              anchor.click();
+              document.body.removeChild(anchor);
+              window.URL.revokeObjectURL(fileURL);
+              Swal.close();
+            },
+            error: (err) => {
+              Swal.close();
+              Swal.fire({
+                icon: 'error',
+                title: 'Error al generar reporte',
+                text: err?.error?.errors?.[0]?.msg || 'Ocurrió un error al generar el consolidado de inventario',
+              });
+            },
+          });
       },
     });
   }

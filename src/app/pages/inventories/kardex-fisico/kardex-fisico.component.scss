@@ -34,3 +34,30 @@ p-dropdown {
 .p-dropdown-panel {
   z-index: 1000 !important;
 }
+
+.valued-kardex { border: 1px solid #e5e7eb; border-radius: 1rem; overflow: hidden; background: #fff; }
+.valued-kardex__desktop { overflow-x: auto; }
+.valued-kardex__mobile { display: none; }
+
+::ng-deep .valued-kardex-table { min-width: 1420px; }
+::ng-deep .valued-kardex-table .p-datatable-thead > tr > th { border-color: #e5e7eb; color: #4b5563; font-size: .72rem; letter-spacing: .035em; text-align: center; }
+::ng-deep .valued-kardex-table .p-datatable-tbody > tr > td { border-color: #edf0f3; padding: .85rem .75rem; vertical-align: middle; }
+::ng-deep .valued-kardex-table .group-input, .value-input { background: #effaf6; color: #047857; }
+::ng-deep .valued-kardex-table .group-output, .value-output { background: #fff1f3; color: #be123c; }
+::ng-deep .valued-kardex-table .group-balance, .value-balance { background: #f2f1ff; color: #4338ca; }
+::ng-deep .valued-kardex-table .valued-kardex-groups .group-input { background: #dff4ec; }
+::ng-deep .valued-kardex-table .valued-kardex-groups .group-output { background: #fbe4e8; }
+::ng-deep .valued-kardex-table .valued-kardex-groups .group-balance { background: #e8e7fa; }
+::ng-deep .valued-kardex-table .valued-kardex-groups i { margin-right: .35rem; font-size: .55rem; }
+.kardex-date, .kardex-product, .kardex-concept { min-width: 190px; }
+.kardex-date { display: grid; gap: .2rem; min-width: 170px; }.kardex-date small { color: #94a3b8; }
+.kardex-product { display: grid; gap: .3rem; min-width: 250px; }.kardex-product a { color: #111827; font-weight: 800; text-decoration: none; }.kardex-product span,.kardex-product small { color: #64748b; font-size: .73rem; }
+.kardex-concept { min-width: 245px; }.kardex-concept strong,.kardex-concept small { display: block; margin-top: .35rem; }.kardex-concept small { color: #64748b; font-style: italic; }
+.kardex-event { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .55rem; border: 1px solid; border-radius: .4rem; font-size: .68rem; font-weight: 800; }
+.kardex-event--input { border-color: #6ee7b7; background: #ecfdf5; color: #047857; }.kardex-event--output { border-color: #fda4af; background: #fff1f2; color: #be123c; }.kardex-event--adjustment { border-color: #fdba74; background: #fff7ed; color: #c2410c; }
+.value-input,.value-output,.value-balance { min-width: 88px; text-align: right; font-variant-numeric: tabular-nums; }.value-total { font-weight: 800; }
+.kardex-user { min-width: 135px; text-align: center; }.kardex-user > span,.kardex-user > i { display: grid; width: 2rem; height: 2rem; margin: 0 auto .3rem; place-items: center; border: 1px solid #c7d2fe; border-radius: 50%; background: #eef2ff; color: #4338ca; font-style: normal; font-weight: 800; }.kardex-user small { display: block; max-width: 130px; overflow: hidden; color: #475569; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 768px) {
+  .valued-kardex { border: 0; background: transparent; }.valued-kardex__desktop { display: none; }.valued-kardex__mobile { display: grid; gap: .8rem; }.kardex-card { padding: 1rem; border: 1px solid #e2e8f0; border-radius: .9rem; background: #fff; box-shadow: 0 .2rem .65rem rgb(15 23 42 / 7%); }.kardex-card header,.kardex-card footer { display: flex; align-items: center; justify-content: space-between; gap: .6rem; }.kardex-card time,.kardex-card p,.kardex-card small { color: #64748b; font-size: .75rem; }.kardex-card h3 { margin: .8rem 0 .15rem; font-size: 1rem; }.kardex-card p { margin: 0 0 .7rem; }.kardex-card__movement { display: grid; gap: .2rem; margin-bottom: .75rem; }.kardex-card__values { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .35rem; }.kardex-card__values section { display: grid; gap: .2rem; padding: .6rem; border-radius: .55rem; text-align: center; }.kardex-card footer { justify-content: flex-end; margin-top: .7rem; }.kardex-card .kardex-user { display: inline-flex; align-items: center; gap: .4rem; min-width: 0; font-size: .75rem; }.kardex-card .kardex-user i { flex: 0 0 1.7rem; width: 1.7rem; height: 1.7rem; margin: 0; }
+}

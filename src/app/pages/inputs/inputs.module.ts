@@ -16,6 +16,7 @@ import { QueryInputsComponent } from './query-inputs/query-inputs.component';
 import { ModalViewDetailsComponent } from './query-inputs/components/modal-view-details/modal-view-details.component';
 import { ChipModule } from 'primeng/chip';
 import { AccordionModule } from 'primeng/accordion';
+import { PurchaseReportComponent } from './purchase-report/purchase-report.component';
 @NgModule({
   declarations: [
     ProvidersComponent,
@@ -28,6 +29,7 @@ import { AccordionModule } from 'primeng/accordion';
     ModalSaveInputComponent,
     QueryInputsComponent,
     ModalViewDetailsComponent,
+    PurchaseReportComponent,
   ],
   imports: [
     CommonModule, 

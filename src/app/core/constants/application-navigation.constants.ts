@@ -32,8 +32,10 @@ export const NAVIGATION_DESTINATIONS = {
   providerCertification: destination('/providers/certify', 'Certificar proveedor', 'CERTIFICAR', 'create'),
   providerAccounts: destination('/providers/accounts', 'Cuentas de proveedor', 'CUENTAS PROVEEDOR'),
   providerPurchases: destination('/providers/purchases', 'Compras por proveedor', 'COMPRAS PROVEEDOR'),
+  commercialReport: destination('/providers/commercial-report', 'Reporte comercial', 'REPORTE COMERCIAL', 'reports'),
   createPurchase: destination('/inputs/input-small', 'Realizar compras', 'COMPRAS', 'create'),
   queryPurchases: destination('/inputs/query-inputs', 'Consultar compras', 'CONSULTAR COMPRAS'),
+  purchaseReport: destination('/inputs/purchase-report', 'Reporte de compras', 'REPORTE COMPRAS', 'reports'),
   createClassified: destination('/classifieds/classified', 'Realizar clasificados', 'CLASIFICADOS', 'create'),
   queryClassifieds: destination('/classifieds/query-classifieds', 'Consultar clasificados', 'CONSULTAR CLASIFICADOS'),
 
@@ -51,6 +53,8 @@ export const NAVIGATION_DESTINATIONS = {
   clients: destination('/outputs/clients', 'Clientes', 'CLIENTES'),
   createSale: destination('/outputs/output', 'Realizar ventas', 'VENTAS', 'create'),
   querySales: destination('/outputs/query-outputs', 'Consultar ventas', 'CONSULTAR VENTAS'),
+  salesReport: destination('/outputs/sales-report', 'Reporte de ventas', 'REPORTE VENTAS', 'reports'),
+  dispatches: destination('/outputs/dispatches', 'Despachos', 'DESPACHOS'),
   createTransfer: destination('/transfers/transfer', 'Realizar traslado', 'TRASLADOS', 'create'),
   queryTransfers: destination('/transfers/query-transfers', 'Consultar traslados', 'CONSULTAR TRASLADOS'),
   queryReceptions: destination('/transfers/query-receptions', 'Consultar recepciones', 'RECEPCIONES'),
@@ -60,6 +64,7 @@ export const NAVIGATION_DESTINATIONS = {
   cashQuery: destination('/caja/query-caja', 'Consultar caja', 'CONSULTAR CAJA'),
   cashExpenses: destination('/caja/expenses', 'Gestión de gastos', 'GASTOS'),
   cashMajorTransfers: destination('/caja/major-transfers', 'Transferencias (Mayor)', 'CAJA'),
+  financeReport: destination('/caja/finance-report', 'Reporte de finanzas', 'REPORTE FINANZAS', 'reports'),
   assetPurchaseRequest: destination('/assets/inputs/purchase-request', 'Solicitud de compra', 'GASTOS'),
   assetPurchaseOrder: destination('/assets/inputs/purchase-order', 'Orden de compra', 'PERSONAL GASTOS', 'create'),
   assetPurchaseManagement: destination('/assets/inputs/purchase-management', 'Gestión de compra', 'PERSONAL GASTOS', 'create'),
@@ -78,7 +83,8 @@ export const NAVIGATION_DESTINATIONS = {
   resaleItemKardex: destination('/inventories/kardex-fisico/ar', 'Kardex Artículos de Reventa', 'KARDEX-AR'),
   allProductKardex: destination('/inventories/kardex-fisico/all', 'Kardex de todos los productos', 'KARDEX-ALL'),
   totalStock: destination('/inventories/total-stock-recumet', 'Total Stock Recumet', 'KARDEX-ALL-FILTRO'),
-  stockDiagnostic: destination('/inventories/stock-diagnostic', 'Diagnóstico de Stock', 'KARDEX-ALL'),
+  stockDiagnostic: destination('/inventories/stock-diagnostic', 'Ajuste diferencia Stock–Kardex', 'STOCK_RECONCILIATION'),
+  kardexReport: destination('/inventories/kardex-report', 'Reporte de Kardex', 'REPORTE KARDEX', 'reports'),
 
   units: destination('/inventories/units', 'Unidades de medida', 'UND MEDIDA'),
   scales: destination('/inventories/scales', 'Balanzas', 'BALANZAS'),
@@ -89,6 +95,8 @@ export const NAVIGATION_DESTINATIONS = {
   branches: destination('/managements/sucursales', 'Sucursales', 'SUCURSALES'),
   storages: destination('/managements/storages', 'Almacenes', 'ALMACENES'),
   transportCompanies: destination('/managements/trasport_company', 'Compañías de transporte', 'COMP. TRASPORTE'),
+  managementReport: destination('/reports/management', 'Reporte gerencial', 'REPORTE GERENCIA', 'reports'),
+  accountingReport: destination('/reports/accounting', 'Reporte de contabilidad', 'REPORTE CONTABILIDAD', 'reports'),
 } as const satisfies Record<string, NavigationDestination>;
 
 export const MENU_NAVIGATION_DESTINATIONS = Object.values(NAVIGATION_DESTINATIONS);

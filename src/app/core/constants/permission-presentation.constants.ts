@@ -38,6 +38,7 @@ export const PERMISSION_MODULE_LABELS: Readonly<Record<string, string>> = Object
   'KARDEX-AR': 'Kardex de artículos de reventa',
   'KARDEX-ALL': 'Kardex de todos los productos',
   'KARDEX-ALL-FILTRO': 'Consulta total de existencias',
+  STOCK_RECONCILIATION: 'Ajuste diferencia Stock–Kardex',
   INSUMOS: 'Insumos',
   'AF MAQUINARIA': 'Activo fijo: maquinaria',
   'AF VEHICULOS': 'Activo fijo: vehículos',
@@ -51,6 +52,14 @@ export const PERMISSION_MODULE_LABELS: Readonly<Record<string, string>> = Object
   SUCURSALES: 'Sucursales',
   ALMACENES: 'Almacenes',
   'COMP. TRASPORTE': 'Compañías de transporte',
+  'REPORTE COMERCIAL': 'Reporte comercial',
+  'REPORTE COMPRAS': 'Reporte de compras',
+  'REPORTE VENTAS': 'Reporte de ventas',
+  DESPACHOS: 'Despachos',
+  'REPORTE FINANZAS': 'Reporte de finanzas',
+  'REPORTE KARDEX': 'Reporte de Kardex',
+  'REPORTE GERENCIA': 'Reporte de gerencia',
+  'REPORTE CONTABILIDAD': 'Reporte de contabilidad',
 });
 
 export const PERMISSION_ACTION_LABELS: Readonly<Record<PermissionAction, string>> = Object.freeze({
@@ -62,6 +71,7 @@ export const PERMISSION_ACTION_LABELS: Readonly<Record<PermissionAction, string>
 });
 
 export const TRANSFER_REVIEW_ACTION_HELP = 'Ver: consultar · Crear: asignar · Modificar: resolver · Eliminar: reabrir · Reportes: aprobar';
+export const STOCK_RECONCILIATION_ACTION_HELP = 'Ver: consultar casos · Crear: investigar · Modificar: regularizar · Reportes: autorizar';
 
 export const permissionModuleLabel = (module: string): string => (
   PERMISSION_MODULE_LABELS[module] || module

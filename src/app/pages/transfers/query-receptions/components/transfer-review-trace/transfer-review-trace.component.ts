@@ -3,6 +3,10 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import {
   AssignableReviewUser,
+  AutomaticResolutionPreview,
+  BulkReviewPreview,
+  HistoricalCompletionPreview,
+  HistoricalDifferenceItem,
   ReviewDetail,
   ReviewStatus,
   TransferTraceability,
@@ -54,9 +58,11 @@ export class TransferReviewTraceComponent {
 
   readonly selectedNote = signal<TransferReview | null>(null);
   readonly selectedDetail = signal<ReviewDetail | null>(null);
+  readonly selectedDetailIds = signal<number[]>([]);
   readonly saving = signal(false);
   readonly formError = signal('');
-  readonly automaticPreview = signal<any | null>(null);
+  readonly automaticPreview = signal<AutomaticResolutionPreview | null>(null);
+  readonly bulkPreview = signal<BulkReviewPreview | null>(null);
   readonly previewLoading = signal(false);
   readonly targetProductsLoading = signal(false);
   readonly targetProducts = signal<SelectableProduct[]>([]);
@@ -64,6 +70,14 @@ export class TransferReviewTraceComponent {
   readonly assignmentNoteId = signal<number | null>(null);
   readonly assignmentSaving = signal(false);
   readonly assignmentError = signal('');
+  readonly historicalSelectedItem = signal<HistoricalDifferenceItem | null>(null);
+  readonly historicalPreview = signal<HistoricalCompletionPreview | null>(null);
+  readonly historicalPreviewLoading = signal(false);
+  readonly historicalSaving = signal(false);
+  readonly historicalError = signal('');
+  readonly historicalNotice = signal('');
+  readonly historicalMermaProducts = signal<SelectableProduct[]>([]);
+  readonly historicalMermaProductsLoading = signal(false);
 
   readonly reconciliationCases: ReconciliationCase[] = [
     {
@@ -123,6 +137,11 @@ export class TransferReviewTraceComponent {
     assignment_observation: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(500)]],
   });
 
+  readonly historicalCompletionForm = this.fb.group({
+    reason: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(500)]],
+    id_merma_product: [null as number | null],
+  });
+
   get documentReferences(): FormArray {
     return this.documentaryForm.controls.document_references;
   }
@@ -139,8 +158,43 @@ export class TransferReviewTraceComponent {
     return ({ EN_REVISION: 'danger', PARCIAL: 'warning', COMPLETADO: 'success' } as const)[status];
   }
 
+  registrationVerificationLabel(status?: string): string {
+    return ({
+      SIN_REGISTRO_ACTIVO: 'Sin registro vigente',
+      REGISTRO_EXISTENTE: 'Registro existente',
+      REGISTRO_PARCIAL: 'Registro parcial existente',
+      EVIDENCIA_AMBIGUA: 'Evidencia ambigua',
+    } as Record<string, string>)[status || ''] || 'Verificación de registro';
+  }
+
   differenceLabel(type: string): string {
     return type === 'EXCEDENTE_PARA_REVISION' ? 'Excedente' : 'Faltante';
+  }
+
+  historicalTypeLabel(type: string): string {
+    return ({ EXACTO: 'Exacto', EXCEDENTE: 'Excedente', FALTANTE: 'Faltante', INDETERMINADO: 'Indeterminado' } as Record<string, string>)[type] || type;
+  }
+
+  historicalItemForProduct(trace: TransferTraceability['historical_difference_reconciliation'] | null | undefined, productId: number): HistoricalDifferenceItem | undefined {
+    return trace?.items.find((item) => item.id_product === productId);
+  }
+
+  historicalStatusLabel(item: HistoricalDifferenceItem): string {
+    if (item.reconciliation_status === 'COMPLETO') return item.difference_type === 'EXACTO' ? 'Registro completo' : 'Ya registrado';
+    if (item.allowed_action) return item.allowed_action.label;
+    if (
+      item.reconciliation_status === 'PARCIAL'
+      || (item.difference_type === 'FALTANTE' && Number(item.difference_pending || 0) > 0)
+    ) return 'Incluido en registro consolidado';
+    return 'Requiere investigación';
+  }
+
+  historicalMovementLabel(item: HistoricalDifferenceItem): string {
+    if (!item.difference_expected) return 'No corresponde';
+    if (!item.difference_movements.length) return `No encontrado · falta ${Number(item.difference_pending || 0).toFixed(4)} kg`;
+    const covered = Number(item.difference_covered || 0).toFixed(4);
+    const pending = Number(item.difference_pending || 0).toFixed(4);
+    return Number(item.difference_pending || 0) > 0 ? `${covered} kg registrado · ${pending} kg pendiente` : `${covered} kg registrado`;
   }
 
   irregularityLabel(direction: string): string {
@@ -153,9 +207,37 @@ export class TransferReviewTraceComponent {
     return note.details.filter(({ reconciliation_status }) => reconciliation_status !== 'COMPLETADO').length;
   }
 
+  isDetailSelected(detail: ReviewDetail): boolean { return this.selectedDetailIds().includes(detail.id); }
+  toggleDetailSelection(detail: ReviewDetail, checked: boolean): void { this.selectedDetailIds.update((ids) => checked ? [...new Set([...ids, detail.id])] : ids.filter((id) => id !== detail.id)); }
+  toggleAllDetails(note: TransferReview, checked: boolean): void { this.selectedDetailIds.set(checked ? note.details.filter((detail) => detail.reconciliation_status !== 'COMPLETADO').map(({ id }) => id) : []); }
+  beginBulkReconciliation(note: TransferReview): void {
+    const selected = note.details.filter((detail) => this.isDetailSelected(detail) && detail.reconciliation_status !== 'COMPLETADO');
+    if (selected.length === 0) return;
+    this.previewLoading.set(true);
+    this.formError.set('');
+    this.bulkPreview.set(null);
+    this.reviewService.previewBulkResolution(note.id, selected.map(({ id }) => id)).pipe(
+      finalize(() => this.previewLoading.set(false)),
+    ).subscribe({
+      next: (preview) => {
+        this.bulkPreview.set(preview);
+        if (!preview.ready) {
+          const invalid = preview.items
+            .filter(({ preview: itemPreview, error }) => error || itemPreview?.status !== 'READY')
+            .map(({ detail_id, error, preview: itemPreview }) => `Ítem ${detail_id}: ${error || itemPreview?.message || 'no está listo'}`);
+          this.formError.set(invalid.join(' · '));
+          return;
+        }
+        this.selectDocumentaryClose(note, selected[0], true);
+      },
+      error: (error: any) => this.formError.set(this.apiError(error, 'No se pudo validar la selección agrupada.')),
+    });
+  }
+
   historyActionLabel(value: string): string {
     return ({ CONFIRM_DIFFERENCE: 'Confirmación sin movimiento adicional', TRANSFER_RETURN: 'Devolución al origen',
       CLASSIFY_EXCESS: 'Clasificación de excedente', CLASSIFY_SHORTAGE: 'Clasificación de faltante',
+      LOCATE_SHORTAGE: 'Ingreso de faltante localizado',
       TRANSFER: 'Traslado', CLASSIFIED: 'Clasificación', CONFIRMATION: 'Confirmación',
       ACTIVE: 'Activa', REVERSED: 'Revertida', REVERSAL_PENDING: 'Reversión pendiente',
       PENDING_RECEPTION: 'Pendiente de recepción', MANUAL_INTERVENTION_REQUIRED: 'Requiere gestión manual',
@@ -218,7 +300,113 @@ export class TransferReviewTraceComponent {
     if (!visible) {
       this.cancelDocumentaryClose();
       this.cancelAssignment();
+      this.cancelHistoricalCompletion();
+      this.historicalNotice.set('');
     }
+  }
+
+  beginHistoricalCompletion(item: HistoricalDifferenceItem): void {
+    if (!item.allowed_action) return;
+    this.historicalSelectedItem.set(item);
+    this.historicalPreview.set(null);
+    this.historicalError.set('');
+    this.historicalNotice.set('');
+    this.historicalCompletionForm.reset({
+      reason: '',
+      id_merma_product: item.registered_product?.id || null,
+    });
+    const mermaControl = this.historicalCompletionForm.controls.id_merma_product;
+    if (item.allowed_action.requires_merma_product) {
+      mermaControl.setValidators([Validators.required, Validators.min(1)]);
+      this.loadHistoricalMermaProducts();
+    } else {
+      mermaControl.clearValidators();
+      this.loadHistoricalPreview();
+    }
+    mermaControl.updateValueAndValidity();
+  }
+
+  cancelHistoricalCompletion(): void {
+    this.historicalSelectedItem.set(null);
+    this.historicalPreview.set(null);
+    this.historicalError.set('');
+    this.historicalCompletionForm.reset();
+  }
+
+  onHistoricalMermaChange(): void {
+    this.historicalPreview.set(null);
+    this.historicalError.set('');
+    if (this.historicalCompletionForm.controls.id_merma_product.value) this.loadHistoricalPreview();
+  }
+
+  private loadHistoricalMermaProducts(): void {
+    if (this.historicalMermaProductsLoading() || this.historicalMermaProducts().length) return;
+    this.historicalMermaProductsLoading.set(true);
+    this.productsService.getDifferenceProducts('', 500).pipe(
+      finalize(() => this.historicalMermaProductsLoading.set(false)),
+    ).subscribe({
+      next: ({ products }) => this.historicalMermaProducts.set(products.map((product) => ({
+        ...product,
+        display_name: `${product.cod} - ${product.name}`,
+      }))),
+      error: (error: any) => this.historicalError.set(this.apiError(error, 'No se pudo cargar el catálogo de productos MERMAS.')),
+    });
+  }
+
+  private loadHistoricalPreview(): void {
+    const trace = this.reviewService.traceability();
+    const item = this.historicalSelectedItem();
+    if (!trace || !item) return;
+    this.historicalPreviewLoading.set(true);
+    this.reviewService.previewHistoricalDifference(
+      trace.id,
+      item.id,
+      this.historicalCompletionForm.controls.id_merma_product.value,
+    ).pipe(finalize(() => this.historicalPreviewLoading.set(false))).subscribe({
+      next: (preview) => this.historicalPreview.set(preview),
+      error: (error: any) => this.historicalError.set(this.apiError(error, 'No se pudo preparar la regularización histórica.')),
+    });
+  }
+
+  async confirmHistoricalCompletion(): Promise<void> {
+    const trace = this.reviewService.traceability();
+    const item = this.historicalSelectedItem();
+    const preview = this.historicalPreview();
+    if (!trace || !item || !preview || this.historicalCompletionForm.invalid) {
+      this.historicalCompletionForm.markAllAsTouched();
+      this.historicalError.set('Indique el motivo y complete la previsualización antes de confirmar.');
+      return;
+    }
+    const inventory = preview.inventory;
+    const target = document.querySelector('.transfer-review-trace-dialog') as HTMLElement | null;
+    const confirmation = await Swal.fire({
+      target: target || document.body,
+      icon: 'warning',
+      title: item.allowed_action?.label || 'Completar registro histórico',
+      text: inventory
+        ? `Producto ${preview.product?.cod}. Stock ${inventory.before_stock} → ${inventory.after_stock}; Kardex ${inventory.before_kardex} → ${inventory.after_kardex}.`
+        : 'Revise los datos antes de confirmar.',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, completar registro',
+      cancelButtonText: 'Volver a revisar',
+      confirmButtonColor: '#166534',
+      allowOutsideClick: false,
+    });
+    if (!confirmation.isConfirmed) return;
+    this.historicalSaving.set(true);
+    this.historicalError.set('');
+    this.reviewService.completeHistoricalDifference(trace.id, item.id, {
+      preview_fingerprint: preview.fingerprint,
+      reason: this.historicalCompletionForm.controls.reason.value?.trim() || '',
+      id_merma_product: this.historicalCompletionForm.controls.id_merma_product.value,
+    }).pipe(finalize(() => this.historicalSaving.set(false))).subscribe({
+      next: () => {
+        this.historicalNotice.set('El registro histórico fue completado y quedó vinculado a la boleta. La investigación operativa permanece separada.');
+        this.cancelHistoricalCompletion();
+        this.reviewChanged.emit();
+      },
+      error: (error: any) => this.historicalError.set(this.apiError(error, 'No se pudo completar el registro histórico.')),
+    });
   }
 
   beginAssignment(note: TransferReview): void {
@@ -259,7 +447,7 @@ export class TransferReviewTraceComponent {
     });
   }
 
-  selectDocumentaryClose(note: TransferReview, detail: ReviewDetail): void {
+  selectDocumentaryClose(note: TransferReview, detail: ReviewDetail, preserveBulkPreview = false): void {
     this.selectedNote.set(note);
     this.selectedDetail.set(detail);
     this.formError.set('');
@@ -274,6 +462,7 @@ export class TransferReviewTraceComponent {
       quantity: this.remainingQuantity(detail),
     });
     this.automaticPreview.set(null);
+    if (!preserveBulkPreview) this.bulkPreview.set(null);
     this.previewLoading.set(true);
     this.reviewService.previewAutomaticResolution(note.id, detail.id).pipe(
       finalize(() => this.previewLoading.set(false)),
@@ -401,10 +590,18 @@ export class TransferReviewTraceComponent {
     const confirmation = await Swal.fire({
       target: reconciliationDialog || document.body,
       icon: solution?.operation_type === 'CONFIRMATION' ? 'warning' : 'question',
-      title: solution?.operation_type === 'CONFIRMATION' ? '¿Confirmar sin movimiento?' : '¿Crear operación y conciliar?',
+      title: solution?.operation_type === 'CONFIRMATION'
+        ? '¿Confirmar sin movimiento?'
+        : solution?.operation_type === 'KARDEX_ENTRY' || solution?.operation_type === 'WASTE_ENTRY'
+          ? '¿Registrar regularización de recepción?'
+          : '¿Crear operación y conciliar?',
       html: `<p>${solution?.warning || 'Revise los datos antes de continuar.'}</p><p><b>Autoriza:</b> ${authorizer?.full_names || ''}</p>`,
       showCancelButton: true,
-      confirmButtonText: solution?.operation_type === 'CONFIRMATION' ? 'Sí, confirmar diferencia' : 'Sí, crear y conciliar',
+      confirmButtonText: solution?.operation_type === 'CONFIRMATION'
+        ? 'Sí, confirmar diferencia'
+        : solution?.operation_type === 'KARDEX_ENTRY' || solution?.operation_type === 'WASTE_ENTRY'
+          ? 'Sí, registrar y conciliar'
+          : 'Sí, crear y conciliar',
       cancelButtonText: 'Volver a revisar',
       confirmButtonColor: solution?.operation_type === 'CONFIRMATION' ? '#b45309' : '#166534',
       customClass: { container: 'sweetalert2 reconciliation-confirmation' },
@@ -415,21 +612,33 @@ export class TransferReviewTraceComponent {
 
     this.formError.set('');
     this.saving.set(true);
-    this.reviewService.confirmAutomaticResolution(note.id, detail.id, {
+    const payload = {
       solution_code: form.solution_code || '',
       id_target_product: form.id_target_product,
-      reason_code: form.reason_code,
-      operational_justification: form.operational_justification?.trim(),
+      reason_code: form.reason_code || '',
+      operational_justification: form.operational_justification?.trim() || '',
       document_references: form.document_references,
       id_authorizer_user: form.id_authorizer_user,
       detail_version: this.automaticPreview()?.detail_version,
       quantity,
-    }).pipe(finalize(() => this.saving.set(false))).subscribe({
+    };
+    const selected = note.details.filter((candidate) => this.isDetailSelected(candidate) && candidate.reconciliation_status !== 'COMPLETADO');
+    const request = selected.length > 1
+      ? this.reviewService.confirmBulkResolution(note.id, selected.map((candidate) => ({
+        ...payload, detail_id: candidate.id, detail_version: candidate.id === detail.id ? this.automaticPreview()?.detail_version : undefined,
+        quantity: candidate.id === detail.id ? quantity : this.remainingQuantity(candidate),
+      })))
+      : this.reviewService.confirmAutomaticResolution(note.id, detail.id, payload);
+    request.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: (result: any) => {
         const pendingQuantity = Number(result?.pending_quantity || 0);
         const operation = result?.operation;
         const text = operation?.type === 'CONFIRMATION'
           ? 'Diferencia confirmada. Se conservó el producto registrado sin crear movimientos adicionales.'
+          : operation?.type === 'KARDEX_ENTRY'
+            ? 'Excedente registrado en Kardex del mismo producto y vinculado automáticamente a la boleta de recepción.'
+            : operation?.type === 'WASTE_ENTRY'
+              ? 'Faltante registrado en MERMAS con Stock y Kardex, vinculado automáticamente a la boleta de recepción.'
           : pendingQuantity > 0
           ? `${operation?.type || 'Operación'} ${operation?.code || ''} creada. Quedan ${pendingQuantity.toFixed(4)} pendientes.`
           : `${operation?.type || 'Operación'} ${operation?.code || ''} creada con stock, Kardex e historial. La diferencia quedó conciliada.`;
@@ -440,6 +649,7 @@ export class TransferReviewTraceComponent {
         });
         this.reviewChanged.emit();
         this.cancelDocumentaryClose();
+        this.selectedDetailIds.set([]);
       },
       error: (error: any) => {
         const message = this.apiError(error, 'No se pudo guardar la conciliación.');
@@ -461,6 +671,7 @@ export class TransferReviewTraceComponent {
       ASIGNADA_AUTOMATICAMENTE: 'Responsable asignado automáticamente',
       ASIGNADA: 'Tarea derivada a responsable',
       CREADA: 'Boleta de revisión creada',
+      REGISTRO_HISTORICO_COMPLETADO: 'Registro histórico completado',
     } as Record<string, string>)[eventType] || eventType.replaceAll('_', ' ');
   }
 
@@ -484,6 +695,14 @@ export class TransferReviewTraceComponent {
   }
 
   private apiError(error: any, fallback: string): string {
-    return error?.error?.errors?.[0]?.msg || error?.error?.msg || fallback;
+    const message = error?.error?.errors?.[0]?.msg || error?.error?.msg || fallback;
+    const locations = Array.isArray(error?.error?.details)
+      ? error.error.details.map((detail: any) => {
+        const product = detail.product_cod || `producto ${detail.product_id}`;
+        const location = `sucursal ${detail.sucursal_id}, almacén ${detail.storage_id}`;
+        return `${product} (${location}): Stock ${Number(detail.stock || 0).toFixed(4)}, Kardex ${Number(detail.kardex || 0).toFixed(4)}`;
+      })
+      : [];
+    return locations.length ? `${message} ${locations.join('; ')}.` : message;
   }
 }

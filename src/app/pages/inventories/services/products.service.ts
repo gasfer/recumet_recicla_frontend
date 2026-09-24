@@ -45,8 +45,8 @@ export class ProductsService {
     return this.http.get<GetAllProducts>(url);
   }
 
-  getSelectProducts(query: string = '', limit: number = 10, category_type: string = '', category_ids: string = '', productContext: ProductAccessContext | '' = ''): Observable<any> {
-    const id_sucursal = this.validatorsService.id_sucursal().toString();
+  getSelectProducts(query: string = '', limit: number = 10, category_type: string = '', category_ids: string = '', productContext: ProductAccessContext | '' = '', selectedSucursalId?: number): Observable<any> {
+    const id_sucursal = String(selectedSucursalId || this.validatorsService.id_sucursal());
     const endpoint = productContext
       ? `product/operational/${PRODUCT_ACCESS_ROUTE_SEGMENTS[productContext]}/select`
       : 'product/select';

@@ -183,8 +183,37 @@
             {{ col?.tagValue(getRowData(rowData,col)) }}
           </div>
 
+          <div *ngIf="col.isSucursalBadge">
+            <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(getRowData(rowData,col))">
+              <i class="fa-solid fa-building me-1" aria-hidden="true"></i>
+              {{ getRowData(rowData,col) }}
+            </span>
+          </div>
+
+          <div *ngIf="col.isInfoStack" class="app-table-info-stack">
+            <div *ngFor="let item of getRowData(rowData,col)" class="app-table-info-stack__item"
+                 [ngClass]="'app-table-info-stack__item--' + (item.tone || 'neutral')">
+              <i [class]="item.icon" aria-hidden="true"></i>
+              <div>
+                <small>{{ item.label }}</small>
+                <span [ngStyle]="item.badgeStyle">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="col.isReviewNotes" class="app-table-review-notes">
+            <button *ngFor="let note of getRowData(rowData,col)" type="button" class="app-table-review-note"
+                    [ngClass]="{'app-table-review-note--surplus': note.type === 'EXCEDENTE_PARA_REVISION'}"
+                    (click)="note.open()">
+              <span class="app-table-review-note__header"><strong>{{ note.registry_number }}</strong><span>{{ note.pending_items }} pendiente(s)</span></span>
+              <small>{{ note.type === 'EXCEDENTE_PARA_REVISION' ? 'Excedente' : 'Faltante' }}</small>
+              <span *ngFor="let detail of note.details">{{ detail }}</span>
+            </button>
+          </div>
+
           <div *ngIf="!col.isLink && !col.isDoubleValue && !col.isButton && !col.isArray
-                      && !col.isTag && !col.isImg && !col.isText && !col.isValueUpdate && !col.isTextArray">
+                      && !col.isTag && !col.isImg && !col.isText && !col.isValueUpdate && !col.isTextArray && !col.isSucursalBadge
+                      && !col.isInfoStack && !col.isReviewNotes">
             {{ getRowData(rowData,col) }}
           </div>
         </td>

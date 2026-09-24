@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { LazyLoadEvent, MenuItem } from 'primeng/api';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ProvidersService } from '../../inputs/services/providers.service';
@@ -16,13 +16,16 @@ import { CategoriesService } from '../services/categories.service';
 import { Category, CategoryType } from '../interfaces/categories.interface';
 import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
+import { ValuedKardexMovement } from '../interfaces/valued-kardex.interface';
 
 @Component({
   selector: 'app-kardex-fisico',
   templateUrl: './kardex-fisico.component.html',
-  styles: [],
+  styleUrls: ['./kardex-fisico.component.scss'],
 })
 export class KardexFisicoComponent {
+  readonly ALL_HISTORY = 'ALL_HISTORY';
+  readonly PHYSICAL_SUMMARY = 'PHYSICAL_SUMMARY';
   fb = inject(FormBuilder);
   validatorsService = inject(ValidatorsService);
   providersService = inject(ProvidersService);
@@ -50,8 +53,12 @@ export class KardexFisicoComponent {
   dropdownFilter = signal('');
 
   private searchSubject = new Subject<string>();
+  private kardexRequest?: Subscription;
 
   title = signal('CONSULTA DE KARDEX FÍSICO');
+  isAllProductsRoute = signal(false);
+  activeView = signal(this.PHYSICAL_SUMMARY);
+  activeSearchItem = signal<MenuItem | undefined>(undefined);
 
   // Signals para categorías
   dropdownCategories = signal<{ id: number, name: string }[]>([]);
@@ -94,17 +101,7 @@ export class KardexFisicoComponent {
     },
   ];
 
-  searchItems = signal<MenuItem[]>([
-    {
-      label: 'ENTRADAS Y SALIDAS',
-      icon: 'fa-solid fa-left-right',
-      iconStyle: { color: '#3B71CA' },
-      command: () => {
-        this.paramsSearch().type_kardex = '';
-        this.getAllAndSearchKardex(1, this.rows());
-      },
-    },
-  ]);
+  searchItems = signal<MenuItem[]>([]);
 
   formReport: UntypedFormGroup = this.fb.group({
     filterBy: ['YEAR'],
@@ -118,7 +115,7 @@ export class KardexFisicoComponent {
     category_types: ['']
   });
 
-  pipeNumber = new DecimalPipe('en-US');
+  pipeNumber = new DecimalPipe('es-BO');
   decimalLength = signal(this.validatorsService.decimalLength());
   decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
 
@@ -179,6 +176,27 @@ export class KardexFisicoComponent {
     },
   ]);
 
+  historyCols = signal<ColsTable[]>([
+    { field: 'date', header: 'FECHA', style: 'min-width:125px;max-width:140px;', tooltip: true, isDate: true },
+    {
+      field: 'event_label', header: 'EVENTO', style: 'min-width:135px;max-width:155px;', tooltip: true, isTag: true,
+      tagValue: (value: string) => value || 'OTRO MOVIMIENTO',
+      tagColor: (value: string) => value === 'REVERSIÓN' ? 'warning' : value.includes('SALIDA') || value.includes('ENVIADO') ? 'danger' : 'success',
+      tagIcon: (value: string) => value === 'REVERSIÓN' ? 'fa-solid fa-rotate-left' : value.includes('SALIDA') || value.includes('ENVIADO') ? 'fa-solid fa-arrow-right' : 'fa-solid fa-arrow-left',
+    },
+    { field: 'registry_number', header: 'DOCUMENTO', style: 'min-width:105px;max-width:125px;', tooltip: true, isText: true },
+    {
+      field: 'product.cod', header: 'CÓDIGO', style: 'min-width:120px;max-width:140px;', tooltip: true,
+      isLink: true, link: '/inventories/kardex-existencia?p=${value}', field2: 'id_product',
+    },
+    { field: 'product.name', header: 'PRODUCTO', style: 'min-width:190px;max-width:240px;', tooltip: true, isText: true },
+    { field: 'detail', field2: 'sub_detail', header: 'DETALLE / ORIGEN', style: 'min-width:210px;max-width:280px;', tooltip: true, isDoubleValue: true },
+    { field: 'product.unit.siglas', header: 'UND', style: 'min-width:65px;max-width:75px;text-align:center;', tooltip: true, isText: true },
+    { field: 'quantity_input', header: 'ENTRADA', style: 'min-width:105px;max-width:120px;text-align:right;', tooltip: true, isValueUpdate: true, tagValue: (value: number) => this.pipeNumber.transform(value, this.decimal()) },
+    { field: 'quantity_output', header: 'SALIDA', style: 'min-width:105px;max-width:120px;text-align:right;', tooltip: true, isValueUpdate: true, tagValue: (value: number) => this.pipeNumber.transform(value, this.decimal()) },
+    { field: 'saldo', header: 'SALDO', style: 'min-width:105px;max-width:120px;text-align:right;', tooltip: true, isValueUpdate: true, tagValue: (value: number) => this.pipeNumber.transform(value, this.decimal()) },
+  ]);
+
   fieldSort = signal('product.category.name');
   order = signal('desc');
 
@@ -198,6 +216,9 @@ export class KardexFisicoComponent {
     this.activatedRoute.data.subscribe((data: any) => {
       this.title.set(data.title || 'CONSULTA DE KARDEX FÍSICO');
       const categoryType = data.category_types || '';
+      const allProducts = categoryType === '';
+      this.isAllProductsRoute.set(allProducts);
+      this.configureViews(allProducts);
 
       this.formReport.patchValue({
         category_types: categoryType
@@ -216,6 +237,39 @@ export class KardexFisicoComponent {
       this.dropdownFilter.set(filterValue);
       this.loadDropdownProducts(true);
     });
+  }
+
+  private configureViews(allProducts: boolean): void {
+    if (!allProducts) {
+      this.activeView.set(this.PHYSICAL_SUMMARY);
+      this.fieldSort.set('product.category.name');
+      this.order.set('ASC');
+      const item: MenuItem = { label: 'ENTRADAS Y SALIDAS', icon: 'fa-solid fa-left-right', iconStyle: { color: '#3B71CA' } };
+      this.searchItems.set([item]);
+      this.activeSearchItem.set(item);
+      return;
+    }
+
+    this.activeView.set(this.PHYSICAL_SUMMARY);
+    this.fieldSort.set('product.category.name');
+    this.order.set('ASC');
+    const summaryItem: MenuItem = {
+      label: 'RESUMEN FÍSICO', icon: 'fa-solid fa-boxes-stacked', iconStyle: { color: '#14A44D' },
+      command: () => this.selectView(this.PHYSICAL_SUMMARY),
+    };
+    this.searchItems.set([summaryItem]);
+    this.activeSearchItem.set(summaryItem);
+  }
+
+  private selectView(view: string): void {
+    this.activeView.set(view);
+    this.applyCurrentDayToAllHistory();
+    this.page.set(1);
+    this.fieldSort.set(view === this.ALL_HISTORY ? 'date' : 'product.category.name');
+    this.order.set(view === this.ALL_HISTORY ? 'DESC' : 'ASC');
+    const itemIndex = view === this.ALL_HISTORY ? 0 : 1;
+    this.activeSearchItem.set(this.searchItems()[itemIndex] ?? this.searchItems()[0]);
+    this.getAllAndSearchKardex(1, this.rows(), this.type(), this.query());
   }
 
 
@@ -344,6 +398,7 @@ export class KardexFisicoComponent {
     type: string = '',
     query: string = '',
   ): void {
+    this.applyCurrentDayToAllHistory();
     // Asegurar que el id_sucursal está actualizado
     this.formReport.patchValue({
       id_sucursal: this.validatorsService.id_sucursal(),
@@ -371,12 +426,12 @@ export class KardexFisicoComponent {
     // Debug de los parámetros enviados
     console.log('Parámetros de búsqueda:', this.paramsSearch());
 
-    if (!query) {
-      this.loading.set(true);
-    }
+    this.kardexRequest?.unsubscribe();
+    this.loading.set(true);
 
-    this.kardexService
-      .getAllAndSearchKardexFisico(
+const request$ = this.activeView() === this.ALL_HISTORY
+      ? this.kardexService.getDailyKardex(page, limit, this.paramsSearch(), type, query, this.fieldSort(), this.order())
+      : this.kardexService.getAllAndSearchKardexFisico(
         page,
         limit,
         this.paramsSearch(),
@@ -384,8 +439,9 @@ export class KardexFisicoComponent {
         query,
         this.fieldSort(),
         this.order(),
-      )
-      .subscribe({
+      );
+
+    this.kardexRequest = request$.subscribe({
         next: (resp) => {
           const startNum = ((page - 1) * Number(limit)) + 1;
           resp.kardexes.data.forEach((item: any, idx: number) => {
@@ -395,7 +451,7 @@ export class KardexFisicoComponent {
           this.kardexes.set(resp.kardexes);
 
           // Update column footers with grand totals
-          const totals = resp.kardexes.totals;
+          const totals = this.activeView() === this.PHYSICAL_SUMMARY ? resp.kardexes.totals : undefined;
           if (totals) {
             this.cols.update(cols => cols.map(col => {
               if (col.field === 'product.cod') {
@@ -422,6 +478,12 @@ export class KardexFisicoComponent {
           this.loading.set(false);
         },
       });
+  }
+
+  private applyCurrentDayToAllHistory(): void {
+    if (this.isAllProductsRoute() && this.activeView() === this.ALL_HISTORY) {
+      this.formReport.patchValue({ filterBy: 'DAY', dates: new Date() });
+    }
   }
 
   // === ACTUALIZAR formParamsByForm PARA ASEGURAR QUE id_product SE INCLUYA ===
@@ -558,6 +620,46 @@ export class KardexFisicoComponent {
     this.order.set(order);
   }
 
+  historyPageChange(event: any): void {
+    const rows = Number(event.rows || this.rows());
+    const page = Math.floor(Number(event.first || 0) / rows) + 1;
+    this.paginate({ rows, page });
+  }
+
+  historySort(event: any): void {
+    const field = event.field || 'date';
+    const order = Number(event.order) === 1 ? 'ASC' : 'DESC';
+    this.customSort({ field, order });
+    this.getAllAndSearchKardex(1, this.rows(), this.type(), this.query());
+  }
+
+  asValuedMovement(row: any): ValuedKardexMovement {
+    return row as ValuedKardexMovement;
+  }
+
+  hasQuantity(value: string | number | null | undefined): boolean {
+    return Math.abs(Number(value || 0)) > 0.0000001;
+  }
+
+  valuedAmount(row: ValuedKardexMovement, value: number | null | undefined): string {
+    if (row.valuation?.status !== 'VALUED' || value === null || value === undefined) return 'SIN VALORAR';
+    return this.pipeNumber.transform(value, '1.2-2') || '0,00';
+  }
+
+  movementIcon(row: ValuedKardexMovement): string {
+    if (row.is_reversal) return 'fa-solid fa-rotate-left';
+    return row.type === 'INPUT' ? 'fa-solid fa-arrow-left' : 'fa-solid fa-arrow-right';
+  }
+
+  movementClass(row: ValuedKardexMovement): string {
+    if (row.is_reversal) return 'kardex-event--adjustment';
+    return row.type === 'INPUT' ? 'kardex-event--input' : 'kardex-event--output';
+  }
+
+  responsibleInitial(row: ValuedKardexMovement): string {
+    return row.responsible?.name?.trim()?.charAt(0)?.toUpperCase() || '?';
+  }
+
   search($query: any): void {
     const { type, query } = $query;
     this.type.set(type);
@@ -575,15 +677,16 @@ export class KardexFisicoComponent {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.kardexService
-            .getReportPdfFisico(
+          const report$ = this.activeView() === this.ALL_HISTORY
+            ? this.kardexService.getReportPdf(this.paramsSearch(), this.fieldSort(), this.order())
+            : this.kardexService.getReportPdfFisico(
               this.paramsSearch(),
               this.type(),
               this.query(),
               this.fieldSort(),
               this.order(),
-            )
-            .subscribe({
+            );
+          report$.subscribe({
               next: (data) => {
                 const file = new Blob([data], { type: 'application/pdf' });
                 const fileURL = URL.createObjectURL(file);
@@ -609,15 +712,16 @@ export class KardexFisicoComponent {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.kardexService
-            .getReportExcelFisico(
+          const report$ = this.activeView() === this.ALL_HISTORY
+            ? this.kardexService.getReportExcel(this.paramsSearch(), this.fieldSort(), this.order())
+            : this.kardexService.getReportExcelFisico(
               this.paramsSearch(),
               this.type(),
               this.query(),
               this.fieldSort(),
               this.order(),
-            )
-            .subscribe({
+            );
+          report$.subscribe({
               next: (data) => {
                 const fileURL = window.URL.createObjectURL(data);
                 window.open(fileURL);

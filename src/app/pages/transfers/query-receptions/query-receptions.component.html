@@ -1,4 +1,4 @@
-<div [formGroup]="formReport">
+<div [formGroup]="formReport" class="reception-query-page">
     <div class="card shadow mb-4 icon-box ">
       <div class="card-body">
         <div class="row text-center">
@@ -78,9 +78,17 @@
         [activeItem]="activeSearchItem()"></p-tabMenu>
     </div>
   </div>
+  <div *ngIf="isInconclusiveMode" class="alert reception-query-page__alert mb-3">
+    <div class="fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Boletas recibidas con conciliación pendiente</div>
+    <div class="small mt-1">Esta vista no usa el filtro mensual. Muestra todas las notas abiertas de la sucursal y almacén seleccionados. Trabaje cada ítem por separado y conserve su evidencia.</div>
+  </div>
+  <div *ngIf="isInconclusiveMode && !loading() && (transfers()?.data?.length || 0) === 0" class="reception-query-page__empty-state mb-3">
+    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+    <div><strong>No quedan recepciones inconclusas en esta sucursal y almacén.</strong><span>La conciliación se guardó correctamente. Puede revisar el detalle actualizado en el modal o cambiar de pestaña para consultar otras recepciones.</span></div>
+  </div>
   <app-table responsiveStrategy="scroll" [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
     [data]="transfers()" [loading]="loading()" (customSort$)="customSort($event)">
   </app-table>
   <app-modal-view-details-transfer></app-modal-view-details-transfer>
   <app-modal-approved-transfer [id_transfer]="id_transfer()" (save$)="this.getAllAndSearchTransfers(1,this.rows())"></app-modal-approved-transfer>
-  <app-transfer-review-trace (reviewChanged)="getAllAndSearchTransfers(1, rows())"></app-transfer-review-trace>
+  <app-transfer-review-trace (reviewChanged)="refreshInconclusiveReviews()"></app-transfer-review-trace>

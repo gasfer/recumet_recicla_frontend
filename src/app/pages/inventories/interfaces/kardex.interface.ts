@@ -41,6 +41,7 @@ export interface Kardexes {
 }
 
 export interface Kardex {
+    id_product?: number;
     type: Type;
     date: Date;
     registry_number: string;
@@ -60,6 +61,10 @@ export interface Kardex {
     storage: Storage;
     product: Product;
     review_note?: { id: number; registry_number: string; type: string };
+    event_type?: string;
+    event_label?: string;
+    event_direction?: 'INPUT' | 'OUTPUT' | 'UNKNOWN';
+    is_reversal?: boolean;
     options?: Options[];
 
 }

@@ -1,5 +1,5 @@
 <p-dialog
-  header="Recepciones inconclusas"
+  header="Pendientes de conciliación"
   [visible]="reviewService.showAlertDialog()"
   (visibleChange)="reviewService.setAlertVisibility($event)"
   [modal]="false"
@@ -12,11 +12,8 @@
   <div class="review-intro" role="status">
     <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
     <div>
-      <strong>
-        Hay {{ reviewService.openReviews().length }} conciliación(es) inconclusa(s)
-        y {{ reviewService.stockKardexIrregularities().length }} irregularidad(es) Stock–Kardex.
-      </strong>
-      <p>Revise la causa y la evidencia antes de corregir cualquiera de los dos saldos.</p>
+      <strong>{{ reviewService.openReviews().length }} boleta(s) de recepción con notas abiertas.</strong>
+      <p>{{ reviewService.stockKardexIrregularities().length }} producto(s) presentan una diferencia independiente entre Stock y Kardex. Revise causa y evidencia antes de modificar un saldo.</p>
     </div>
   </div>
 
@@ -24,7 +21,7 @@
     <div class="stock-kardex-alert__heading">
       <i class="fa-solid fa-scale-unbalanced-flip" aria-hidden="true"></i>
       <div>
-        <strong id="stock-kardex-alert-title">Irregularidades de inventario detectadas</strong>
+        <strong id="stock-kardex-alert-title">Ajustes de diferencia Stock–Kardex</strong>
         <p>Estos productos no pueden considerarse conciliados hasta verificar cuál saldo corresponde al inventario real.</p>
       </div>
     </div>
@@ -58,7 +55,15 @@
       <div class="review-card__header">
         <div>
           <strong>{{ review.transfer.cod }} · {{ review.registry_number }}</strong>
-          <span>{{ review.transfer.sucursal_send.name }} → {{ review.transfer.sucursal_received.name }}</span>
+          <div class="review-sucursal-route">
+            <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(review.transfer.sucursal_send?.name)">
+              <i class="fa-solid fa-building me-1" aria-hidden="true"></i>{{ review.transfer.sucursal_send.name }}
+            </span>
+            <i class="fa-solid fa-arrow-right-long route-arrow" aria-hidden="true"></i>
+            <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(review.transfer.sucursal_received?.name)">
+              <i class="fa-solid fa-location-dot me-1" aria-hidden="true"></i>{{ review.transfer.sucursal_received.name }}
+            </span>
+          </div>
         </div>
         <p-tag [value]="reviewStatusLabel(review)" [severity]="reviewStatusSeverity(review)"></p-tag>
       </div>
@@ -69,10 +74,12 @@
         <span><b>Responsable:</b> {{ review.assignedUser?.full_names || 'Sin asignar' }}</span>
       </div>
       <ul class="review-products">
-        <li *ngFor="let detail of review.details">
-          <span>{{ detail.product.cod }} · {{ detail.product.name }}</span>
-          <strong>{{ differenceLabel(review.type) }}: {{ detail.quantity_difference | number:'1.4-4' }}</strong>
-        </li>
+        <ng-container *ngFor="let detail of review.details">
+          <li *ngIf="detail.reconciliation_status !== 'COMPLETADO'">
+            <span>{{ detail.product.cod }} · {{ detail.product.name }}</span>
+            <strong>{{ differenceLabel(review.type) }}: {{ detail.quantity_difference | number:'1.4-4' }}</strong>
+          </li>
+        </ng-container>
       </ul>
     </article>
   </div>
@@ -84,6 +91,10 @@
     <button *ngIf="reviewService.openReviews().length" type="button" class="btn btn-primary btn-sm" (click)="goToInconclusiveReceptions()">
       <i class="fa-solid fa-list-check me-1" aria-hidden="true"></i>
       Ir a Recepciones inconclusas
+    </button>
+    <button *ngIf="reviewService.stockKardexIrregularities().length" type="button" class="btn btn-warning btn-sm" (click)="goToStockReconciliation()">
+      <i class="fa-solid fa-scale-balanced me-1" aria-hidden="true"></i>
+      Ajuste diferencia Stock–Kardex
     </button>
   </ng-template>
 </p-dialog>

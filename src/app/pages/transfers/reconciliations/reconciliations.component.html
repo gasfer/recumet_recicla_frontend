@@ -2,8 +2,8 @@
   <div class="card-body">
     <div class="reconciliation-heading">
       <div>
-        <h3><b>CONCILIACIONES</b></h3>
-        <p>Consulte las conciliaciones vinculadas a cada boleta de recepción.</p>
+        <h3><b>CONCILIACIÓN DE TRASLADOS</b></h3>
+        <p>Consulte las diferencias de peso y las conciliaciones vinculadas a cada boleta de recepción.</p>
       </div>
       <p-tag value="Operaciones auditadas" severity="info"></p-tag>
     </div>
@@ -14,8 +14,14 @@
     </div>
 
     <div class="filter-grid">
-      <label>Boleta de conciliación
-        <input pInputText [(ngModel)]="query" placeholder="Ej. REV-000123" (keyup.enter)="load(1)" />
+      <label>Boleta o producto
+        <input pInputText [(ngModel)]="query" placeholder="Ej. TRAS00326 o MP-AL" (keyup.enter)="load(1)" />
+      </label>
+      <label>Estado de diferencia
+        <p-dropdown [options]="differenceStatuses" [(ngModel)]="differenceStatus" optionLabel="label" optionValue="value"></p-dropdown>
+      </label>
+      <label>Tipo de diferencia
+        <p-dropdown [options]="differenceTypes" [(ngModel)]="differenceType" optionLabel="label" optionValue="value"></p-dropdown>
       </label>
       <label>Estado
         <p-dropdown [options]="statuses" [(ngModel)]="status" optionLabel="label" optionValue="value"></p-dropdown>
@@ -32,6 +38,30 @@
       </div>
     </div>
   </div>
+
+  <section class="difference-panel" aria-labelledby="reception-differences-title">
+    <div class="difference-panel__heading">
+      <div><h4 id="reception-differences-title">Diferencias de recepción</h4><small>Se muestran primero los casos pendientes del almacén seleccionado.</small></div>
+      <div class="difference-counters"><span>Pendientes <b>{{ differenceSummary().pendiente }}</b></span><span>Parciales <b>{{ differenceSummary().parcial }}</b></span><span>Resueltas <b>{{ differenceSummary().resuelta }}</b></span></div>
+    </div>
+    <div *ngIf="differenceRows().length === 0" class="difference-empty">No hay diferencias para los filtros seleccionados.</div>
+    <article *ngFor="let group of differenceRows()" class="difference-group">
+      <header>
+        <div class="d-flex align-items-center flex-wrap gap-2">
+          <b>{{ group.transfer.cod }}</b>
+          <small class="text-muted">{{ group.transfer.date_received | date:'dd/MM/yyyy HH:mm' }}</small>
+          <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(group.transfer.sucursal_received?.name)">
+            <i class="fa-solid fa-location-dot me-1" aria-hidden="true"></i>{{ group.transfer.sucursal_received?.name }}
+          </span>
+          <small class="text-muted">/ {{ group.transfer.storage_received?.name }}</small>
+        </div>
+        <button pButton type="button" icon="fa-solid fa-eye" label="Ver trazabilidad" class="p-button-sm p-button-outlined" (click)="previewDifference(group)"></button>
+      </header>
+      <div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Producto</th><th>Enviado</th><th>Recibido</th><th>Diferencia</th><th>Tipo</th><th>Estado</th><th>Situación</th></tr></thead><tbody>
+        <tr *ngFor="let row of group.items"><td><b>{{ row.item.product.cod }}</b><small>{{ row.item.product.name }}</small></td><td>{{ row.item.sent | number:'1.4-4' }}</td><td>{{ row.item.received | number:'1.4-4' }}</td><td>{{ row.item.difference_expected | number:'1.4-4' }} kg</td><td>{{ differenceTypeLabel(row.item.difference_type) }}</td><td><p-tag [value]="row.status" [severity]="differenceStatusSeverity(row.status)"></p-tag></td><td><span>{{ row.action?.label || row.message }}</span><small *ngIf="row.has_review_note">Expediente o movimiento relacionado disponible.</small></td></tr>
+      </tbody></table></div>
+    </article>
+  </section>
 
   <p-table [value]="rows()" [loading]="loading()" [lazy]="true" [paginator]="true"
     [rows]="pageSize()" [totalRecords]="total()" [rowsPerPageOptions]="[10,25,50]"

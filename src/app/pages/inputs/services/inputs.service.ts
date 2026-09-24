@@ -80,6 +80,10 @@ export class InputsService {
     return this.http.get(`${base_url}/input/anular/${id_input}/preview`);
   }
 
+  getOperationalDate(): Observable<{ ok: boolean; date: string }> {
+    return this.http.get<{ ok: boolean; date: string }>(`${base_url}/input/operational-date`);
+  }
+
   deleteInput(id_input: number, reason: string) {
     const url = `${base_url}/input/anular/${id_input}`;
     return this.http.delete(url, { ...this.mutationOptions(), body: { reason } });
@@ -138,6 +142,68 @@ export class InputsService {
           ...params
         }
       }),
+      responseType: 'blob',
+    });
+  }
+
+  getPurchaseReportExcel(params: FormSearchInputs, field_sort: string = 'id', order: string = 'DESC', type: string = '', query: string = '') {
+    const search = type ? `&type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}` : '';
+    return this.http.get(`${base_url}/input/purchase-report/excel?field_sort=${field_sort}&order=${order}${search}`, {
+      params: new HttpParams({ fromObject: { ...params } }),
+      responseType: 'blob',
+    });
+  }
+
+  getPurchaseReport(page: number, limit: number, params: FormSearchInputs, type: string = '', query: string = '', field_sort: string = 'date_voucher', order: string = 'DESC'): Observable<GetAllInputs> {
+    const search = type ? `&type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}` : '';
+    return this.http.get<GetAllInputs>(`${base_url}/input/purchase-report?page=${page}&limit=${limit}&field_sort=${field_sort}&order=${order}${search}`, {
+      params: new HttpParams({ fromObject: { ...params } }),
+    });
+  }
+
+getPurchaseReportPdf(params: FormSearchInputs, field_sort: string = 'date_voucher', order: string = 'DESC', type: string = '', query: string = '') {
+    const search = type ? `&type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}` : '';
+    return this.http.get(`${base_url}/input/purchase-report/pdf?field_sort=${field_sort}&order=${order}${search}`, {
+      params: new HttpParams({ fromObject: { ...params } }),
+      responseType: 'blob',
+    });
+  }
+
+  getPurchaseReportDetailsPdf(params: FormSearchInputs, field_sort: string = 'date_voucher', order: string = 'DESC', type: string = '', query: string = '') {
+    const search = type ? `&type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}` : '';
+    return this.http.get(`${base_url}/input/purchase-report/pdf/details?field_sort=${field_sort}&order=${order}${search}`, {
+      params: new HttpParams({ fromObject: { ...params } }),
+      responseType: 'blob',
+    });
+  }
+
+  getPurchaseReportDetailsCPPPdf(params: FormSearchInputs, field_sort: string = 'date_voucher', order: string = 'DESC', type: string = '', query: string = '') {
+    const search = type ? `&type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}` : '';
+    return this.http.get(`${base_url}/input/purchase-report/pdf/details/cpp?field_sort=${field_sort}&order=${order}${search}`, {
+      params: new HttpParams({ fromObject: { ...params } }),
+      responseType: 'blob',
+    });
+  }
+
+  getPurchaseReportDetailsExcel(params: FormSearchInputs, field_sort: string = 'date_voucher', order: string = 'DESC', type: string = '', query: string = '') {
+    const search = type ? `&type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}` : '';
+    return this.http.get(`${base_url}/input/purchase-report/excel/details?field_sort=${field_sort}&order=${order}${search}`, {
+      params: new HttpParams({ fromObject: { ...params } }),
+      responseType: 'blob',
+    });
+  }
+
+  getPurchaseProductSummaryExcel(params: FormSearchInputs, field_sort: string = 'date_voucher', order: string = 'DESC', type: string = '', query: string = '') {
+    const search = type ? `&type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}` : '';
+    return this.http.get(`${base_url}/input/purchase-report/excel/summary-by-product?field_sort=${field_sort}&order=${order}${search}`, {
+      params: new HttpParams({ fromObject: { ...params } }),
+      responseType: 'blob',
+    });
+  }
+
+  getConsolidatedInventoryExcel(params: FormSearchInputs) {
+    return this.http.get(`${base_url}/kardex/total-stock-recumet/excel-consolidated`, {
+      params: new HttpParams({ fromObject: { ...params, showZeroSaldo: 'false' } }),
       responseType: 'blob',
     });
   }
