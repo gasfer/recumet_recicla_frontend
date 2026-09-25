@@ -27,4 +27,8 @@ export class CompaniesService {
     const url = `${base_url}/company/${form.id}`;
     return this.http.put(url, form);
   }
+  uploadLogo(id: number, file: File) {
+    const data = new FormData(); data.append('logo', file);
+    return this.http.put(`${base_url}/company/${id}/logo`, data);
+  }
 }

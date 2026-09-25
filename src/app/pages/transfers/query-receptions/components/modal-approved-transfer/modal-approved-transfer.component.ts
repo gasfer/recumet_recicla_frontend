@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { Transfer } from '../../../interfaces/transfers.interface';
 import { ProductsService } from 'src/app/pages/inventories/services/products.service';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-modal-approved-transfer',
@@ -18,13 +19,11 @@ export class ModalApprovedTransferComponent {
   validatorsService = inject( ValidatorsService );
   fb                = inject( FormBuilder );
   productsService   = inject( ProductsService );
+  decimalFormat     = inject( DecimalFormatService );
   loading           = signal( false );
   mermaProducts     = signal<Product[]>([]);
 
   transfer          = signal<Transfer|undefined>(undefined);
-  decimalLength     = signal(this.validatorsService.decimalLength());
-  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
-
   _id_transfer = 0;
   private readonly defaultMermaProductName = 'DIFERENCIA DE PESO POR TRASLADO – EN REVISIÓN';
 
@@ -222,6 +221,20 @@ getTotalDiffClass(): string {
     this.checkObservationsRequirement();
 
     if(!this.approvedForm.valid) return;
+
+    const invalidDetail = this.detailsFormArray.controls.find((group) => {
+      const quantity = Number(group.get('quantity_received')?.value);
+      return !Number.isFinite(quantity) || quantity < 0;
+    });
+    if (invalidDetail) {
+      Swal.fire({
+        title: 'Cantidad recibida inválida',
+        text: `Ingrese un número mayor o igual a cero, con hasta ${this.decimalFormat.decimals()} decimales según la configuración de la empresa.`,
+        icon: 'warning',
+        customClass: { container: 'swal-alert' },
+      });
+      return;
+    }
     this.loading.set(true);
 
     const formValue = this.approvedForm.value;

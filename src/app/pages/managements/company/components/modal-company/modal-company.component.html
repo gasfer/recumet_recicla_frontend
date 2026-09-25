@@ -18,6 +18,11 @@
                 </div>
                 <div class="row mt-1">
                     <div class="col-sm-6 col-12">
+                        <label class="block mb-0">Decimales operativos<span class="text-danger">*</span></label>
+                        <p-inputNumber formControlName="decimals" [min]="0" [max]="4" [useGrouping]="false" [showButtons]="true"></p-inputNumber>
+                        <small class="text-muted">Vista previa: {{ decimalFormat.format(1234.5678) }}</small>
+                    </div>
+                    <div class="col-sm-6 col-12">
                         <label class="block mb-0">Nit<span class="text-danger">*</span>
                         </label>
                         <input
@@ -91,6 +96,11 @@
 
                     </div> -->
                 </div>
+            </div>
+            <div class="field mt-2">
+                <label class="block mb-0">Logo de empresa</label>
+                <input type="file" accept="image/png" (change)="changeLogo($event)" class="form-control" />
+                <small class="text-muted">Este logo se usará en los reportes impresos.</small>
             </div>
             <div class="field mt-2">
                 <label class="block mb-0">Dirección<span class="text-danger">*</span>

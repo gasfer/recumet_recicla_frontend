@@ -5,6 +5,7 @@ import { catchError, map, Observable, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ValidatorsService } from '../services/validators.service';
+import { DecimalFormatService } from '../services/decimal-format.service';
 const base_url = environment.base_url;	
 
 @Injectable({
@@ -16,7 +17,8 @@ export class AuthService {
   constructor( 
     private http:    HttpClient,
     private router:  Router,
-    private validatorsService:ValidatorsService
+    private validatorsService:ValidatorsService,
+    private decimalFormat: DecimalFormatService
   ) { }
   
   get token(): string {
@@ -37,6 +39,7 @@ export class AuthService {
           this.decimal.set(resp.company.decimals);
           localStorage.setItem('token', resp.token);
           this.validatorsService.decimalLength.set(this.decimal());
+          this.decimalFormat.setDecimals(this.decimal());
           this.validatorsService.user.set(this._user());
         })
       );
@@ -50,6 +53,7 @@ export class AuthService {
         this.validatorsService.user.set(this._user());
         this.decimal.set(resp.company.decimals);
         this.validatorsService.decimalLength.set(this.decimal())
+        this.decimalFormat.setDecimals(this.decimal());
         localStorage.setItem('token',resp.token);
         return true;
       }),

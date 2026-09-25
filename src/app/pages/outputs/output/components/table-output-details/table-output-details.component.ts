@@ -4,6 +4,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { ComponentsService } from 'src/app/core/services/components.service';
 import Swal from 'sweetalert2';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-table-output-details',
@@ -14,9 +15,8 @@ export class TableOutputDetailsComponent implements OnDestroy {
   outputService     = inject(OutputService);
   validatorsService = inject(ValidatorsService);
   componentsService = inject(ComponentsService);
+  decimalFormat     = inject(DecimalFormatService);
   totalSummary      = computed(() => this.outputService.detailSale().reduce((sum, product) => Number(sum) + Number(product.import), 0));
-  decimalLength = signal(this.validatorsService.decimalLength());
-  decimal       = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   product_temp  = signal<Product|undefined>(undefined);
 
   ngOnDestroy(): void {

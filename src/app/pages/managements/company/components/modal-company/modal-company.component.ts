@@ -4,6 +4,7 @@ import { CompaniesService } from '../../../services/companies.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-modal-company',
@@ -15,6 +16,7 @@ export class ModalCompanyComponent implements OnInit, OnDestroy{
   validatorsService = inject( ValidatorsService );
   companiesService  = inject( CompaniesService );
   fb                = inject( FormBuilder );
+  decimalFormat     = inject( DecimalFormatService );
   loading           = signal(false);
   companyForm: FormGroup = this.fb.group({
     id: [''],
@@ -26,9 +28,11 @@ export class ModalCompanyComponent implements OnInit, OnDestroy{
     cellphone: [''],
     logo: [''],
     address: [''],
+    decimals: [2, [Validators.required, Validators.min(0), Validators.max(4)]],
     status: [true],
   });
   isEditSub$!: Subscription;
+  private savedDecimals = 2;
 
   ngOnInit(): void {
     this.isEditSub$ = this.companiesService.editSubs.subscribe(resp => {
@@ -42,19 +46,30 @@ export class ModalCompanyComponent implements OnInit, OnDestroy{
         cellphone: resp.cellphone,
         logo: resp.logo,
         address: resp.address,
+        decimals: resp.decimals,
         status: resp.status,
       });
+      this.savedDecimals = resp.decimals;
     });
   }
   ngOnDestroy(): void {
     this.isEditSub$.unsubscribe();
   }
   
-  editCompany() {
+  async editCompany() {
     this.companyForm.markAllAsTouched();
     if(!this.companyForm.valid) return;
+    if (this.companyForm.value.decimals !== this.savedDecimals) {
+      const confirmation = await Swal.fire({
+        title: '¿Cambiar precisión operativa?',
+        text: 'Afectará operaciones y vistas posteriores; los movimientos históricos no se modificarán.',
+        icon: 'warning', showCancelButton: true, confirmButtonText: 'Guardar cambio', cancelButtonText: 'Cancelar',
+      });
+      if (!confirmation.isConfirmed) return;
+    }
     this.loading.set(true);
     this.companiesService.putUpdate(this.companyForm.value).subscribe({
+      next: () => this.decimalFormat.setDecimals(this.companyForm.value.decimals),
       complete: () => {
         this.companiesService.save$.next(true);
         this.loading.set(false);
@@ -71,6 +86,17 @@ export class ModalCompanyComponent implements OnInit, OnDestroy{
     });
   }
 
+  changeLogo(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    const id = this.companyForm.value.id;
+    if (!file || !id) return;
+    this.loading.set(true);
+    this.companiesService.uploadLogo(id, file).subscribe({
+      next: () => this.companiesService.save$.next(true),
+      complete: () => this.loading.set(false), error: () => this.loading.set(false),
+    });
+  }
+
   resetModal() { 
     this.companyForm.reset({
       id: '',
@@ -82,6 +108,7 @@ export class ModalCompanyComponent implements OnInit, OnDestroy{
       cellphone: '',
       logo: '',
       address: '',
+      decimals: 2,
       status: true,
     });
   }

@@ -26,9 +26,10 @@
                 <p-inputNumber
 
                     [size]="5"
-                    locale="en-US"
+                    [locale]="decimalFormat.locale"
                     mode="decimal"
-                    [minFractionDigits]="2"
+                    [minFractionDigits]="decimalFormat.decimals()"
+                    [maxFractionDigits]="decimalFormat.decimals()"
                     [showButtons]="true"
                     decrementButtonClass="p-button-secondary"
                     incrementButtonClass="p-button-primary"
@@ -52,7 +53,7 @@
     <ng-template pTemplate="footer">
         <tr>
             <th colspan="1" class="text-end text-white pt-1 background-primary"><h4>Total: &nbsp;</h4></th>
-            <th colspan="1" class="text-center text-white pt-1 background-primary"><h4>{{ totalSummary()  | number:decimal() }}</h4></th>
+            <th colspan="1" class="text-center text-white pt-1 background-primary"><h4>{{ totalSummary() | number:decimalFormat.digitsInfo }}</h4></th>
             <th colspan="1" class="background-primary"></th>
         </tr>
         <tr>

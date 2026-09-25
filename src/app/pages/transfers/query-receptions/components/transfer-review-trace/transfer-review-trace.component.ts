@@ -18,6 +18,7 @@ import { ProductsService } from 'src/app/pages/inventories/services/products.ser
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 import Swal from 'sweetalert2';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 interface DocumentRequirement {
   type?: string;
@@ -53,6 +54,7 @@ export class TransferReviewTraceComponent {
 
   readonly reviewService = inject(TransferReviewService);
   readonly validatorsService = inject(ValidatorsService);
+  readonly decimalFormat = inject(DecimalFormatService);
   readonly productsService = inject(ProductsService);
   private readonly fb = inject(FormBuilder);
 

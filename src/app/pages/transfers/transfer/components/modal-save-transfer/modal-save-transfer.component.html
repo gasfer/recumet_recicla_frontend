@@ -25,7 +25,7 @@
                                 <label class="block mb-0">Cantidad Productos</label><br>
                                 <p-tag [rounded]="true" [severity]="'success'"
                                     [icon]="'fa-solid fa-tag'"
-                                    value="{{totalSummaryItems() | number:decimal() }}"></p-tag>
+                                    value="{{totalSummaryItems() | number:decimalFormat.digitsInfo }}"></p-tag>
                             </div>
                         </div>
                     </div>

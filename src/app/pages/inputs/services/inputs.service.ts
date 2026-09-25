@@ -4,7 +4,7 @@ import { Product } from '../../inventories/interfaces/products.interface';
 import { Provider } from '../interfaces/provider.interface';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
 const base_url = environment.base_url;
@@ -26,6 +26,7 @@ export class InputsService {
   detailsSubs$: EventEmitter<Input> = new EventEmitter<Input>();
   types_registry = signal([{ name: 'SIN FICHA', code: 'SIN FICHA' }, { name: 'FICHA', code: 'FICHA' }, { name: 'BOLETA', code: 'BOLETA' }]);
   private http = inject(HttpClient);
+  private voucherPrintInProgress = false;
   referral_sources = signal([
     { name: 'Redes Sociales (Facebook, TikTok, Instagram)', code: 'REDES SOCIALES' },
     { name: 'Página Web RECUMET', code: 'PAGINA WEB RECUMET' },
@@ -43,6 +44,19 @@ export class InputsService {
     viewMoneyButtons: localStorage?.getItem('viewMoneyButtons') === 'false' ? false : true,
     printRoll: localStorage.getItem('printRoll') === 'true' ? true : false,
     printHalfPage: localStorage.getItem('printHalfPage') === 'true' ? true : false,
+  }
+
+  constructor() {
+    this.migrateLegacyPrintFormatPreference();
+  }
+
+  private migrateLegacyPrintFormatPreference(): void {
+    const preferenceVersion = 'input-print-format-v2';
+    if (localStorage.getItem(preferenceVersion) === 'true') return;
+
+    localStorage.setItem('printHalfPage', 'false');
+    localStorage.setItem(preferenceVersion, 'true');
+    this._inputConfig.printHalfPage = false;
   }
 
   getInputById(id_input: string): Observable<GetOneInput> {
@@ -258,6 +272,11 @@ getPurchaseReportPdf(params: FormSearchInputs, field_sort: string = 'date_vouche
   }
 
   printPdfReport(id_input: number) {
+    if (this.voucherPrintInProgress) {
+      return;
+    }
+
+    this.voucherPrintInProgress = true;
     Swal.fire({
       title: 'Generando Boleta!',
       html: `Estamos generando la boleta`,
@@ -267,7 +286,9 @@ getPurchaseReportPdf(params: FormSearchInputs, field_sort: string = 'date_vouche
       }
     });
 
-    this.getPrintVoucherInput(id_input).subscribe({
+    this.getPrintVoucherInput(id_input).pipe(
+      timeout({ first: 20000 })
+    ).subscribe({
       next: (data) => {
         const file = new Blob([data], { type: 'application/pdf' });
         const fileURL = URL.createObjectURL(file);
@@ -275,26 +296,57 @@ getPurchaseReportPdf(params: FormSearchInputs, field_sort: string = 'date_vouche
         const iframe = document.createElement('iframe');
         iframe.classList.add('app-print-frame');
         iframe.src = fileURL;
+        let cleanedUp = false;
+        let cleanupTimeout: ReturnType<typeof setTimeout> | undefined;
         const cleanupPrintFrame = () => {
+          if (cleanedUp) return;
+          cleanedUp = true;
+          if (cleanupTimeout) clearTimeout(cleanupTimeout);
           iframe.remove();
           URL.revokeObjectURL(fileURL);
+          this.voucherPrintInProgress = false;
         };
 
         iframe.onload = () => {
-          setTimeout(() => {
-            Swal.close();
-            iframe.contentWindow?.focus();
-            iframe.contentWindow?.print();
-            setTimeout(cleanupPrintFrame, 1000);
-          }, 1000); // Esperar 1 segundo con el loader activo para asegurar el renderizado
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const printWindow = iframe.contentWindow;
+              if (!printWindow) {
+                Swal.close();
+                cleanupPrintFrame();
+                void Swal.fire('No se pudo abrir la boleta', 'Intente imprimir nuevamente.', 'error');
+                return;
+              }
+
+              cleanupTimeout = setTimeout(cleanupPrintFrame, 60000);
+              try {
+                Swal.close();
+                printWindow.focus();
+                printWindow.print();
+              } catch (error) {
+                console.error('Error al abrir el diálogo de impresión:', error);
+                cleanupPrintFrame();
+                void Swal.fire('No se pudo abrir la impresión', 'Intente nuevamente.', 'error');
+              }
+            });
+          });
         };
-        iframe.onerror = cleanupPrintFrame;
+        iframe.onerror = () => {
+          Swal.close();
+          cleanupPrintFrame();
+          void Swal.fire('No se pudo cargar la boleta', 'Intente imprimir nuevamente.', 'error');
+        };
 
         document.body.appendChild(iframe);
       },
       error: (err) => {
+        this.voucherPrintInProgress = false;
         Swal.close();
         console.error('Error al generar la boleta:', err);
+        const message = err?.name === 'TimeoutError'
+          ? 'El servidor tardó demasiado en responder. Intente nuevamente; no es necesario reiniciar la página.'
+          : 'Verifique su conexión e intente nuevamente.';
+        void Swal.fire('No se pudo generar la boleta', message, 'error');
       }
     });
   }

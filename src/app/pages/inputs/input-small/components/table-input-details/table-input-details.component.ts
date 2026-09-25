@@ -4,6 +4,7 @@ import { Product } from 'src/app/pages/inventories/interfaces/products.interface
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ComponentsService } from 'src/app/core/services/components.service';
 import Swal from 'sweetalert2';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-table-input-details',
@@ -14,8 +15,7 @@ export class TableInputDetailsComponent implements OnDestroy {
   inputsService       = inject( InputsService );
   validatorsService   = inject( ValidatorsService );
   componentsService   = inject( ComponentsService );
-  decimalLength       = signal(this.validatorsService.decimalLength());
-  decimal             = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+  decimalFormat       = inject( DecimalFormatService );
   product_temp        = signal<Product|undefined>(undefined);
   totalSummary        = computed(() => this.inputsService.detailShopping().reduce( (sum, product) => Number(sum) + Number(product.import),0));
 

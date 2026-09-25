@@ -7,6 +7,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { TransfersService } from '../services/transfers.service';
 import { ClassifiedService } from '../../classifieds/services/classified.service';
 import { getSucursalBadgeStyle } from 'src/app/core/utils/sucursal-badge.util';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-reconciliations',
@@ -17,6 +18,7 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
   readonly getSucursalBadgeStyle = getSucursalBadgeStyle;
   readonly reviewService = inject(TransferReviewService);
   readonly validators = inject(ValidatorsService);
+  readonly decimalFormat = inject(DecimalFormatService);
   private readonly notifications = inject(NotificationsService);
   private readonly transfersService = inject(TransfersService);
   private readonly classifiedService = inject(ClassifiedService);

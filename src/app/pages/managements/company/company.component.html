@@ -1,12 +1,58 @@
-<div class="card shadow">
-    <p-toolbar>
-      <div class="p-toolbar-group-left">
-        <h4>EMPRESA</h4>
-      </div>
-    </p-toolbar>
-    <app-modal-company></app-modal-company>
-    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
-    <app-table responsiveStrategy="scroll" [cols]="cols()" [isCustomSort]="false"
-      [data]="companies()" [loading]="loading()">
-    </app-table>
-</div>
+<section *ngIf="company() as current; else loadingState" class="card shadow p-4">
+  <header class="mb-4">
+    <h4 class="mb-1">Configuración de la empresa</h4>
+    <p class="text-muted mb-0">Administre la información que se muestra en el sistema, reportes y comprobantes.</p>
+  </header>
+
+  <form [formGroup]="companyForm" class="row g-4">
+    <aside class="col-lg-4">
+      <article class="company-preview border rounded p-4 text-center">
+        <h5 class="text-start mb-4"><i class="fa-regular fa-eye me-2"></i>Previsualización</h5>
+        <div class="bg-white border rounded p-4">
+          <img [src]="logoUrl()" class="company-logo mb-3" alt="Logo de la empresa" onerror="this.style.display='none'">
+          <div *ngIf="!current.logo || current.logo === 'NONE'" class="display-5 text-success mb-3"><i class="fa-solid fa-building"></i></div>
+          <h4 class="mb-1">{{ companyForm.get('name')?.value }}</h4>
+          <p class="text-muted mb-4">{{ companyForm.get('razon_social')?.value }}</p>
+          <div class="row text-start border-top pt-3 small">
+            <div class="col-6"><span class="text-muted d-block">NIT</span><b>{{ companyForm.get('nit')?.value }}</b></div>
+            <div class="col-6"><span class="text-muted d-block">TELÉFONO</span><b>{{ companyForm.get('cellphone')?.value }}</b></div>
+          </div>
+          <div class="border-top mt-3 pt-3 text-start small">Impresión predeterminada: <b>{{ printFormat() === 'ROLL' ? 'Ticket 80 mm' : 'Media página / Carta' }}</b></div>
+        </div>
+        <div class="mt-3 text-start">
+          <label class="form-label">Logo de empresa</label>
+          <input type="file" accept="image/png" class="form-control" (change)="changeLogo($event)" [disabled]="uploadingLogo() || !validatorsService.withPermission('EMPRESA', 'update')">
+          <small class="text-muted">PNG. Este mismo logo se imprime en reportes y comprobantes.</small>
+        </div>
+      </article>
+    </aside>
+
+    <main class="col-lg-8">
+      <article class="border rounded p-4">
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">Nombre comercial *</label><input pInputText class="w-100" formControlName="name"></div>
+          <div class="col-md-6"><label class="form-label">Razón social *</label><input pInputText class="w-100" formControlName="razon_social"></div>
+          <div class="col-md-6"><label class="form-label">NIT *</label><input pInputText class="w-100" formControlName="nit"></div>
+          <div class="col-md-6"><label class="form-label">Teléfono</label><input pInputText class="w-100" formControlName="cellphone"></div>
+          <div class="col-12"><label class="form-label">Correo electrónico</label><input pInputText class="w-100" formControlName="email"></div>
+          <div class="col-12"><label class="form-label">Actividad</label><input pInputText class="w-100" formControlName="activity"></div>
+          <div class="col-12"><label class="form-label">Dirección</label><textarea pInputTextarea class="w-100" rows="2" formControlName="address"></textarea></div>
+        </div>
+
+        <hr class="my-4">
+        <h5><i class="fa-solid fa-calculator me-2 text-primary"></i>Configuración numérica</h5>
+        <div class="row align-items-end"><div class="col-md-4"><label class="form-label">Decimales para operar</label><p-inputNumber formControlName="decimals" [min]="0" [max]="4" [useGrouping]="false" [showButtons]="true"></p-inputNumber></div><div class="col-md-8"><span class="text-muted d-block">Vista previa del sistema</span><b class="fs-5">{{ decimalFormat.format(1234.5678) }}</b><small class="d-block text-muted">Coma decimal y punto de miles para kg, moneda, Stock y Kardex.</small></div></div>
+
+        <hr class="my-4">
+        <h5><i class="fa-solid fa-print me-2 text-primary"></i>Formato predeterminado de impresión</h5>
+        <p class="text-muted small">Define el formato inicial para comprobantes de compra.</p>
+        <div class="row g-3">
+          <div class="col-md-6"><button type="button" class="btn btn-outline-secondary w-100 print-format-option" [class.selected]="printFormat() === 'HALF_PAGE'" (click)="selectPrintFormat('HALF_PAGE')"><b><i class="fa-regular fa-file-lines me-2"></i>Media página / Carta (PDF)</b><span class="d-block small mt-2">Para documentos PDF y hojas membretadas.</span></button></div>
+          <div class="col-md-6"><button type="button" class="btn btn-outline-secondary w-100 print-format-option" [class.selected]="printFormat() === 'ROLL'" (click)="selectPrintFormat('ROLL')"><b><i class="fa-solid fa-receipt me-2"></i>Rollo / Ticket térmico (80 mm)</b><span class="d-block small mt-2">Para impresoras térmicas de punto de venta.</span></button></div>
+        </div>
+        <div class="text-end mt-4"><p-button label="Guardar configuración" icon="fa-solid fa-floppy-disk" [loading]="loading()" [disabled]="!validatorsService.withPermission('EMPRESA', 'update')" (onClick)="save()"></p-button></div>
+      </article>
+    </main>
+  </form>
+</section>
+<ng-template #loadingState><div class="card p-4 text-center">Cargando configuración general…</div></ng-template>

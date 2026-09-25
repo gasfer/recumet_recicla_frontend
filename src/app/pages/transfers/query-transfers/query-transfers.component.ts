@@ -11,6 +11,7 @@ import { TransfersService } from '../services/transfers.service';
 import { Sucursal } from '../../managements/interfaces/sucursales.interface';
 import { SucursalesService } from '../../managements/services/sucursales.service';
 import { isTransferCancellationAdministrator } from '../utils/transfer-cancellation-actions.util';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-query-transfers',
@@ -28,6 +29,7 @@ export class QueryTransfersComponent implements OnInit {
   validatorsService      = inject(ValidatorsService);
   transfersService       = inject(TransfersService);
   sucursalService        = inject(SucursalesService);
+  decimalFormat          = inject(DecimalFormatService);
 
   loading         = signal(false);
   rows            = signal(50);
@@ -35,9 +37,7 @@ export class QueryTransfersComponent implements OnInit {
   type            = signal('');
   query           = signal('');
   transfers       = signal<Transfers|undefined>(undefined);
-  pipeNumber      = new DecimalPipe('en-US');
-  decimalLength   = signal(this.validatorsService.decimalLength());
-  decimal         = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+  pipeNumber      = new DecimalPipe('es-BO');
   sucursales      = signal<Sucursal[]>([]);
 
   types_filtrado  = signal([
@@ -165,7 +165,7 @@ export class QueryTransfersComponent implements OnInit {
             },
           ] ;
           const totalQuantity = resp.transfers?.totals?.totalQuantity ?? 0;
-          this.cols()[3].footer =  this.pipeNumber.transform(totalQuantity,this.decimal()) ?? '0';
+          this.cols()[3].footer =  this.pipeNumber.transform(totalQuantity, this.decimalFormat.digitsInfo) ?? '0';
         });
       },
       complete: () => this.loading.set(false),
@@ -330,7 +330,7 @@ export class QueryTransfersComponent implements OnInit {
       { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:150px;', tooltip: true, isDate: true},
       { field: 'user_send.full_names', header: 'USUARIO ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isText:true},
       { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
-        tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+        tagValue: (val:number)=>  this.pipeNumber.transform(val, this.decimalFormat.digitsInfo),
         tagColor: (val:number)=> 'warning',
         tagIcon: (val:number)=>  'fas fa-boxes-stacked'
       },
@@ -344,7 +344,7 @@ export class QueryTransfersComponent implements OnInit {
       { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
       { field: 'date_received', header: 'FECHA RECEPCIÓN' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
       { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
-        tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+        tagValue: (val:number)=>  this.pipeNumber.transform(val, this.decimalFormat.digitsInfo),
         tagColor: (val:number)=> 'warning',
         tagIcon: (val:number)=>  'fas fa-boxes-stacked'
       },

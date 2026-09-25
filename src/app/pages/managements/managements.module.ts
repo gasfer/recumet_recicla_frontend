@@ -20,6 +20,8 @@ import { ModalChauffeursComponent } from './trasport-company/components/modal-ch
 import { ModalNewChauffeurComponent } from './trasport-company/components/modal-new-chauffeur/modal-new-chauffeur.component';
 import { ModalNewCargoTrucksComponent } from './trasport-company/components/modal-new-cargo-trucks/modal-new-cargo-trucks.component';
 import { ModalCargoTrucksComponent } from './trasport-company/components/modal-cargo-trucks/modal-cargo-trucks.component';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,9 @@ import { ModalCargoTrucksComponent } from './trasport-company/components/modal-c
   imports: [
     CommonModule,
     ManagementsRoutingModule,
-    PagesModule
+    PagesModule,
+    DialogModule,
+    InputTextareaModule,
   ]
 })
 export class ManagementsModule { }

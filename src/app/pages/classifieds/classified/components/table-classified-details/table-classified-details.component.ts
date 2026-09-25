@@ -3,6 +3,7 @@ import { ClassifiedService } from '../../../services/classified.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import Swal from 'sweetalert2';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-table-classified-details',
@@ -13,9 +14,8 @@ import Swal from 'sweetalert2';
 export class TableClassifiedDetailsComponent {
   classifiedService = inject( ClassifiedService );
   validatorsService = inject( ValidatorsService );
+  decimalFormat     = inject( DecimalFormatService );
   totalSummary      = computed(() => this.classifiedService.detailSale().reduce( (sum, product) => Number(sum) + Number(product.import),0));
-  decimalLength     = signal(this.validatorsService.decimalLength());
-  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   totalQuantityItems= computed(() => this.classifiedService.detailSale().reduce( (sum, product) => Number(sum) + Number(product.quantity),0));
 
   confirmClassified() {

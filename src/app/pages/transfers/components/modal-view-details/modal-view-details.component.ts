@@ -3,6 +3,7 @@ import { TransfersService } from '../../services/transfers.service';
 import { Subscription } from 'rxjs';
 import { Transfer } from '../../interfaces/transfers.interface';
 import { ValidatorsService } from 'src/app/services/validators.service';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-modal-view-details-transfer',
@@ -12,10 +13,9 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 export class ModalViewDetailsComponent implements OnInit, OnDestroy{
   transfersService  = inject(TransfersService);
   validatorsService = inject(ValidatorsService);
+  decimalFormat     = inject(DecimalFormatService);
   viewDetailsSub$!: Subscription;
   transfer          = signal<Transfer|undefined>(undefined);
-  decimalLength     = signal(this.validatorsService.decimalLength());
-  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   totalQuantityItems= computed(() => this.transfer()?.detailsTransfers.reduce( (sum, product) => Number(sum) + Number(product.quantity),0));
   totalQuantityReceivedItems = computed(() => this.transfer()?.detailsTransfers.reduce( (sum, product) => Number(sum) + Number(product.quantity_received !== null && product.quantity_received !== undefined ? product.quantity_received : product.quantity),0));
 

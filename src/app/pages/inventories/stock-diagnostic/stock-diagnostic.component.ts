@@ -8,6 +8,7 @@ import { Sucursal } from 'src/app/pages/managements/interfaces/sucursales.interf
 import { SucursalesService } from 'src/app/pages/managements/services/sucursales.service';
 import { KardexService } from '../services/kardex.service';
 import { ReconciliationUser, StockReconciliationCase, StockReconciliationFilters, StockReconciliationPreview, StockReconciliationStrategy } from '../interfaces/stock-reconciliation.interface';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({ selector: 'app-stock-diagnostic', templateUrl: './stock-diagnostic.component.html', styleUrls: ['./stock-diagnostic.component.scss'] })
 export class StockDiagnosticComponent implements OnInit {
@@ -16,6 +17,7 @@ export class StockDiagnosticComponent implements OnInit {
   private sucursalService = inject(SucursalesService);
   readonly authService = inject(AuthService);
   readonly validatorsService = inject(ValidatorsService);
+  readonly decimalFormat = inject(DecimalFormatService);
   loading = signal(false);
   saving = signal(false);
   cases = signal<StockReconciliationCase[]>([]);
@@ -141,7 +143,7 @@ export class StockDiagnosticComponent implements OnInit {
   confirmResolution(): void {
     const item = this.selectedCase(); const resultPreview = this.preview(); const authorizer = Number(this.formInvestigation.value.authorized_user_id);
     if (!item || !resultPreview || !authorizer) { Swal.fire('Falta autorización', 'Seleccione al usuario que autoriza esta regularización.', 'info'); return; }
-    Swal.fire({ title: `Confirmar ${resultPreview.registry_number || 'regularización individual'}`, html: `<b>${resultPreview.effect_label}</b><br>Stock: ${resultPreview.stock_before} → ${resultPreview.stock_after}<br>Kardex: ${resultPreview.kardex_before} → ${resultPreview.kardex_after}`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Confirmar', cancelButtonText: 'Cancelar' }).then(result => {
+    Swal.fire({ title: `Confirmar ${resultPreview.registry_number || 'regularización individual'}`, html: `<b>${resultPreview.effect_label}</b><br>Stock: ${this.decimalFormat.format(resultPreview.stock_before)} → ${this.decimalFormat.format(resultPreview.stock_after)}<br>Kardex: ${this.decimalFormat.format(resultPreview.kardex_before)} → ${this.decimalFormat.format(resultPreview.kardex_after)}`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Confirmar', cancelButtonText: 'Cancelar' }).then(result => {
       if (!result.isConfirmed) return;
       const key = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${item.id}`;
       this.saving.set(true);

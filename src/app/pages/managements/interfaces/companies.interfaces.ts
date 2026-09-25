@@ -26,6 +26,7 @@ export interface Company {
     cellphone:    number;
     logo:         string;
     address:      string;
+    decimals:     number;
     status:       boolean;
     options?:   Options[];
     createdAt:    string;

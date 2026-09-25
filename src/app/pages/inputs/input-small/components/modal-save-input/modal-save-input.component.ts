@@ -27,6 +27,7 @@ import {
   purchaseEditAuthorizationMessage,
   resolvePurchasePricingDecision,
 } from 'src/app/core/utils/purchase-pricing-authorization';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-modal-save-input',
@@ -39,6 +40,7 @@ export class ModalSaveInputComponent implements OnInit {
   bankService = inject(BankService);
   scalesService = inject(ScalesService);
   validatorsService = inject(ValidatorsService);
+  decimalFormat = inject(DecimalFormatService);
   componentService = inject(ComponentsService);
   fb = inject(FormBuilder);
   private authorizationApi = inject(PurchaseTraceabilityApiService);
@@ -58,8 +60,6 @@ export class ModalSaveInputComponent implements OnInit {
     { name: 'QR', code: 'QR' },
   ]);
   types_registry = computed(() => this.inputsService.types_registry());
-  decimalLength = signal(this.validatorsService.decimalLength());
-  decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   scalas = signal<Scale[]>([]);
   banks = signal<Bank[]>([]);
   blockedInputCredit = signal(false);

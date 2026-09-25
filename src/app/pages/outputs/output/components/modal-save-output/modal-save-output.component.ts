@@ -22,6 +22,7 @@ import {
   Chauffeur,
 } from 'src/app/pages/managements/interfaces/trasport_company.interfaces';
 import { ComponentsService } from 'src/app/core/services/components.service';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-modal-save-output',
@@ -33,6 +34,7 @@ export class ModalSaveOutputComponent implements OnInit {
   bankService = inject(BankService);
   scalesService = inject(ScalesService);
   validatorsService = inject(ValidatorsService);
+  decimalFormat = inject(DecimalFormatService);
   fb = inject(FormBuilder);
   authService = inject(AuthService);
   transportCompanyService = inject(TransportCompanyService);
@@ -77,8 +79,6 @@ export class ModalSaveOutputComponent implements OnInit {
     { name: '40 PIES ESTANDAR' },
     { name: '40 PIES HIGH CUBE' },
   ]);
-  decimalLength = signal(this.validatorsService.decimalLength());
-  decimal = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   scalas = signal<Scale[]>([]);
   chauffeurs = signal<Chauffeur[]>([]);
   allCargoTrucks = signal<CargoTruck[]>([]);

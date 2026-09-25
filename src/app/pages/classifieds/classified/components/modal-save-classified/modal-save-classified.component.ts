@@ -7,6 +7,7 @@ import { Scale } from 'src/app/pages/inventories/interfaces/scale.interface';
 import { NewClassifiedForm } from '../../../interfaces/classified.interface';
 import Swal from 'sweetalert2';
 import { ComponentsService } from 'src/app/core/services/components.service';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-modal-save-classified',
@@ -19,10 +20,9 @@ export class ModalSaveClassifiedComponent implements OnInit {
   componentService  = inject( ComponentsService );
   scalesService     = inject( ScalesService );
   validatorsService = inject( ValidatorsService );
+  decimalFormat     = inject( DecimalFormatService );
   fb                = inject( FormBuilder );
   types_registry    = computed(() => this.classifiedService.types_registry());
-  decimalLength     = signal(this.validatorsService.decimalLength());
-  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   scales            = signal<Scale[]>([]);
   loading           = signal(false);
   productSelect     = computed(() => this.classifiedService.productSelect());

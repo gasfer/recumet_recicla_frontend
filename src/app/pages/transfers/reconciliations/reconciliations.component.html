@@ -1,140 +1,26 @@
 <section class="card shadow mb-4 reconciliation-page">
   <div class="card-body">
-    <div class="reconciliation-heading">
-      <div>
-        <h3><b>CONCILIACIÓN DE TRASLADOS</b></h3>
-        <p>Consulte las diferencias de peso y las conciliaciones vinculadas a cada boleta de recepción.</p>
-      </div>
-      <p-tag value="Operaciones auditadas" severity="info"></p-tag>
-    </div>
-
-    <div class="warning-panel" role="alert">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-      <span>Previsualice el expediente antes de revertir. Los documentos automáticos serán anulados y el Kardex se compensará sin borrar la auditoría.</span>
-    </div>
-
+    <div class="reconciliation-heading"><div><h3><b>CONCILIACIÓN DE TRASLADOS</b></h3><p>Consulte las diferencias de peso y las conciliaciones vinculadas a cada boleta de recepción.</p></div><p-tag value="Operaciones auditadas" severity="info"></p-tag></div>
+    <div class="warning-panel" role="alert"><i class="fa-solid fa-triangle-exclamation"></i><span>Previsualice el expediente antes de revertir. Los documentos automáticos serán anulados y el Kardex se compensará sin borrar la auditoría.</span></div>
     <div class="filter-grid">
-      <label>Boleta o producto
-        <input pInputText [(ngModel)]="query" placeholder="Ej. TRAS00326 o MP-AL" (keyup.enter)="load(1)" />
-      </label>
-      <label>Estado de diferencia
-        <p-dropdown [options]="differenceStatuses" [(ngModel)]="differenceStatus" optionLabel="label" optionValue="value"></p-dropdown>
-      </label>
-      <label>Tipo de diferencia
-        <p-dropdown [options]="differenceTypes" [(ngModel)]="differenceType" optionLabel="label" optionValue="value"></p-dropdown>
-      </label>
-      <label>Estado
-        <p-dropdown [options]="statuses" [(ngModel)]="status" optionLabel="label" optionValue="value"></p-dropdown>
-      </label>
-      <label>Desde
-        <input pInputText type="date" [(ngModel)]="dateFrom" />
-      </label>
-      <label>Hasta
-        <input pInputText type="date" [(ngModel)]="dateTo" />
-      </label>
-      <div class="filter-actions">
-        <button pButton type="button" label="Buscar" icon="fa-solid fa-magnifying-glass" (click)="load(1)"></button>
-        <button pButton type="button" label="Limpiar" icon="fa-solid fa-broom" class="p-button-outlined" (click)="clearFilters()"></button>
-      </div>
+      <label>Boleta o producto<input pInputText [(ngModel)]="query" placeholder="Ej. TRAS00326 o MP-AL" (keyup.enter)="load(1)" /></label>
+      <label>Estado de diferencia<p-dropdown [options]="differenceStatuses" [(ngModel)]="differenceStatus" optionLabel="label" optionValue="value"></p-dropdown></label>
+      <label>Tipo de diferencia<p-dropdown [options]="differenceTypes" [(ngModel)]="differenceType" optionLabel="label" optionValue="value"></p-dropdown></label>
+      <label>Estado<p-dropdown [options]="statuses" [(ngModel)]="status" optionLabel="label" optionValue="value"></p-dropdown></label>
+      <label>Desde<input pInputText type="date" [(ngModel)]="dateFrom" /></label><label>Hasta<input pInputText type="date" [(ngModel)]="dateTo" /></label>
+      <div class="filter-actions"><button pButton type="button" label="Buscar" icon="fa-solid fa-magnifying-glass" (click)="load(1)"></button><button pButton type="button" label="Limpiar" icon="fa-solid fa-broom" class="p-button-outlined" (click)="clearFilters()"></button></div>
     </div>
   </div>
-
   <section class="difference-panel" aria-labelledby="reception-differences-title">
-    <div class="difference-panel__heading">
-      <div><h4 id="reception-differences-title">Diferencias de recepción</h4><small>Se muestran primero los casos pendientes del almacén seleccionado.</small></div>
-      <div class="difference-counters"><span>Pendientes <b>{{ differenceSummary().pendiente }}</b></span><span>Parciales <b>{{ differenceSummary().parcial }}</b></span><span>Resueltas <b>{{ differenceSummary().resuelta }}</b></span></div>
-    </div>
+    <div class="difference-panel__heading"><div><h4 id="reception-differences-title">Diferencias de recepción</h4><small>Se muestran primero los casos pendientes del almacén seleccionado.</small></div><div class="difference-counters"><span>Pendientes <b>{{ differenceSummary().pendiente }}</b></span><span>Parciales <b>{{ differenceSummary().parcial }}</b></span><span>Resueltas <b>{{ differenceSummary().resuelta }}</b></span></div></div>
     <div *ngIf="differenceRows().length === 0" class="difference-empty">No hay diferencias para los filtros seleccionados.</div>
-    <article *ngFor="let group of differenceRows()" class="difference-group">
-      <header>
-        <div class="d-flex align-items-center flex-wrap gap-2">
-          <b>{{ group.transfer.cod }}</b>
-          <small class="text-muted">{{ group.transfer.date_received | date:'dd/MM/yyyy HH:mm' }}</small>
-          <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(group.transfer.sucursal_received?.name)">
-            <i class="fa-solid fa-location-dot me-1" aria-hidden="true"></i>{{ group.transfer.sucursal_received?.name }}
-          </span>
-          <small class="text-muted">/ {{ group.transfer.storage_received?.name }}</small>
-        </div>
-        <button pButton type="button" icon="fa-solid fa-eye" label="Ver trazabilidad" class="p-button-sm p-button-outlined" (click)="previewDifference(group)"></button>
-      </header>
-      <div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Producto</th><th>Enviado</th><th>Recibido</th><th>Diferencia</th><th>Tipo</th><th>Estado</th><th>Situación</th></tr></thead><tbody>
-        <tr *ngFor="let row of group.items"><td><b>{{ row.item.product.cod }}</b><small>{{ row.item.product.name }}</small></td><td>{{ row.item.sent | number:'1.4-4' }}</td><td>{{ row.item.received | number:'1.4-4' }}</td><td>{{ row.item.difference_expected | number:'1.4-4' }} kg</td><td>{{ differenceTypeLabel(row.item.difference_type) }}</td><td><p-tag [value]="row.status" [severity]="differenceStatusSeverity(row.status)"></p-tag></td><td><span>{{ row.action?.label || row.message }}</span><small *ngIf="row.has_review_note">Expediente o movimiento relacionado disponible.</small></td></tr>
-      </tbody></table></div>
-    </article>
+    <article *ngFor="let group of differenceRows()" class="difference-group"><header><div class="d-flex align-items-center flex-wrap gap-2"><b>{{ group.transfer.cod }}</b><small class="text-muted">{{ group.transfer.date_received | date:'dd/MM/yyyy HH:mm' }}</small><span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(group.transfer.sucursal_received?.name)"><i class="fa-solid fa-location-dot me-1" aria-hidden="true"></i>{{ group.transfer.sucursal_received?.name }}</span><small class="text-muted">/ {{ group.transfer.storage_received?.name }}</small></div><button pButton type="button" icon="fa-solid fa-eye" label="Ver trazabilidad" class="p-button-sm p-button-outlined" (click)="previewDifference(group)"></button></header><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Producto</th><th>Enviado</th><th>Recibido</th><th>Diferencia</th><th>Tipo</th><th>Estado</th><th>Situación</th></tr></thead><tbody><tr *ngFor="let row of group.items"><td><b>{{ row.item.product.cod }}</b><small>{{ row.item.product.name }}</small></td><td>{{ row.item.sent | number:decimalFormat.digitsInfo }}</td><td>{{ row.item.received | number:decimalFormat.digitsInfo }}</td><td>{{ row.item.difference_expected | number:decimalFormat.digitsInfo }} kg</td><td>{{ differenceTypeLabel(row.item.difference_type) }}</td><td><p-tag [value]="row.status" [severity]="differenceStatusSeverity(row.status)"></p-tag></td><td><span>{{ row.action?.label || row.message }}</span><small *ngIf="row.has_review_note">Expediente o movimiento relacionado disponible.</small></td></tr></tbody></table></div></article>
   </section>
-
-  <p-table [value]="rows()" [loading]="loading()" [lazy]="true" [paginator]="true"
-    [rows]="pageSize()" [totalRecords]="total()" [rowsPerPageOptions]="[10,25,50]"
-    (onLazyLoad)="paginate($event)" responsiveLayout="scroll">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Traslado</th><th>Fecha recepción</th><th>Boletas conciliadas</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-group let-rowIndex="rowIndex">
-      <tr class="group-row" [ngClass]="'group-color-' + (rowIndex % 4)">
-        <td class="transfer-cell">
-          <b>{{ group.transfer?.cod }}</b>
-          <small>{{ group.reconciliations.length }} {{ group.reconciliations.length === 1 ? 'boleta' : 'boletas' }}</small>
-        </td>
-        <td>{{ group.transfer?.date_received | date:'dd/MM/yyyy HH:mm' }}</td>
-        <td>
-          <div class="reconciliation-list">
-            <article *ngFor="let note of group.reconciliations; let noteIndex = index" class="reconciliation-item"
-              [class.reconciliation-item--alternate]="noteIndex % 2 === 1"
-              [class.deleted-row]="note.management_status === 'ELIMINADA'">
-              <div class="voucher-summary">
-                <span class="voucher-summary__label">Boleta de revisión</span>
-                <b>{{ note.registry_number }}</b>
-                <p-tag [value]="note.management_status" [severity]="statusSeverity(note.management_status)"></p-tag>
-              </div>
-              <div class="product-summary">
-                <span>{{ note.registeredProduct?.cod }} - {{ note.registeredProduct?.name }}</span>
-                <small>{{ note.type === 'FALTANTE_PARA_REVISION' ? 'Faltante' : 'Excedente' }} · {{ note.assignedUser?.full_names || 'Sin asignar' }}</small>
-                <small>{{ note.details.length }} {{ note.details.length === 1 ? 'ítem' : 'ítems' }} · Diferencia total: {{ totalDifference(note) | number:'1.4-4' }} kg</small>
-                <small *ngFor="let operation of automaticOperations(note)">
-                  Automática · {{ operation.operation_type }} #{{ operation.operation_id }} · {{ operation.operation_status }}
-                  · {{ operation.movementLinks?.length || 0 }} movimientos vinculados
-                </small>
-              </div>
-              <div class="status-summary">
-                <span>Estado</span>
-                <p-tag [value]="reconciliationStatusLabel(note)" [severity]="reconciliationStatusSeverity(note)"></p-tag>
-                <small>{{ note.management_status === 'ACTIVA' ? 'Operación vigente' : note.management_status }}</small>
-              </div>
-              <div class="note-actions">
-                <button pButton type="button" icon="fa-solid fa-eye" class="p-button-rounded p-button-info p-button-sm"
-                  [disabled]="processingNoteId() === note.id"
-                  [pTooltip]="'Ver expediente de ' + note.registry_number" [attr.aria-label]="'Ver expediente de ' + note.registry_number"
-                  (click)="preview(note)"></button>
-                <button *ngFor="let operation of automaticOperations(note)"
-                  pButton type="button" icon="fa-solid fa-file-pdf" class="p-button-rounded p-button-info p-button-sm"
-                  [disabled]="processingNoteId() === note.id"
-                  [pTooltip]="'Previsualizar ' + operation.operation_type + ' #' + operation.operation_id"
-                  [attr.aria-label]="'Previsualizar documento operativo ' + operation.operation_id"
-                  (click)="printOperation(operation)"></button>
-                <button *ngIf="note.management_status === 'ACTIVA' && validators.withPermission('TRANSFER_REVIEW','delete')"
-                  pButton type="button" icon="fa-solid fa-rotate-left" class="p-button-rounded p-button-warning p-button-sm"
-                  [disabled]="processingNoteId() === note.id"
-                  [pTooltip]="'Revertir ' + note.registry_number" [attr.aria-label]="'Revertir ' + note.registry_number" (click)="reverse(note)"></button>
-                <button *ngIf="note.management_status === 'REVERTIDA' && validators.withPermission('TRANSFER_REVIEW','delete')"
-                  pButton type="button" icon="fa-solid fa-trash" class="p-button-rounded p-button-danger p-button-sm"
-                  [disabled]="processingNoteId() === note.id"
-                  [pTooltip]="'Eliminar ' + note.registry_number" [attr.aria-label]="'Eliminar ' + note.registry_number" (click)="remove(note)"></button>
-              </div>
-            </article>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr><td colspan="3" class="empty-state">
-        <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
-        <strong>No se encontraron conciliaciones</strong>
-        <span>Pruebe limpiando los filtros o seleccione otro rango de fechas.</span>
-      </td></tr>
-    </ng-template>
+  <p-table [value]="rows()" [loading]="loading()" [lazy]="true" [paginator]="true" [rows]="pageSize()" [totalRecords]="total()" [rowsPerPageOptions]="[10,25,50]" (onLazyLoad)="paginate($event)" responsiveLayout="scroll">
+    <ng-template pTemplate="header"><tr><th>Traslado</th><th>Fecha recepción</th><th>Boletas conciliadas</th></tr></ng-template>
+    <ng-template pTemplate="body" let-group let-rowIndex="rowIndex"><tr class="group-row" [ngClass]="'group-color-' + (rowIndex % 4)"><td class="transfer-cell"><b>{{ group.transfer?.cod }}</b><small>{{ group.reconciliations.length }} {{ group.reconciliations.length === 1 ? 'boleta' : 'boletas' }}</small></td><td>{{ group.transfer?.date_received | date:'dd/MM/yyyy HH:mm' }}</td><td><div class="reconciliation-list"><article *ngFor="let note of group.reconciliations; let noteIndex = index" class="reconciliation-item" [class.reconciliation-item--alternate]="noteIndex % 2 === 1" [class.deleted-row]="note.management_status === 'ELIMINADA'"><div class="voucher-summary"><span class="voucher-summary__label">Boleta de revisión</span><b>{{ note.registry_number }}</b><p-tag [value]="note.management_status" [severity]="statusSeverity(note.management_status)"></p-tag></div><div class="product-summary"><span>{{ note.registeredProduct?.cod }} - {{ note.registeredProduct?.name }}</span><small>{{ note.type === 'FALTANTE_PARA_REVISION' ? 'Faltante' : 'Excedente' }} · {{ note.assignedUser?.full_names || 'Sin asignar' }}</small><small>{{ note.details.length }} {{ note.details.length === 1 ? 'ítem' : 'ítems' }} · Diferencia total: {{ totalDifference(note) | number:decimalFormat.digitsInfo }} kg</small><small *ngFor="let operation of automaticOperations(note)">Automática · {{ operation.operation_type }} #{{ operation.operation_id }} · {{ operation.operation_status }} · {{ operation.movementLinks?.length || 0 }} movimientos vinculados</small></div><div class="status-summary"><span>Estado</span><p-tag [value]="reconciliationStatusLabel(note)" [severity]="reconciliationStatusSeverity(note)"></p-tag><small>{{ note.management_status === 'ACTIVA' ? 'Operación vigente' : note.management_status }}</small></div><div class="note-actions"><button pButton type="button" icon="fa-solid fa-eye" class="p-button-rounded p-button-info p-button-sm" [disabled]="processingNoteId() === note.id" [pTooltip]="'Ver expediente de ' + note.registry_number" [attr.aria-label]="'Ver expediente de ' + note.registry_number" (click)="preview(note)"></button><button *ngFor="let operation of automaticOperations(note)" pButton type="button" icon="fa-solid fa-file-pdf" class="p-button-rounded p-button-info p-button-sm" [disabled]="processingNoteId() === note.id" [pTooltip]="'Previsualizar ' + operation.operation_type + ' #' + operation.operation_id" [attr.aria-label]="'Previsualizar documento operativo ' + operation.operation_id" (click)="printOperation(operation)"></button><button *ngIf="note.management_status === 'ACTIVA' && validators.withPermission('TRANSFER_REVIEW','delete')" pButton type="button" icon="fa-solid fa-rotate-left" class="p-button-rounded p-button-warning p-button-sm" [disabled]="processingNoteId() === note.id" [pTooltip]="'Revertir ' + note.registry_number" [attr.aria-label]="'Revertir ' + note.registry_number" (click)="reverse(note)"></button><button *ngIf="note.management_status === 'REVERTIDA' && validators.withPermission('TRANSFER_REVIEW','delete')" pButton type="button" icon="fa-solid fa-trash" class="p-button-rounded p-button-danger p-button-sm" [disabled]="processingNoteId() === note.id" [pTooltip]="'Eliminar ' + note.registry_number" [attr.aria-label]="'Eliminar ' + note.registry_number" (click)="remove(note)"></button></div></article></div></td></tr></ng-template>
+    <ng-template pTemplate="emptymessage"><tr><td colspan="3" class="empty-state"><i class="fa-solid fa-folder-open" aria-hidden="true"></i><strong>No se encontraron conciliaciones</strong><span>Pruebe limpiando los filtros o seleccione otro rango de fechas.</span></td></tr></ng-template>
   </p-table>
 </section>
-
 <app-transfer-review-trace (reviewChanged)="load(1)"></app-transfer-review-trace>
+

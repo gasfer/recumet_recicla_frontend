@@ -119,36 +119,13 @@
                       ></p-dropdown>
                     </div>
                     <div class="col-12 col-sm-6">
-                      <label class="block mb-0">Area / Almacén</label>
-                      <p-dropdown
-                        [options]="validatorsService.storages()"
-                        placeholder="Selecciona un almacén"
-                        optionLabel="name"
-                        optionValue="id"
-                        [showClear]="true"
-                        appendTo="body"
-                        [filter]="true"
-                        filterBy="name"
-                        [virtualScrollItemSize]="38"
-                        [lazy]="true"
-                        formControlName="id_storage"
-                        [class.ng-dirty]="
-                          validatorsService.inputValid('id_storage', formReport)
-                        "
-                      ></p-dropdown>
-                      <small
-                        *ngIf="
-                          validatorsService.inputValid('id_storage', formReport)
-                        "
-                        class="p-error block"
-                      >
-                        {{
-                          validatorsService.inputValidMessage(
-                            "id_storage",
-                            formReport
-                          )
-                        }}
-                      </small>
+                      <label class="block mb-0">Almacén activo</label>
+                      <p-tag
+                        severity="info"
+                        icon="fa-solid fa-warehouse"
+                        [value]="activeStorageName()"
+                      ></p-tag>
+                      <small class="block mt-1 text-muted">Se toma del almacén seleccionado en la cabecera.</small>
                     </div>
                   </div>
                 </div>

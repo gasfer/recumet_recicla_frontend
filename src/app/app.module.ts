@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { registerLocaleData } from '@angular/common';
 import localeEsBo from '@angular/common/locales/es-BO';
@@ -35,6 +35,7 @@ export function createTranslateLoader(http: HttpClient): any {
     LayoutsModule
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: 'es-BO' },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,

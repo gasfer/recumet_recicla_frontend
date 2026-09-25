@@ -53,6 +53,8 @@
 .difference-panel h4 { margin: 0; color: #1e3a5f; }.difference-panel small, .difference-group small { display: block; color: #64748b; }
 .difference-counters { display: flex; flex-wrap: wrap; gap: .5rem; }.difference-counters span { padding: .25rem .5rem; border-radius: .3rem; background: #e2e8f0; color: #334155; font-size: .78rem; }
 .difference-group { margin-top: .75rem; border: 1px solid #dbe3ee; border-left: .3rem solid #f59e0b; border-radius: .45rem; overflow: hidden; background: #fff; }.difference-group header { padding: .65rem .75rem; background: #fffbeb; }.difference-group td { vertical-align: middle; }.difference-group td small { max-width: 28rem; }.difference-empty { padding: 1.25rem; text-align: center; color: #64748b; }
+.group-actions, .transfer-summary { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.transfer-summary { padding: .5rem .75rem; color: #475569; font-size: .86rem; }.transfer-summary span { border-radius: .3rem; background: #f1f5f9; padding: .15rem .4rem; }.transfer-summary strong { margin-left: auto; color: #1e3a5f; }
 .reconciliation-page :is(.p-button, .p-dropdown, input) { border-radius: .5rem; }.reconciliation-page :is(.p-table-thead > tr > th, .p-datatable-thead > tr > th) { background: #414a60; color: #fff; font-size: .78em; font-weight: 800; }
 
 @media (max-width: 1200px) {
@@ -61,6 +63,7 @@
   .reconciliation-item { grid-template-columns: minmax(8rem, .8fr) minmax(15rem, 2fr) minmax(8rem, .8fr); }
   .note-actions { grid-column: 1 / -1; justify-content: flex-end; padding-top: .45rem; border-top: 1px solid #e5e7eb; }
   .difference-panel__heading { align-items: flex-start; flex-direction: column; }
+  .group-actions { justify-content: flex-end; }
 }
 
 @media (max-width: 768px) {
@@ -69,6 +72,7 @@
   .product-summary { grid-column: 1 / -1; }
   .status-summary { justify-self: end; }
   .note-actions { grid-column: 1 / -1; }
+  .difference-group header { align-items: flex-start; flex-direction: column; }.group-actions { width: 100%; justify-content: flex-start; }
 }
 
 @media (max-width: 576px) {
@@ -79,4 +83,5 @@
   .product-summary, .note-actions { grid-column: auto; }
   .status-summary { justify-self: start; }
   .note-actions { justify-content: flex-start; }
+  .transfer-summary strong { width: 100%; margin-left: 0; }
 }

@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { TransfersService } from '../../../services/transfers.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-table-transfer-details',
@@ -12,9 +13,8 @@ import { Product } from 'src/app/pages/inventories/interfaces/products.interface
 export class TableTransferDetailsComponent  {
   transfersService     = inject( TransfersService );
   validatorsService    = inject( ValidatorsService );
+  decimalFormat        = inject( DecimalFormatService );
   totalSummary         = computed(() => this.transfersService.detailTransfer().reduce( (sum, product) => Number(sum) + Number(product.quantity),0));
-  decimalLength        = signal(this.validatorsService.decimalLength());
-  decimal              = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
 
 
   updateQuantityProduct(event : any, product : Product){

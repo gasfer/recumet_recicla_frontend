@@ -9,6 +9,7 @@ import { ComponentsService } from 'src/app/core/services/components.service';
 import { ScalesService } from 'src/app/pages/inventories/services/scales.service';
 import { Scale } from 'src/app/pages/inventories/interfaces/scale.interface';
 import { InputsService } from 'src/app/pages/inputs/services/inputs.service';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-modal-save-transfer',
@@ -24,8 +25,7 @@ export class ModalSaveTransferComponent {
   inputsService     = inject( InputsService );
   scalesService     = inject( ScalesService );
   fb                = inject( FormBuilder );
-  decimalLength     = signal(this.validatorsService.decimalLength());
-  decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+  decimalFormat     = inject( DecimalFormatService );
   loading           = signal(false);
   totalSummary      = computed(() => this.transfersService.detailTransfer().reduce( (sum, product) => Number(sum) + Number(product.import),0));
   totalSummaryItems = computed(() => this.transfersService.detailTransfer().reduce( (sum, product) => Number(sum) + Number(product.quantity),0));

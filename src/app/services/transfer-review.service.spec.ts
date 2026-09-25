@@ -93,4 +93,5 @@ describe('TransferReviewService automatic context loading', () => {
     expect(service.stockKardexIrregularities().length).toBe(1);
     expect(service.showAlertDialog()).toBeTrue();
   });
+
 });

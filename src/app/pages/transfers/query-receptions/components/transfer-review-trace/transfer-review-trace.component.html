@@ -28,8 +28,8 @@
       <div class="trace-section-heading">
         <i class="fa-solid fa-truck-ramp-box" aria-hidden="true"></i>
         <div>
-          <h4>Recepción y conciliación por artículo</h4>
-          <p>Una sola vista para comparar lo enviado, lo recibido y el estado de cada diferencia.</p>
+          <h4>Resumen de conciliación</h4>
+          <p>Abra el expediente para revisar cada diferencia y su evidencia; no se repiten los datos de recepción.</p>
         </div>
       </div>
       <div *ngIf="trace.historical_difference_reconciliation as reconciliation" class="historical-summary" aria-label="Resumen de conciliación">
@@ -42,7 +42,7 @@
         <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
         {{ historicalNotice() }}
       </div>
-      <div class="table-responsive">
+      <div *ngIf="!trace.reviewNotes.length" class="table-responsive">
         <table class="table table-sm align-middle trace-products-table">
           <thead>
             <tr>
@@ -62,19 +62,19 @@
               <ng-container *ngIf="historicalItemForProduct(trace.historical_difference_reconciliation, detail.product.id) as historicalItem">
                 <tr [class.historical-row--warning]="historicalItem.reconciliation_status !== 'COMPLETO'" [class.historical-row--complete]="historicalItem.reconciliation_status === 'COMPLETO'">
                   <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td>
-                  <td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:'1.4-4' }}</td>
-                  <td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:'1.4-4') }}</td>
-                  <td class="text-center">{{ detail.quantity_normal_received | number:'1.4-4' }}</td>
+                  <td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:decimalFormat.digitsInfo }}</td>
+                  <td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:decimalFormat.digitsInfo) }}</td>
+                  <td class="text-center">{{ detail.quantity_normal_received | number:decimalFormat.digitsInfo }}</td>
                   <td class="text-center" [class.text-danger]="historicalItem.difference_type === 'FALTANTE'" [class.text-warning]="historicalItem.difference_type === 'EXCEDENTE'">
                     <strong>{{ historicalTypeLabel(historicalItem.difference_type) }}</strong>
-                    <small *ngIf="historicalItem.difference_expected">{{ historicalItem.difference_expected | number:'1.4-4' }} kg</small>
+                    <small *ngIf="historicalItem.difference_expected">{{ historicalItem.difference_expected | number:decimalFormat.digitsInfo }} kg</small>
                   </td>
                   <td class="text-center">
                     <ng-container *ngIf="historicalItem.difference_type === 'FALTANTE'; else historicalRetained">
-                      <strong class="text-danger">Faltante: {{ historicalItem.difference_expected | number:'1.4-4' }}</strong>
-                      <small class="d-block">Físico disponible: {{ detail.quantity_available | number:'1.4-4' }}</small>
+                      <strong class="text-danger">Faltante: {{ historicalItem.difference_expected | number:decimalFormat.digitsInfo }}</strong>
+                      <small class="d-block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small>
                     </ng-container>
-                    <ng-template #historicalRetained>{{ detail.quantity_held | number:'1.4-4' }} / {{ detail.quantity_available | number:'1.4-4' }}</ng-template>
+                    <ng-template #historicalRetained>{{ detail.quantity_held | number:decimalFormat.digitsInfo }} / {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</ng-template>
                   </td>
                   <td class="text-center"><span [class.text-danger]="detail.inventory_integrity !== 'INTEGRA'">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</span></td>
                   <td class="text-center">
@@ -93,7 +93,7 @@
                 </td></tr>
               </ng-container>
               <tr *ngIf="!historicalItemForProduct(trace.historical_difference_reconciliation, detail.product.id)">
-                <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td><td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:'1.4-4' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:'1.4-4') }}</td><td class="text-center">{{ detail.quantity_normal_received | number:'1.4-4' }}</td><td class="text-center">{{ detail.quantity_blocked_difference | number:'1.4-4' }}</td><td class="text-center"><ng-container *ngIf="detail.is_shortage; else standardRetained"><strong class="text-danger">Faltante: {{ detail.quantity_shortage_pending | number:'1.4-4' }}</strong><small class="d-block">Físico disponible: {{ detail.quantity_available | number:'1.4-4' }}</small></ng-container><ng-template #standardRetained>{{ detail.quantity_held | number:'1.4-4' }} / {{ detail.quantity_available | number:'1.4-4' }}</ng-template></td><td class="text-center">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : 'Contabilizado' }}</td><td>{{ detail.observation || '—' }}</td>
+                <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td><td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:decimalFormat.digitsInfo) }}</td><td class="text-center">{{ detail.quantity_normal_received | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ detail.quantity_blocked_difference | number:decimalFormat.digitsInfo }}</td><td class="text-center"><ng-container *ngIf="detail.is_shortage; else standardRetained"><strong class="text-danger">Faltante: {{ detail.quantity_shortage_pending | number:decimalFormat.digitsInfo }}</strong><small class="d-block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small></ng-container><ng-template #standardRetained>{{ detail.quantity_held | number:decimalFormat.digitsInfo }} / {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</ng-template></td><td class="text-center">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : 'Contabilizado' }}</td><td>{{ detail.observation || '—' }}</td>
               </tr>
             </ng-container>
           </tbody>
@@ -145,12 +145,12 @@
                     </div>
                     <div *ngIf="historicalPreview() as preview" class="historical-preview">
                       <div><span>Producto</span><strong>{{ preview.product?.cod }} · {{ preview.product?.name }}</strong></div>
-                      <div><span>Cantidad</span><strong>{{ preview.action.quantity | number:'1.4-4' }} kg</strong></div>
-                      <div><span>Stock</span><strong>{{ preview.inventory?.before_stock | number:'1.4-4' }} → {{ preview.inventory?.after_stock | number:'1.4-4' }}</strong></div>
-                      <div><span>Kardex</span><strong>{{ preview.inventory?.before_kardex | number:'1.4-4' }} → {{ preview.inventory?.after_kardex | number:'1.4-4' }}</strong></div>
+                      <div><span>Cantidad</span><strong>{{ preview.action.quantity | number:decimalFormat.digitsInfo }} kg</strong></div>
+                      <div><span>Stock</span><strong>{{ preview.inventory?.before_stock | number:decimalFormat.digitsInfo }} → {{ preview.inventory?.after_stock | number:decimalFormat.digitsInfo }}</strong></div>
+                      <div><span>Kardex</span><strong>{{ preview.inventory?.before_kardex | number:decimalFormat.digitsInfo }} → {{ preview.inventory?.after_kardex | number:decimalFormat.digitsInfo }}</strong></div>
                       <div class="historical-preview__allocations">
                         <span>Ítems cubiertos</span>
-                        <strong *ngFor="let allocation of preview.allocations">{{ allocation.product.cod }}: {{ allocation.quantity | number:'1.4-4' }} kg</strong>
+                        <strong *ngFor="let allocation of preview.allocations">{{ allocation.product.cod }}: {{ allocation.quantity | number:decimalFormat.digitsInfo }} kg</strong>
                       </div>
                     </div>
                     <div *ngIf="historicalError()" class="field-error" role="alert">{{ historicalError() }}</div>
@@ -175,20 +175,7 @@
           <p>La conciliación debe permanecer inconclusa hasta verificar el inventario físico y regularizar el saldo correcto.</p>
         </div>
       </div>
-      <div class="table-responsive">
-        <table class="table table-sm align-middle stock-kardex-table">
-          <thead><tr><th>Producto</th><th>Stock físico</th><th>Kardex</th><th>Diferencia</th><th>Diagnóstico</th></tr></thead>
-          <tbody>
-            <tr *ngFor="let item of trace.stock_kardex_irregularities">
-              <td><strong>{{ item.cod }}</strong><span>{{ item.name }}</span></td>
-              <td>{{ item.physical_stock | number:'1.4-4' }}</td>
-              <td>{{ item.kardex_balance | number:'1.4-4' }}</td>
-              <td><strong>{{ item.physical_kardex_difference > 0 ? '+' : '' }}{{ item.physical_kardex_difference | number:'1.4-4' }}</strong></td>
-              <td>{{ irregularityLabel(item.difference_direction) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <p class="mb-0">{{ trace.stock_kardex_irregularities.length }} producto(s) requieren revisar su saldo independiente antes de cerrar. <a routerLink="/inventories/stock-diagnostic" (click)="setVisibility(false)">Abrir Ajuste diferencia Stock–Kardex</a></p>
     </section>
 
     <p *ngIf="reviewService.historyOnly() && !trace.reviewNotes.length">Esta recepción no tiene conciliaciones registradas.</p>
@@ -308,10 +295,10 @@
                 [class.review-detail--completed]="detail.reconciliation_status === 'COMPLETADO'">
                 <td><input *ngIf="detail.reconciliation_status !== 'COMPLETADO'" type="checkbox" [checked]="isDetailSelected(detail)" (change)="toggleDetailSelection(detail, $any($event.target).checked)" [attr.aria-label]="'Seleccionar ' + detail.product.cod"></td><td>{{ detail.product.cod }} · {{ detail.product.name }}</td>
                 <td>{{ differenceLabel(note.type) }}</td>
-                <td>{{ detail.quantity_difference | number:'1.4-4' }}</td>
-                <td class="review-detail__remaining">{{ remainingQuantity(detail) | number:'1.4-4' }}</td>
+                <td>{{ detail.quantity_difference | number:decimalFormat.digitsInfo }}</td>
+                <td class="review-detail__remaining">{{ remainingQuantity(detail) | number:decimalFormat.digitsInfo }}</td>
                 <td>
-                  <span class="review-retained-label">{{ retainedQuantity(detail) | number:'1.4-4' }}</span>
+                  <span class="review-retained-label">{{ retainedQuantity(detail) | number:decimalFormat.digitsInfo }}</span>
                 </td>
                 <td>
                   <span class="review-detail-status" [class.review-detail-status--completed]="detail.reconciliation_status === 'COMPLETADO'">
@@ -341,7 +328,7 @@
                     <div class="documentary-close-panel__header">
                       <div>
                         <span>Resolver ahora</span>
-                        <h5>{{ detail.product.cod }} · {{ differenceLabel(note.type) }} {{ remainingQuantity(detail) | number:'1.4-4' }}</h5>
+                        <h5>{{ detail.product.cod }} · {{ differenceLabel(note.type) }} {{ remainingQuantity(detail) | number:decimalFormat.digitsInfo }}</h5>
                         <p>Confirme la diferencia o cree automáticamente la devolución o clasificación correspondiente.</p>
                       </div>
                       <div class="documentary-close-panel__no-inventory">
@@ -454,18 +441,18 @@
                     </section>
                     <section *ngIf="automaticPreview() as preview" class="documentary-case-action">
                       <i class="fa-solid fa-route" aria-hidden="true"></i>
-                      <div><strong>Previsualización autoritativa</strong><p>{{ selectedAutomaticSolution()?.warning || preview.warning }}</p><small>Pendiente: {{ preview.pending_quantity | number:'1.4-4' }}</small></div>
+                      <div><strong>Previsualización autoritativa</strong><p>{{ selectedAutomaticSolution()?.warning || preview.warning }}</p><small>Pendiente: {{ preview.pending_quantity | number:decimalFormat.digitsInfo }}</small></div>
                     </section>
                     <section *ngIf="automaticPreview()?.verification as verification" class="documentary-case-action" [class.review-form-error]="verification.is_blocked">
                       <i class="fa-solid" [class.fa-circle-check]="!verification.is_blocked" [class.fa-lock]="verification.is_blocked" aria-hidden="true"></i>
                       <div>
                         <strong>{{ registrationVerificationLabel(verification.status) }}</strong>
                         <p>{{ verification.message }}</p>
-                        <small>Boleta: {{ verification.transfer.number || verification.transfer.registry_number || 'Sin correlativo' }} · {{ verification.difference.quantity_expected | number:'1.4-4' }} kg</small>
+                        <small>Boleta: {{ verification.transfer.number || verification.transfer.registry_number || 'Sin correlativo' }} · {{ verification.difference.quantity_expected | number:decimalFormat.digitsInfo }} kg</small>
                         <small>Producto de registro: {{ verification.registration.product?.cod || 'Pendiente de definir' }} · {{ verification.registration.location.sucursal || 'Sin sucursal' }} / {{ verification.registration.location.storage || 'Sin almacén' }}</small>
-                        <small *ngIf="verification.registration.note_number">Nota: {{ verification.registration.note_number }} · Registrado: {{ verification.registration.quantity_registered | number:'1.4-4' }} kg · Pendiente: {{ verification.registration.quantity_pending | number:'1.4-4' }} kg</small>
+                        <small *ngIf="verification.registration.note_number">Nota: {{ verification.registration.note_number }} · Registrado: {{ verification.registration.quantity_registered | number:decimalFormat.digitsInfo }} kg · Pendiente: {{ verification.registration.quantity_pending | number:decimalFormat.digitsInfo }} kg</small>
                         <small *ngIf="!verification.registration.note_number && verification.registration.note_assigned_on_confirmation">El correlativo NTR se asignará únicamente al confirmar.</small>
-                        <small *ngIf="verification.inventory as inventory">Stock: {{ inventory.before_stock | number:'1.4-4' }} → {{ inventory.after_stock | number:'1.4-4' }} · Kardex: {{ inventory.before_kardex | number:'1.4-4' }} → {{ inventory.after_kardex | number:'1.4-4' }}</small>
+                        <small *ngIf="verification.inventory as inventory">Stock: {{ inventory.before_stock | number:decimalFormat.digitsInfo }} → {{ inventory.after_stock | number:decimalFormat.digitsInfo }} · Kardex: {{ inventory.before_kardex | number:decimalFormat.digitsInfo }} → {{ inventory.after_kardex | number:decimalFormat.digitsInfo }}</small>
                       </div>
                     </section>
                     <section *ngIf="selectedAutomaticSolution() as solution" class="documentary-case-action">
@@ -478,7 +465,7 @@
                         <p *ngIf="solution.operation_type === 'KARDEX_ENTRY' || solution.operation_type === 'WASTE_ENTRY'">
                           Motivo: Error de registro en la recepción. La boleta y la fecha de recepción se vincularán automáticamente.
                         </p>
-                        <small>Cantidad: {{ solution.quantity | number:'1.4-4' }}</small>
+                        <small>Cantidad: {{ solution.quantity | number:decimalFormat.digitsInfo }}</small>
                       </div>
                     </section>
 
@@ -540,14 +527,14 @@
       <section *ngIf="reviewService.historyOnly() && note.resolutionActions?.length" class="trace-section">
         <h4>Operaciones realizadas</h4>
         <article *ngFor="let action of note.resolutionActions" class="review-history">
-          <strong>{{ historyActionLabel(action.strategy) }}</strong> · {{ action.quantity | number:'1.4-4' }} kg
+          <strong>{{ historyActionLabel(action.strategy) }}</strong> · {{ action.quantity | number:decimalFormat.digitsInfo }} kg
           <p>Realizó: {{ action.user?.full_names || 'No registrado' }} · Autorizó: {{ action.approvedUser?.full_names || 'No registrado' }}</p>
           <p>{{ action.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ historyActionLabel(action.operation_status || '') }}</p>
           <p *ngIf="action.observations">{{ action.observations }}</p>
           <p *ngIf="action.operation_id">Documento: {{ historyActionLabel(action.operation_type || '') }} #{{ action.operation_id }}</p>
           <p *ngIf="action.reversal_reason">Motivo de reversión: {{ action.reversal_reason }}</p>
           <div *ngFor="let link of action.movementLinks">
-            <p *ngIf="link.kardexMovement as movement">Kardex: {{ movement.type === 'INPUT' ? 'Ingreso' : 'Salida' }} · {{ movement.quantity | number:'1.4-4' }} kg · {{ movement.details }}</p>
+            <p *ngIf="link.kardexMovement as movement">Kardex: {{ movement.type === 'INPUT' ? 'Ingreso' : 'Salida' }} · {{ movement.quantity | number:decimalFormat.digitsInfo }} kg · {{ movement.details }}</p>
           </div>
         </article>
       </section>
@@ -583,3 +570,4 @@
     </section>
   </ng-container>
 </p-dialog>
+

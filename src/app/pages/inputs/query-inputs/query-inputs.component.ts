@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MenuItem } from 'primeng/api';
 import { ValidatorsService } from 'src/app/services/validators.service';
@@ -164,6 +164,7 @@ export class QueryInputsComponent implements OnInit {
     {name: 'USUARIO', code: 'user.full_names'},
   ]);
   loading      = signal(false);
+  private hasObservedWorkContext = false;
   traceabilityVisible = signal(false);
   traceabilityData = signal<any>(null);
   rows         = signal(50);
@@ -201,11 +202,27 @@ export class QueryInputsComponent implements OnInit {
   ]);
 
   referral_sources = computed(this.inputsService.referral_sources);
+  activeStorageName = computed(() => (
+    this.validatorsService.storages().find(storage => storage.id === this.validatorsService.id_storage())?.name || 'Sin almacén activo'
+  ));
   types = signal<{name:string, code:string}[]>([]);
   txtSearchProvider      = signal('');
   suggestedProvider      = signal<Provider[]>([]);
   loadingSearchProvider  = signal(false);
   providerSelect         = signal<Provider|undefined>(undefined);
+
+  constructor() {
+    effect(() => {
+      const idSucursal = this.validatorsService.id_sucursal();
+      const idStorage = this.validatorsService.id_storage();
+      if (!idSucursal || !idStorage) return;
+      if (!this.hasObservedWorkContext) {
+        this.hasObservedWorkContext = true;
+        return;
+      }
+      untracked(() => this.getAllAndSearchInputs(1, this.rows(), this.type(), this.query()));
+    });
+  }
 
   ngOnInit(): void {
     this.getAllAndSearchInputs(1,this.rows());
@@ -294,9 +311,11 @@ export class QueryInputsComponent implements OnInit {
   }
 
   getAllAndSearchInputs(page: number, limit: number,type: string = '', query: string = '') {
-    this.formReport.get('id_sucursal')?.setValue(this.validatorsService.id_sucursal());
+    const idSucursal = this.validatorsService.id_sucursal();
+    const idStorage = this.validatorsService.id_storage();
+    this.formReport.patchValue({ id_sucursal: idSucursal, id_storage: idStorage }, { emitEvent: false });
     this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
+    if(!this.formReport.valid || !idSucursal || !idStorage) return;
     this.formParamsByForm();
     if(!query) {this.loading.set(true);} //not loading in search
     this.inputsService.getAllAndSearchInputs(page,limit,this.paramsSearch(),type,query,this.fieldSort(),this.order()).subscribe({
@@ -451,13 +470,13 @@ export class QueryInputsComponent implements OnInit {
 
   formParamsByForm() {
     this.paramsSearch.update((params)=> {
-      const { filterBy, id_sucursal,id_storage,type_registry, id_provider, dates, referral_sources, id_type_provider, old_customer, with_pickup} = this.formReport.value;
+      const { filterBy, type_registry, id_provider, dates, referral_sources, id_type_provider, old_customer, with_pickup} = this.formReport.value;
       const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
         type_registry: type_registry ? type_registry : '',
-        id_sucursal: id_sucursal ? id_sucursal : '',
-        id_storage : id_storage ? id_storage : '',
+        id_sucursal: String(this.validatorsService.id_sucursal() || ''),
+        id_storage: String(this.validatorsService.id_storage() || ''),
         id_provider: id_provider ? id_provider : '',
         type_pay: params.type_pay,
         status: params.status,

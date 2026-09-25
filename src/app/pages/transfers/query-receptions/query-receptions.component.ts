@@ -14,6 +14,7 @@ import { TransferReviewService } from 'src/app/services/transfer-review.service'
 import { ActivatedRoute } from '@angular/router';
 import { getSucursalBadgeStyle } from 'src/app/core/utils/sucursal-badge.util';
 import { canCancelReception, isTransferCancellationAdministrator, receptionCancellationMessage } from '../utils/transfer-cancellation-actions.util';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 @Component({
   selector: 'app-query-receptions',
@@ -28,6 +29,7 @@ export class QueryReceptionsComponent implements OnInit {
   sucursalService        = inject(SucursalesService);
   reviewService          = inject(TransferReviewService);
   route                  = inject(ActivatedRoute);
+  decimalFormat          = inject(DecimalFormatService);
 
   loading         = signal(false);
   rows            = signal(50);
@@ -35,9 +37,7 @@ export class QueryReceptionsComponent implements OnInit {
   type            = signal('');
   query           = signal('');
   transfers       = signal<Transfers|undefined>(undefined);
-  pipeNumber      = new DecimalPipe('en-US');
-  decimalLength   = signal(this.validatorsService.decimalLength());
-  decimal         = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
+  pipeNumber      = new DecimalPipe('es-BO');
   sucursales      = signal<Sucursal[]>([]);
   id_transfer     = signal(0);
 
@@ -405,7 +405,7 @@ export class QueryReceptionsComponent implements OnInit {
       { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:150px;', tooltip: true, isDate: true},
       { field: 'user_send.full_names', header: 'USUARIO ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isText:true},
       { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
-        tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
+        tagValue: (val:number)=>  this.pipeNumber.transform(val, this.decimalFormat.digitsInfo),
         tagColor: (val:number)=> 'primary',
         tagIcon: (val:number)=>  ''
       },
@@ -446,7 +446,7 @@ export class QueryReceptionsComponent implements OnInit {
 
   private transferredWeight(transfer: Transfer): InfoStackItem[] {
     const kilograms = Number(transfer.total_quantity || 0) || transfer.detailsTransfers.reduce((total, detail) => total + Number(detail.quantity || 0), 0);
-    const formatted = this.pipeNumber.transform(kilograms, this.decimal()) || '0';
+    const formatted = this.pipeNumber.transform(kilograms, this.decimalFormat.digitsInfo) || '0';
     return [{ icon: 'fa-solid fa-weight-hanging', label: 'Trasladado', value: kilograms >= 1000 ? `${formatted} kg · ${(kilograms / 1000).toFixed(2)} t` : `${formatted} kg`, tone: 'warning' }];
   }
 
@@ -459,7 +459,7 @@ export class QueryReceptionsComponent implements OnInit {
         pending_items: note.pending_items,
         details: note.details
           .filter((detail) => detail.reconciliation_status !== 'COMPLETADO')
-          .map((detail) => `${detail.product?.cod || 'Producto'} · ${type}: ${this.pipeNumber.transform(detail.quantity_remaining, this.decimal()) || detail.quantity_remaining}`),
+          .map((detail) => `${detail.product?.cod || 'Producto'} · ${type}: ${this.pipeNumber.transform(detail.quantity_remaining, this.decimalFormat.digitsInfo) || detail.quantity_remaining}`),
         open: () => this.reviewNote(transfer.id, note.id),
       };
     });

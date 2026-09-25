@@ -20,9 +20,10 @@
                         <p-inputNumber
 
                             [size]="5"
-                            locale="en-US"
+                            [locale]="decimalFormat.locale"
                             mode="decimal"
-                            [minFractionDigits]="2"
+                            [minFractionDigits]="decimalFormat.decimals()"
+                            [maxFractionDigits]="decimalFormat.decimals()"
                             [showButtons]="false"
                             decrementButtonClass="p-button-secondary"
                             incrementButtonClass="p-button-primary"

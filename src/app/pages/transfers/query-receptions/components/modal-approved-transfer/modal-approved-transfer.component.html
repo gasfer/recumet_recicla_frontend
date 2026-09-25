@@ -95,20 +95,20 @@
                                 <p class="text-muted m-0 app-u-font-size-10px-0d5be05">{{ group.get('product_cod')?.value }}</p>
                             </td>
                            <td class="text-center align-middle text-dark fw-medium">
-                              {{ group.get('quantity_sent')?.value | number: '1.2-2' }}
+                              {{ group.get('quantity_sent')?.value | number: decimalFormat.digitsInfo }}
                           </td>
                             <td class="text-center align-middle">
                                 <p-inputNumber
                                     formControlName="quantity_received"
 
-                                    locale="en-US"
+                                    [locale]="decimalFormat.locale"
                                     mode="decimal"
-                                    [minFractionDigits]="2"
-                                    [maxFractionDigits]="2"
+                                    [minFractionDigits]="decimalFormat.decimals()"
+                                    [maxFractionDigits]="decimalFormat.decimals()"
                                     [showButtons]="true"
                                     decrementButtonClass="p-button-secondary"
                                     incrementButtonClass="p-button-primary"
-                                    placeholder="0.00"
+                                    [placeholder]="decimalFormat.format(0)"
                                     [min]="0"
                                     [class.ng-dirty]="group.get('quantity_received')?.invalid" class="app-u-height-38px-3b84911 app-u-width-100-0466783"></p-inputNumber>
                             </td>
@@ -128,10 +128,10 @@
                                 </small>
                             </td>
                             <td class="text-center align-middle text-dark">
-                                {{ getExcedente(group) | number:'1.4-4' }}
+                                {{ getExcedente(group) | number:decimalFormat.digitsInfo }}
                             </td>
                             <td class="text-center align-middle text-dark">
-                                {{ getFaltante(group) | number:'1.4-4' }}
+                                {{ getFaltante(group) | number:decimalFormat.digitsInfo }}
                             </td>
                             <td class="text-center align-middle">
                                 <span [class]="getDiffClass(group)">
@@ -144,17 +144,17 @@
                         <tr class="table-light fw-bold">
                             <td class="text-end">TOTALES</td>
                             <td class="text-center text-dark">
-                                {{ getTotalSent() | number: decimal() }}
+                                {{ getTotalSent() | number:decimalFormat.digitsInfo }}
                             </td>
                             <td class="text-center text-dark">
-                                {{ getTotalReceived() | number: decimal() }}
+                                {{ getTotalReceived() | number:decimalFormat.digitsInfo }}
                             </td>
                             <td></td>
                             <td class="text-center text-dark">
-                                {{ getTotalExcedente() | number:'1.4-4' }}
+                                {{ getTotalExcedente() | number:decimalFormat.digitsInfo }}
                             </td>
                             <td class="text-center text-dark">
-                                {{ getTotalFaltante() | number:'1.4-4' }}
+                                {{ getTotalFaltante() | number:decimalFormat.digitsInfo }}
                             </td>
                             <td class="text-center">
                                 <span [class]="getTotalDiffClass()">

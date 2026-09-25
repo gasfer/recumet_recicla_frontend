@@ -283,6 +283,7 @@ const baseUrl = environment.base_url;
 
 @Injectable({ providedIn: 'root' })
 export class TransferReviewService {
+  readonly reconciliationAlertEnabled = environment.features.transferReconciliationAlert;
   private readonly http = inject(HttpClient);
   private readonly validators = inject(ValidatorsService);
   private readonly notifications = inject(NotificationsService);
@@ -523,6 +524,7 @@ export class TransferReviewService {
       .pipe(map(({ differences }) => differences));
   }
 
+
   private normalizeReconciliationGroups(
     page: ReconciliationPage | { data: TransferReview[]; total: number; page: number; limit: number },
   ): ReconciliationPage {
@@ -578,6 +580,10 @@ export class TransferReviewService {
   }
 
   setAlertVisibility(visible: boolean): void {
+    if (!this.reconciliationAlertEnabled) {
+      this.showAlertDialog.set(false);
+      return;
+    }
     if (!visible) {
       this.closeAlerts();
       return;
@@ -603,10 +609,10 @@ export class TransferReviewService {
 
     const dismissedIds = this.dismissedReviewIdsByContext.get(contextKey) || new Set<number>();
     const dismissedIrregularities = this.dismissedIrregularitiesByContext.get(contextKey) || new Set<string>();
-    this.showAlertDialog.set(
+    this.showAlertDialog.set(this.reconciliationAlertEnabled && (
       reviews.some(({ id }) => !dismissedIds.has(id))
-      || irregularities.some((item) => !dismissedIrregularities.has(this.irregularityKey(item))),
-    );
+      || irregularities.some((item) => !dismissedIrregularities.has(this.irregularityKey(item)))
+    ));
   }
 
   private irregularityKey(item: StockKardexIrregularity): string {

@@ -51,9 +51,9 @@
                             <strong>{{detail.product.name}}</strong>
                             <p class="text-muted m-0">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
                         </td>
-                        <td>{{detail.quantity  | number:decimal() }}</td>
+                        <td>{{detail.quantity  | number:decimalFormat.digitsInfo }}</td>
                         <td *ngIf="transfer()?.status === 'RECEIVED'">
-                            {{ (detail.quantity_received !== null && detail.quantity_received !== undefined ? detail.quantity_received : detail.quantity) | number:decimal() }}
+                            {{ (detail.quantity_received !== null && detail.quantity_received !== undefined ? detail.quantity_received : detail.quantity) | number:decimalFormat.digitsInfo }}
                         </td>
                         <td *ngIf="transfer()?.status === 'RECEIVED'">
                             <span class="text-dark">{{ detail.observation || '-' }}</span>
@@ -64,10 +64,10 @@
 					<tr>
 						<td  class="table-active fw-bold">TOTAL</td>
                         <td id="total">
-                            <p-tag [severity]="'warning'"  value="{{totalQuantityItems() | number:decimal()}}" [rounded]="true" class="app-u-font-size-15px-de00808"></p-tag>
+                            <p-tag [severity]="'warning'"  value="{{totalQuantityItems() | number:decimalFormat.digitsInfo}}" [rounded]="true" class="app-u-font-size-15px-de00808"></p-tag>
                         </td>
                         <td *ngIf="transfer()?.status === 'RECEIVED'">
-                            <p-tag [severity]="'success'"  value="{{totalQuantityReceivedItems() | number:decimal()}}" [rounded]="true" class="app-u-font-size-15px-de00808"></p-tag>
+                            <p-tag [severity]="'success'"  value="{{totalQuantityReceivedItems() | number:decimalFormat.digitsInfo}}" [rounded]="true" class="app-u-font-size-15px-de00808"></p-tag>
                         </td>
                         <td *ngIf="transfer()?.status === 'RECEIVED'" class="table-active"></td>
 					</tr>
