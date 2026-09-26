@@ -742,8 +742,8 @@ const dataPdfReturnAbonoAccountPayableVoucher = (abono_account_payable,accountsP
     {
         margin: [0,40,0,0],
         columns: [
-            { text: `-----------------------------------------`, bold:true, style: 'text', alignment: 'center' },
-            { text: `-----------------------------------------`, bold:true, style: 'text',alignment: 'center' },
+            { text: `........................................`, bold:true, style: 'text', alignment: 'center' },
+            { text: `........................................`, bold:true, style: 'text',alignment: 'center' },
         ]
     },
     {
@@ -1148,7 +1148,7 @@ const dataPdfReturnAccountPayableVoucher = (accountsPayable, decimal) => [
         alignment: "center",
       },
       {
-        text: `-----------------------------------------`,
+        text: `........................................`,
         bold: true,
         style: "text",
         alignment: "center",

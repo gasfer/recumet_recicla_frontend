@@ -424,8 +424,8 @@ const addFooterAbonosMultiple = (abono_account_payable,saldoTotal,decimal) => {
         {
             margin: [0,40,0,0],
             columns: [
-                { text: `-----------------------------------------`, bold:true, style: 'text', alignment: 'center' },
-                { text: `-----------------------------------------`, bold:true, style: 'text',alignment: 'center' },
+                { text: `........................................`, bold:true, style: 'text', alignment: 'center' },
+                { text: `........................................`, bold:true, style: 'text',alignment: 'center' },
             ]
         },
         {
