@@ -16,7 +16,7 @@ ARG BASE_URL
 
 # Si se proporciona BASE_URL, sobreescribir environment.ts con el nuevo valor antes de compilar
 RUN if [ -n "$BASE_URL" ]; then \
-      echo "export const environment = { base_url: '$BASE_URL' };" > src/environments/environment.ts; \
+      echo "export const environment = { base_url: '$BASE_URL', features: { transferReconciliationAlert: false } };" > src/environments/environment.ts; \
     fi
 
 RUN npm run build
