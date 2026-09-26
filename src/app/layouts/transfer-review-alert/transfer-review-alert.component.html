@@ -56,11 +56,11 @@
         <div>
           <strong>{{ review.transfer.cod }} · {{ review.registry_number }}</strong>
           <div class="review-sucursal-route">
-            <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(review.transfer.sucursal_send?.name)">
+            <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(review.transfer.sucursal_send.name)">
               <i class="fa-solid fa-building me-1" aria-hidden="true"></i>{{ review.transfer.sucursal_send.name }}
             </span>
             <i class="fa-solid fa-arrow-right-long route-arrow" aria-hidden="true"></i>
-            <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(review.transfer.sucursal_received?.name)">
+            <span class="sucursal-badge" [ngStyle]="getSucursalBadgeStyle(review.transfer.sucursal_received.name)">
               <i class="fa-solid fa-location-dot me-1" aria-hidden="true"></i>{{ review.transfer.sucursal_received.name }}
             </span>
           </div>
