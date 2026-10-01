@@ -1,0 +1,7 @@
+.title { display:flex; justify-content:space-between; align-items:center; }
+.provider-info-tabs { display:flex; overflow:auto; margin:0 -1rem 1rem; padding:0 1rem; background:#fff; border-bottom:1px solid #e2e8f0; }
+.provider-info-tabs button { flex:1; min-width:180px; border:0; border-bottom:2px solid transparent; background:#fff; padding:.75rem 1rem; color:#64748b; font-size:.73rem; font-weight:700; white-space:nowrap; }
+.provider-info-tabs button.active { border-color:#059669; background:#ecfdf5; color:#047857; }
+.provider-info-tabs button i { margin-right:.4rem; }
+.provider-info-tabs button b { margin-left:.35rem; padding:.08rem .38rem; border-radius:999px; background:#059669; color:#fff; }
+.provider-info-pane { display:grid; gap:.75rem; }

@@ -1,7 +1,7 @@
 import { Injectable, signal,  } from '@angular/core';
 import { Auth, FormAuth, User } from './auth.interface';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap, timeout } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ValidatorsService } from '../services/validators.service';
@@ -48,6 +48,7 @@ export class AuthService {
   refresh() : Observable<boolean> {
     return this.http.post<Auth>(`${base_url}/auth/refresh`,{},this.headerToken)
     .pipe(
+      timeout({ first: 8000 }),
       map( (resp: Auth) => {
         this._user.set(resp.user);
         this.validatorsService.user.set(this._user());
@@ -61,6 +62,34 @@ export class AuthService {
         return of(false);
       })
     );
+  }
+
+  getProfile(): Observable<{ ok: boolean, user: User }> {
+    return this.http.get<{ ok: boolean, user: User }>(`${base_url}/user/profile/me`, this.headerToken)
+      .pipe(
+        tap(resp => {
+          if (resp?.ok && resp.user) {
+            this._user.set(resp.user);
+            this.validatorsService.user.set(this._user());
+          }
+        })
+      );
+  }
+
+  updateProfile(data: { cellphone?: number | string, photo?: string }): Observable<{ ok: boolean, msg: string, user: User }> {
+    return this.http.put<{ ok: boolean, msg: string, user: User }>(`${base_url}/user/profile/me`, data, this.headerToken)
+      .pipe(
+        tap(resp => {
+          if (resp?.ok && resp.user) {
+            this._user.set(resp.user);
+            this.validatorsService.user.set(this._user());
+          }
+        })
+      );
+  }
+
+  changePassword(data: { current_password: string, new_password: string, confirm_password?: string }): Observable<{ ok: boolean, msg: string }> {
+    return this.http.put<{ ok: boolean, msg: string }>(`${base_url}/user/profile/change-password`, data, this.headerToken);
   }
 
   logout() {

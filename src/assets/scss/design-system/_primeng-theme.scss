@@ -1,0 +1,458 @@
+/* ============================================================
+   RECUMET RECICLA — PrimeNG Theme Override
+   Sobrescribe saga-blue con la paleta Emerald/Slate del Design System.
+   Garantiza encabezados oscuros (#0F172A), texto blanco, alto contraste
+   en botones e iconos semánticos según función.
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   1. INPUTTEXT — Campos de texto
+   ---------------------------------------------------------- */
+body .p-inputtext {
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+  font-family: var(--font-family-base) !important;
+  font-size: var(--font-size-base) !important;
+  border-radius: var(--radius-md) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+body .p-inputtext:enabled:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15) !important;
+  outline: none !important;
+}
+
+body .p-inputtext:enabled:hover {
+  border-color: #94a3b8 !important;
+}
+
+/* ----------------------------------------------------------
+   2. DROPDOWN
+   ---------------------------------------------------------- */
+body .p-dropdown {
+  border-color: var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-family-base) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+body .p-dropdown:not(.p-disabled):hover {
+  border-color: #94a3b8 !important;
+}
+
+body .p-dropdown:not(.p-disabled).p-focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15) !important;
+  outline: none !important;
+}
+
+body .p-dropdown .p-dropdown-label {
+  color: var(--color-text) !important;
+  font-family: var(--font-family-base) !important;
+  font-size: var(--font-size-base) !important;
+}
+
+body .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+
+body .p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover {
+  background-color: var(--color-bg) !important;
+}
+
+/* ----------------------------------------------------------
+   3. CALENDAR (DatePicker)
+   ---------------------------------------------------------- */
+body .p-calendar .p-inputtext {
+  border-color: var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+body .p-datepicker .p-datepicker-header {
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
+  border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+}
+
+body .p-datepicker .p-datepicker-header .p-datepicker-title button,
+body .p-datepicker .p-datepicker-header .p-link {
+  color: #FFFFFF !important;
+}
+
+body .p-datepicker table td > span.p-highlight {
+  background-color: var(--color-primary) !important;
+  color: #FFFFFF !important;
+  border-radius: var(--radius-md) !important;
+}
+
+body .p-datepicker table td > span:hover {
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+}
+
+/* ----------------------------------------------------------
+   4. DIALOG / MODAL (Diseño unificado estándar RECUMET)
+   ---------------------------------------------------------- */
+body .p-dialog {
+  border-radius: 1rem !important;
+  overflow: hidden !important;
+  border: 1px solid #1E293B !important;
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.3), 0 8px 10px -6px rgba(15, 23, 42, 0.25) !important;
+}
+
+body .p-dialog .p-dialog-header {
+  background-color: #0F172A !important; /* Header oscuro consistente */
+  color: #FFFFFF !important;
+  border-top-left-radius: 1rem !important;
+  border-top-right-radius: 1rem !important;
+  padding: 1.15rem 1.5rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body .p-dialog .p-dialog-header .p-dialog-title {
+  color: #FFFFFF !important;
+  font-family: var(--font-family-base) !important;
+  font-weight: 700 !important;
+  font-size: 1.15rem !important;
+  letter-spacing: -0.01em;
+}
+
+body .p-dialog .p-dialog-header .p-dialog-header-icons {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+body .p-dialog .p-dialog-header .p-dialog-header-icon {
+  color: #FFFFFF !important;
+  background-color: rgba(5, 150, 105, 0.25) !important; /* Fondo emerald suave para el botón de cerrar */
+  border-radius: 9999px !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+body .p-dialog .p-dialog-header .p-dialog-header-icon:hover {
+  color: #FFFFFF !important;
+  background-color: #059669 !important; /* Emerald sólido en hover */
+  transform: scale(1.08);
+}
+
+body .p-dialog .p-dialog-content {
+  background-color: #FFFFFF !important;
+  color: var(--color-text) !important;
+  font-family: var(--font-family-base) !important;
+  padding: 1.5rem !important;
+}
+
+body .p-dialog .p-dialog-footer {
+  background-color: #F8FAFC !important;
+  border-top: 1px solid var(--color-border) !important;
+  border-bottom-left-radius: 1rem !important;
+  border-bottom-right-radius: 1rem !important;
+  padding: 1rem 1.5rem !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+}
+
+/* Modal operativo compacto: cabecera, contenido desplazable y acciones persistentes */
+body .p-dialog.erp-operational-dialog { max-height:calc(100dvh - 24px)!important; border-radius:10px!important; }
+body .p-dialog.erp-operational-dialog .p-dialog-header { min-height:52px; padding:.72rem 1rem!important; border-radius:10px 10px 0 0!important; }
+body .p-dialog.erp-operational-dialog .p-dialog-title { font-size:14px!important; }
+body .p-dialog.erp-operational-dialog .p-dialog-content { padding:1rem!important; overflow:auto; font-size:12px; }
+body .p-dialog.erp-operational-dialog .p-dialog-footer { position:sticky; bottom:0; z-index:2; min-height:48px; padding:.55rem 1rem!important; border-radius:0 0 10px 10px!important; }
+body .p-dialog.erp-operational-dialog .erp-form-grid { gap:.65rem .8rem; }
+body .p-dialog.erp-operational-dialog .erp-label { font-size:11px; font-weight:650; }
+body .p-dialog.erp-operational-dialog .erp-input,
+body .p-dialog.erp-operational-dialog .p-inputtext,
+body .p-dialog.erp-operational-dialog .p-dropdown { min-height:34px!important; height:34px!important; font-size:11.5px!important; }
+body .p-dialog.erp-operational-dialog section { padding:.75rem!important; border-radius:8px!important; }
+body .p-dialog.erp-operational-dialog .p-button { min-height:32px; font-size:11px; }
+
+body .p-datatable.app-table-scroll .p-datatable-thead>tr>th { padding:.55rem .65rem!important; font-size:10px!important; }
+body .p-datatable.app-table-scroll .p-datatable-tbody>tr>td { padding:.55rem .65rem!important; font-size:11.5px!important; }
+body .p-datatable .p-tag { font-size:9px!important; padding:.18rem .48rem!important; }
+
+@media (max-width:767px) {
+  body .p-dialog.erp-operational-dialog { width:calc(100vw - 12px)!important; max-height:calc(100dvh - 12px)!important; }
+  body .p-dialog.erp-operational-dialog .p-dialog-content { padding:.7rem!important; }
+  body .p-dialog.erp-operational-dialog .p-dialog-footer { flex-wrap:wrap; }
+}
+
+/* ----------------------------------------------------------
+   5. BOTONES PRIMENG Y DEL SISTEMA (Contraste garantizado)
+   ---------------------------------------------------------- */
+/* Botón PRIMARIO (sólido verde esmeralda) */
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info),
+.erp-btn-primary,
+.btn-primary {
+  background-color: var(--color-primary) !important; /* #059669 */
+  border: 1px solid var(--color-primary) !important;
+  color: #FFFFFF !important; /* Texto blanco asegurado */
+  font-family: var(--font-family-base) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-md) !important;
+  transition: all 0.15s ease !important;
+}
+
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info) .p-button-label,
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info) .p-button-icon {
+  color: #FFFFFF !important;
+}
+
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info):enabled:hover,
+.erp-btn-primary:hover,
+.btn-primary:hover {
+  background-color: var(--color-primary-hover) !important; /* #047857 */
+  border-color: var(--color-primary-hover) !important;
+  color: #FFFFFF !important;
+}
+
+/* Botón OUTLINED (ej. Cancelar - Evitar fondo verde y asegurar contraste legible) */
+body .p-button.p-button-outlined {
+  background-color: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #334155 !important; /* Slate 700 - Alto contraste */
+  font-family: var(--font-family-base) !important;
+  font-weight: 500 !important;
+  border-radius: var(--radius-md) !important;
+}
+
+body .p-button.p-button-outlined .p-button-label,
+body .p-button.p-button-outlined .p-button-icon {
+  color: #334155 !important;
+}
+
+body .p-button.p-button-outlined:enabled:hover {
+  background-color: #F1F5F9 !important;
+  border-color: #94A3B8 !important;
+  color: #0F172A !important;
+}
+
+body .p-button.p-button-outlined:enabled:hover .p-button-label,
+body .p-button.p-button-outlined:enabled:hover .p-button-icon {
+  color: #0F172A !important;
+}
+
+/* Botón SECUNDARIO */
+body .p-button.p-button-secondary:not(.p-button-outlined),
+.erp-btn-secondary,
+.btn-secondary {
+  background-color: #F1F5F9 !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #1E293B !important;
+  font-family: var(--font-family-base) !important;
+  font-weight: 500 !important;
+  border-radius: var(--radius-md) !important;
+}
+
+body .p-button.p-button-secondary:not(.p-button-outlined) .p-button-label,
+body .p-button.p-button-secondary:not(.p-button-outlined) .p-button-icon,
+.erp-btn-secondary,
+.btn-secondary {
+  color: #1E293B !important;
+}
+
+body .p-button.p-button-secondary:not(.p-button-outlined):enabled:hover,
+.erp-btn-secondary:hover,
+.btn-secondary:hover {
+  background-color: #E2E8F0 !important;
+  border-color: #94A3B8 !important;
+  color: #0F172A !important;
+}
+
+/* Botón DANGER / ELIMINAR */
+body .p-button.p-button-danger,
+.erp-btn-danger,
+.btn-danger {
+  background-color: var(--color-danger) !important; /* #EF4444 */
+  border-color: var(--color-danger) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+body .p-button.p-button-danger .p-button-label,
+body .p-button.p-button-danger .p-button-icon {
+  color: #FFFFFF !important;
+}
+body .p-button.p-button-danger:enabled:hover,
+.erp-btn-danger:hover,
+.btn-danger:hover {
+  background-color: #DC2626 !important;
+  border-color: #DC2626 !important;
+  color: #FFFFFF !important;
+}
+
+/* Botón SUCCESS */
+body .p-button.p-button-success,
+.btn-success {
+  background-color: var(--color-success) !important; /* #10B981 */
+  border-color: var(--color-success) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+body .p-button.p-button-success .p-button-label,
+body .p-button.p-button-success .p-button-icon {
+  color: #FFFFFF !important;
+}
+body .p-button.p-button-success:enabled:hover {
+  background-color: #059669 !important;
+  color: #FFFFFF !important;
+}
+
+/* Botón WARNING */
+body .p-button.p-button-warning,
+.btn-warning {
+  background-color: var(--color-warning) !important; /* #F59E0B */
+  border-color: var(--color-warning) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+body .p-button.p-button-warning .p-button-label,
+body .p-button.p-button-warning .p-button-icon {
+  color: #FFFFFF !important;
+}
+
+/* Botón INFO */
+body .p-button.p-button-info,
+.btn-info {
+  background-color: var(--color-info) !important; /* #2563EB */
+  border-color: var(--color-info) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+body .p-button.p-button-info .p-button-label,
+body .p-button.p-button-info .p-button-icon {
+  color: #FFFFFF !important;
+}
+
+/* ----------------------------------------------------------
+   6. INPUTNUMBER
+   ---------------------------------------------------------- */
+body .p-inputnumber-input {
+  border-color: var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-family-base) !important;
+  font-size: var(--font-size-base) !important;
+  color: var(--color-text) !important;
+}
+
+body .p-inputnumber-input:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15) !important;
+  outline: none !important;
+}
+
+/* ----------------------------------------------------------
+   7. CHECKBOX / RADIO / SWITCH
+   ---------------------------------------------------------- */
+body .p-checkbox .p-checkbox-box.p-highlight {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+body .p-radiobutton .p-radiobutton-box.p-highlight {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+body .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+  background-color: var(--color-primary) !important;
+}
+
+/* ----------------------------------------------------------
+   8. TABLAS PRIMENG (p-table) & TABLAS GENERALES
+   Encabezados oscuros (#0F172A) con texto blanco (#FFFFFF)
+   ---------------------------------------------------------- */
+body .p-datatable .p-datatable-thead > tr > th,
+body table thead th,
+body .erp-table-header th {
+  background-color: #0F172A !important; /* Oscuro idéntico al header del modal */
+  color: #FFFFFF !important;            /* Texto Blanco */
+  font-size: var(--font-size-sm) !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid #334155 !important;
+  font-family: var(--font-family-base) !important;
+  letter-spacing: 0.025em;
+  padding: 0.75rem 1rem !important;
+}
+
+body .p-datatable .p-datatable-thead > tr > th * {
+  color: #FFFFFF !important;
+}
+
+body .p-datatable .p-sortable-column .p-sortable-column-icon,
+body .p-datatable .p-sortable-column .p-sortIcon i {
+  color: #94A3B8 !important;
+  transition: color 0.15s ease !important;
+}
+
+body .p-datatable .p-sortable-column:hover .p-sortable-column-icon,
+body .p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon,
+body .p-datatable .p-sortable-column.p-highlight .p-sortIcon i {
+  color: #10B981 !important; /* Emerald en sort activo */
+}
+
+body .p-datatable .p-datatable-tbody > tr > td {
+  font-size: var(--font-size-sm) !important;
+  color: var(--color-text) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  font-family: var(--font-family-base) !important;
+}
+
+body .p-datatable .p-datatable-tbody > tr:hover > td {
+  background-color: var(--color-primary-light) !important;
+}
+
+/* ----------------------------------------------------------
+   9. PAGINATOR
+   ---------------------------------------------------------- */
+body .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #FFFFFF !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* ----------------------------------------------------------
+   10. ICONOS SEMÁNTICOS (Preservar color según función)
+   ---------------------------------------------------------- */
+i.text-danger, .text-danger i,
+i.fa-trash, i.fa-trash-can, i.fa-circle-xmark, i.fa-ban, i.fa-times {
+  color: #EF4444 !important;
+}
+
+i.text-success, .text-success i,
+i.fa-check, i.fa-circle-check, i.fa-truck-moving, i.fa-dollar-sign {
+  color: #10B981 !important;
+}
+
+i.text-warning, .text-warning i,
+i.fa-triangle-exclamation, i.fa-exclamation, i.fa-clock {
+  color: #F59E0B !important;
+}
+
+i.text-info, .text-info i,
+i.fa-circle-info, i.fa-info {
+  color: #2563EB !important;
+}
+
+i.text-primary, .text-primary i {
+  color: #059669 !important;
+}
+
+/* En botones sólidos, los iconos internos son blancos para asegurar contraste */
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary) i,
+body .p-button.p-button-danger i,
+body .p-button.p-button-success i,
+body .p-button.p-button-warning i,
+body .p-button.p-button-info i {
+  color: #FFFFFF !important;
+}

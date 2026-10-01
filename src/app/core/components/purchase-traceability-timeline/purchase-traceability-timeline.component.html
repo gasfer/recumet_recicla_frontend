@@ -14,8 +14,10 @@
     <div><small>Saldo pendiente</small><strong>{{ displayValue(data.totals?.pending, 'total') }}</strong></div>
     <div><small>Total anulado</small><strong>{{ displayValue(data.totals?.voided, 'total') }}</strong></div>
   </section>
-  <div class="trace-compact-values" *ngIf="mode === 'provider' && data?.purchases?.length">
-    <span *ngFor="let purchase of data.purchases"><b>{{ purchase.cod }}:</b> {{ displayValue(purchase.total, 'total') }} · {{ displayValue(purchase.status) }}</span>
+  <div class="overflow-auto" *ngIf="mode === 'provider' && data?.purchases?.length">
+    <table class="w-full text-xs border-collapse"><thead><tr><th>Boleta</th><th>Fecha</th><th>Sucursal / almacén</th><th>Tipo</th><th>Total</th><th>Pagado</th><th>Saldo</th><th>Estado</th></tr></thead><tbody>
+      <tr *ngFor="let purchase of data.purchases"><td><b>{{ purchase.registry_number || purchase.cod }}</b></td><td>{{ purchase.date_voucher | date:'dd/MM/yyyy' }}</td><td>{{ purchase.sucursal?.name || 'Sin sucursal' }}<small class="block">{{ purchase.storage?.name || 'Sin almacén' }}</small></td><td>{{ purchase.type_registry || 'COMPRA' }}</td><td>{{ displayValue(purchase.total, 'total') }}</td><td>{{ displayValue(purchase.accounts_payable?.monto_abonado || 0, 'total') }}</td><td>{{ displayValue(purchase.accounts_payable?.monto_restante || 0, 'total') }}</td><td>{{ purchase.accounts_payable?.status_account || displayValue(purchase.status) }}</td></tr>
+    </tbody></table>
   </div>
   <div class="trace-legend" aria-label="Colores de las operaciones">
     <span class="trace-badge trace-success">Registro</span><span class="trace-badge trace-warning">Edición</span><span class="trace-badge trace-danger">Anulación o retiro</span>

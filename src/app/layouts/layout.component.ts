@@ -6,6 +6,7 @@ import { EventService } from '../core/services/event.service';
 import { ActivationEnd, Router } from '@angular/router';
 import { Subscription, filter, map } from 'rxjs';
 import { ValidatorsService } from '../services/validators.service';
+import { SessionManagementService } from '../core/services/session-management.service';
 
 @Component({
   selector: 'app-layout',
@@ -22,6 +23,7 @@ export class LayoutComponent implements OnInit, OnDestroy{
 
   eventService = inject(EventService);
   validatorsService = inject(ValidatorsService);
+  sessionManagementService = inject(SessionManagementService);
   public tituloSubs$! : Subscription;
   public breadcrumbs:any = [];
 
@@ -35,10 +37,12 @@ export class LayoutComponent implements OnInit, OnDestroy{
 
   }
   ngOnDestroy(): void {
-   this.tituloSubs$.unsubscribe();
+    this.tituloSubs$.unsubscribe();
+    this.sessionManagementService.stopMonitoring();
   }
 
   ngOnInit(): void {
+    this.sessionManagementService.startMonitoring();
     this.LayoutWidth(this.layoutwidth());
     this.changeSidebar(this.sidebartype());
     this.changeMode(this.mode());

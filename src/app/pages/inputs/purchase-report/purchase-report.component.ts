@@ -38,8 +38,14 @@ export class PurchaseReportComponent implements OnInit {
   form: UntypedFormGroup = this.fb.group({ filterBy: ['MONTH'], dates: [new Date(), Validators.required], id_sucursal: [[], Validators.required], id_storage: [[]], category_ids: [[]], id_products: [[]] });
   cols = signal<ColsTable[]>([
     { field: 'cod', header: 'CÓDIGO', style: 'min-width:100px;max-width:100px', tooltip: true },
-    { field: 'type_registry', header: 'TIPO DOC.', style: 'min-width:90px;max-width:90px', tooltip: true, isTag: true, tagValue: (value: string) => value, tagColor: () => 'success', tagIcon: () => 'fa-solid fa-file' },
-    { field: 'registry_number', header: 'NÚMERO', style: 'min-width:90px;max-width:110px', tooltip: true, isText: true },
+    {
+      field: 'type_registry',
+      field2: 'registry_number',
+      header: 'TIPO DOC.',
+      style: 'min-width:130px;max-width:150px;',
+      tooltip: true,
+      isDocument: true
+    },
     { field: 'date_voucher', header: 'FECHA CMP.', style: 'min-width:115px;max-width:115px', tooltip: true, isDate: true },
     { field: 'provider.full_names', header: 'PROVEEDOR', style: 'min-width:170px;max-width:220px', tooltip: true, isText: true },
     { field: 'comments', header: 'OBSERVACIONES', style: 'min-width:170px;max-width:250px', tooltip: true, isText: true },

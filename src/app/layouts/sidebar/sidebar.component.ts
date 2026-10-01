@@ -370,4 +370,23 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
     return item.subItems !== undefined ? item.subItems.length > 0 : false;
   }
 
+  materialIcon(label?: string): string {
+    const value = (label ?? '').toLocaleLowerCase();
+    if (value.includes('dashboard')) return 'dashboard';
+    if (value.includes('proveedor')) return 'groups';
+    if (value.includes('cliente')) return 'person';
+    if (value.includes('compra')) return 'local_shipping';
+    if (value.includes('clasific')) return 'inventory_2';
+    if (value.includes('recepci')) return 'move_to_inbox';
+    if (value.includes('concilia')) return 'balance';
+    if (value.includes('balanza') || value.includes('pesaje')) return 'scale';
+    if (value.includes('venta')) return 'shopping_cart';
+    if (value.includes('traslado')) return 'sync_alt';
+    if (value.includes('caja')) return 'account_balance_wallet';
+    if (value.includes('inventario') || value.includes('kardex')) return 'inventory';
+    if (value.includes('reporte')) return 'bar_chart';
+    if (value.includes('config')) return 'settings';
+    return 'chevron_right';
+  }
+
 }

@@ -1,0 +1,33 @@
+<p-dialog header="Pre-registro rápido de proveedor" [(visible)]="visible" [modal]="true" [draggable]="false"
+  [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--sm">
+  <form [formGroup]="form">
+    <p class="erp-text-caption mb-3">Registre lo indispensable para continuar la compra. La validación comercial se completa después.</p>
+    
+    <div class="erp-form-grid mb-3">
+      <div class="erp-field erp-col-full">
+        <label for="provider-name" class="erp-label required">Razón social o nombre</label>
+        <input id="provider-name" type="text" pInputText formControlName="full_names" class="erp-input text-uppercase"
+          [class.ng-dirty]="form.controls.full_names.touched && form.controls.full_names.invalid" />
+        <small *ngIf="form.controls.full_names.touched && form.controls.full_names.invalid" class="erp-error-msg">La razón social es obligatoria.</small>
+      </div>
+    </div>
+
+    <div class="erp-form-grid mb-3">
+      <div class="erp-field">
+        <label for="provider-document" class="erp-label">CI / NIT</label>
+        <input id="provider-document" type="text" pInputText formControlName="number_document" class="erp-input text-uppercase" />
+      </div>
+      <div class="erp-field">
+        <label for="provider-cellphone" class="erp-label">Celular</label>
+        <input id="provider-cellphone" type="tel" pInputText formControlName="cellphone" class="erp-input" />
+      </div>
+    </div>
+
+    <p-message *ngIf="duplicate()" severity="warn" styleClass="w-full mb-2" text="Ya existe un proveedor con este CI/NIT o celular."></p-message>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button *ngIf="duplicate()" label="Seleccionar existente" icon="fa-solid fa-check" styleClass="p-button-outlined p-button-sm p-button-rounded" (click)="selectDuplicate()"></p-button>
+    <p-button label="Guardar y continuar" icon="fa-solid fa-floppy-disk" styleClass="p-button-sm p-button-rounded" [loading]="loading()" [disabled]="!!duplicate()" (click)="save()"></p-button>
+    <p-button label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded" (click)="visible = false"></p-button>
+  </ng-template>
+</p-dialog>

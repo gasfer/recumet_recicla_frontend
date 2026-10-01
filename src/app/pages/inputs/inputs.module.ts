@@ -17,6 +17,9 @@ import { ModalViewDetailsComponent } from './query-inputs/components/modal-view-
 import { ChipModule } from 'primeng/chip';
 import { AccordionModule } from 'primeng/accordion';
 import { PurchaseReportComponent } from './purchase-report/purchase-report.component';
+import { ModalPreRegisterProviderComponent } from './input-small/components/modal-pre-register-provider/modal-pre-register-provider.component';
+import { ProviderContactsSectionComponent } from './providers/components/provider-contacts-section/provider-contacts-section.component';
+import { ProviderBankAccountsSectionComponent } from './providers/components/provider-bank-accounts-section/provider-bank-accounts-section.component';
 @NgModule({
   declarations: [
     ProvidersComponent,
@@ -30,6 +33,9 @@ import { PurchaseReportComponent } from './purchase-report/purchase-report.compo
     QueryInputsComponent,
     ModalViewDetailsComponent,
     PurchaseReportComponent,
+    ModalPreRegisterProviderComponent,
+    ProviderContactsSectionComponent,
+    ProviderBankAccountsSectionComponent,
   ],
   imports: [
     CommonModule, 

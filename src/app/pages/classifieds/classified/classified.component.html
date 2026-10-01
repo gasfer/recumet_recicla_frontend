@@ -5,107 +5,104 @@
     [id_sucursal]="formReport.get('id_sucursal')?.value"
     [id_storage]="formReport.get('id_storage')?.value"
 ></app-modal-save-classified>
-<!--provider new modal-->
 
-<div class="card bg-light m-0">
-    <div class="card-body shadow pt-2 pb-2">
-        <h4>{{'REGISTRO DE CLASIFICADOS'}}</h4>
-        <div class="row mt-2">
-            <div class="col-sm-6 col-12 mt-0">
-                <app-input-search (onEnters)="setSuggestedProducts($event)" (onDebounce)="setSuggestedProducts($event)"
-                    (onBtnNew)="newProduct()" [icon]="'fa-solid fa-tag'" [btnNew]="true"
-                    [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un producto aquí....'">
-                </app-input-search>
-                <small>Producto buscado por la sucursal y area / almacén seleccionado.</small>
-                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
-                    <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
-                        <li class="list-group-item list-group-item-action">
-                            <span class='fw-bold'>Cargando....</span>
-                        </li>
-                    </ul>
-                    <ul class="list-group shadow cursor-pointer">
-                        <li *ngFor="let product of suggestedProducts()"
-                            class="list-group-item list-group-item-action" (click)="selectProduct(product)">
-                            <span class='fw-bold'>{{product.cod}} - {{ product.name}}</span>
-                            <br>
-                            <span class="text-muted fw-normal align-content-end">{{product.description }} -
-                                {{product.category.name}} / {{product.unit.siglas}}</span>
-                        </li>
-                    </ul>
-                    <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
-                        <li class="list-group-item list-group-item-action">
-                            <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
-                        </li>
-                    </ul>
-                </div>
+<div class="erp-header-panel mb-2">
+    <div class="erp-panel-title">
+        <i class="fa-solid fa-layer-group text-emerald-600"></i>
+        <span>REGISTRO DE CLASIFICADOS</span>
+    </div>
+
+    <div class="row align-items-center g-2 mt-1">
+        <div class="col-sm-6 col-12 position-relative">
+            <app-input-search (onEnters)="setSuggestedProducts($event)" (onDebounce)="setSuggestedProducts($event)"
+                (onBtnNew)="newProduct()" [icon]="'fa-solid fa-tag'" [btnNew]="true"
+                [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un producto aquí....'">
+            </app-input-search>
+            <small class="text-muted d-block mt-0.5">Producto origen por sucursal y almacén seleccionado.</small>
+            <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
+                <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
+                    <li class="list-group-item list-group-item-action">
+                        <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
+                    </li>
+                </ul>
+                <ul class="list-group shadow cursor-pointer">
+                    <li *ngFor="let product of suggestedProducts()"
+                        class="list-group-item list-group-item-action" (click)="selectProduct(product)">
+                        <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
+                        <br>
+                        <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                    </li>
+                </ul>
+                <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
+                    <li class="list-group-item list-group-item-action text-danger">
+                        <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                    </li>
+                </ul>
             </div>
-            <div class="col-sm-5 col-12 mt-2 m-md-0">
-                <b>Producto a clasificar:
-                    <p-tag [rounded]="true" icon="fa-solid fa-tag"
-                        [severity]="productSelect() ? 'info' : 'warning'"
-                        [value]="productSelect() ? 'COD: ' + productSelect()?.cod+' / ' + productSelect()?.name : 'COD: 0 / SELECCIONE UN PRODUCTO'">
-                        <p-badge *ngIf="productSelect()" class="cursor-pointer" severity="danger"
-                            (click)="classifiedService.productSelect.set(undefined)" [value]="'X'" styleClass="mr-2"
-                            pTooltip="Quitar Producto" tooltipPosition="top">
-                        </p-badge>
-                    </p-tag>
-                    <p-tag [rounded]="true"  [severity]="productSelect() ? 'success' : 'warning'"
-                        [value]="productSelect() ? 'Stock: ' + productSelect()?.total_stock?.toString() : 'Stock: 0'">
-                    </p-tag>
-                </b>
+        </div>
+
+        <div class="col-sm-5 col-12 d-flex flex-wrap align-items-center gap-2">
+            <span class="text-muted small fw-bold">Producto origen:</span>
+            <div class="erp-entity-chip" [ngClass]="productSelect() ? 'active' : 'unselected'">
+                <i class="fa-solid fa-tag"></i>
+                <span>{{ productSelect() ? productSelect()?.cod + ' · ' + productSelect()?.name : 'SELECCIONE UN PRODUCTO' }}</span>
+                <span *ngIf="productSelect()" class="remove-btn"
+                    (click)="classifiedService.productSelect.set(undefined)"
+                    pTooltip="Quitar Producto" tooltipPosition="top">
+                    ✕
+                </span>
             </div>
-            <div class="col-sm-1 col-12">
-                <div class="d-flex justify-content-end">
-                    <i class="cursor-pointer fa-solid fa-gear" pTooltip="Config. Modo de clasificación" tooltipPosition="left"
-                        role="button" tabindex="0" aria-label="Configurar modo de clasificación"
-                        (click)="classifiedService.showModalConfigClassified = true"
-                        (keydown.enter)="classifiedService.showModalConfigClassified = true"
-                        (keydown.space)="$event.preventDefault(); classifiedService.showModalConfigClassified = true">
-                    </i>
-                </div>
+            <span *ngIf="productSelect()" class="badge-subtle-stock">
+                Stock: {{ productSelect()?.total_stock }}
+            </span>
+        </div>
+
+        <div class="col-sm-1 col-12">
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-light border rounded-circle p-2 text-secondary"
+                    pTooltip="Configurar modo de clasificación" tooltipPosition="left"
+                    (click)="classifiedService.showModalConfigClassified = true">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
             </div>
         </div>
     </div>
 </div>
-<div class="row mt-1">
-    <div class="col-sm-12 mb-2"
+
+<div class="row g-2">
+    <div class="col-sm-12"
         [ngClass]="{'col-md-7': classifiedService._classifiedConfig.viewCardProducts, 'col-md-12': !classifiedService._classifiedConfig.viewCardProducts}">
-        <div class="card">
-            <div class="card-body shadow m-0 p-0">
-                <div class="row m-1 mt-0">
-                    <div class="col-12">
-                        <p-messages severity="info">
-                            <ng-template pTemplate>
-                                <b>ITEMS CLASIFICADOS <i class="fa-solid fa-cart-arrow-down"></i></b>
-                                <i class="fa-solid fa-tags ms-5 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
-                                    value="{{totalItems()}}"></i>
-                            </ng-template>
-                        </p-messages>
-                        <app-input-search *ngIf="!classifiedService._classifiedConfig.viewCardProducts" (onEnters)="suggestedProductClassifieds($event)" (onDebounce)="suggestedProductClassifieds($event)"
-                            [icon]="'fa-solid fa-cart-plus'"
-                            [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
-                            <ul *ngIf="loadingSearchProductClassified()" class="list-group shadow">
-                                <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'>Cargando....</span>
-                                </li>
-                            </ul>
-                            <ul class="list-group shadow cursor-pointer">
-                                <li *ngFor="let product of suggestedProductsClassified()"
-                                    class="list-group-item list-group-item-action" (click)="addItemCar(product)">
-                                    <span class='fw-bold'>{{product.cod}} - {{ product.name}}</span>
-                                    <br>
-                                    <span class="text-muted fw-normal align-content-end">{{product.description }} -
-                                        {{product.category.name}} / {{product.unit.siglas}}</span>
-                                </li>
-                            </ul>
-                            <ul *ngIf="suggestedProductsClassified().length == 0 && txtSearchProductClassified() && !loadingSearchProductClassified()" class="list-group shadow">
-                                <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+        <div class="card erp-card-container border-0 shadow-sm">
+            <div class="erp-items-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-boxes-packing text-emerald-400"></i>
+                    <span>ITEMS CLASIFICADOS RESULTANTES</span>
+                </div>
+                <span class="erp-counter-chip">{{totalItems()}} items</span>
+            </div>
+            <div class="p-2 border-bottom" *ngIf="!classifiedService._classifiedConfig.viewCardProducts">
+                <app-input-search (onEnters)="suggestedProductClassifieds($event)" (onDebounce)="suggestedProductClassifieds($event)"
+                    [icon]="'fa-solid fa-cart-plus'"
+                    [placeholder]="'Busque un producto aquí....'"></app-input-search>
+                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                    <ul *ngIf="loadingSearchProductClassified()" class="list-group shadow">
+                        <li class="list-group-item list-group-item-action">
+                            <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
+                        </li>
+                    </ul>
+                    <ul class="list-group shadow cursor-pointer">
+                        <li *ngFor="let product of suggestedProductsClassified()"
+                            class="list-group-item list-group-item-action" (click)="addItemCar(product)">
+                            <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
+                            <br>
+                            <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                        </li>
+                    </ul>
+                    <ul *ngIf="suggestedProductsClassified().length == 0 && txtSearchProductClassified() && !loadingSearchProductClassified()" class="list-group shadow">
+                        <li class="list-group-item list-group-item-action text-danger">
+                            <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <app-table-classified-details></app-table-classified-details>

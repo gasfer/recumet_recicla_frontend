@@ -87,7 +87,7 @@ export class InputSmallComponent  {
   }
 
   newProvider() {
-    this.providerService.showModal = true;
+    this.providerService.showPreRegisterModal = true;
   }
 
   suggestedProduct(txtSearchProduct: string){

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ViewChild, ElementRef } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { MenuItem } from 'primeng/api';
@@ -71,12 +71,13 @@ export class AccountsPayableComponent implements OnInit {
     { field: `provider.full_names`, header: 'PROVEEDOR', style: 'min-width:150px;max-width:200px;', tooltip: true, isText: true },
     { field: 'input.date_voucher', header: 'FECHA REGISTRO', style: 'min-width:110px;max-width:110px;', tooltip: true, isDate: true },
     {
-      field: 'input.type_registry', header: 'TIPO DOC.', style: 'min-width:80px;max-width:80px;', tooltip: true, isTag: true,
-      tagValue: (val: boolean) => val,
-      tagColor: (val: boolean) => 'success',
-      tagIcon: (val: boolean) => 'fa-solid fa-file'
+      field: 'input.type_registry',
+      field2: 'input.registry_number',
+      header: 'TIPO DOC.',
+      style: 'min-width:130px;max-width:150px;',
+      tooltip: true,
+      isDocument: true
     },
-    { field: 'input.registry_number', header: 'NUMERO', style: 'min-width:80px;max-width:110px;', tooltip: true, isText: true },
     {
       field: 'monto_abonado', header: 'A CUENTA', style: 'min-width:100px;max-width:130px;text-align: end;', tooltip: true,
       isValueUpdate: true, tagValue: (val: number) => this.pipeNumber.transform(val, this.decimal()),
@@ -706,3 +707,4 @@ export class AccountsPayableComponent implements OnInit {
     window.open(url, '_blank');
   }
 }
+

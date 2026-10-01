@@ -23,7 +23,8 @@
               "can-use-dom",
               "socket.io-client",
               "engine.io-client",
-              "moment"
+              "moment",
+              "leaflet"
             ],
             "outputPath": "dist/frontend_recumet",
             "index": "src/index.html",
@@ -35,17 +36,25 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "src/assets/recumet",
+                "output": "/recumet"
+              }
             ],
             "styles": [
-              "src/styles.scss",
               "src/assets/scss/bootstrap.scss",
-              "src/assets/scss/app.scss",
               "src/assets/scss/icons.scss",
-              "node_modules/@fortawesome/fontawesome-free/css/all.css",
+                "node_modules/@fortawesome/fontawesome-free/css/all.css",
+                "node_modules/leaflet/dist/leaflet.css",
               "node_modules/primeng/resources/themes/saga-blue/theme.css",
               "node_modules/primeng/resources/primeng.min.css",
-              "node_modules/animate.css/animate.compat.css"
+              "node_modules/animate.css/animate.compat.css",
+              "src/assets/scss/app.scss",
+              "src/assets/scss/design-system/form-tokens.css",
+              "src/assets/scss/design-system/_primeng-theme.scss",
+              "src/styles.scss"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"

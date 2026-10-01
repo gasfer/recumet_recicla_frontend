@@ -440,6 +440,7 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   @Input() isCustomSort: boolean = true;
   @Input() customPagination: boolean = false;
   @Input() includeSearch: boolean = true;
+  @Input() showViewToggle: boolean = false;
   @Input() sortField: string = 'id';
   @Input() sortOrder: 'ASC' | 'DESC' = 'DESC';
   @Input() responsiveStrategy: 'stack' | 'scroll' = 'stack';

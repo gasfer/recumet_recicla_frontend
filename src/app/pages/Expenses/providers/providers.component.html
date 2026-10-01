@@ -1,4 +1,4 @@
-<div [formGroup]="formReport">
+﻿<div [formGroup]="formReport">
   <div class="card shadow mb-4 icon-box ">
     <div class="card-body">
       <div class="title mb-1">
@@ -49,3 +49,214 @@
 <app-modal-provider></app-modal-provider>
 <app-purchase-traceability-timeline mode="provider" [data]="traceabilityData()" [visible]="traceabilityVisible()"
   (visibleChange)="traceabilityVisible.set($event)"></app-purchase-traceability-timeline>
+
+
+
+<!-- MODAL: MÁS INFORMACIÓN DETALLADA DEL PROVEEDOR (SOLO LECTURA, MISMO DISEÑO QUE EDITAR) -->
+<p-dialog
+  [header]="'Ficha Informativa de Proveedor: ' + (selectedProvider()?.full_names || '')"
+  [(visible)]="providerInfoVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  styleClass="app-dialog--xl erp-operational-dialog">
+
+  <div *ngIf="selectedProvider() as p" class="space-y-3">
+    <!-- Header banner con resumen ejecutivo -->
+    <div class="p-3 rounded-lg bg-slate-800 text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-emerald-600/30 border border-emerald-400 flex items-center justify-center text-emerald-300 text-lg">
+          <i class="fa-solid fa-truck-moving"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm text-white mb-0 uppercase tracking-wide">{{ p.full_names }}</h4>
+          <span class="text-xs text-slate-300">{{ p.type?.name || 'Proveedor estándar' }} · NIT/CI: {{ p.number_document || 'Sin documento' }}</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <p-tag [value]="p.status ? 'ACTIVO' : 'INACTIVO'" [severity]="p.status ? 'success' : 'danger'" [rounded]="true"></p-tag>
+        <p-tag *ngIf="p.mayorista" value="MAYORISTA" severity="info" [rounded]="true"></p-tag>
+        <p-tag *ngIf="!p.mayorista" value="MINORISTA" severity="secondary" [rounded]="true"></p-tag>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 1: TIPO E IDENTIFICACIÓN FISCAL (Fondo suave pizarra/slate) -->
+    <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+      <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-id-card text-slate-500"></i> 1. Identificación Legal & Tipo de Proveedor
+      </div>
+
+      <div class="erp-form-grid mb-2">
+        <div class="erp-field erp-col-full">
+          <label class="erp-label">Tipo de proveedor</label>
+          <div class="erp-readonly-value font-semibold text-slate-800">
+            <i class="fa-solid fa-tag text-emerald-600 mr-2"></i> {{ p.type?.name || 'Proveedor general' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="erp-form-grid">
+        <div class="erp-field">
+          <label class="erp-label">Razón social o nombre completo</label>
+          <div class="erp-readonly-value font-semibold text-slate-900 uppercase">
+            {{ p.full_names }}
+          </div>
+        </div>
+        <div class="erp-field">
+          <label class="erp-label">NIT / CI / Documento fiscal</label>
+          <div class="erp-readonly-value font-semibold text-slate-800">
+            {{ p.number_document || 'Sin documento registrado' }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: UBICACIÓN & SECTOR (Fondo suave esmeralda) -->
+    <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40">
+      <div class="text-xs font-bold text-emerald-800 uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-map-location-dot text-emerald-600"></i> 2. Sector & Ubicación Geográfica
+      </div>
+
+      <div class="erp-form-grid mb-2">
+        <div class="erp-field">
+          <label class="erp-label">Sector / Zona</label>
+          <div class="erp-readonly-value font-semibold text-slate-800">
+            <i class="fa-solid fa-location-dot text-emerald-600 mr-2"></i> {{ p.sector.name || 'Sin sector asignado' }}
+          </div>
+        </div>
+        <div class="erp-field">
+          <label class="erp-label">Celular principal</label>
+          <div class="erp-readonly-value font-semibold text-slate-800">
+            <i class="fa-solid fa-phone text-emerald-600 mr-2"></i> {{ p.cellphone || 'Sin número registrado' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="erp-form-grid">
+        <div class="erp-field erp-col-full">
+          <label class="erp-label">Dirección exacta</label>
+          <div class="erp-readonly-value text-slate-800 uppercase">
+            {{ p.direction || 'Sin dirección registrada' }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: CONTACTO & CATEGORÍA (Fondo suave azul) -->
+    <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40">
+      <div class="text-xs font-bold text-blue-900 uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-user-tie text-blue-600"></i> 3. Contacto Comercial & Material
+      </div>
+
+      <div class="erp-form-grid mb-2">
+        <div class="erp-field">
+          <label class="erp-label">Persona de contacto</label>
+          <div class="erp-readonly-value font-semibold text-slate-800 uppercase">
+            {{ p.name_contact || 'Sin contacto registrado' }}
+          </div>
+        </div>
+        <div class="erp-field">
+          <label class="erp-label">Celular de contacto</label>
+          <div class="erp-readonly-value font-semibold text-slate-800">
+            {{ p.cellphone_contact || 'Sin número registrado' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="erp-form-grid mb-2">
+        <div class="erp-field">
+          <label class="erp-label">Categoría (material principal)</label>
+          <div class="erp-readonly-value font-semibold text-slate-800">
+            <i class="fa-solid fa-box-open text-blue-600 mr-2"></i> {{ p.category.name || 'General' }}
+          </div>
+        </div>
+        <div class="erp-field">
+          <label class="erp-label">Área / Cargo / Unidad</label>
+          <div class="erp-readonly-value text-slate-800 uppercase">
+            {{ p.workAreaOrPositionOrUnit || 'No especificado' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="erp-form-grid">
+        <div class="erp-field">
+          <label class="erp-label">Frecuencia de entrega</label>
+          <div class="erp-readonly-value font-semibold text-slate-800">
+            <i class="fa-solid fa-calendar-days text-blue-600 mr-2"></i> {{ p.frequency || 'MENSUAL' }}
+          </div>
+        </div>
+        <div class="erp-field">
+          <label class="erp-label">Contactos adicionales</label>
+          <div class="erp-readonly-value text-slate-700">
+            {{ p.companyContacts || 'Ninguno' }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: MODALIDAD & ESTADO (Fondo suave ámbar) -->
+    <section class="p-3 rounded-lg border border-amber-100 bg-amber-50/30">
+      <div class="text-xs font-bold text-amber-900 uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-sliders text-amber-600"></i> 4. Modalidad de Operación & Estado
+      </div>
+
+      <div class="erp-form-grid">
+        <div class="erp-field">
+          <label class="erp-label">Modalidad de entrega</label>
+          <div class="erp-toggle-pill">
+            <p-tag [rounded]="true"
+              [icon]="p.mayorista ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'"
+              [severity]="p.mayorista ? 'info' : 'success'"
+              [value]="p.mayorista ? 'MAYORISTA' : 'MINORISTA'">
+            </p-tag>
+          </div>
+        </div>
+        <div class="erp-field">
+          <label class="erp-label">Estado de la cuenta</label>
+          <div class="erp-toggle-pill">
+            <p-tag [rounded]="true"
+              [icon]="p.status ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+              [styleClass]="p.status ? 'app-status-active' : 'app-status-inactive'"
+              [value]="p.status ? 'ACTIVO' : 'INACTIVO'">
+            </p-tag>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 5: RESUMEN DE OPERACIONES (Fondo suave pizarra) -->
+    <section class="p-3 rounded-lg border border-slate-200 bg-slate-50">
+      <div class="text-xs font-bold text-slate-800 uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-chart-line text-slate-600"></i> 5. Resumen de Movimientos & Saldos
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
+          <span class="text-xs text-slate-500 block">Total Compras</span>
+          <b class="text-slate-800 text-sm">{{ p.total_inputs }} reg.</b>
+        </div>
+        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
+          <span class="text-xs text-slate-500 block">Total Kilogramos</span>
+          <b class="text-slate-800 text-sm">{{ p.total_products }} kg</b>
+        </div>
+        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
+          <span class="text-xs text-slate-500 block">Saldo Pendiente</span>
+          <b class="text-amber-700 text-sm">Bs. {{ (p.saldo_cuentas_por_pagar || 0) | number:'1.2-2' }}</b>
+        </div>
+        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
+          <span class="text-xs text-slate-500 block">Última Compra</span>
+          <span class="text-slate-700 font-semibold text-xs">{{ (p.date_last_input | date:'dd/MM/yyyy') || 'Sin fecha' }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button *ngIf="validatorsService.withPermission('PROVEEDORES','update')"
+      (click)="providerInfoVisible.set(false); editShowModal(selectedProvider()!)"
+      label="Editar Proveedor" icon="fas fa-edit"
+      styleClass="p-button-warning p-button-sm p-button-rounded"></p-button>
+    <p-button (click)="providerInfoVisible.set(false)" label="Cerrar"
+      styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+  </ng-template>
+</p-dialog>

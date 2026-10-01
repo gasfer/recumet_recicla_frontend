@@ -15,6 +15,7 @@ const routes: Routes = [
   { path: 'assets', loadChildren: () => import('./assets/assets.module').then(m => m.AssetsModule) },
   { path: 'scale', loadChildren: () => import('./balanza/balanza.module').then(m => m.BalanzaModule) },
   { path: 'notifications', loadChildren: () => import('./notifications/notifications.module').then(m => m.NotificationsModule) },
+  { path: 'profile', loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule) },
   { path: '**', redirectTo: 'dashboard'}
 ];
 

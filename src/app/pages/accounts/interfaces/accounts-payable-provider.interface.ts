@@ -10,7 +10,7 @@ export interface AccountsPayableProvider {
     data:   Account[];
 }
 
-interface Account {
+export interface Account {
     id:             number;
     cod:            string;
     id_input:       number;
@@ -25,7 +25,22 @@ interface Account {
     status:         boolean;
     createdAt:      Date;
     updatedAt:      Date;
-    input:          Pick<Input,'cod'|'date_voucher'|'type_registry'|'registry_number'>;
+    input:          Pick<Input,'cod'|'date_voucher'|'type_registry'|'registry_number'> & { storage?: { id: number; name: string } };
+    sucursal?:      { id: number; name: string };
+    abonosAccountsPayable?: ProviderPayment[];
+}
+
+export interface ProviderPayment {
+    id: number;
+    date_abono: Date;
+    monto_abono: string;
+    total_abonado: string;
+    restante_credito: string;
+    type_payment: string;
+    number_transaction?: string;
+    comments?: string;
+    status: boolean;
+    user?: { id: number; full_names: string };
 }
 
 interface Totals {

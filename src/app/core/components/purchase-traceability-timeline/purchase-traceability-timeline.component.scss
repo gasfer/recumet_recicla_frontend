@@ -29,6 +29,10 @@
 .trace-history { padding:.6rem; background:#fff5db; color:#714e09; border-radius:5px; }
 .trace-empty { text-align:center; padding:2rem; color:#475569; }
 .trace-mobile-label { display:none; }
+:host table { width:100%; border-collapse:collapse; margin-top:1rem; font-size:.78rem; }
+:host th { background:#0f172a; color:#fff; padding:.55rem; text-align:left; white-space:nowrap; }
+:host td { padding:.55rem; border-bottom:1px solid #e2e8f0; vertical-align:top; }
+:host td small { color:#64748b; }
 @media(max-width:640px) {
   .trace-filters,.trace-summary,.trace-data-row { grid-template-columns:1fr; }
   .trace-group,.trace-event { padding:.65rem; }

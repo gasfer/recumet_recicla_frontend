@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+﻿import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ClientsService } from '../../outputs/services/clients.service';
@@ -66,10 +66,12 @@ export class AccountsReceivableComponent implements OnInit {
     },
     { field: 'output.cod', header: 'VENTA', style: 'min-width:100px;max-width:100px;', tooltip: true },
     {
-      field: 'output.type_registry', header: 'TIPO DOC.', style: 'min-width:80px;max-width:80px;', tooltip: true, isTag: true,
-      tagValue: (val: boolean) => val,
-      tagColor: (val: boolean) => 'success',
-      tagIcon: (val: boolean) => 'fa-solid fa-file'
+      field: 'output.type_registry',
+      field2: 'output.number_registry',
+      header: 'TIPO DOC.',
+      style: 'min-width:130px;max-width:150px;',
+      tooltip: true,
+      isDocument: true
     },
     { field: 'output.date_output', header: 'FECHA REGISTRO', style: 'min-width:110px;max-width:110px;', tooltip: true, isDate: true },
     {
@@ -599,3 +601,4 @@ export class AccountsReceivableComponent implements OnInit {
     });
   }
 }
+

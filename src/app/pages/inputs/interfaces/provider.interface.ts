@@ -31,8 +31,8 @@ export interface Provider {
     status: boolean;
     createdAt: string;
     updatedAt: string;
-    category: Category;
-    sector: Sector;
+    category?: Category;
+    sector?: Sector;
     companyContacts: string,
     workAreaOrPositionOrUnit: string,
     frequency: string,
@@ -41,6 +41,22 @@ export interface Provider {
     total_inputs: number,
     total_products: number,
     saldo_cuentas_por_pagar: number,
+    estado_registro?: 'PENDIENTE' | 'VALIDADO';
+    commercial_name?: string;
+    entity_type?: string;
+    origin_channel?: string;
+    relationship_status?: string;
+    service_mode?: string;
+    general_observations?: string;
+    commercial_observations?: string;
+    negotiation_condition?: string;
+    requires_certificate?: boolean;
+    requires_traceability_report?: boolean;
+    company?: { id: number; has_branches?: boolean; operatingProviders?: Provider[] };
+    branches?: Array<{ id: number; name?: string; department?: string; province?: string; city?: string; zone?: string; address?: string; latitude?: number; longitude?: number; geolocation_text?: string; google_maps_url?: string; is_main?: boolean }>;
+    contacts?: Array<{ id: number; full_name?: string; phone?: string; email?: string; position?: string; is_main_contact?: boolean }>;
+    bankAccounts?: Array<{ id: number; account_holder?: string; account_number?: string; account_type?: string; currency?: string; is_main?: boolean; bank?: { name: string } }>;
+    materials?: Array<{ id: number; product?: { name: string; cod?: string }; category?: { name: string } }>;
     options?: Options[];
 }
 

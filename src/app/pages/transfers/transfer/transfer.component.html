@@ -1,64 +1,58 @@
 <!--Pos config modal-->
 <app-modal-config-transfer></app-modal-config-transfer>
 <!--Pos Data modal save-->
-<app-modal-save-transfer [id_sucursal_send]="formReport.get('id_sucursal')?.value" [id_storage_send]="formReport.get('id_storage')?.value" ></app-modal-save-transfer>
+<app-modal-save-transfer [id_sucursal_send]="formReport.get('id_sucursal')?.value" [id_storage_send]="formReport.get('id_storage')?.value"></app-modal-save-transfer>
 
-<div class="card bg-light m-0">
-    <div class="card-body shadow pt-2 pb-2">
-        <h4>REGISTRA TUS TRASLADOS</h4>
-        <div class="row mt-2">
-            <div class="col-12">
-                <div class="d-flex justify-content-end">
-                    <i class="cursor-pointer fa-solid fa-gear" pTooltip="Config. Modo de trasferencia" tooltipPosition="left"
-                        role="button" tabindex="0" aria-label="Configurar modo de transferencia"
-                        (click)="transfersService.showModalConfigTransfer = true"
-                        (keydown.enter)="transfersService.showModalConfigTransfer = true"
-                        (keydown.space)="$event.preventDefault(); transfersService.showModalConfigTransfer = true">
-                    </i>
-                </div>
-            </div>
+<div class="erp-header-panel mb-2">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="erp-panel-title m-0">
+            <i class="fa-solid fa-truck-ramp-box text-emerald-600"></i>
+            <span>REGISTRO DE TRASLADOS ENTRE ALMACENES</span>
+        </div>
+        <div>
+            <button type="button" class="btn btn-sm btn-light border rounded-circle p-2 text-secondary"
+                pTooltip="Configurar modo de transferencia" tooltipPosition="left"
+                (click)="transfersService.showModalConfigTransfer = true">
+                <i class="fa-solid fa-gear"></i>
+            </button>
         </div>
     </div>
 </div>
-<div class="row mt-1">
-    <div class="col-sm-12 mb-2"
+
+<div class="row g-2">
+    <div class="col-sm-12"
         [ngClass]="{'col-md-7': transfersService._transferConfig.viewCardProducts, 'col-md-12': !transfersService._transferConfig.viewCardProducts}">
-        <div class="card">
-            <div class="card-body shadow m-0 p-0">
-                <div class="row m-1 mt-0">
-                    <div class="col-12">
-                        <p-messages severity="info">
-                            <ng-template pTemplate>
-                                <b>ITEMS A TRANSFERIR <i class="fa-solid fa-cart-arrow-down"></i></b>
-                                <i class="fa-solid fa-tags ms-5 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
-                                    value="{{totalItems()}}"></i>
-                            </ng-template>
-                        </p-messages>
-                        <app-input-search *ngIf="!transfersService._transferConfig.viewCardProducts" (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
-                            [icon]="'fa-solid fa-cart-plus'"
-                            [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
-                            <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
-                                <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'>Cargando....</span>
-                                </li>
-                            </ul>
-                            <ul class="list-group shadow cursor-pointer">
-                                <li *ngFor="let product of suggestedProducts()"
-                                    class="list-group-item list-group-item-action" (click)="addItemCar(product)">
-                                    <span class='fw-bold'>{{product.cod}} - {{ product.name}}</span>
-                                    <br>
-                                    <span class="text-muted fw-normal align-content-end">{{product.description }} -
-                                        {{product.category.name}} / {{product.unit.siglas}}</span>
-                                </li>
-                            </ul>
-                            <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
-                                <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+        <div class="card erp-card-container border-0 shadow-sm">
+            <div class="erp-items-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-boxes-packing text-emerald-400"></i>
+                    <span>DETALLE DE ITEMS A TRANSFERIR</span>
+                </div>
+                <span class="erp-counter-chip">{{totalItems()}} items</span>
+            </div>
+            <div class="p-2 border-bottom" *ngIf="!transfersService._transferConfig.viewCardProducts">
+                <app-input-search (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
+                    [icon]="'fa-solid fa-cart-plus'"
+                    [placeholder]="'Busque un producto aquí....'"></app-input-search>
+                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                    <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
+                        <li class="list-group-item list-group-item-action">
+                            <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
+                        </li>
+                    </ul>
+                    <ul class="list-group shadow cursor-pointer">
+                        <li *ngFor="let product of suggestedProducts()"
+                            class="list-group-item list-group-item-action" (click)="addItemCar(product)">
+                            <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
+                            <br>
+                            <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                        </li>
+                    </ul>
+                    <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
+                        <li class="list-group-item list-group-item-action text-danger">
+                            <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <app-table-transfer-details></app-table-transfer-details>

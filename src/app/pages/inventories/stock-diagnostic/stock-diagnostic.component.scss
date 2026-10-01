@@ -67,7 +67,7 @@
 .stock-diagnostic-page :is(.btn, .form-control, .form-select) { border-radius: .5rem; }
 .stock-diagnostic-page .btn { font-weight: 700; }
 
-.reconciliation-preview__heading { display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 1rem; }
+.reconciliation-preview__heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
 .reconciliation-preview__heading small, .reconciliation-preview__grid section > span, .reconciliation-preview__result small { color: #64748b; font-size: .75rem; font-weight: 800; letter-spacing: .05em; }
 .reconciliation-preview__heading h6 { margin: .2rem 0; color: #1e3a5f; font-size: 1.05rem; font-weight: 800; }
 .reconciliation-preview__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; }

@@ -63,9 +63,11 @@ export class AccountsPayableService {
             });
   }
 
-  getAccountsPayableForProvider(id_provider:number): Observable<GetAllAccountsPayableForProvider> {
-    const url = `${base_url}/accounts_payable/forProvider?id_provider=${id_provider}`;
-    return this.http.get<GetAllAccountsPayableForProvider>(url);
+  getAccountsPayableForProvider(id_provider:number, id_sucursal?: number, id_storage?: number): Observable<GetAllAccountsPayableForProvider> {
+    let params = new HttpParams().set('id_provider', id_provider);
+    if (id_sucursal) params = params.set('id_sucursal', id_sucursal);
+    if (id_storage) params = params.set('id_storage', id_storage);
+    return this.http.get<GetAllAccountsPayableForProvider>(`${base_url}/accounts_payable/forProvider`, { params });
   }
 
   //* IMPRIMIR BOLETAS

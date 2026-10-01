@@ -4,42 +4,46 @@
     [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="unitForm">
         <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="field">
-                    <label class="block mb-0">Nombre<span class="text-danger">*</span>
-                    </label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="name" placeholder="EJ. UNIDAD"
-                        [class.ng-dirty]="validatorsService.inputValid('name',unitForm)" class="text-uppercase"/>
-                    <small *ngIf="validatorsService.inputValid('name',unitForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("name",unitForm) }}
-                    </small>
-                </div>
-                <div class="field mt-2">
-                    <label class="block mb-0">Siglas<span class="text-danger">*</span>
-                    </label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="siglas" placeholder="EJ. UND"
-                        [class.ng-dirty]="validatorsService.inputValid('siglas',unitForm)" class="text-uppercase"/>
-                    <small *ngIf="validatorsService.inputValid('siglas',unitForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("siglas",unitForm) }}
-                    </small>
-                </div>
-                <div class="row mt-1 ">
-                    <label class="block">Estado:<span class="text-danger">*</span></label>
-                </div>
-                <div class="row mt-0">
-                    <div class="col-3">
-                        <p-inputSwitch formControlName="status"></p-inputSwitch>
-                    </div>
-                    <div class="col">
-                        <p-tag  [rounded]="true"
-                                [icon]="unitForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                                [styleClass]="unitForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
-                                [value]="unitForm.get('status')!.value ? 'Activo' : 'Inactivo'">
-                        </p-tag>
-                    </div>
+
+        <!-- Fila 1: Nombre -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Nombre</label>
+                <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="name" placeholder="EJ. UNIDAD"
+                    class="erp-input text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('name',unitForm)"/>
+                <small *ngIf="validatorsService.inputValid('name',unitForm)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("name",unitForm) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Fila 2: Siglas -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Siglas</label>
+                <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="siglas" placeholder="EJ. UND"
+                    class="erp-input text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('siglas',unitForm)"/>
+                <small *ngIf="validatorsService.inputValid('siglas',unitForm)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("siglas",unitForm) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Fila 3: Estado (Switch alineado) -->
+        <div class="erp-form-grid mb-2">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Estado</label>
+                <div class="erp-toggle-field">
+                    <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    <p-tag  [rounded]="true"
+                            [icon]="unitForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                            [styleClass]="unitForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
+                            [value]="unitForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                    </p-tag>
                 </div>
             </div>
         </div>

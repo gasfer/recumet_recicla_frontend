@@ -3,53 +3,60 @@
     [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="categoryForm">
         <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="field">
-                    <label class="block mb-0">Nombre<span class="text-danger">*</span>
-                    </label>
-                    <input type="text" pInputText
-                        [pKeyFilter]="validatorsService.expRegValidInput" formControlName="name"
-                        placeholder="EJ. METALES FERROSOS"
-                        [class.ng-dirty]="validatorsService.inputValid('name',categoryForm)" class="text-uppercase"/>
-                    <small *ngIf="validatorsService.inputValid('name',categoryForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("name",categoryForm) }}
-                    </small>
-                </div>
-                <div class="field mt-2">
-                    <label class="block mb-0">Descripcion<span class="text-danger">*</span>
-                    </label>
-                    <textarea pInputTextarea type="text" pInputText
-                        [pKeyFilter]="validatorsService.expRegValidInput" formControlName="description"
-                        placeholder="EJ. ......" class="mt-1 text-uppercase"
-                        [class.ng-dirty]="validatorsService.inputValid('description',categoryForm)"></textarea>
-                    <small *ngIf="validatorsService.inputValid('description',categoryForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("description",categoryForm) }}
-                    </small>
-                </div>
-                <div class="field mt-2">
-                    <label class="block mb-0">Tipo<span class="text-danger">*</span></label>
-                    <p-dropdown [options]="types" formControlName="type" optionLabel="label" optionValue="value"
-                        placeholder="Seleccione un tipo" appendTo="body" class="app-u-width-100-0466783">
-                    </p-dropdown>
-                    <small *ngIf="validatorsService.inputValid('type', categoryForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("type", categoryForm) }}
-                    </small>
-                </div>
-                <div class="row mt-1 ">
-                    <label class="block">Estado:<span class="text-danger">*</span></label>
-                </div>
-                <div class="row mt-0">
-                    <div class="col-3">
-                        <p-inputSwitch formControlName="status"></p-inputSwitch>
-                    </div>
-                    <div class="col">
-                        <p-tag [rounded]="true"
-                            [icon]="categoryForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                            [styleClass]="categoryForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
-                            [value]="categoryForm.get('status')!.value ? 'Activo' : 'Inactivo'">
-                        </p-tag>
-                    </div>
+
+        <!-- Fila 1: Nombre -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Nombre</label>
+                <input type="text" pInputText
+                    [pKeyFilter]="validatorsService.expRegValidInput" formControlName="name"
+                    placeholder="EJ. METALES FERROSOS"
+                    class="erp-input text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('name',categoryForm)"/>
+                <small *ngIf="validatorsService.inputValid('name',categoryForm)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("name",categoryForm) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Fila 2: Descripción -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Descripción</label>
+                <textarea pInputTextarea
+                    [pKeyFilter]="validatorsService.expRegValidInput" formControlName="description"
+                    placeholder="EJ. ......" class="text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('description',categoryForm)"></textarea>
+                <small *ngIf="validatorsService.inputValid('description',categoryForm)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("description",categoryForm) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Fila 3: Tipo -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Tipo</label>
+                <p-dropdown [options]="types" formControlName="type" optionLabel="label" optionValue="value"
+                    placeholder="Seleccione un tipo" appendTo="body" class="erp-input">
+                </p-dropdown>
+                <small *ngIf="validatorsService.inputValid('type', categoryForm)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("type", categoryForm) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Fila 4: Estado (Switch alineado) -->
+        <div class="erp-form-grid mb-2">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Estado</label>
+                <div class="erp-toggle-field">
+                    <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    <p-tag [rounded]="true"
+                        [icon]="categoryForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                        [styleClass]="categoryForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
+                        [value]="categoryForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                    </p-tag>
                 </div>
             </div>
         </div>

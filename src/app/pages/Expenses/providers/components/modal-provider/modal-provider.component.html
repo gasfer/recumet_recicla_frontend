@@ -1,232 +1,437 @@
-<p-dialog [header]="!providersService.isEdit ? 'Registro Proveedor' : 'Modificar Proveedor'" [(visible)]="providersService.showModal"
-    [modal]="true" [draggable]="false"
-    [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true" styleClass="app-dialog--md">
-    <form [formGroup]="providerForm">
-        <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="row">
-                    <label class="block mb-0">Tipo proveedor<span class="text-danger">*</span>
-                    </label>
-                    <p-dropdown [options]="types()"
-                        placeholder="Selecciona un tipo"
-                        optionLabel="name"
-                        appendTo="body"
-                        [filter]="true" filterBy="name"
-                        formControlName="id_type_provider"
-                        (onChange)="changeLabelAndForm()"
-                        [class.ng-dirty]="validatorsService.inputValid('id_type_provider',providerForm)"
-                    ></p-dropdown>
-                    <small *ngIf="validatorsService.inputValid('id_type_provider',providerForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("id_type_provider",providerForm) }}
-                    </small>
-                </div>
-                <div class="row mt-1">
-                    <div *ngIf="formP.full_names.view" class="col-sm-6 col-12">
-                        <label class="block mb-0">{{formP.full_names.label}}<span class="text-danger">*</span>
-                        </label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="full_names" placeholder="EJ. PROVEEDOR ..."
-                            [class.ng-dirty]="validatorsService.inputValid('full_names',providerForm)" class="text-uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('full_names',providerForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("full_names",providerForm) }}
-                        </small>
-                    </div>
-                    <div *ngIf="formP.number_document.view"  class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">{{formP.number_document.label}}</label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="number_document" placeholder="EJ. ..."
-                            [class.ng-dirty]="validatorsService.inputValid('number_document',providerForm)" class="text-uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('number_document',providerForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("number_document",providerForm)  }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                       <div *ngIf="formP.id_sector.view" class="field">
-                            <label class="block mb-0">{{formP.id_sector.label}}<span class="text-danger">*</span></label>
-                            <div class="p-inputgroup">
-                                <p-dropdown [options]="sectors()"
-                                    placeholder="Selecciona un sector"
-                                    optionLabel="name"
-                                    optionValue="code"
-                                    appendTo="body"
-                                    [filter]="true" filterBy="name"
-                                    [virtualScrollItemSize]="38" [lazy]="true"
-                                    formControlName="id_sector"
-                                    [class.ng-dirty]="validatorsService.inputValid('id_sector',providerForm)"
-                                ></p-dropdown>
-                                <button type="button" pButton pRipple icon="fa-solid fa-circle-plus"
-                                        aria-label="Agregar nuevo sector"
-                                        pTooltip="Agregar nuevo"
-                                        (click)="providersService.showModalSectors = true">
-                                </button>
-                            </div>
-                            <small *ngIf="validatorsService.inputValid('id_sector',providerForm)" class="p-error block">
-                                {{ validatorsService.inputValidMessage("id_sector",providerForm) }}
-                            </small>
-                       </div>
-                    </div>
-                    <div  *ngIf="formP.cellphone.view" class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">{{formP.cellphone.label}}</label>
-                        <input
-                            type="number"
-                            pInputText
-                            placeholder="EJ. 79....03"
-                            formControlName="cellphone"
-                            pKeyFilter="int"
-                            [class.ng-dirty]="validatorsService.inputValid('cellphone',providerForm)"
-                        />
-                        <small *ngIf="validatorsService.inputValid('cellphone',providerForm)" class="p-error block">
-                            {{ 'Celular no valido' }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div  *ngIf="formP.direction.view" class="col-sm-12 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">{{formP.direction.label}}</label>
-                        <textarea pInputTextarea
-                            type="text"
+﻿<p-dialog
+  [header]="!providersService.isEdit ? 'Registro de Proveedor' : 'Modificar Proveedor'"
+  [(visible)]="providersService.showModal"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="resetModal()"
+  [dismissableMask]="true"
+  styleClass="app-dialog--xl erp-operational-dialog">
 
-                            pInputText
-                            [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="direction"
-                            placeholder="EJ. ......"
-                            class="mt-1 text-uppercase"
-                            [class.ng-dirty]="validatorsService.inputValid('direction',providerForm)"
-                        ></textarea>
-                        <small *ngIf="validatorsService.inputValid('direction',providerForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("direction",providerForm) }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div *ngIf="formP.mayorista.view" class="col-sm-6 col-12">
-                        <div class="row mt-1 ">
-                            <label class="block">{{formP.mayorista.label}}<span class="text-danger">*</span></label>
-                        </div>
-                        <div class="row mt-0">
-                            <div class="col-3">
-                                <p-inputSwitch formControlName="mayorista"></p-inputSwitch>
-                            </div>
-                            <div class="col">
-                                <p-tag  [rounded]="true"
-                                        [icon]="providerForm.get('mayorista')!.value ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'"
-                                        [severity]="providerForm.get('mayorista')!.value
-                                                  ? 'info'
-                                                  : 'success'"
-                                        [value]="providerForm.get('mayorista')!.value ? 'SI' : 'NO'">
-                                </p-tag>
-                            </div>
-                        </div>
-                    </div>
-                    <div *ngIf="formP.name_contact.view" class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">{{formP.name_contact.label}}</label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="name_contact" placeholder="EJ. PROVEEDOR ..."
-                            [class.ng-dirty]="validatorsService.inputValid('name_contact',providerForm)" class="text-uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('name_contact',providerForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("name_contact",providerForm) }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div *ngIf="formP.cellphone_contact.view" class="col-sm-6 col-12">
-                        <label class="block mb-0">{{formP.cellphone_contact.label}}</label>
-                        <input
-                            type="number"
-                            pInputText
-                            placeholder="EJ. 79....03"
-                            formControlName="cellphone_contact"
-                            pKeyFilter="int"
-                            [class.ng-dirty]="validatorsService.inputValid('cellphone_contact',providerForm)"
-                        />
-                        <small *ngIf="validatorsService.inputValid('cellphone_contact',providerForm)" class="p-error block">
-                            {{ 'Celular no valido' }}
-                        </small>
-                    </div>
-                    <div  *ngIf="formP.id_category.view" class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">{{formP.id_category.label}}<span class="text-danger">*</span>
-                        </label>
-                        <p-dropdown [options]="categories()"
-                          placeholder="Selecciona una categoría"
-                          optionLabel="name"
-                          optionValue="code"
-                          appendTo="body"
-                          [filter]="true" filterBy="name"
-                          [virtualScrollItemSize]="38" [lazy]="true"
-                          formControlName="id_category"
-                          [class.ng-dirty]="validatorsService.inputValid('id_category',providerForm)"
-                        ></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('id_category',providerForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("id_category",providerForm) }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div *ngIf="formP.workAreaOrPositionOrUnit.view" class="col-sm-6 col-12">
-                        <label class="block mb-0">{{formP.workAreaOrPositionOrUnit.label}}</label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="workAreaOrPositionOrUnit" placeholder="EJ. ..."
-                            [class.ng-dirty]="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)" class="text-uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("workAreaOrPositionOrUnit",providerForm) }}
-                        </small>
-                    </div>
-                    <div  *ngIf="formP.frequency.view" class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">{{formP.frequency.label}}
-                        </label>
-                        <p-dropdown [options]="frequencies()"
-                          placeholder="Selecciona una {{formP.frequency.label}}"
-                          optionLabel="name"
-                          optionValue="code"
-                          appendTo="body"
-                          [filter]="true" filterBy="name"
-                          [showClear]="true"
-                          [virtualScrollItemSize]="38" [lazy]="true"
-                          formControlName="frequency"
-                          [class.ng-dirty]="validatorsService.inputValid('frequency',providerForm)"
-                        ></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('frequency',providerForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("frequency",providerForm) }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div *ngIf="formP.companyContacts.view" class="col-sm-12 col-12">
-                        <label class="block mb-0">{{formP.companyContacts.label}}</label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="companyContacts" placeholder="EJ. ..."
-                            [class.ng-dirty]="validatorsService.inputValid('companyContacts',providerForm)" class="text-uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('companyContacts',providerForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("companyContacts",providerForm) }}
-                        </small>
-                    </div>
-                </div>
-                <div  *ngIf="formP.status.view" class="row mt-1 ">
-                    <label class="block">{{formP.status.label}}<span class="text-danger">*</span></label>
-                </div>
-                <div *ngIf="formP.status.view" class="row mt-0">
-                    <div class="col-3">
-                        <p-inputSwitch formControlName="status"></p-inputSwitch>
-                    </div>
-                    <div class="col">
-                        <p-tag  [rounded]="true"
-                                [icon]="providerForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                                [styleClass]="providerForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
-                                [value]="providerForm.get('status')!.value ? 'Activo' : 'Inactivo'">
-                        </p-tag>
-                    </div>
-                </div>
-            </div>
+  <form [formGroup]="providerForm">
+    <app-alert-notify></app-alert-notify>
+
+    <!-- AVISO MODO EDICIÓN CON COLOR BAJITO SUTIL -->
+    <div *ngIf="providersService.isEdit" class="mb-3 animated fadeInDown">
+      <div class="p-3 rounded-lg border border-amber-300 bg-amber-50 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-amber-600 text-lg"></i>
+          <div>
+            <span class="font-bold text-xs text-amber-900 uppercase">Proceso de Edición de Proveedor</span>
+            <small class="block text-xs text-amber-700">
+              Modificando ficha de: <b>{{ providerForm.get('full_names')?.value }}</b>
+              <span *ngIf="providerForm.get('number_document')?.value"> · NIT/CI: {{ providerForm.get('number_document')?.value }}</span>
+            </small>
+          </div>
         </div>
-    </form>
-    <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ? (providersService.isEdit ? editProvider() : newProvider()) : null" styleClass="p-button-sm p-button-rounded"
-            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
-        <p-button (click)="providersService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
-    </ng-template>
+        <span class="badge bg-amber-500 text-white font-bold text-xs px-2.5 py-1 rounded-full">MODO EDICIÓN</span>
+      </div>
+    </div>
+
+    <!-- Pestañas Corporativas (Solo si es Tipo A) -->
+    <div *ngIf="isTypeA()" class="flex gap-2 mb-3 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
+      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+        [class.btn-success]="activeTab()==='company'"
+        [class.btn-light]="activeTab()!=='company'"
+        (click)="setActiveTab('company')">
+        <i class="fa-solid fa-building mr-1"></i> 1. Empresa Matriz
+      </button>
+      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+        [class.btn-success]="activeTab()==='branches'"
+        [class.btn-light]="activeTab()!=='branches'"
+        (click)="setActiveTab('branches')">
+        <i class="fa-solid fa-code-branch mr-1"></i> 2. Sucursales ({{ companyBranchCount() }})
+      </button>
+      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+        [class.btn-success]="activeTab()==='summary'"
+        [class.btn-light]="activeTab()!=='summary'"
+        (click)="setActiveTab('summary')">
+        <i class="fa-solid fa-chart-pie mr-1"></i> 3. Consolidado
+      </button>
+    </div>
+
+    <!-- â•â• CONTENIDO FICHA GENERAL (ESTRUCTURA ORIGINAL CON FONDOS BAJOS SUTILES) â•â• -->
+    <div *ngIf="!isTypeA() || activeTab()==='company'" class="space-y-3">
+
+      <!-- SECCIÓN 1: TIPO E IDENTIFICACIÓN FISCAL (Fondo suave pizarra/slate) -->
+      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+        <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-id-card text-slate-500"></i> 1. Identificación Legal & Tipo de Proveedor
+        </div>
+
+        <!-- Tipo proveedor -->
+        <div class="erp-form-grid mb-2">
+          <div class="erp-field erp-col-full">
+            <label class="erp-label required">Tipo proveedor</label>
+            <p-dropdown [options]="types()"
+              placeholder="Selecciona un tipo"
+              optionLabel="name"
+              appendTo="body"
+              [filter]="true" filterBy="name"
+              formControlName="id_type_provider"
+              class="erp-input w-full"
+              (onChange)="changeLabelAndForm()"
+              [class.ng-dirty]="validatorsService.inputValid('id_type_provider',providerForm)">
+            </p-dropdown>
+            <small *ngIf="validatorsService.inputValid('id_type_provider',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("id_type_provider",providerForm) }}
+            </small>
+          </div>
+        </div>
+
+        <!-- Razón Social + Documento -->
+        <div class="erp-form-grid">
+          <div *ngIf="formP.full_names.view" class="erp-field" [class.erp-col-full]="!formP.number_document.view">
+            <label class="erp-label required">{{formP.full_names.label}}</label>
+            <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+              formControlName="full_names" placeholder="EJ. PROVEEDOR ..."
+              class="erp-input text-uppercase w-full"
+              [class.ng-dirty]="validatorsService.inputValid('full_names',providerForm)"/>
+            <small *ngIf="validatorsService.inputValid('full_names',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("full_names",providerForm) }}
+            </small>
+          </div>
+          <div *ngIf="formP.number_document.view" class="erp-field" [class.erp-col-full]="!formP.full_names.view">
+            <label class="erp-label">{{formP.number_document.label}}</label>
+            <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+              formControlName="number_document" placeholder="EJ. ..."
+              class="erp-input text-uppercase w-full"
+              [class.ng-dirty]="validatorsService.inputValid('number_document',providerForm)"/>
+            <small *ngIf="validatorsService.inputValid('number_document',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("number_document",providerForm) }}
+            </small>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 2: UBICACIÓN & SECTOR (Fondo suave esmeralda) -->
+      <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40">
+        <div class="text-xs font-bold text-emerald-800 uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-map-location-dot text-emerald-600"></i> 2. Sector & Ubicación Geográfica
+        </div>
+
+        <div class="erp-form-grid mb-2">
+          <!-- Sector con botón añadir -->
+          <div *ngIf="formP.id_sector.view" class="erp-field" [class.erp-col-full]="!formP.cellphone.view">
+            <label class="erp-label required">{{formP.id_sector.label}}</label>
+            <div class="p-inputgroup">
+              <p-dropdown [options]="sectors()"
+                placeholder="Selecciona un sector"
+                optionLabel="name"
+                optionValue="code"
+                appendTo="body"
+                [filter]="true" filterBy="name"
+                [virtualScrollItemSize]="38" [lazy]="true"
+                formControlName="id_sector"
+                class="erp-input flex-1"
+                [class.ng-dirty]="validatorsService.inputValid('id_sector',providerForm)">
+              </p-dropdown>
+              <button type="button" pButton pRipple icon="fa-solid fa-circle-plus"
+                aria-label="Agregar nuevo sector"
+                pTooltip="Agregar nuevo sector"
+                (click)="providersService.showModalSectors = true">
+              </button>
+            </div>
+            <small *ngIf="validatorsService.inputValid('id_sector',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("id_sector",providerForm) }}
+            </small>
+          </div>
+
+          <!-- Celular principal -->
+          <div *ngIf="formP.cellphone.view" class="erp-field" [class.erp-col-full]="!formP.id_sector.view">
+            <label class="erp-label">{{formP.cellphone.label}}</label>
+            <input type="number" pInputText
+              placeholder="EJ. 79....03"
+              formControlName="cellphone"
+              pKeyFilter="int"
+              class="erp-input w-full"
+              [class.ng-dirty]="validatorsService.inputValid('cellphone',providerForm)"/>
+            <small *ngIf="validatorsService.inputValid('cellphone',providerForm)" class="erp-error-msg">
+              Celular no válido
+            </small>
+          </div>
+        </div>
+
+        <!-- Dirección exacta -->
+        <div *ngIf="formP.direction.view" class="erp-form-grid">
+          <div class="erp-field erp-col-full">
+            <label class="erp-label">{{formP.direction.label}}</label>
+            <textarea pInputTextarea
+              formControlName="direction"
+              rows="2"
+              placeholder="EJ. AV. BLANCO GALINDO KM 7..."
+              class="erp-input text-uppercase w-full"
+              [class.ng-dirty]="validatorsService.inputValid('direction',providerForm)">
+            </textarea>
+            <small *ngIf="validatorsService.inputValid('direction',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("direction",providerForm) }}
+            </small>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 3: CONTACTO & CATEGORÍA (Fondo suave azul) -->
+      <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40">
+        <div class="text-xs font-bold text-blue-900 uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-user-tie text-blue-600"></i> 3. Contacto Comercial & Material
+        </div>
+
+        <!-- Nombre contacto + Celular contacto -->
+        <div class="erp-form-grid mb-2" *ngIf="formP.name_contact.view || formP.cellphone_contact.view">
+          <div *ngIf="formP.name_contact.view" class="erp-field" [class.erp-col-full]="!formP.cellphone_contact.view">
+            <label class="erp-label">{{formP.name_contact.label}}</label>
+            <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+              formControlName="name_contact" placeholder="EJ. JUAN PÉREZ"
+              class="erp-input text-uppercase w-full"
+              [class.ng-dirty]="validatorsService.inputValid('name_contact',providerForm)"/>
+            <small *ngIf="validatorsService.inputValid('name_contact',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("name_contact",providerForm) }}
+            </small>
+          </div>
+          <div *ngIf="formP.cellphone_contact.view" class="erp-field" [class.erp-col-full]="!formP.name_contact.view">
+            <label class="erp-label">{{formP.cellphone_contact.label}}</label>
+            <input type="number" pInputText
+              placeholder="EJ. 79....03"
+              formControlName="cellphone_contact"
+              pKeyFilter="int"
+              class="erp-input w-full"
+              [class.ng-dirty]="validatorsService.inputValid('cellphone_contact',providerForm)"/>
+            <small *ngIf="validatorsService.inputValid('cellphone_contact',providerForm)" class="erp-error-msg">
+              Celular no válido
+            </small>
+          </div>
+        </div>
+
+        <!-- Categoría de Material + Área / Cargo -->
+        <div class="erp-form-grid mb-2">
+          <div *ngIf="formP.id_category.view" class="erp-field" [class.erp-col-full]="!formP.workAreaOrPositionOrUnit.view">
+            <label class="erp-label required">{{formP.id_category.label}}</label>
+            <p-dropdown [options]="categories()"
+              placeholder="Selecciona una categoría"
+              optionLabel="name"
+              optionValue="code"
+              appendTo="body"
+              [filter]="true" filterBy="name"
+              [virtualScrollItemSize]="38" [lazy]="true"
+              formControlName="id_category"
+              class="erp-input w-full"
+              [class.ng-dirty]="validatorsService.inputValid('id_category',providerForm)">
+            </p-dropdown>
+            <small *ngIf="validatorsService.inputValid('id_category',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("id_category",providerForm) }}
+            </small>
+          </div>
+          <div *ngIf="formP.workAreaOrPositionOrUnit.view" class="erp-field" [class.erp-col-full]="!formP.id_category.view">
+            <label class="erp-label">{{formP.workAreaOrPositionOrUnit.label}}</label>
+            <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+              formControlName="workAreaOrPositionOrUnit" placeholder="EJ. GERENCIA / VENTAS"
+              class="erp-input text-uppercase w-full"
+              [class.ng-dirty]="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)"/>
+            <small *ngIf="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("workAreaOrPositionOrUnit",providerForm) }}
+            </small>
+          </div>
+        </div>
+
+        <!-- Frecuencia + Contactos adicionales -->
+        <div class="erp-form-grid" *ngIf="formP.frequency.view || formP.companyContacts.view">
+          <div *ngIf="formP.frequency.view" class="erp-field" [class.erp-col-full]="!formP.companyContacts.view">
+            <label class="erp-label">{{formP.frequency.label}}</label>
+            <p-dropdown [options]="frequencies()"
+              placeholder="Selecciona {{formP.frequency.label}}"
+              optionLabel="name"
+              optionValue="code"
+              appendTo="body"
+              [filter]="true" filterBy="name"
+              [showClear]="true"
+              [virtualScrollItemSize]="38" [lazy]="true"
+              formControlName="frequency"
+              class="erp-input w-full"
+              [class.ng-dirty]="validatorsService.inputValid('frequency',providerForm)">
+            </p-dropdown>
+            <small *ngIf="validatorsService.inputValid('frequency',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("frequency",providerForm) }}
+            </small>
+          </div>
+          <div *ngIf="formP.companyContacts.view" class="erp-field" [class.erp-col-full]="!formP.frequency.view">
+            <label class="erp-label">{{formP.companyContacts.label}}</label>
+            <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+              formControlName="companyContacts" placeholder="EJ. TELF FIJO / EMAIL SECUNDARIO"
+              class="erp-input text-uppercase w-full"
+              [class.ng-dirty]="validatorsService.inputValid('companyContacts',providerForm)"/>
+            <small *ngIf="validatorsService.inputValid('companyContacts',providerForm)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage("companyContacts",providerForm) }}
+            </small>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 4: MODALIDAD & ESTADO (Fondo suave ámbar) -->
+      <section class="p-3 rounded-lg border border-amber-100 bg-amber-50/30">
+        <div class="text-xs font-bold text-amber-900 uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-sliders text-amber-600"></i> 4. Modalidad de Operación & Estado
+        </div>
+
+        <div class="erp-form-grid">
+          <!-- Mayorista / Minorista -->
+          <div *ngIf="formP.mayorista.view" class="erp-field">
+            <label class="erp-label required">{{formP.mayorista.label || 'Tipo entrega'}}</label>
+            <div class="erp-toggle-pill">
+              <p-inputSwitch formControlName="mayorista"></p-inputSwitch>
+              <p-tag [rounded]="true"
+                [icon]="providerForm.get('mayorista')!.value ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'"
+                [severity]="providerForm.get('mayorista')!.value ? 'info' : 'success'"
+                [value]="providerForm.get('mayorista')!.value ? 'MAYORISTA' : 'MINORISTA'">
+              </p-tag>
+            </div>
+          </div>
+
+          <!-- Estado Proveedor -->
+          <div *ngIf="formP.status.view" class="erp-field" [class.erp-col-full]="!formP.mayorista.view">
+            <label class="erp-label required">{{formP.status.label || 'Estado'}}</label>
+            <div class="erp-toggle-pill">
+              <p-inputSwitch formControlName="status"></p-inputSwitch>
+              <p-tag [rounded]="true"
+                [icon]="providerForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                [styleClass]="providerForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
+                [value]="providerForm.get('status')!.value ? 'ACTIVO' : 'INACTIVO'">
+              </p-tag>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- â•â• PESTAÑA: SUCURSALES (TIPO A) â•â• -->
+    <div *ngIf="isTypeA() && activeTab()==='branches'" class="animated fadeIn">
+      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+        <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-code-branch text-emerald-600"></i> Gestión de Sucursales Vinculadas
+        </div>
+        <div class="erp-form-grid mb-3">
+          <div class="erp-field">
+            <label class="erp-label required">¿Tiene sucursales?</label>
+            <p-dropdown [options]="branchOptions" optionLabel="name" optionValue="code" formControlName="has_branches" appendTo="body" class="erp-input w-full"></p-dropdown>
+          </div>
+          <div class="erp-field erp-col-2" *ngIf="providerForm.get('has_branches')?.value">
+            <label class="erp-label">Proveedores que son sucursales</label>
+            <p-multiSelect [options]="availableProviders()" optionLabel="full_names" optionValue="id" formControlName="provider_ids" defaultLabel="Seleccione proveedores existentes" appendTo="body" class="w-full" (onChange)="onBranchSelectionChange($event.value)"></p-multiSelect>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <aside class="bg-white p-2.5 rounded-lg border border-slate-200">
+            <b class="text-xs text-slate-800 uppercase block mb-2 font-bold">Sedes Vinculadas</b>
+            <button type="button" *ngFor="let branch of allCompanyBranches(); let i=index"
+              class="w-full border rounded-lg p-2 mb-1.5 flex items-center justify-between text-left text-xs bg-white transition-all"
+              [class.border-emerald-500]="selectedBranchId()===branch.id"
+              [class.bg-emerald-50]="selectedBranchId()===branch.id"
+              (click)="selectedBranchId.set(branch.id)">
+              <div class="flex items-center gap-1.5 overflow-hidden">
+                <span class="badge bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded text-xs">0{{i+1}}</span>
+                <span class="font-semibold text-slate-800 text-truncate">{{ branch.full_names }}</span>
+              </div>
+              <span class="text-emerald-600 font-bold">●</span>
+            </button>
+          </aside>
+
+          <main class="col-span-2 flex flex-col gap-2">
+            <div class="erp-form-grid cols-3">
+              <div class="erp-field">
+                <label class="erp-label required">Departamento</label>
+                <input pInputText formControlName="department" class="erp-input w-full">
+              </div>
+              <div class="erp-field">
+                <label class="erp-label required">Ciudad / Municipio</label>
+                <input pInputText formControlName="city" class="erp-input w-full">
+              </div>
+              <div class="erp-field">
+                <label class="erp-label required">Zona / Sector</label>
+                <input pInputText formControlName="zone" class="erp-input w-full">
+              </div>
+            </div>
+            <div class="erp-form-grid">
+              <div class="erp-field erp-col-full">
+                <label class="erp-label required">Dirección exacta</label>
+                <input pInputText formControlName="direction" class="erp-input w-full">
+              </div>
+            </div>
+            <div class="erp-form-grid cols-3">
+              <div class="erp-field">
+                <label class="erp-label required">Contacto local</label>
+                <input pInputText formControlName="name_contact" class="erp-input w-full">
+              </div>
+              <div class="erp-field">
+                <label class="erp-label">Celular directo</label>
+                <input pInputText formControlName="cellphone_contact" class="erp-input w-full">
+              </div>
+              <div class="erp-field">
+                <label class="erp-label">Correo operativo</label>
+                <input pInputText formControlName="contact_email" class="erp-input w-full">
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+    </div>
+
+    <!-- â•â• PESTAÑA: CONSOLIDADO (TIPO A) â•â• -->
+    <div *ngIf="isTypeA() && activeTab()==='summary'" class="animated fadeIn">
+      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+        <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-pie text-emerald-600"></i> Consolidado Corporativo: {{ providerForm.get('full_names')?.value }}
+        </div>
+        <div class="grid grid-cols-4 gap-2 mb-3">
+          <div class="p-2.5 bg-white border rounded-lg text-center">
+            <small class="text-slate-500 font-semibold text-xs block">TOTAL COMPRADO</small>
+            <b class="text-emerald-700 text-lg block my-0.5">—</b>
+            <span class="text-xs text-slate-400">Sin compras</span>
+          </div>
+          <div class="p-2.5 bg-white border rounded-lg text-center">
+            <small class="text-slate-500 font-semibold text-xs block">SALDO PENDIENTE</small>
+            <b class="text-amber-700 text-lg block my-0.5">—</b>
+            <span class="text-xs text-slate-400">Al día</span>
+          </div>
+          <div class="p-2.5 bg-white border rounded-lg text-center">
+            <small class="text-slate-500 font-semibold text-xs block">TICKETS</small>
+            <b class="text-slate-700 text-lg block my-0.5">—</b>
+            <span class="text-xs text-slate-400">0 registros</span>
+          </div>
+          <div class="p-2.5 bg-white border rounded-lg text-center">
+            <small class="text-slate-500 font-semibold text-xs block">SEDES ACTIVAS</small>
+            <b class="text-emerald-600 text-lg block my-0.5">{{ companyBranchCount() }}</b>
+            <span class="text-xs text-slate-400">Registradas</span>
+          </div>
+        </div>
+
+        <table class="w-full text-xs border rounded-lg overflow-hidden bg-white app-table-scroll" tabindex="0" aria-label="Resumen consolidado de sucursales">
+          <thead class="bg-slate-800 text-white">
+            <tr>
+              <th class="p-2 text-left">Sucursal</th>
+              <th class="p-2 text-left">Dirección / Sector</th>
+              <th class="p-2 text-center">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let branch of allCompanyBranches()" class="border-b">
+              <td class="p-2 font-semibold text-slate-800">● {{ branch.full_names }}</td>
+              <td class="p-2 text-slate-600">{{ branch.direction || 'Sin información' }}</td>
+              <td class="p-2 text-center">
+                <p-tag [value]="branch.status ? 'Activa' : 'Inactiva'" [severity]="branch.status ? 'success' : 'secondary'"></p-tag>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button (click)="!loading() ? (providersService.isEdit ? editProvider() : newProvider()) : null"
+      styleClass="p-button-sm p-button-rounded" [label]="providersService.isEdit ? 'Guardar cambios' : (activeTab()==='branches' ? 'Guardar sucursal' : 'Guardar proveedor')"
+      icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+    <p-button (click)="providersService.showModal = false" label="Cancelar"
+      styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+  </ng-template>
 </p-dialog>
 <app-modal-sectors></app-modal-sectors>

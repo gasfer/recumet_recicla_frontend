@@ -1,32 +1,6 @@
-<!-- ======= Hero Section ======= -->
-<section id="hero1" class="mt-0 pt-0 m-0 p-0 d-flex flex-column justify-content-center">
-    <div class="m-4 mt-0 mb-3 pt-0"  data-aos="zoom-in" data-aos-delay="100">
-        <h1>Bienvenido: {{authService.getUser.full_names}}</h1>
-        <p> <ngx-typed-js [strings]="['Administrar', 'Reportes', 'Compras', 'Ventas']"
-                [backDelay]="3000" [backSpeed]="100" [typeSpeed]="40" [loop]="true">
-                Aquí podrás, <span class="typing"></span>
-            </ngx-typed-js></p>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="row mt-4">
-                    <div *ngFor="let card of cardsRequestPermission()" class="col-xxl-3 col-md-6 cursor-pointer">
-                        <app-card-home  [data]="card"></app-card-home>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section><!-- End Hero -->
-<div class="card">
-    <div class="card-body">
-        <h3 class="text-center">Últimos Eventos</h3>
-        <div class="row mt-2">
-            <div class="col-12">
-                <app-table responsiveStrategy="stack" [cols]="cols()" [isCustomSort]="false"
-                    [includeSearch]="false" [customPagination]="true"
-                    [data]="histories()" [loading]="loading()">
-                </app-table>
-            </div>
-        </div>
-    </div>
-</div>
+<main class="recumet-dashboard erp-density-compact">
+  <section class="dashboard-intro"><div><div class="eyebrow"><span></span> CENTRO DE CONTROL OPERATIVO</div><h1>Hola, {{ authService.getUser.full_names }}</h1><p>Supervisa el flujo de reciclaje, pesaje y operaciones de tu sucursal en un solo lugar.</p></div><div class="intro-actions"><button type="button" class="btn-report" (click)="exportReport()"><i class="fa-solid fa-file-arrow-down"></i> Exportar reporte</button><a class="btn-scale" routerLink="/scale/truck-scale/register"><i class="fa-solid fa-weight-scale"></i> Nuevo pesaje</a></div></section>
+  <section class="kpi-grid"><article class="kpi-card kpi-card--primary"><div class="kpi-icon"><i class="fa-solid fa-scale-balanced"></i></div><div><span class="kpi-label">Actividad de hoy</span><strong>{{ todayEvents() }}</strong><small><i class="fa-solid fa-arrow-trend-up"></i> Registros en el turno actual</small></div></article><article class="kpi-card"><div class="kpi-icon kpi-icon--blue"><i class="fa-solid fa-receipt"></i></div><div><span class="kpi-label">Tickets emitidos</span><strong>{{ totalEvents() }}</strong><small>Eventos registrados en historial</small></div></article><article class="kpi-card"><div class="kpi-icon kpi-icon--amber"><i class="fa-solid fa-truck-ramp-box"></i></div><div><span class="kpi-label">Compras registradas</span><strong>{{ purchaseEvents() }}</strong><small>Movimientos de compra recientes</small></div></article><article class="kpi-card"><div class="kpi-icon kpi-icon--violet"><i class="fa-solid fa-user-group"></i></div><div><span class="kpi-label">Operadores activos</span><strong>{{ activeUsers() }}</strong><small>Usuarios con movimientos recientes</small></div></article></section>
+  <section class="quick-section"><div class="section-heading"><div><span class="eyebrow"><span></span> ACCESOS DIRECTOS</span><h2>Operación diaria</h2></div><span class="section-note">{{ cardsRequestPermission().length }} módulos disponibles</span></div><div class="quick-grid"><a *ngFor="let card of cardsRequestPermission()" class="quick-card" [routerLink]="card.linkRedirect"><div class="quick-icon" [ngClass]="card.class"><i [class]="card.icon"></i></div><div><h3>{{ card.title }}</h3><p>{{ card.subtitle }}</p></div><i class="fa-solid fa-arrow-up-right-from-square quick-arrow"></i></a></div></section>
+  <section class="activity-panel"><div class="activity-head"><div><span class="eyebrow"><span></span> TRAZABILIDAD EN VIVO</span><h2>Últimos eventos y operaciones</h2><p>Auditoría reciente de la sucursal seleccionada.</p></div><div class="activity-tools"><label><i class="fa-solid fa-magnifying-glass"></i><input type="search" [(ngModel)]="searchTerm" placeholder="Buscar operación o usuario"></label><button type="button" (click)="clearSearch()" [disabled]="!searchTerm"><i class="fa-solid fa-filter-circle-xmark"></i></button></div></div><div class="activity-table-wrap"><table class="activity-table"><thead><tr><th>Fecha y hora</th><th>Detalle</th><th>Operación</th><th>Responsable</th><th class="text-end">Acción</th></tr></thead><tbody><tr *ngIf="loading()"><td colspan="5" class="table-state"><i class="fa-solid fa-spinner fa-spin"></i> Cargando movimientos...</td></tr><tr *ngFor="let history of filteredHistories()"><td><span class="event-date">{{ history.createdAt | date:'dd/MM/yyyy' }}</span><span class="event-time">{{ history.createdAt | date:'HH:mm' }}</span></td><td class="event-detail">{{ history.description }}</td><td><span class="operation-badge" [ngClass]="operationClass(history.type)">{{ history.type || 'OPERACIÓN' }}</span></td><td><div class="user-cell"><span>{{ initials(history.user?.full_names) }}</span>{{ history.user?.full_names || 'Sistema RECUMET' }}</div></td><td class="text-end"><button type="button" class="view-action" title="Ver movimiento" (click)="openHistory(history)"><i class="fa-solid fa-eye"></i></button></td></tr><tr *ngIf="!loading() && !filteredHistories().length"><td colspan="5" class="table-state">No se encontraron movimientos con ese criterio.</td></tr></tbody></table></div></section>
+</main>

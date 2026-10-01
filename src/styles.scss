@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
+@import './assets/scss/custom/recumet-loader';
 :root {
     --bg-primary: rgba(42, 48, 66, 0.90);
 }
@@ -22,19 +23,19 @@ body > .swal2-container,
 }
 
 body .p-dialog {
-    max-width: calc(100vw - 1rem);
+    max-width: calc(100vw - 1.5rem);
     
     &.app-dialog--sm {
-        width: min(var(--app-dialog-sm, 42rem), 96vw) !important;
+        width: min(480px, 94vw) !important;
     }
     &.app-dialog--md {
-        width: min(var(--app-dialog-md, 65rem), 96vw) !important;
+        width: min(680px, 94vw) !important;
     }
     &.app-dialog--lg {
-        width: min(var(--app-dialog-lg, 84rem), 96vw) !important;
+        width: min(820px, 94vw) !important;
     }
     &.app-dialog--xl {
-        width: min(var(--app-dialog-xl, 98rem), 98vw) !important;
+        width: min(980px, 96vw) !important;
     }
 }
 
@@ -72,9 +73,7 @@ body .p-datepicker table td {
 p {
     font-size: small;
 }
-html {
-    font-size: 12px !important;
-}
+/* Escala rem estándar 16px gestionada al pie del archivo */
 
 body .p-datepicker table td {
     padding: 0.10rem;
@@ -91,15 +90,7 @@ body .p-datepicker table td {
  
 
 
-body .p-dialog .p-dialog-header  {
-    border-top-right-radius: 10px !important;
-    border-top-left-radius: 10px !important;
-}
-
-body .p-dialog .p-dialog-footer {
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
+/* Radios de modal unificados en _primeng-theme.scss */
 
 body .p-inputtext {
     border-radius: 6px;
@@ -155,3 +146,256 @@ body .p-dropdown {
     vertical-align: middle;
 }
 
+/* ----------------------------------------------------------
+   Design System RECUMET: tipografía base Inter, escala compacta 15px
+   ---------------------------------------------------------- */
+html {
+    font-size: 15px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body,
+.p-component,
+input,
+select,
+textarea,
+button {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    color: #1E293B;
+}
+
+/* Patrón compacto reutilizable para formularios, modales y listas. */
+.app-compact-form {
+    --compact-gap: .5rem;
+    --compact-control-height: 2.25rem;
+    --compact-label-size: .8rem;
+    --compact-meta-size: .73rem;
+}
+
+.app-compact-form label,
+.app-compact-form .p-field-label {
+    font-size: var(--compact-label-size);
+}
+
+.app-compact-form .p-inputtext,
+.app-compact-form .p-dropdown,
+.app-compact-form .p-inputnumber-input,
+.app-compact-form textarea {
+    min-height: var(--compact-control-height);
+    font-size: .87rem;
+}
+
+.app-compact-meta {
+    font-size: var(--compact-meta-size);
+}
+
+/* ----------------------------------------------------------
+   RECUMET ERP - Módulos Operacionales (Compras, Clasificados, Traslados, Ventas)
+   Estilos Centralizados, Colores Sutiles, Cards Compactas
+   ---------------------------------------------------------- */
+.erp-header-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+}
+
+.erp-panel-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.erp-edit-mode-banner {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #92400e;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.erp-card-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+}
+
+.erp-items-header {
+    background: #0b1324;
+    color: #f8fafc;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    letter-spacing: 0.4px;
+}
+
+.erp-counter-chip {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 9999px;
+}
+
+.erp-entity-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    &.active {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+    }
+
+    &.unselected {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        color: #92400e;
+    }
+
+    .remove-btn {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fee2e2;
+        color: #dc2626;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        cursor: pointer;
+        transition: background 0.15s;
+
+        &:hover {
+            background: #fca5a5;
+            color: #991b1b;
+        }
+    }
+}
+
+.erp-soft-alert-empty {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    color: #64748b;
+
+    h5 {
+        color: #334155;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+
+    p {
+        font-size: 0.8rem;
+        margin: 0;
+    }
+}
+
+/* Tabla Operacional RECUMET */
+.erp-operational-table {
+    .p-datatable-thead > tr > th {
+        background: #0b1324 !important;
+        color: #f8fafc !important;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        padding: 8px 10px;
+        border: none !important;
+    }
+
+    .p-datatable-tbody > tr > td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.82rem;
+        vertical-align: middle;
+    }
+
+    .p-datatable-tfoot > tr > th,
+    .p-datatable-tfoot > tr > td {
+        border: none;
+    }
+}
+
+/* Badges Sutiles de Productos */
+.badge-subtle-cost {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border: 1px solid #a7f3d0 !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 3px 8px !important;
+}
+
+.badge-subtle-price {
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border: 1px solid #bfdbfe !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 3px 8px !important;
+}
+
+.badge-subtle-stock {
+    background: #f0f9ff !important;
+    color: #0369a1 !important;
+    border: 1px solid #bae6fd !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 3px 8px !important;
+
+    &.stock-empty {
+        background: #fef2f2 !important;
+        color: #b91c1c !important;
+        border: 1px solid #fecaca !important;
+    }
+}
+
+.badge-subtle-code {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    border-radius: 4px !important;
+    padding: 2px 6px !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ----------------------------------------------------------
+   Tailwind CSS 3 utilities — corePlugins.preflight: false
+   (Bootstrap/Skote no se ven afectados)
+   ---------------------------------------------------------- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

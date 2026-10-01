@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/OptionsTable.interface';
 import { Provider, Providers } from '../interfaces/provider.interface';
@@ -66,7 +66,14 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     {name: 'RANGO', code: 'RANGE'},
   ]);
 
-  providers = signal<Providers|undefined>(undefined);
+    providers = signal<Providers|undefined>(undefined);
+  providerInfoVisible = signal(false);
+  selectedProvider = signal<Provider | null>(null);
+
+  showProviderInfo(provider: Provider) {
+    this.selectedProvider.set(provider);
+    this.providerInfoVisible.set(true);
+  }
   private providersService = inject(ProvidersService);
   private traceabilityApi = inject(PurchaseTraceabilityApiService);
   traceabilityVisible = signal(false);
@@ -115,6 +122,16 @@ export class ProvidersComponent implements OnInit, OnDestroy {
                 this.router.navigateByUrl(`/accounts/accounts-payable?p=${provider.id}`)
               }
             },
+                        {
+              label: '',
+              icon: 'fa-solid fa-circle-info',
+              tooltip: 'Más información',
+              disabled: false,
+              class: 'p-button-rounded p-button-help p-button-sm ms-1',
+              eventClick: () => {
+                this.showProviderInfo(provider);
+              }
+            },
             {
               label:'',icon:'fas fa-edit',
               tooltip: 'Editar',
@@ -134,6 +151,16 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               }
             },
           ] : [
+                        {
+              label: '',
+              icon: 'fa-solid fa-circle-info',
+              tooltip: 'Más información',
+              disabled: false,
+              class: 'p-button-rounded p-button-help p-button-sm',
+              eventClick: () => {
+                this.showProviderInfo(provider);
+              }
+            },
             {
               label:'',icon:'fa-solid fa-circle-check',
               tooltip: 'Activar',
@@ -275,7 +302,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       { field: 'date_last_input', header: 'ULT. COMPRA', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true, isDate: true, isNotDateAndHour: true },
       { field: 'total_products', header: 'COMPRAS [KG]', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true, field2: 'total_inputs', isDoubleValue: true,
         tagValue: (val: string) => val ? this.pipeNumber.transform(val, this.decimal()) : 0,
-        tagColor: (val: string) => 'primary',
+        tagColor: (val: string) => 'info',
         tagIcon: (val: string) => '',
       },
       { field: 'saldo_cuentas_por_pagar', header: 'SALDO', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true,
@@ -376,3 +403,4 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     });
   }
 }
+

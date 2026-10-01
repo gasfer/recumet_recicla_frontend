@@ -19,6 +19,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MessagesModule } from 'primeng/messages';
+import { MessageModule } from 'primeng/message';
 import { BadgeModule } from 'primeng/badge';
 import { CalendarModule } from 'primeng/calendar';
 import { SplitButtonModule } from 'primeng/splitbutton';
@@ -50,6 +51,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     CheckboxModule,
     InputNumberModule,
     MessagesModule,
+    MessageModule,
     BadgeModule,
     CalendarModule,
     SplitButtonModule,

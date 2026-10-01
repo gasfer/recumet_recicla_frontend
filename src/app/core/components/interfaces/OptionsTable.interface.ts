@@ -37,6 +37,8 @@ export interface ColsTable {
     typeImg?:   string;
     toImg?:     string;
     isTag?:     boolean;
+    isDocument?: boolean;
+    isProviderIdentity?: boolean;
     isSucursalBadge?: boolean;
     activeSortable?: boolean;
     class?: string;

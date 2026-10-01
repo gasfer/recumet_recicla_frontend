@@ -1,80 +1,78 @@
-<div class="card border-light shadow">
-    <div class="card-header bg-primary text-white m-0 rounded-top-custom">
-        <div class="text-center m-0">
-            <b>PRODUCTOS</b>
+<div class="card erp-card-container border-0 shadow-sm">
+    <div class="erp-items-header">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked text-emerald-400"></i>
+            <span class="tracking-wide">CATÁLOGO DE PRODUCTOS</span>
         </div>
+        <span class="erp-counter-chip">{{ products().length }} de {{ total }}</span>
     </div>
 
-    <div class="card-body rounded-body-custom">
+    <div class="card-body p-2">
 
         <!-- BUSCADOR -->
-        <div class="search-container" [formGroup]="formSearch">
+        <div class="search-container mb-2" [formGroup]="formSearch">
             <div class="row g-2 align-items-center">
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-4">
                     <p-dropdown
                         [options]="searchFor()"
                         formControlName="searchSelect"
                         placeholder="Buscar por:"
-                        pTooltip="Selecciona buscar por"
+                        pTooltip="Selecciona criterio de búsqueda"
                         tooltipPosition="top"
                         optionLabel="name"
                         optionValue="code"
-
-                        (onChange)="changeSearchProductBy($event)" class="app-u-width-100-0466783">
+                        (onChange)="changeSearchProductBy($event)" class="app-u-width-100-0466783 w-full">
                     </p-dropdown>
                 </div>
 
-                <div class="col-12 col-md-9">
+                <div class="col-12 col-md-8">
                     <p-dropdown
                         *ngIf="!isSearchByProduct()"
                         [options]="categories()"
                         placeholder="Selecciona una categoría"
                         optionLabel="name"
                         optionValue="code"
-
                         (onChange)="searchByCategory($event)"
                         [showClear]="true"
                         appendTo="body"
                         [filter]="true"
                         filterBy="name"
                         [virtualScrollItemSize]="38"
-                        [lazy]="true" class="app-u-width-100-0466783">
+                        [lazy]="true" class="app-u-width-100-0466783 w-full">
                     </p-dropdown>
 
                     <app-input-search
                         *ngIf="isSearchByProduct()"
                         (onEnters)="searchByProduct($event)"
                         (onDebounce)="searchByProduct($event)"
-                        [icon]="'fa-solid fa-cart-plus'"
-                        [placeholder]="'Busque un producto aquí....'">
+                        [icon]="'fa-solid fa-magnifying-glass'"
+                        [placeholder]="'Buscar producto por nombre o código...'">
                     </app-input-search>
                 </div>
             </div>
         </div>
 
-        <hr class="divider-custom">
-
         <!-- MENSAJE SIN PRODUCTOS -->
         <div class="row animated fadeIn fast" *ngIf="products().length === 0 && loading() === false">
             <div class="col-12">
-                <div class="alert alert-warning text-center">
-                    <h4 class="alert-heading">No se encontraron productos</h4>
-                    <i class="fa fa-spin fa-refresh fa-2x"></i>
-                    <p class="mb-0">Intenta una nueva búsqueda</p>
+                <div class="erp-soft-alert-empty my-3">
+                    <i class="fa-solid fa-box-open text-muted fs-2 mb-2 d-block"></i>
+                    <h5>No se encontraron productos</h5>
+                    <p class="mb-0 text-muted">Intenta una nueva búsqueda con otros criterios o categorías</p>
                 </div>
             </div>
         </div>
 
         <!-- LISTADO DE PRODUCTOS -->
         <p-scrollPanel *ngIf="!loading()" class="app-u-width-100-0466783 app-u-height-450px-25e06cd">
-            <div class="container mt-2">
-                <div class="row">
+            <div class="container-fluid px-1 mt-1">
+                <div class="row g-2">
 
                     <div
                         *ngFor="let product of products()"
-                        class="col-12 col-sm-6 col-lg-4 animated animate zoomIn mt-3">
+                        class="col-12 col-sm-6 col-lg-4 animated animate zoomIn">
 
-                        <!-- CARD PRODUCTO MEJORADA -->
+                        <!-- CARD PRODUCTO COMPACTA Y MODERNA -->
                         <div class="cardProduct">
 
                             <!-- CONTENEDOR DE IMAGEN CON BADGES -->
@@ -100,9 +98,9 @@
                                     <button
                                         class="btn-open"
                                         (click)="openImageModal(product); $event.stopPropagation()"
-                                        title="Ver imagen completa">
+                                        title="Ver detalle completo">
                                         <i class="fa-solid fa-expand"></i>
-                                        <span class="btn-text">Abrir</span>
+                                        <span class="btn-text">Ver</span>
                                     </button>
                                 </div>
 
@@ -133,47 +131,48 @@
                                     tooltipPosition="bottom">
                                 </span>
 
-                                <!-- BADGES DE PRECIO Y STOCK -->
+                                <!-- BADGES DE PRECIO Y STOCK SUTILES -->
                                 <div class="product-badges">
-                                    <p-badge
+                                    <span
                                         role="button" tabindex="0"
                                         [attr.aria-label]="'Añadir ' + product.name"
                                         (click)="addListDetailPos(product)"
                                         (keydown.enter)="addListDetailPos(product)"
                                         (keydown.space)="$event.preventDefault(); addListDetailPos(product)"
                                         *ngIf="!isViewPrice"
-                                        severity="success"
-                                        value="Costo: {{ product.costo | number: decimal()}}">
-                                    </p-badge>
+                                        class="badge-subtle-cost cursor-pointer">
+                                        Costo: {{ product.costo | number: decimal()}}
+                                    </span>
 
-                                    <p-badge
+                                    <span
                                         role="button" tabindex="0"
                                         [attr.aria-label]="'Añadir ' + product.name"
                                         (click)="addListDetailPos(product)"
                                         (keydown.enter)="addListDetailPos(product)"
                                         (keydown.space)="$event.preventDefault(); addListDetailPos(product)"
                                         *ngIf="isViewPrice"
-                                        severity="success"
-                                        value="Precio: {{ product.prices[0].price | number: decimal()}}">
-                                    </p-badge>
+                                        class="badge-subtle-price cursor-pointer">
+                                        Precio: {{ product.prices[0].price | number: decimal()}}
+                                    </span>
 
-                                    <p-badge
+                                    <span
                                         role="button" tabindex="0"
                                         [attr.aria-label]="'Añadir ' + product.name"
                                         (click)="addListDetailPos(product)"
                                         (keydown.enter)="addListDetailPos(product)"
                                         (keydown.space)="$event.preventDefault(); addListDetailPos(product)"
                                         *ngIf="isViewQuantity"
-                                        value="Stock: {{product.total_stock | number: decimal()}}"
-                                        [severity]="product.total_stock === 0 ? 'danger' : 'primary'">
-                                    </p-badge>
+                                        class="badge-subtle-stock cursor-pointer"
+                                        [class.stock-empty]="product.total_stock === 0">
+                                        Stock: {{product.total_stock | number: decimal()}}
+                                    </span>
                                 </div>
 
                                 <!-- INPUT DE CANTIDAD (si typeFrom === 'INPUT') -->
                                 @if(typeFrom === 'INPUT') {
                                     <div class="quantity-input-section">
-                                        <div class="row mt-2">
-                                            <div class="col-auto pe-0">
+                                        <div class="row g-1 align-items-center">
+                                            <div class="col-auto">
                                                 <p-button
                                                     ariaLabel="Añadir producto con cantidad"
                                                     icon="fa-solid fa-arrow-left"
@@ -183,7 +182,7 @@
                                                     severity="success"
                                                     size="small" />
                                             </div>
-                                            <div class="col ps-2">
+                                            <div class="col">
                                                 <input
                                                     type="number"
                                                     [(ngModel)]="product.set_quantity"
@@ -191,7 +190,7 @@
                                                     min="0"
                                                     max="99999999999"
                                                     class="form-control form-control-sm"
-                                                    placeholder="Cantidad">
+                                                    placeholder="Cant.">
                                             </div>
                                         </div>
                                     </div>
@@ -214,7 +213,8 @@
             [showCurrentPageReport]="true"
             currentPageReportTemplate="{{ from }} al {{ to }} de {{total}}"
             [totalRecords]="total"
-            (onPageChange)="paginate($event)">
+            (onPageChange)="paginate($event)"
+            styleClass="p-paginator-sm border-0 border-t border-slate-100 mt-1">
         </p-paginator>
 
     </div>

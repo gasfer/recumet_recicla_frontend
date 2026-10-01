@@ -1,3 +1,33 @@
-<div class="justify-content-center text-center">
-    <img class="img-fluid" src="../../../../assets/img/loading.gif"  alt="">
+<div [class]="containerClasses" role="status" aria-label="Cargando RECUMET">
+  <div class="recumet-brand">
+    <div class="recumet-symbol">
+      <img
+        class="recumet-map"
+        src="assets/recumet/recumet-mapa-bolivia.png"
+        alt="Mapa de Bolivia"
+        aria-hidden="true"
+      />
+
+      <div class="recumet-recycle-orbit">
+        <img
+          class="recumet-recycle"
+          src="assets/recumet/recumet-simbolo-reciclaje.svg"
+          alt="Símbolo de Reciclaje"
+          aria-hidden="true"
+        />
+      </div>
+
+      <span class="recumet-r">R</span>
+    </div>
+
+    <div class="recumet-name" aria-label="RECUMET">
+      <span>R</span><span>E</span><span>C</span><span>U</span><span>M</span><span>E</span><span>T</span>
+    </div>
+
+    <div *ngIf="showLine" class="recumet-loading-line">
+      <span></span>
+    </div>
+
+    <p *ngIf="showText && text" class="recumet-status">{{ text }}</p>
+  </div>
 </div>

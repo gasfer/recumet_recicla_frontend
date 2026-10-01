@@ -123,12 +123,14 @@ export class QueryInputsComponent implements OnInit {
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   cols = signal<ColsTable[]>([
     { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true, footer:'TOTALES'},
-    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:80px;max-width:80px;', tooltip: true,isTag: true,
-      tagValue: (val:boolean)=>  val,
-      tagColor: (val:boolean)=> 'success',
-      tagIcon: (val:boolean)=>  'fa-solid fa-file'
+    {
+      field: 'type_registry',
+      field2: 'registry_number',
+      header: 'TIPO DOC.',
+      style:'min-width:160px;max-width:180px;',
+      tooltip: true,
+      isDocument: true,
     },
-    { field: 'registry_number', header: 'NUMERO' , style:'min-width:80px;max-width:120px;', tooltip: true, isText: true},
     { field: 'date_voucher', header: 'FECHA CMP.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
     { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: `comments`, header: 'OBSERVACIONES' , style:'min-width:100px;max-width:250px;', tooltip: true, isText: true  },

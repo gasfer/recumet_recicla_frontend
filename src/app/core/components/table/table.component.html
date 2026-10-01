@@ -1,7 +1,7 @@
-<!-- ════════════════════════════════════════════════════
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      VIEW TOGGLE BAR
-════════════════════════════════════════════════════ -->
-<div class="view-toggle-bar" *ngIf="data?.data?.length && !loading">
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="view-toggle-bar" *ngIf="showViewToggle && data?.data?.length && !loading">
   <button type="button" [class.active]="viewMode === 'table'" [attr.aria-pressed]="viewMode === 'table'" (click)="viewMode = 'table'">
     <i class="fas fa-table" aria-hidden="true"></i> Tabla
   </button>
@@ -13,16 +13,16 @@
   </button>
 </div>
 
-<!-- ════════════════════════════════════════════════════
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      EMPTY STATE
-════════════════════════════════════════════════════ -->
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <app-card-empty
   *ngIf="(data?.data?.length === 0 && !loading) || (!data && !loading)">
 </app-card-empty>
 
-<!-- ════════════════════════════════════════════════════
-     ① VISTA TABLA — 100% original
-════════════════════════════════════════════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     â‘  VISTA TABLA — 100% original
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <ng-container *ngIf="viewMode === 'table'">
 
   <p-table #dt id="table"
@@ -79,9 +79,10 @@
 
     <ng-template pTemplate="header" let-columns>
       <ng-content *ngIf="!loading"></ng-content>
-      <tr *ngIf="!loading">
+      <tr *ngIf="!loading" class="erp-table-header">
         <th *ngFor="let col of columns" [style]="col.style"
             class="text-white background-primary"
+            [class.app-table-action-column]="col.isButton"
             [pSortableColumn]="(col.activeSortable ?? true) && !col.isButton ? col.field : ''">
           {{ col.header }}
           <p-sortIcon [field]="col.field"
@@ -97,8 +98,9 @@
     </ng-template>
 
     <ng-template pTemplate="body" let-rowData let-columns="columns">
-      <tr *ngIf="!loading">
+      <tr *ngIf="!loading" class="erp-table-row">
         <td *ngFor="let col of columns" ngClass="tdwith" [style]="col.style"
+            [class.app-table-action-column]="col.isButton"
             [pTooltip]="col.tooltip ? (col.tooltipMsg ? col.tooltipMsg : formatTooltip(getRowData(rowData,col))) : null"
             tooltipPosition="top" class="text-start app-u-white-space-normal-f8f979b">
           <span class="p-column-title"><b>{{ col.header }}</b></span>
@@ -130,7 +132,7 @@
             </p-overlayPanel>
           </div>
 
-          <div *ngIf="col.isButton">
+          <div *ngIf="col.isButton" class="erp-table-cell-action">
             <button *ngFor="let button of rowData[col.field]" pButton [label]="button.label"
                 [attr.aria-label]="button.ariaLabel || button.label || button.tooltip"
                 [attr.aria-disabled]="button.ariaDisabled ? 'true' : null"
@@ -148,6 +150,26 @@
                 [value]="col?.tagValue(getRowData(rowData,col))"
                 [icon]="col?.tagIcon(getRowData(rowData,col))">
             </p-tag>
+          </div>
+
+          <div *ngIf="col.isDocument" class="app-table-document">
+            <span class="app-table-document__type"
+                  [class.app-table-document__type--receipt]="getRowData(rowData,col) === 'BOLETA'"
+                  [class.app-table-document__type--without-file]="getRowData(rowData,col) === 'SIN FICHA'"
+                  [class.app-table-document__type--file]="getRowData(rowData,col) === 'FICHA'">
+              <i [class]="getRowData(rowData,col) === 'BOLETA' ? 'fa-solid fa-receipt' : 'fa-solid fa-file-lines'"
+                 aria-hidden="true"></i>
+              {{ getRowData(rowData,col) }}
+            </span>
+            <span class="app-table-document__number" *ngIf="getRowData2(rowData,col)">{{ getRowData2(rowData,col) }}</span>
+          </div>
+
+          <div *ngIf="col.isProviderIdentity" class="app-table-provider">
+            <span class="app-table-provider__code"
+                  [ngClass]="'app-table-provider__code--' + (getRowData(rowData,col) || 'x').toString().toLowerCase()">
+              {{ getRowData(rowData,col) || '?' }}
+            </span>
+            <span class="app-table-provider__name">{{ getRowData2(rowData,col) }}</span>
           </div>
 
           <div *ngIf="col.isImg">
@@ -213,7 +235,7 @@
 
           <div *ngIf="!col.isLink && !col.isDoubleValue && !col.isButton && !col.isArray
                       && !col.isTag && !col.isImg && !col.isText && !col.isValueUpdate && !col.isTextArray && !col.isSucursalBadge
-                      && !col.isInfoStack && !col.isReviewNotes">
+                      && !col.isInfoStack && !col.isReviewNotes && !col.isDocument && !col.isProviderIdentity">
             {{ getRowData(rowData,col) }}
           </div>
         </td>
@@ -259,9 +281,9 @@
 </ng-container>
 
 
-<!-- ════════════════════════════════════════════════════
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      ② VISTA CARDS — p-table, body = card horizontal
-════════════════════════════════════════════════════ -->
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <ng-container *ngIf="viewMode === 'cards'">
 
   <p-table #dt id="table"
@@ -466,10 +488,10 @@
 </ng-container>
 
 
-<!-- ════════════════════════════════════════════════════
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      ③ VISTA GRID — Catálogo Premium
          6 cols · imagen dominante · código en badge · modal
-════════════════════════════════════════════════════ -->
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <ng-container *ngIf="viewMode === 'grid'">
 
   <!-- Barra búsqueda -->
@@ -510,7 +532,7 @@
     <div class="gc-grid" *ngIf="!loading">
       <div class="gc-card" *ngFor="let rowData of data?.data">
 
-        <!-- ── Zona imagen: click abre modal ── -->
+        <!-- â”€â”€ Zona imagen: click abre modal â”€â”€ -->
         <div class="gc-card__img-wrap" role="button" tabindex="0" aria-label="Abrir detalle"
              (click)="openDetailModal(rowData)" (keydown.enter)="openDetailModal(rowData)"
              (keydown.space)="$event.preventDefault(); openDetailModal(rowData)">
@@ -552,7 +574,7 @@
 
         </div><!-- /img-wrap -->
 
-        <!-- ── Cuerpo: nombre + hasta 5 campos ── -->
+        <!-- â”€â”€ Cuerpo: nombre + hasta 5 campos â”€â”€ -->
         <div class="gc-card__body">
           <ng-container *ngFor="let col of cols; let i = index">
 
@@ -604,7 +626,7 @@
 
         </div><!-- /gc-card__body -->
 
-        <!-- ── Botones al pie ── -->
+        <!-- â”€â”€ Botones al pie â”€â”€ -->
         <div class="gc-card__actions" *ngIf="hasButtonCol()">
           <ng-container *ngFor="let col of cols">
             <ng-container *ngIf="col.isButton">
@@ -641,9 +663,9 @@
 
 </ng-container>
 
-<!-- ════════════════════════════════════════════════════
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      MODAL DETALLE — se activa con openDetailModal()
-════════════════════════════════════════════════════ -->
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <p-dialog
   [(visible)]="detailModalVisible"
   [modal]="true"

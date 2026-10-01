@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/OptionsTable.interface';
 import { Provider, Providers } from '../interfaces/provider.interface';
@@ -6,35 +6,39 @@ import { ProvidersService } from '../services/providers.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { ValidatorsService } from 'src/app/services/validators.service';
-import { Router } from '@angular/router';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
+import { AccountsPayableService } from '../../accounts/services/accounts-payable.service';
+import { Account, AccountsPayableProvider } from '../../accounts/interfaces/accounts-payable-provider.interface';
+import { ProviderCompanyProfile, ProviderSiteProfile } from '../interfaces/provider-commercial-profile.interface';
 
 @Component({
   selector: 'app-providers',
   templateUrl: './providers.component.html',
-  styles: [`
-      .title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-  `]
+  styleUrls: ['./providers.component.scss']
 })
 export class ProvidersComponent implements OnInit, OnDestroy {
   searchItems = signal<MenuItem[]>([
     { label: 'Activos',   icon: 'fa-solid fa-circle-check' ,
       iconStyle: { 'color': '#3B71CA'}, command: () => {
       this.type.set('');
+      this.estadoRegistro.set('');
       this.getAllAndSearchProviders(1,this.rows(),true);
     }},
     { label: 'Inactivos', icon: 'fa-solid fa-trash-can',
       iconStyle: { 'color': '#DC4C64'},
       command: () => {
       this.type.set('');
+      this.estadoRegistro.set('');
       this.getAllAndSearchProviders(1,this.rows(),false)
+    } },
+    { label: 'Pendientes de Validación Comercial', icon: 'fa-solid fa-clock',
+      iconStyle: { 'color': '#f57c00' }, command: () => {
+      this.type.set('');
+      this.estadoRegistro.set('PENDIENTE');
+      this.getAllAndSearchProviders(1, this.rows(), true);
     } },
   ]);
   cols = signal<ColsTable[]>([]);
@@ -58,6 +62,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   status    = signal(true);
   type      = signal('');
   query     = signal('');
+  estadoRegistro = signal('');
   types = signal<{name:string, code:string}[]>([]);
   types_filtrado = signal([
     {name: 'DIA', code: 'DAY'},
@@ -66,13 +71,83 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     {name: 'RANGO', code: 'RANGE'},
   ]);
 
-  providers = signal<Providers|undefined>(undefined);
+    providers = signal<Providers|undefined>(undefined);
+  providerInfoVisible = signal(false);
+  providerInfoLoading = signal(false);
+  providerInfoTab = signal<'company' | 'branches' | 'summary'>('company');
+  selectedProvider = signal<Provider | null>(null);
+  selectedCompanyProfile = signal<ProviderCompanyProfile | null>(null);
+  selectedInfoSiteId = signal<number | null>(null);
+  accountsVisible = signal(false);
+  accountsLoading = signal(false);
+  providerAccounts = signal<AccountsPayableProvider | null>(null);
+
+  showProviderInfo(provider: Provider) {
+    this.providerInfoTab.set('company');
+    this.selectedProvider.set(provider);
+    this.selectedCompanyProfile.set(null);
+    this.selectedInfoSiteId.set(provider.id);
+    this.providerInfoVisible.set(true);
+    this.providerInfoLoading.set(true);
+    this.providersService.getCommercialDetails(provider.id).subscribe({
+      next: ({ provider: details }) => {
+        this.selectedProvider.set({ ...provider, ...details });
+        const companyId = details.company?.id;
+        if (companyId) {
+          this.providersService.getCommercialCompany(companyId).subscribe({
+            next: ({ company }) => {
+              this.selectedCompanyProfile.set(company);
+              this.selectedInfoSiteId.set(provider.id);
+            },
+          });
+        }
+      },
+      error: () => Swal.fire({ icon: 'error', title: 'No se pudo cargar la ficha', text: 'Intente nuevamente.' }),
+      complete: () => this.providerInfoLoading.set(false),
+    });
+  }
+
+  infoSites(): ProviderSiteProfile[] { return this.selectedCompanyProfile()?.operatingProviders || []; }
+
+  selectedInfoSite(): ProviderSiteProfile | null {
+    const sites = this.infoSites();
+    return sites.find(site => site.id === this.selectedInfoSiteId()) || sites[0] || null;
+  }
+
+  selectInfoSite(site: ProviderSiteProfile) {
+    this.selectedInfoSiteId.set(site.id || null);
+  }
+
+  maskedAccount(accountNumber: string) {
+    const value = String(accountNumber || '');
+    if (value.length <= 4) return value ? `•••• ${value}` : 'Sin número';
+    return `${'•'.repeat(Math.min(8, value.length - 4))} ${value.slice(-4)}`;
+  }
+
+  openStreetMapUrl(site: ProviderSiteProfile) {
+    const latitude = site.location?.latitude;
+    const longitude = site.location?.longitude;
+    return latitude != null && longitude != null ? `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}` : '';
+  }
+
+  siteMapUrl(site: ProviderSiteProfile): SafeResourceUrl | null {
+    const latitude = Number(site.location?.latitude);
+    const longitude = Number(site.location?.longitude);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+    const delta = 0.008;
+    const bbox = [longitude - delta, latitude - delta, longitude + delta, latitude + delta].join('%2C');
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${latitude}%2C${longitude}`,
+    );
+  }
+
   private providersService = inject(ProvidersService);
+  private sanitizer = inject(DomSanitizer);
   private traceabilityApi = inject(PurchaseTraceabilityApiService);
+  private accountsPayableService = inject(AccountsPayableService);
   traceabilityVisible = signal(false);
   traceabilityData = signal<any>(null);
   validatorsService = inject(ValidatorsService);
-  router            = inject(Router);
   fb                = inject(FormBuilder);
   save$!: Subscription;
   formReport:UntypedFormGroup = this.fb.group({
@@ -95,7 +170,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     this.status.set(status);
     this.cols.set(this.loadColsTableByType());
     const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
-    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '').subscribe({
+    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '', this.estadoRegistro()).subscribe({
       next: (resp) => {
         this.providers.set(resp.providers);
         this.providers()!.data.forEach((provider) => {
@@ -111,8 +186,15 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               tooltip: 'Cuentas por pagar',
               disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR','view'),
               class:'p-button-rounded  p-button-sm',
+              eventClick: () => this.showProviderAccounts(provider)
+            },
+                        {
+              label: '',
+              icon: 'fa-solid fa-circle-info',
+              tooltip: 'Más información',
+              class: 'p-button-rounded p-button-help p-button-sm ms-1',
               eventClick: () => {
-                this.router.navigateByUrl(`/accounts/accounts-payable?p=${provider.id}`)
+                this.showProviderInfo(provider);
               }
             },
             {
@@ -134,6 +216,15 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               }
             },
           ] : [
+                        {
+              label: '',
+              icon: 'fa-solid fa-circle-info',
+              tooltip: 'Más información',
+              class: 'p-button-rounded p-button-help p-button-sm',
+              eventClick: () => {
+                this.showProviderInfo(provider);
+              }
+            },
             {
               label:'',icon:'fa-solid fa-circle-check',
               tooltip: 'Activar',
@@ -150,15 +241,67 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       error: () => this.loading.set(false)
     });
   }
-
   showTraceability(provider: Provider) {
-    this.traceabilityApi.getProvider(provider.id).subscribe(({ traceability }) => {
+    this.traceabilityApi.getProvider(provider.id, 1, 100, this.currentContext()).subscribe(({ traceability }) => {
       this.traceabilityData.set(traceability);
       this.traceabilityVisible.set(true);
     });
   }
 
+  showProviderAccounts(provider: Provider) {
+    this.selectedProvider.set(provider);
+    this.providerAccounts.set(null);
+    this.accountsVisible.set(true);
+    this.accountsLoading.set(true);
+    const context = this.currentContext();
+    this.accountsPayableService.getAccountsPayableForProvider(provider.id, context['id_sucursal'], context['id_storage']).subscribe({
+      next: ({ accountsPayable }) => this.providerAccounts.set(accountsPayable),
+      error: () => Swal.fire({ icon: 'error', title: 'No se pudo cargar el historial de cuentas' }),
+      complete: () => this.accountsLoading.set(false),
+    });
+  }
+
+  activePayments(account: Account) {
+    return (account.abonosAccountsPayable || []).filter(payment => payment.status !== false);
+  }
+
+  private currentContext(): Record<string, number> {
+    const context: Record<string, number> = {};
+    const branchId = Number(this.validatorsService.id_sucursal());
+    const storageId = Number(this.validatorsService.id_storage());
+    if (branchId) context['id_sucursal'] = branchId;
+    if (storageId) context['id_storage'] = storageId;
+    return context;
+  }
+
   updateStatus(provider: Provider,newStatus: boolean) {
+    if (!newStatus) {
+      this.confirmProviderDeactivation(provider);
+      return;
+    }
+    this.persistProviderStatus(provider, newStatus);
+  }
+
+  private confirmProviderDeactivation(provider: Provider) {
+    this.accountsPayableService.getAccountsPayableForProvider(provider.id).subscribe({
+      next: ({ accountsPayable }) => {
+        const totals = accountsPayable.totals;
+        Swal.fire({
+          title: '¿Dar de baja al proveedor?',
+          html: `<div style="text-align:left;font-size:.86rem"><b>${this.escapeHtml(provider.full_names)}</b><hr><p>Cuentas registradas: <b>${totals.total_accounts || 0}</b></p><p>Total comprado: <b>Bs. ${Number(totals.total_account || 0).toFixed(2)}</b></p><p>Total pagado: <b>Bs. ${Number(totals.total_abonados || 0).toFixed(2)}</b></p><p>Saldo pendiente: <b style="color:#b45309">Bs. ${Number(totals.total_restante || 0).toFixed(2)}</b></p><small>La baja no elimina compras, pagos ni deudas. El historial permanecerá disponible.</small></div>`,
+          icon: Number(totals.total_restante || 0) > 0 ? 'warning' : 'question',
+          confirmButtonText: 'Sí, dar de baja',
+          cancelButtonText: 'Cancelar',
+          showCancelButton: true,
+          confirmButtonColor: '#dc2626',
+          customClass: { container: 'sweetalert2' },
+        }).then(result => { if (result.isConfirmed) this.persistProviderStatus(provider, false); });
+      },
+      error: () => Swal.fire({ icon: 'error', title: 'No se pudo validar el estado de cuenta', text: 'No se realizó la baja.' }),
+    });
+  }
+
+  private persistProviderStatus(provider: Provider,newStatus: boolean) {
     const statusText = newStatus ? 'Activar' : 'Inactivar';
     Swal.fire({
       title: `¿${statusText} Proveedor?`,
@@ -197,6 +340,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  private escapeHtml(value: string) {
+    return value.replace(/[&<>'\"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '\"': '&quot;' }[char] || char));
   }
 
   paginate($rows:any) {
@@ -271,11 +418,18 @@ export class ProvidersComponent implements OnInit, OnDestroy {
 
   getDefaultColumns() {
     return [
-      { field: 'category.name', header: 'CATEGORÍA', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
+      {
+        field: 'type.code',
+        field2: 'full_names',
+        header: 'PROVEEDOR',
+        style:'min-width:230px;max-width:330px;',
+        tooltip: true,
+        isProviderIdentity: true,
+      },
       { field: 'date_last_input', header: 'ULT. COMPRA', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true, isDate: true, isNotDateAndHour: true },
       { field: 'total_products', header: 'COMPRAS [KG]', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true, field2: 'total_inputs', isDoubleValue: true,
         tagValue: (val: string) => val ? this.pipeNumber.transform(val, this.decimal()) : 0,
-        tagColor: (val: string) => 'primary',
+        tagColor: (val: string) => 'info',
         tagIcon: (val: string) => '',
       },
       { field: 'saldo_cuentas_por_pagar', header: 'SALDO', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true,
@@ -294,7 +448,6 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     switch (type.code) {
       case 'A': case 'F':
         return [...columns,
-          { field: 'full_names', header: type === 'A' ? 'EMPRESA' : 'EMPRESA PUBLICA', style:'min-width:150px;max-width:300px;', tooltip: true, isText: true },
           { field: 'number_document', header: 'NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
           { field: 'direction', header: 'DIRECCIÓN', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
           { field: 'companyContacts', header: 'CONTACTO', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
@@ -305,7 +458,6 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         ];
       case 'B':
         return [...columns,
-          { field: 'full_names', header: 'TALLER, NEGOCIO', style:'min-width:150px;max-width:300px;', tooltip: true, isText: true },
           { field: 'number_document', header: 'CI / NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
           { field: 'direction', header: 'DIRECCIÓN', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
           { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px;', isButton: true }
@@ -314,11 +466,6 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         return [...columns,
           { field: 'number_document', header: 'CI / NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
           { field: 'direction', header: type === 'C' ? 'ACOPIADORA MAYORISTA' : 'DIRECCIÓN ACOPIADORA MINORISTA', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
-          { field: 'mayorista', header: 'MAYOR.', style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
-            tagValue: (val: boolean) => val ? 'SI' : 'NO',
-            tagColor: (val: boolean) => val ? 'primary' : 'success',
-            tagIcon: (val: boolean) => val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'
-          },
           { field: 'options', header: 'OPCIONES', style:'min-width:130px;max-width:130px;', isButton: true }
         ];
       case 'E':
@@ -330,19 +477,12 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         ];
       case 'ALL':
           return [...columns,
-            { field: 'full_names', header: 'EMPRESA - TALLER, NEGOCIO', style: 'min-width:150px;max-width:300px;', tooltip: true, isText: true },
             { field: 'number_document', header: 'CI / NIT', style: 'min-width:120px;max-width:120px;', tooltip: true, isText: true },
           //  { field: 'direction', header: 'DIRECCIÓN - ACOPIADORA', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
             { field: 'companyContacts', header: 'CONTACTO', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
             { field: 'name_contact', header: 'PERSONA NOMBRE', style: 'min-width:150px;max-width:200px;', tooltip: true, isText: true },
             { field: 'cellphone_contact', header: 'PERSONA CELULAR', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },
            // { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },
-            {
-              field: 'mayorista', header: 'MAYOR.', style: 'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
-              tagValue: (val: boolean) => val ? 'SI' : 'NO',
-              tagColor: (val: boolean) => val ? 'primary' : 'success',
-              tagIcon: (val: boolean) => val ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'
-            },
             { field: 'options', header: 'OPCIONES', style: 'min-width:130px;max-width:130px;', isButton: true }
           ];
       default:
@@ -376,3 +516,4 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     });
   }
 }
+

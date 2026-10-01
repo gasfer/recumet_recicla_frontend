@@ -4,58 +4,63 @@
     [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="scaleForm">
         <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="field">
-                    <label class="block mb-0">Nombre<span class="text-danger">*</span>
-                    </label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="name" placeholder="EJ. BALANZA ETC."
-                        [class.ng-dirty]="validatorsService.inputValid('name',scaleForm)" class="text-uppercase"/>
-                    <small *ngIf="validatorsService.inputValid('name',scaleForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("name",scaleForm) }}
-                    </small>
-                </div>
 
-                <div class="field">
-                    <label class="block mb-0">Celular</label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="cellphone" placeholder="EJ. 7974..."
-                        [class.ng-dirty]="validatorsService.inputValid('cellphone',scaleForm)" class="text-uppercase"/>
-                    <small *ngIf="validatorsService.inputValid('cellphone',scaleForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("cellphone",scaleForm) }}
-                    </small>
-                </div>
-                <div class="field">
-                    <label class="block mb-0">Dirección</label>
-                    <textarea pInputTextarea
-                        type="text"
+        <!-- Fila 1: Nombre -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Nombre</label>
+                <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="name" placeholder="EJ. BALANZA ETC."
+                    class="erp-input text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('name',scaleForm)"/>
+                <small *ngIf="validatorsService.inputValid('name',scaleForm)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("name",scaleForm) }}
+                </small>
+            </div>
+        </div>
 
-                        pInputText
-                        [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="address"
-                        placeholder="EJ. ......"
-                        class="mt-1 text-uppercase"
-                        [class.ng-dirty]="validatorsService.inputValid('address',scaleForm)"
-                    ></textarea>
-                    <small *ngIf="validatorsService.inputValid('address',scaleForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("address",scaleForm) }}
-                    </small>
-                </div>
-                <div class="row mt-1 ">
-                    <label class="block">Estado:<span class="text-danger">*</span></label>
-                </div>
-                <div class="row mt-0">
-                    <div class="col-3">
-                        <p-inputSwitch formControlName="status"></p-inputSwitch>
-                    </div>
-                    <div class="col">
-                        <p-tag  [rounded]="true"
-                                [icon]="scaleForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                                [styleClass]="scaleForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
-                                [value]="scaleForm.get('status')!.value ? 'Activo' : 'Inactivo'">
-                        </p-tag>
-                    </div>
+        <!-- Fila 2: Celular -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label">Celular</label>
+                <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="cellphone" placeholder="EJ. 7974..."
+                    class="erp-input text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('cellphone',scaleForm)"/>
+                <small *ngIf="validatorsService.inputValid('cellphone',scaleForm)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("cellphone",scaleForm) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Fila 3: Dirección -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label">Dirección</label>
+                <textarea pInputTextarea
+                    [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="address"
+                    placeholder="EJ. ......"
+                    class="text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('address',scaleForm)"
+                ></textarea>
+                <small *ngIf="validatorsService.inputValid('address',scaleForm)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("address",scaleForm) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Fila 4: Estado (Switch alineado) -->
+        <div class="erp-form-grid mb-2">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label required">Estado</label>
+                <div class="erp-toggle-field">
+                    <p-inputSwitch formControlName="status"></p-inputSwitch>
+                    <p-tag  [rounded]="true"
+                            [icon]="scaleForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                            [styleClass]="scaleForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
+                            [value]="scaleForm.get('status')!.value ? 'Activo' : 'Inactivo'">
+                    </p-tag>
                 </div>
             </div>
         </div>

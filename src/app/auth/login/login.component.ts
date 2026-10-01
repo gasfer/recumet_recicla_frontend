@@ -11,11 +11,7 @@ import { TransferReviewService } from 'src/app/services/transfer-review.service'
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styles: [
-    `.context-form { display: grid; gap: 1rem; }
-     .context-field { display: grid; gap: .4rem; }
-     .context-field label { color: #334155; font-size: .82rem; font-weight: 700; }`
-  ]
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   fb                = inject( FormBuilder );

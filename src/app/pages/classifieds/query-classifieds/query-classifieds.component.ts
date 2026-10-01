@@ -84,13 +84,15 @@ export class QueryClassifiedsComponent implements OnInit {
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   cols = signal<ColsTable[]>([
-    { field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
-    { field: 'type_registry', header: 'TIPO DOC.' , style:'min-width:100px;max-width:100px;', tooltip: true,isTag: true,
-      tagValue: (val:boolean)=>  val,
-      tagColor: (val:boolean)=> 'success',
-      tagIcon: (val:boolean)=>  'fa-solid fa-file'
+    { field: 'cod', header: 'CÓDIGO' , style:'min-width:90px;max-width:90px;', tooltip: true},
+    {
+      field: 'type_registry',
+      field2: 'number_registry',
+      header: 'TIPO DOC.',
+      style: 'min-width:130px;max-width:150px;',
+      tooltip: true,
+      isDocument: true
     },
-    { field: 'number_registry', header: 'N. DOC.' , style:'min-width:90px;max-width:100px;', tooltip: true},
     { field: 'product.name', header: 'PRODUCTO' , style:'min-width:150px;max-width:250px;', tooltip: true, isText: true},
     { field: 'quantity_product', header: 'CANT.' , style:'min-width:90px;max-width:90px;text-align: center;', tooltip: true,isTag: true,
       tagValue: (val:boolean)=>  val,

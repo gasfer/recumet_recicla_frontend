@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, OnInit, Output, inject, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Inject, Input, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -20,11 +20,16 @@ import { TransferReviewService } from 'src/app/services/transfer-review.service'
   styleUrls: ['./topbar.component.scss']
 })
 export class TopbarComponent implements OnInit{
+  @ViewChild('globalSearch') globalSearch?: ElementRef<HTMLInputElement>;
   element:any;
   cookieValue:any;
   flagvalue:any;
   countryName:any;
   valueset:any;
+  defaultAvatar = 'assets/img/not-user.jpg';
+  userDropdownOpen = signal(false);
+  notificationsDropdownOpen = signal(false);
+
   constructor(@Inject(DOCUMENT) private document: any, private router: Router,
               public languageService: LanguageService,
               public translate: TranslateService,
@@ -41,6 +46,7 @@ export class TopbarComponent implements OnInit{
   @Output() settingsButtonClicked = new EventEmitter();
   @Output() mobileMenuButtonClicked = new EventEmitter();
   @Input() mobileMenuOpen = false;
+  @Input() desktopSidebarHidden = false;
   @Input() mobileMenuControls = 'app-sidebar';
   cities: any[] | undefined;
   selectedCity: any | undefined;
@@ -72,6 +78,40 @@ export class TopbarComponent implements OnInit{
     this.isReloadSub$ = this.validatorsService.reload_sucursal_storages$.subscribe(resp => {
       this.getAllSucursales();
     });
+  }
+
+  toggleUserDropdown(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.notificationsDropdownOpen.set(false);
+    this.userDropdownOpen.update(v => !v);
+  }
+
+  closeUserDropdown(): void {
+    this.userDropdownOpen.set(false);
+  }
+
+  toggleNotificationsDropdown(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.userDropdownOpen.set(false);
+    this.notificationsDropdownOpen.update(v => !v);
+    if (this.notificationsDropdownOpen()) {
+      this.loadNotifications();
+    }
+  }
+
+  closeNotificationsDropdown(): void {
+    this.notificationsDropdownOpen.set(false);
+  }
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = this.defaultAvatar;
+    }
   }
 
   loadNotifications() {
@@ -115,6 +155,34 @@ export class TopbarComponent implements OnInit{
         this.transferReviewService.checkCurrentContext(true).subscribe();
       }
     });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (target) {
+      if (!target.closest('#page-header-user-dropdown') && !target.closest('.user-dropdown-menu')) {
+        this.userDropdownOpen.set(false);
+      }
+      if (!target.closest('#page-header-notifications-dropdown') && !target.closest('.notifications-dropdown-menu')) {
+        this.notificationsDropdownOpen.set(false);
+      }
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  focusGlobalSearch(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      this.userDropdownOpen.set(false);
+      this.notificationsDropdownOpen.set(false);
+      return;
+    }
+    if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'k') return;
+    const target = event.target as HTMLElement | null;
+    const isEditing = target?.matches('input, textarea, select, [contenteditable="true"]');
+    if (isEditing && target !== this.globalSearch?.nativeElement) return;
+    event.preventDefault();
+    this.globalSearch?.nativeElement.focus();
   }
 
   setWorkContext(idSucursal: number, preferredStorageId?: number | null): boolean {
@@ -175,6 +243,7 @@ export class TopbarComponent implements OnInit{
    * Logout the user
    */
   logout() {
+    this.closeUserDropdown();
     this.authService.logout();
   }
 

@@ -4,6 +4,17 @@ import { Observable, Subject } from 'rxjs';
 import { GetAllProviders, GetAllTypesProvider, Provider } from '../interfaces/provider.interface';
 import { environment } from 'src/environments/environment';
 import { GetAllSectorProviders, Sector } from '../interfaces/sector.interface';
+import {
+  ProviderBankAccountProfile,
+  ProviderCommercialCompaniesResponse,
+  ProviderCommercialProfileResponse,
+  ProviderCompanyProfile,
+  ProviderContactProfile,
+  ProviderMaterialProfile,
+  ProviderPendingSummary,
+  ProviderSiteProfile,
+  ProviderSiteResponse,
+} from '../interfaces/provider-commercial-profile.interface';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -13,6 +24,7 @@ export class ProvidersService {
   private http = inject(HttpClient);
   isEdit: boolean = false;
   showModal : boolean = false;
+  showPreRegisterModal : boolean = false;
   showModalNewSector : boolean = false;
   showModalSectors : boolean = false;
   save$: Subject<boolean> = new Subject();
@@ -37,7 +49,8 @@ getAllAndSearch(
   query: string = '',
   field_sort: string = 'id',
   order: string = 'DESC',
-  id_type_provider: string = ''
+  id_type_provider: string = '',
+  estado_registro: string = ''
 ): Observable<GetAllProviders> {
 
   let params = new HttpParams()
@@ -49,6 +62,10 @@ getAllAndSearch(
 
   if (id_type_provider) {
     params = params.set('id_type_provider', id_type_provider);
+  }
+
+  if (estado_registro) {
+    params = params.set('estado_registro', estado_registro);
   }
 
   if (type) {
@@ -108,6 +125,72 @@ getAllAndSearch(
   getProvidersAutocomplete(query: string = ''): Observable<{ ok: boolean, providers: Provider[] }> {
     let params = new HttpParams().set('query', query);
     return this.http.get<{ ok: boolean, providers: Provider[] }>(`${base_url}/provider/autocomplete`, { params });
+  }
+
+  preRegister(form: { full_names: string | null; number_document?: string | null; cellphone?: string | null }) {
+    return this.http.post<{ ok: boolean, provider: Provider }>(`${base_url}/provider/pre-register`, form);
+  }
+
+  checkDuplicate(number_document?: string, cellphone?: string | number) {
+    let params = new HttpParams();
+    if (number_document) params = params.set('number_document', number_document);
+    if (cellphone) params = params.set('cellphone', cellphone);
+    return this.http.get<{ ok: boolean, exists: boolean, provider?: Provider }>(`${base_url}/provider/check-duplicate`, { params });
+  }
+
+  getCommercialDetails(id: number) {
+    return this.http.get<{ ok: boolean, provider: Provider }>(`${base_url}/provider/${id}/commercial-details`);
+  }
+
+  resolveGoogleMapsLink(url: string) {
+    return this.http.get<{ ok: boolean; finalUrl: string; latitude: number; longitude: number }>(`${base_url}/provider/resolve-map-link`, { params: new HttpParams().set('url', url) });
+  }
+
+
+  getCommercialCompanies(query = '') {
+    const params = query ? new HttpParams().set('query', query) : undefined;
+    return this.http.get<ProviderCommercialCompaniesResponse>(`${base_url}/commercial_providers`, { params });
+  }
+  getCommercialCompany(id: number) { return this.http.get<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${id}`); }
+  createCommercialCompany(body: ProviderCompanyProfile | { company: ProviderCompanyProfile; headquarters: ProviderSiteProfile }) {
+    return this.http.post<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers`, body);
+  }
+  updateCommercialCompany(id: number, body: ProviderCompanyProfile) {
+    return this.http.put<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${id}`, body);
+  }
+  uploadCommercialCompanyDocument(id: number, type: 'CERTIFICATE' | 'TRACEABILITY_REPORT', file: File) {
+    const body = new FormData();
+    body.append('document', file, file.name);
+    return this.http.post<{ ok: boolean; document: { id: number; document_type: string; original_name: string } }>(
+      `${base_url}/commercial_providers/${id}/documents/${type}`, body,
+    );
+  }
+  setCommercialCompanyProviders(id: number, provider_ids: number[]) {
+    return this.http.put<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${id}/providers`, { provider_ids });
+  }
+  createCommercialSite(companyId: number, site: ProviderSiteProfile) {
+    return this.http.post<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${companyId}/sites`, site);
+  }
+  updateCommercialSite(companyId: number, providerId: number, site: ProviderSiteProfile) {
+    return this.http.put<ProviderSiteResponse>(`${base_url}/commercial_providers/${companyId}/sites/${providerId}`, site);
+  }
+  transferCommercialHeadquarters(companyId: number, providerId: number) {
+    return this.http.put<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${companyId}/sites/${providerId}/headquarters`, {});
+  }
+  getCommercialSitePending(companyId: number, providerId: number) {
+    return this.http.get<{ ok: boolean; pending: ProviderPendingSummary }>(`${base_url}/commercial_providers/${companyId}/sites/${providerId}/pending`);
+  }
+  deactivateCommercialSite(companyId: number, providerId: number) {
+    return this.http.put<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${companyId}/sites/${providerId}/deactivate`, { confirm: true });
+  }
+  replaceCommercialContacts(companyId: number, providerId: number, contacts: ProviderContactProfile[]) {
+    return this.http.put<{ ok: boolean; contacts: ProviderContactProfile[] }>(`${base_url}/commercial_providers/${companyId}/sites/${providerId}/contacts`, { contacts });
+  }
+  replaceCommercialMaterials(companyId: number, providerId: number, materials: ProviderMaterialProfile[]) {
+    return this.http.put<{ ok: boolean; materials: ProviderMaterialProfile[] }>(`${base_url}/commercial_providers/${companyId}/sites/${providerId}/materials`, { materials });
+  }
+  replaceCommercialBankAccounts(companyId: number, providerId: number, bankAccounts: ProviderBankAccountProfile[]) {
+    return this.http.put<{ ok: boolean; bankAccounts: ProviderBankAccountProfile[] }>(`${base_url}/commercial_providers/${companyId}/sites/${providerId}/bank-accounts`, { bankAccounts });
   }
 
 

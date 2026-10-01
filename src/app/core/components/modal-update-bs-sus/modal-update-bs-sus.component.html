@@ -1,47 +1,43 @@
-<p-dialog [header]="'Cambio Dolar a Bolivianos'" [(visible)]="componentsService.setShowModalBsSus" [modal]="true" [draggable]="false"
+<p-dialog [header]="'Tipo de Cambio Dólar a Bolivianos'" [(visible)]="componentsService.setShowModalBsSus" [modal]="true" [draggable]="false"
     [resizable]="false" (onShow)="focusOnInput()" [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="updateBsForm">
-        <div class="row">
-          <div class="col">
-                <div class="field">
-                    <label class="text-center app-u-margin-right-10px-6b0d456">Cambio actual Bs. $</label><br>
-                    <!-- <h2 class="text-primary text-center">{{this.company()?.change_bs_sus}}</h2> -->
-                    <p-inputNumber
-                      formControlName="actual_cambio"
-
-                      [size]="5"
-                      locale="en-US"
-                      mode="decimal"
-                      [minFractionDigits]="2"
-                      [showButtons]="true"
-                      decrementButtonClass="p-button-secondary"
-                      incrementButtonClass="p-button-primary"
-                      [min]="0"
-                      (onInput)="newCambio()"
-                      [max]="9999999999999.99" class="app-u-height-35px-11d06a7"></p-inputNumber>
-                </div>
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field">
+                <label class="erp-label">Cambio actual (Bs. / $)</label>
+                <p-inputNumber
+                    formControlName="actual_cambio"
+                    [size]="5"
+                    locale="en-US"
+                    mode="decimal"
+                    [minFractionDigits]="2"
+                    [showButtons]="true"
+                    decrementButtonClass="p-button-secondary"
+                    incrementButtonClass="p-button-primary"
+                    [min]="0"
+                    (onInput)="newCambio()"
+                    [max]="9999999999999.99"
+                    class="erp-input w-full">
+                </p-inputNumber>
             </div>
-            <div class="col">
-                <div class="field">
-                    <label class="block mb-0">Monto $<span class="text-danger">*</span></label><br>
-                    <p-inputNumber #txtInputCambio locale="en-US" mode="decimal" inputId="locale-us"
-                        formControlName="cambio"
-                        [minFractionDigits]="decimalLength()"
-                        [maxFractionDigits]="decimalLength()"
-                        [showButtons]="true"
-                        (onInput)="newCambio()"
-                        buttonLayout="horizontal" spinnerMode="horizontal" decrementButtonClass="p-button-secondary"
-                        incrementButtonClass="p-button-primary" incrementButtonIcon="fa-solid fa-plus"
-                        decrementButtonIcon="fa-solid fa-minus" (keydown.enter)="updateBsSus()" [min]="0"
-                        [max]="9999999999999.99"></p-inputNumber>
-                </div>
+            <div class="erp-field">
+                <label class="erp-label required">Nuevo Tipo de Cambio ($)</label>
+                <p-inputNumber #txtInputCambio locale="en-US" mode="decimal" inputId="locale-us"
+                    formControlName="cambio"
+                    [minFractionDigits]="decimalLength()"
+                    [maxFractionDigits]="decimalLength()"
+                    [showButtons]="true"
+                    (onInput)="newCambio()"
+                    buttonLayout="horizontal" spinnerMode="horizontal" decrementButtonClass="p-button-secondary"
+                    incrementButtonClass="p-button-primary" incrementButtonIcon="fa-solid fa-plus"
+                    decrementButtonIcon="fa-solid fa-minus" (keydown.enter)="updateBsSus()" [min]="0"
+                    [max]="9999999999999.99"
+                    class="erp-input w-full">
+                </p-inputNumber>
             </div>
         </div>
-        <div class="row">
-            <div class="field mt-2">
-                <label class="text-center d-flex">Cambio Bs./</label>
-                <h2 class="text-center">{{previewCambio() | number: decimal()}}</h2>
-            </div>
+        <div class="erp-toggle-pill justify-between bg-slate-50 border border-slate-200 p-3 mb-2">
+            <span class="text-xs font-semibold text-slate-600"><i class="fa-solid fa-arrow-right-arrow-left mr-1"></i>Conversión Vista Previa:</span>
+            <span class="font-extrabold text-base text-emerald-600">{{ previewCambio() | number: decimal() }} Bs.</span>
         </div>
     </form>
     <ng-template pTemplate="footer">

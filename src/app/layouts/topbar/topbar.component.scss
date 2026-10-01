@@ -3,15 +3,29 @@
 }
 
 :host ::ng-deep #page-topbar,
-:host ::ng-deep .navbar-header,
-:host ::ng-deep .navbar-brand-box {
+:host ::ng-deep .navbar-header {
   border: 0 !important;
   box-shadow: none !important;
 }
 
+.topbar-navigation {
+  align-items: center;
+  display: flex;
+  gap: .25rem;
+  height: 100%;
+  min-width: 0;
+}
+
+#vertical-menu-btn {
+  flex: 0 0 3rem;
+}
+
 .navbar-header {
   display: grid;
-  grid-template-columns: auto minmax(24rem, 1fr) auto;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  height: var(--erp-shell-topbar-height);
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0 !important;
 }
 
 .topbar-navigation,
@@ -19,40 +33,83 @@
   min-width: 0;
 }
 
+.topbar-actions {
+  gap: .5rem;
+  justify-content: flex-start;
+}
+
+.topbar-utilities {
+  flex: 0 0 auto;
+}
+
 .work-context {
-  align-items: end;
-  align-self: center;
+  align-items: stretch;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: .65rem;
+  border-radius: .45rem;
   display: grid;
-  gap: .55rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: .6rem .75rem;
-  max-width: 42rem;
+  grid-template-columns: minmax(12rem, .8fr) minmax(17rem, 1.2fr);
+  height: 36px;
+  margin: 0 .5rem 0 0;
+  max-width: 36rem;
   min-width: 0;
-  padding: .35rem .55rem;
+  width: 100%;
 }
 
 .work-context__field {
+  align-items: center;
   display: grid;
-  gap: .2rem;
+  gap: .4rem;
+  grid-template-columns: auto minmax(0, 1fr);
   min-width: 0;
+  padding: 0 .55rem;
+}
+
+.work-context__field + .work-context__field {
+  border-left: 1px solid #e2e8f0;
 }
 
 .work-context__field label {
   color: #64748b;
-  font-size: .66rem;
+  font-size: .6rem;
   font-weight: 700;
   line-height: 1;
+  margin: 0;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 :host ::ng-deep .work-context .p-dropdown {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
   max-width: 100%;
   min-width: 0;
   width: 100%;
 }
+
+:host ::ng-deep .work-context .p-dropdown,
+:host ::ng-deep .work-context .p-dropdown-label {
+  height: 34px !important;
+  min-height: 34px !important;
+}
+
+:host ::ng-deep .work-context .p-dropdown-label {
+  color: #17233d !important;
+  font-size: 10px !important;
+  font-weight: 700;
+  padding: .65rem .2rem !important;
+}
+
+:host ::ng-deep .work-context .p-dropdown-trigger {
+  width: 1.5rem;
+}
+.global-search { align-self:center; display:flex; align-items:center; flex:1 1 18rem; gap:7px; height:32px; margin-left:auto; max-width:24rem; min-width:10rem; padding:0 9px; border:1px solid #dfe6ef; border-radius:7px; background:#f8fafc; color:#789; }
+.global-search .material-symbols-outlined { font-size:16px; }
+.global-search input { min-width:0; flex:1; border:0; outline:0; background:transparent; font-size:11px; color:#17233d; }
+.global-search kbd { border:1px solid #dbe3ec; border-radius:4px; background:#fff; color:#8290a5; font:9px/1 Inter,sans-serif; padding:3px 5px; }
+.topbar-actions .header-item { height:var(--erp-shell-topbar-height); font-size:11px; }
+.topbar-actions .noti-icon i { font-size:18px; }
 
 .notification-scroll {
   display: block;
@@ -77,11 +134,20 @@
   }
 
   .topbar-navigation {
+    display: contents;
+  }
+
+  #vertical-menu-btn {
     grid-column: 1;
     grid-row: 1;
+    justify-self: start;
   }
 
   .topbar-actions {
+    display: contents !important;
+  }
+
+  .topbar-utilities {
     grid-column: 2;
     grid-row: 1;
   }
@@ -91,13 +157,10 @@
     grid-row: 2;
     margin: .25rem;
     max-width: none;
-    padding: .25rem;
-    width: auto;
+    width: calc(100% - .5rem);
   }
 
-  .work-context__field label {
-    display: none;
-  }
+  .global-search { display:none; }
 
   .header-item {
     height: 58px;
@@ -113,3 +176,20 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.user-dropdown-menu {
+  display: none;
+  background-color: #fff;
+  border-radius: 0.375rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  &.show {
+    display: block;
+  }
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease-in-out;
+}
+

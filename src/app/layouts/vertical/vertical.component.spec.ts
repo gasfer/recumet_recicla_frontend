@@ -36,7 +36,7 @@ describe('VerticalComponent responsive shell', () => {
 
   afterEach(() => {
     fixture.destroy();
-    document.body.classList.remove('sidebar-enable', 'app-sidebar-open', 'vertical-collpsed');
+    document.body.classList.remove('sidebar-enable', 'app-sidebar-open', 'vertical-collpsed', 'app-sidebar-hidden');
     document.getElementById('vertical-menu-btn')?.remove();
   });
 
@@ -72,14 +72,15 @@ describe('VerticalComponent responsive shell', () => {
     expect(document.body.classList.contains('app-sidebar-open')).toBeFalse();
   });
 
-  it('uses the condensed class only in desktop mode', () => {
+  it('hides the complete sidebar only in desktop mode', () => {
     viewportWidth = 1366;
     component.onViewportResize();
 
     component.onToggleMobileMenu();
 
-    expect(component.isDesktopCondensed).toBeTrue();
-    expect(document.body.classList.contains('vertical-collpsed')).toBeTrue();
+    expect(component.isDesktopSidebarHidden).toBeTrue();
+    expect(document.body.classList.contains('app-sidebar-hidden')).toBeTrue();
+    expect(document.body.classList.contains('vertical-collpsed')).toBeFalse();
     expect(document.body.classList.contains('sidebar-enable')).toBeFalse();
   });
 

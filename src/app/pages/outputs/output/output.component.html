@@ -1,121 +1,116 @@
 <!--Pos config modal-->
 <app-modal-config-output></app-modal-config-output>
 <!--Pos Data modal save-->
-<app-modal-save-output [id_sucursal]="formReport.get('id_sucursal')?.value" [id_storage]="formReport.get('id_storage')?.value" ></app-modal-save-output>
-<!--provider new modal-->
+<app-modal-save-output [id_sucursal]="formReport.get('id_sucursal')?.value" [id_storage]="formReport.get('id_storage')?.value"></app-modal-save-output>
+<!--client new modal-->
 <app-modal-client></app-modal-client>
 
-<div class="card bg-light m-0">
-    <div class="card-body shadow pt-2 pb-2">
-        <p-messages *ngIf="outputService.isEdit" severity="warn" class="animated fadeInDown">
-            <ng-template pTemplate>
-                <ul class="mb-0 pb-0">
-                    <li>
-                        <b>PROCESO DE EDICIÓN VENTA: {{outputService.dataOutputForEdit()?.cod}} <i class="fas fa-edit"></i></b>
-                    </li>
-                    <li>
-                        <p class="d-inline"> ¡Advertencia! Al editar esta venta, podrías ocasionar alteraciones en el sistema. Por favor, procede con precaución.</p>
-                    </li>
-                    <li>
-                        <p class="d-inline"> Si necesita aumentar y/o modificar el stock mayor a la venta editada. Por favor, procede a quitar el producto de la lista de venta y agregarlo nuevamente.</p>
+<div class="erp-header-panel mb-2">
+    <!-- AVISO MODO EDICIÓN SUTIL -->
+    <div *ngIf="outputService.isEdit" class="erp-edit-mode-banner animated fadeInDown">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-amber-600 fs-5"></i>
+            <div>
+                <span class="fw-bold fs-6 text-amber-900 text-uppercase d-block">PROCESO DE EDICIÓN DE VENTA: {{outputService.dataOutputForEdit()?.cod}}</span>
+                <small class="text-amber-700">¡Atención! La edición alterará los saldos y stocks del sistema. Si necesita modificar stock mayor, quite el producto y agréguelo de nuevo.</small>
+            </div>
+        </div>
+        <span class="badge bg-amber-500 text-white fw-bold px-2 py-1 rounded-pill">MODO EDICIÓN</span>
+    </div>
+
+    <div class="erp-panel-title">
+        <i class="fa-solid fa-cash-register text-emerald-600"></i>
+        <span>{{outputService.isEdit ? 'MODIFICAR VENTA' : 'REGISTRO DE VENTAS'}}</span>
+    </div>
+
+    <div class="row align-items-center g-2 mt-1">
+        <div class="col-sm-6 col-12 position-relative">
+            <app-input-search (onEnters)="suggestedClient($event)" (onDebounce)="suggestedClient($event)"
+                (onBtnNew)="newClient()" [icon]="'fa-solid fa-user'" [btnNew]="this.validatorsService.withPermission('CLIENTES','create')"
+                [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un cliente aquí....'">
+            </app-input-search>
+            <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
+                <ul *ngIf="loadingSearchClient()" class="list-group shadow">
+                    <li class="list-group-item list-group-item-action">
+                        <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
                     </li>
                 </ul>
-            </ng-template>
-        </p-messages>
-        <h4>{{outputService.isEdit ? 'EDITAR VENTA' : 'REGISTRA TUS VENTAS'}}</h4>
-        <div class="row">
-            <div class="col-sm-6 col-12 mt-0">
-                <app-input-search (onEnters)="suggestedClient($event)" (onDebounce)="suggestedClient($event)"
-                    (onBtnNew)="newClient()" [icon]="'fa-solid fa-user'" [btnNew]="this.validatorsService.withPermission('CLIENTES','create')"
-                    [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un cliente aquí....'">
-                </app-input-search>
-                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
-                    <ul *ngIf="loadingSearchClient()" class="list-group shadow">
-                        <li class="list-group-item list-group-item-action">
-                            <span class='fw-bold'>Cargando....</span>
-                        </li>
-                    </ul>
-                    <ul class="list-group shadow">
-                        <li *ngFor="let client of suggestedClients()"
-                            class="list-group-item list-group-item-action cursor-pointer"
-                            (click)="selectClient(client)">
-                            <span class='fw-bold'>{{client.full_names}}</span>
-                            <br>
-                            <span class="text-muted fw-normal align-content-end">NIT/CI:
-                                {{client.number_document }}</span>
-                        </li>
-                    </ul>
-                    <ul *ngIf="suggestedClients().length == 0 && txtSearchClient() && !loadingSearchClient()" class="list-group shadow">
-                        <li class="list-group-item list-group-item-action">
-                            <span class='fw-bold'> No se encontró el cliente: "{{txtSearchClient() | uppercase}}"</span>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="list-group shadow">
+                    <li *ngFor="let client of suggestedClients()"
+                        class="list-group-item list-group-item-action cursor-pointer"
+                        (click)="selectClient(client)">
+                        <span class='fw-bold text-slate-800'>{{client.full_names}}</span>
+                        <br>
+                        <span class="text-muted small">NIT/CI: {{client.number_document }}</span>
+                    </li>
+                </ul>
+                <ul *ngIf="suggestedClients().length == 0 && txtSearchClient() && !loadingSearchClient()" class="list-group shadow">
+                    <li class="list-group-item list-group-item-action text-danger">
+                        <span class='fw-bold'> No se encontró el cliente: "{{txtSearchClient() | uppercase}}"</span>
+                    </li>
+                </ul>
             </div>
-            <div class="col-sm-5 col-12 mt-2 m-md-0">
-                <b>Cliente:
-                    <p-tag [rounded]="true" icon="fa-solid fa-user"
-                        [severity]="clientSelect() ? 'info' : 'warning'"
-                        [value]="clientSelect() ? 'NIT-CI: ' + clientSelect()?.number_document+' / ' + clientSelect()?.full_names : 'NIT-CI: 0 / SELECCIONE UN CLIENTE'">
-                        <p-badge *ngIf="clientSelect()" class="cursor-pointer" severity="danger"
-                            (click)="outputService.clientSelect.set(undefined)" [value]="'X'" styleClass="mr-2"
-                            pTooltip="Quitar Cliente" tooltipPosition="top">
-                        </p-badge>
-                    </p-tag>
-                </b>
+        </div>
+
+        <div class="col-sm-5 col-12 d-flex align-items-center gap-2">
+            <span class="text-muted small fw-bold">Cliente:</span>
+            <div class="erp-entity-chip" [ngClass]="clientSelect() ? 'active' : 'unselected'">
+                <i class="fa-solid fa-user"></i>
+                <span>{{ clientSelect() ? 'NIT-CI: ' + clientSelect()?.number_document + ' · ' + clientSelect()?.full_names : 'SELECCIONE UN CLIENTE' }}</span>
+                <span *ngIf="clientSelect()" class="remove-btn"
+                    (click)="outputService.clientSelect.set(undefined)"
+                    pTooltip="Quitar Cliente" tooltipPosition="top">
+                    ✕
+                </span>
             </div>
-            <div class="col-sm-1 col-12">
-                <div class="d-flex justify-content-end">
-                    <i class="cursor-pointer fa-solid fa-gear" pTooltip="Config. Modo de venta" tooltipPosition="left"
-                        role="button" tabindex="0" aria-label="Configurar modo de venta"
-                        (click)="outputService.showModalConfigInput = true"
-                        (keydown.enter)="outputService.showModalConfigInput = true"
-                        (keydown.space)="$event.preventDefault(); outputService.showModalConfigInput = true">
-                    </i>
-                </div>
+        </div>
+
+        <div class="col-sm-1 col-12">
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-light border rounded-circle p-2 text-secondary"
+                    pTooltip="Configurar modo de venta" tooltipPosition="left"
+                    (click)="outputService.showModalConfigInput = true">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
             </div>
         </div>
     </div>
 </div>
-<div class="row mt-1">
-    <div class="col-sm-12 mb-2"
+
+<div class="row g-2">
+    <div class="col-sm-12"
         [ngClass]="{'col-md-7': outputService._outputConfig.viewCardProducts, 'col-md-12': !outputService._outputConfig.viewCardProducts}">
-        <div class="card">
-            <div class="card-body shadow m-0 p-0">
-                <div class="row m-1 mt-0">
-                    <div class="col-12">
-                        <p-messages severity="info">
-                            <ng-template pTemplate>
-                                <b>ITEMS A VENDER <i class="fa-solid fa-cart-arrow-down"></i></b>
-                                <i class="fa-solid fa-tags ms-5 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
-                                    value="{{totalItems()}}"></i>
-                            </ng-template>
-                        </p-messages>
-                        <app-input-search *ngIf="!outputService._outputConfig.viewCardProducts" (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
-                            [icon]="'fa-solid fa-cart-plus'"
-                            [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
-                            <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
-                                <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'>Cargando....</span>
-                                </li>
-                            </ul>
-                            <ul class="list-group shadow cursor-pointer">
-                                <li *ngFor="let product of suggestedProducts()"
-                                    class="list-group-item list-group-item-action" (click)="addItemCar(product)">
-                                    <span class='fw-bold'>{{product.cod}} - {{ product.name}}</span>
-                                    <br>
-                                    <span class="text-muted fw-normal align-content-end">{{product.description }} -
-                                        {{product.category.name}} / {{product.unit.siglas}}</span>
-                                </li>
-                            </ul>
-                            <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
-                                <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+        <div class="card erp-card-container border-0 shadow-sm">
+            <div class="erp-items-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-cart-arrow-down text-emerald-400"></i>
+                    <span>DETALLE DE ITEMS A VENDER</span>
+                </div>
+                <span class="erp-counter-chip">{{totalItems()}} items</span>
+            </div>
+            <div class="p-2 border-bottom" *ngIf="!outputService._outputConfig.viewCardProducts">
+                <app-input-search (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
+                    [icon]="'fa-solid fa-cart-plus'"
+                    [placeholder]="'Busque un producto aquí....'"></app-input-search>
+                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                    <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
+                        <li class="list-group-item list-group-item-action">
+                            <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
+                        </li>
+                    </ul>
+                    <ul class="list-group shadow cursor-pointer">
+                        <li *ngFor="let product of suggestedProducts()"
+                            class="list-group-item list-group-item-action" (click)="addItemCar(product)">
+                            <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
+                            <br>
+                            <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                        </li>
+                    </ul>
+                    <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
+                        <li class="list-group-item list-group-item-action text-danger">
+                            <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <app-table-output-details></app-table-output-details>

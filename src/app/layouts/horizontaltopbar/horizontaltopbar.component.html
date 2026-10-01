@@ -1,4 +1,4 @@
-<header id="page-topbar">
+﻿<header id="page-topbar">
     <div class="navbar-header">
       <div class="d-flex">
         <div class="navbar-brand-box">
@@ -32,12 +32,12 @@
           </div>
         </form>
 
-        <div class="dropdown dropdown-mega d-none d-lg-block me-2" dropdown>
-          <button aria-label="Abrir menú de navegación" type="button" class="btn header-item" dropdownToggle>
+        <div class="dropdown dropdown-mega d-none d-lg-block me-2">
+          <button aria-label="Abrir menú de navegación" type="button" class="btn header-item">
             {{ 'HEADER.MEGA_MENU' | translate}}
             <i class="mdi mdi-chevron-down"></i>
           </button>
-          <div class="dropdown-menu dropdown-megamenu" *dropdownMenu>
+          <div class="dropdown-menu dropdown-megamenu">
             <div class="row">
               <div class="col-sm-8">
 
@@ -165,11 +165,11 @@
 
       <div class="d-flex">
 
-        <div class="dropdown d-inline-block d-lg-none me-2" dropdown>
-          <button aria-label="Buscar" type="button" class="btn header-item noti-icon" id="page-header-search-dropdown" dropdownToggle>
+        <div class="dropdown d-inline-block d-lg-none me-2">
+          <button aria-label="Buscar" type="button" class="btn header-item noti-icon" id="page-header-search-dropdown">
             <i class="mdi mdi-magnify"></i>
           </button>
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" *dropdownMenu>
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0">
 
             <form class="p-3">
               <div class="m-0">
@@ -184,14 +184,14 @@
           </div>
         </div>
 
-        <div class="dropdown d-inline-block" dropdown>
-          <button type="button" class="btn header-item" id="page-header-user-dropdown" dropdownToggle>
+        <div class="dropdown d-inline-block">
+          <button type="button" class="btn header-item" id="page-header-user-dropdown">
             <img *ngIf="flagvalue !== undefined" src="{{flagvalue}}" alt="Header Language" height="16"> <span
               class="ms-1">{{countryName}}</span>
             <img *ngIf="flagvalue === undefined" src="{{valueset()}}" alt="Header Language" height="16">
             <span *ngIf="flagvalue === undefined" class="ms-1">English</span>
           </button>
-          <div class="dropdown-menu dropdown-menu-end" *dropdownMenu>
+          <div class="dropdown-menu dropdown-menu-end">
             <a href="javascript:void(0);" class="dropdown-item notify-item" *ngFor="let item of listLang()"
               (click)="setLanguage(item.text, item.lang, item.flag)" [ngClass]="{'active': cookieValue() === item.lang}">
               <img src="{{item.flag}}" alt="user-image" class="ms-1" height="12"> <span
@@ -200,11 +200,11 @@
           </div>
         </div>
 
-        <div class="dropdown d-none d-lg-inline-block me-1" dropdown>
-          <button aria-label="Abrir accesos rápidos" type="button" class="btn header-item noti-icon" dropdownToggle>
+        <div class="dropdown d-none d-lg-inline-block me-1">
+          <button aria-label="Abrir accesos rápidos" type="button" class="btn header-item noti-icon">
             <i class="bx bx-customize"></i>
           </button>
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end" *dropdownMenu>
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
             <div class="px-lg-2">
               <div class="row no-gutters">
                 <div class="col">
@@ -257,14 +257,13 @@
           </button>
         </div>
 
-        <div class="dropdown d-inline-block" dropdown>
+        <div class="dropdown d-inline-block">
           <button type="button" class="btn header-item noti-icon" id="page-header-notifications-dropdown"
-            aria-label="Abrir notificaciones"
-            dropdownToggle>
+            aria-label="Abrir notificaciones">
             <i class="bx bx-bell bx-tada"></i>
             <span class="badge bg-danger rounded-pill">3</span>
           </button>
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" *dropdownMenu
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
             aria-labelledby="page-header-notifications-dropdown">
             <div class="p-3">
               <div class="row align-items-center">
@@ -346,13 +345,13 @@
           </div>
         </div>
 
-        <div class="dropdown d-inline-block" dropdown>
-          <button type="button" class="btn header-item" id="page-header-user-dropdown" dropdownToggle>
+        <div class="dropdown d-inline-block">
+          <button type="button" class="btn header-item" id="page-header-user-dropdown">
             <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg" alt="Header Avatar">
             <span class="d-none d-xl-inline-block ms-1">Henry </span>
             <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
           </button>
-          <div class="dropdown-menu dropdown-menu-end" *dropdownMenu>
+          <div class="dropdown-menu dropdown-menu-end">
             <a class="dropdown-item" href="javascript: void(0);"><i class="bx bx-user font-size-16 align-middle me-1"></i>
               {{ 'HEADER.LOGIN.PROFILE' | translate}}</a>
             <a class="dropdown-item" href="javascript: void(0);"><i

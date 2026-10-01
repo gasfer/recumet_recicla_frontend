@@ -1,30 +1,29 @@
-<div class="row animated fadeIn fast m-1"
-    *ngIf="classifiedService.detailSale().length === 0">
-    <div class="col-12">
-        <div class="alert alert-info text-center">
-            <h5 class="alert-heading">Sin productos</h5>
-            <i class="fa fa-spin fa-refresh fa-2x"></i>
-            <p class="mb-0">Agrega productos desde el buscador</p>
-        </div>
+<div class="p-3" *ngIf="classifiedService.detailSale().length === 0">
+    <div class="erp-soft-alert-empty">
+        <i class="fa-solid fa-boxes-packing text-muted fs-2 mb-2 d-block"></i>
+        <h5>Sin productos clasificados</h5>
+        <p>Selecciona los productos resultantes desde el catálogo o buscador superior</p>
     </div>
 </div>
-<p-table *ngIf="classifiedService.detailSale().length !== 0" [value]="classifiedService.detailSale()" styleClass="p-datatable-sm app-table-scroll" responsiveLayout="scroll">
+
+<p-table *ngIf="classifiedService.detailSale().length !== 0" [value]="classifiedService.detailSale()"
+    styleClass="p-datatable-sm app-table-scroll erp-operational-table" responsiveLayout="scroll">
     <ng-template pTemplate="header">
         <tr>
-            <th class="text-white app-u-min-width-280px-e581e86 background-primary">Producto</th>
-            <th class="text-white text-center background-primary">Cantidad</th>
-            <th class="text-white text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838 background-primary">Quitar</th>
+            <th class="app-u-min-width-280px-e581e86">Producto</th>
+            <th class="text-center">Cantidad</th>
+            <th class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">Quitar</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product>
         <tr>
             <td class="app-u-min-width-280px-e581e86">
-                <h5 class="m-0 p-0">{{product.name}}</h5>
-                <p class="text-muted app-u-font-size-10px-0d5be05">{{product.description}} <br *ngIf="product.description"> <span class="text-black">{{product.cod}} / {{product.category.name}} / {{product.unit.name}}</span></p>
+                <span class="fw-bold text-slate-800 d-block">{{product.name}}</span>
+                <span class="badge-subtle-code me-1">{{product.cod}}</span>
+                <small class="text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
             </td>
-            <td  class="text-center">
+            <td class="text-center">
                 <p-inputNumber
-
                     [size]="5"
                     [locale]="decimalFormat.locale"
                     mode="decimal"
@@ -37,37 +36,42 @@
                     [min]="0.1"
                     [max]="99999999999999"
                     [inputId]="product.id"
-                    [(ngModel)] = "product.quantity"
+                    [(ngModel)]="product.quantity"
                     (onInput)="updateQuantityProduct($event, product)" class="app-u-height-38px-3b84911">
                 </p-inputNumber>
             </td>
             <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
-                <p-button ariaLabel="Eliminar"
+                <button type="button" aria-label="Eliminar"
                     (click)="deleteProductForDetailShopping(product.id)"
-                    icon="fa-regular fa-trash-can"
-                    styleClass=" p-button-sm p-button-danger p-button-rounded">
-                </p-button>
+                    class="btn btn-sm btn-outline-danger rounded-circle p-1"
+                    pTooltip="Quitar de la lista" tooltipPosition="top"
+                    style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-regular fa-trash-can"></i>
+                </button>
             </td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
-        <tr>
-            <th colspan="2" class="text-end text-white pt-1 background-primary"><h4>Cantidad total: &nbsp;</h4></th>
-            <th colspan="1" class="text-start text-white pt-1 background-primary"><h4>{{ totalQuantityItems() | number:decimalFormat.digitsInfo }}</h4></th>
+        <tr class="bg-slate-900 text-white">
+            <th colspan="2" class="text-end text-white py-2">
+                <span class="fs-6 fw-bold">CANTIDAD TOTAL CLASIFICADA:</span>
+            </th>
+            <th colspan="1" class="text-start text-emerald-400 py-2">
+                <span class="fs-5 fw-bold">{{ totalQuantityItems() | number:decimalFormat.digitsInfo }}</span>
+            </th>
         </tr>
         <tr>
-            <td colspan="2" class="text-end bg-white">
+            <td colspan="2" class="text-end bg-white py-2">
                 <p-button
                     (click)="clearDetailShopping()"
-                    icon="fa-solid fa-ban"  pTooltip="Cancelar Clasificado"
-                    tooltipPosition="left"
+                    icon="fa-solid fa-ban"
                     label="Cancelar"
-                    styleClass="p-button-danger p-button-sm p-button-rounded">
+                    styleClass="p-button-outlined p-button-sm p-button-danger p-button-rounded">
                 </p-button>
             </td>
-            <td colspan="1" class="text-center bg-white">
+            <td colspan="1" class="text-center bg-white py-2">
                 <p-button
-                    styleClass="p-button-sm p-button-rounded"
+                    styleClass="p-button-sm p-button-rounded p-button-success"
                     label="Registrar Clasificado"
                     (click)="confirmClassified()"
                     icon="fa-solid fa-floppy-disk">

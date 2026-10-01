@@ -2,136 +2,136 @@
     [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" (onShow)="showModal()" (onHide)="resetModal()" styleClass="app-dialog--sm">
     <form [formGroup]="formClassified">
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Producto clasificado<span class="text-danger">*</span></label><br>
-                        <p-tag [rounded]="true" icon="fa-solid fa-tag"
-                            [severity]="productSelect() ? 'info' : 'warning'"
-                            [value]="productSelect() ? 'COD: ' + productSelect()?.cod+' / ' + productSelect()?.name : 'COD: 0 / SELECCIONE UN PRODUCTO'">
-                        </p-tag><br>
-                        <small *ngIf="!productSelect()" class="p-error block">
-                            {{ 'Selecciona un producto' }}
-                        </small>
-                    </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Stock a reducir [{{productSelect()?.unit?.siglas}}]:<span class="text-danger">*</span></label>
-                        <p-inputNumber
-
-                            [size]="5"
-                            [locale]="decimalFormat.locale"
-                            mode="decimal"
-                            [minFractionDigits]="decimalFormat.decimals()"
-                            [maxFractionDigits]="decimalFormat.decimals()"
-                            [showButtons]="false"
-                            decrementButtonClass="p-button-secondary"
-                            incrementButtonClass="p-button-primary"
-                            placeholder="0"
-                            [min]="0.1"
-                            [max]="productSelect()?.total_stock"
-                            formControlName="quantity_product"
-                            [readonly]="true" class="app-u-height-38px-3b84911">
-                        </p-inputNumber>
-                        <small *ngIf="validatorsService.inputValid('quantity_product',formClassified)" class="p-error block">
-                            {{ 'Stock no valido' }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <div class="row">
-                            <div class="col-sm-6 col-12">
-                                <label class="block mb-0">Tipo pesaje<span class="text-danger">*</span></label>
-                                <p-dropdown [options]="types_registry()"
-                                  placeholder="Selecciona una opción"
-                                  optionLabel="name"
-                                  optionValue="code"
-                                  appendTo="body"
-                                  formControlName="type_registry"
-                                  [class.ng-dirty]="validatorsService.inputValid('type_registry',formClassified)"
-                                  (onChange)="selectTypeRegistry()"
-                                ></p-dropdown>
-                                <small *ngIf="validatorsService.inputValid('type_registry',formClassified)" class="p-error block">
-                                    {{ validatorsService.inputValidMessage("type_registry",formClassified) }}
-                                </small>
-                            </div>
-                            @if (formClassified.get('type_registry')?.value != 'SIN FICHA') {
-                              <div class="col-sm-6 col-12">
-                                  <label class="block mb-0">Nro.</label>
-                                  <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                                      formControlName="number_registry" placeholder="EJ. 0001"
-                                      [pKeyFilter]="validatorsService.expRegValidInput"
-                                      [class.ng-dirty]="validatorsService.inputValid('number_registry',formClassified)" class="text-uppercase"/>
-                                  <small *ngIf="validatorsService.inputValid('number_registry',formClassified)" class="p-error block">
-                                      {{ validatorsService.inputValidMessage("number_registry",formClassified) }}
-                                  </small>
-                              </div>
-                            } @else {
-                              <div class="col-sm-6 col-12 animated fadeInDown mt-2">
-                                <small class="block">
-                                  {{ "El número se generará automáticamente al guardar el clasificado." }}
-                                </small>
-                              </div>
-                              }
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Pesaje<span class="text-danger">*</span></label>
-                        <p-dropdown [options]="scales()"
-                          placeholder="Selecciona una opción"
-                          optionLabel="name"
-                          optionValue="id"
-                          appendTo="body"
-                          formControlName="id_scale"
-                          [class.ng-dirty]="validatorsService.inputValid('id_scale',formClassified)"
-                        ></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('id_scale',formClassified)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("id_scale",formClassified) }}
-                        </small>
-
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Fecha de Registro <span class="text-danger">*</span>
-                        </label>
-                        <p-calendar
-                            formControlName="date_classified"
-                            appendTo="body"
-                            dateFormat="dd/mm/yy"
-                            [showIcon]="true"
-                            [showTime]="true"
-                            [hourFormat]="'24'"
-                            [class.ng-dirty]="validatorsService.inputValid('date_classified',formClassified)">
-                        </p-calendar>
-                        <small *ngIf="validatorsService.inputValid('date_classified',formClassified)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("date_classified",formClassified) }}
-                        </small>
-                    </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Observaciones</label>
-                        <textarea pInputTextarea
-                            type="text"
-
-                            pInputText
-                            [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="comments"
-                            placeholder="EJ. ......"
-                            class="mt-1 text-uppercase"
-                            [class.ng-dirty]="validatorsService.inputValid('comments',formClassified)"
-                        ></textarea>
-                        <small *ngIf="validatorsService.inputValid('comments',formClassified)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("comments",formClassified) }}
-                        </small>
-                    </div>
-                </div>
+        <!-- Fila 1: Producto clasificado + Stock a reducir -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field">
+                <label class="erp-label required">Producto clasificado</label>
+                <p-tag [rounded]="true" icon="fa-solid fa-tag"
+                    [severity]="productSelect() ? 'info' : 'warning'"
+                    [value]="productSelect() ? 'COD: ' + productSelect()?.cod+' / ' + productSelect()?.name : 'COD: 0 / SELECCIONE UN PRODUCTO'">
+                </p-tag>
+                <small *ngIf="!productSelect()" class="erp-error-msg">
+                    Selecciona un producto
+                </small>
+            </div>
+            <div class="erp-field">
+                <label class="erp-label required">Stock a reducir [{{productSelect()?.unit?.siglas}}]</label>
+                <p-inputNumber
+                    [size]="5"
+                    [locale]="decimalFormat.locale"
+                    mode="decimal"
+                    [minFractionDigits]="decimalFormat.decimals()"
+                    [maxFractionDigits]="decimalFormat.decimals()"
+                    [showButtons]="false"
+                    decrementButtonClass="p-button-secondary"
+                    incrementButtonClass="p-button-primary"
+                    placeholder="0"
+                    [min]="0.1"
+                    [max]="productSelect()?.total_stock"
+                    formControlName="quantity_product"
+                    [readonly]="true"
+                    class="erp-input">
+                </p-inputNumber>
+                <small *ngIf="validatorsService.inputValid('quantity_product',formClassified)" class="erp-error-msg">
+                    Stock no válido
+                </small>
             </div>
         </div>
-      </form>
-      <ng-template pTemplate="footer">
+
+        <!-- Fila 2: Tipo pesaje + Nro. / Mensaje + Balanza -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field">
+                <label class="erp-label required">Tipo pesaje</label>
+                <p-dropdown [options]="types_registry()"
+                  placeholder="Selecciona una opción"
+                  optionLabel="name"
+                  optionValue="code"
+                  appendTo="body"
+                  formControlName="type_registry"
+                  class="erp-input"
+                  [class.ng-dirty]="validatorsService.inputValid('type_registry',formClassified)"
+                  (onChange)="selectTypeRegistry()"
+                ></p-dropdown>
+                <small *ngIf="validatorsService.inputValid('type_registry',formClassified)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("type_registry",formClassified) }}
+                </small>
+            </div>
+
+            @if (formClassified.get('type_registry')?.value != 'SIN FICHA') {
+            <div class="erp-field">
+                <label class="erp-label">Nro.</label>
+                <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="number_registry" placeholder="EJ. 0001"
+                    class="erp-input text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('number_registry',formClassified)"/>
+                <small *ngIf="validatorsService.inputValid('number_registry',formClassified)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("number_registry",formClassified) }}
+                </small>
+            </div>
+            } @else {
+            <div class="erp-field flex justify-end">
+                <small class="erp-text-caption">
+                    El número se generará automáticamente al guardar el clasificado.
+                </small>
+            </div>
+            }
+        </div>
+
+        <!-- Fila 3: Balanza + Fecha de Registro -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field">
+                <label class="erp-label required">Pesaje</label>
+                <p-dropdown [options]="scales()"
+                  placeholder="Selecciona una opción"
+                  optionLabel="name"
+                  optionValue="id"
+                  appendTo="body"
+                  formControlName="id_scale"
+                  class="erp-input"
+                  [class.ng-dirty]="validatorsService.inputValid('id_scale',formClassified)"
+                ></p-dropdown>
+                <small *ngIf="validatorsService.inputValid('id_scale',formClassified)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("id_scale",formClassified) }}
+                </small>
+            </div>
+            <div class="erp-field">
+                <label class="erp-label required">Fecha de Registro</label>
+                <p-calendar
+                    formControlName="date_classified"
+                    appendTo="body"
+                    dateFormat="dd/mm/yy"
+                    [showIcon]="true"
+                    [showTime]="true"
+                    [hourFormat]="'24'"
+                    class="erp-input"
+                    [class.ng-dirty]="validatorsService.inputValid('date_classified',formClassified)">
+                </p-calendar>
+                <small *ngIf="validatorsService.inputValid('date_classified',formClassified)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("date_classified",formClassified) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Fila 4: Observaciones -->
+        <div class="erp-form-grid mb-3">
+            <div class="erp-field erp-col-full">
+                <label class="erp-label">Observaciones</label>
+                <textarea pInputTextarea
+                    [pKeyFilter]="validatorsService.expRegValidInput"
+                    formControlName="comments"
+                    placeholder="EJ. ......"
+                    class="text-uppercase"
+                    [class.ng-dirty]="validatorsService.inputValid('comments',formClassified)"
+                ></textarea>
+                <small *ngIf="validatorsService.inputValid('comments',formClassified)" class="erp-error-msg">
+                    {{ validatorsService.inputValidMessage("comments",formClassified) }}
+                </small>
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
         <p-button (click)="loading() ? null : saveClassified()" styleClass="p-button-sm p-button-rounded"
-            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()" ></p-button>
+            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
         <p-button (click)="classifiedService.showModalSaveClassified = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     </ng-template>
 </p-dialog>

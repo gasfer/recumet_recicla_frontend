@@ -12,7 +12,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
 import { SimplebarAngularModule } from 'simplebar-angular';
 import { LanguageService } from '../core/services/language.service';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DropdownModule } from 'primeng/dropdown';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +19,7 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
 import { TransferReviewAlertComponent } from './transfer-review-alert/transfer-review-alert.component';
+import { CoreModule } from '../core/core.module';
 
 @NgModule({
   declarations: [
@@ -39,12 +39,12 @@ import { TransferReviewAlertComponent } from './transfer-review-alert/transfer-r
     TranslateModule,
     ReactiveFormsModule,
     RouterModule,
-    BsDropdownModule.forRoot(),
     SimplebarAngularModule,
     DropdownModule,
     A11yModule,
     DialogModule,
-    TagModule
+    TagModule,
+    CoreModule
   ],
   exports: [],
   providers: [LanguageService]

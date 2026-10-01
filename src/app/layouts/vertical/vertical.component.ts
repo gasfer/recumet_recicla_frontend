@@ -14,7 +14,7 @@ import { TransferReviewService } from 'src/app/services/transfer-review.service'
 export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly sidebarId = 'app-sidebar';
   readonly mobileBreakpoint = 992;
-  isDesktopCondensed = false;
+  isDesktopSidebarHidden = false;
   isMobileViewport = false;
   isMobileSidebarOpen = false;
   @Input() breadcrumbs:any = [];
@@ -31,7 +31,7 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     document.body.setAttribute('data-layout', 'vertical');
-    this.isDesktopCondensed = document.body.classList.contains('vertical-collpsed');
+    this.isDesktopSidebarHidden = document.body.classList.contains('app-sidebar-hidden');
     this.synchronizeViewportState();
     this.reviewService.checkCurrentContext().subscribe();
   }
@@ -55,8 +55,9 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.isDesktopCondensed = !this.isDesktopCondensed;
-    document.body.classList.toggle('vertical-collpsed', this.isDesktopCondensed);
+    this.isDesktopSidebarHidden = !this.isDesktopSidebarHidden;
+    document.body.classList.toggle('app-sidebar-hidden', this.isDesktopSidebarHidden);
+    document.body.classList.remove('vertical-collpsed');
     document.body.classList.remove('sidebar-enable', 'app-sidebar-open');
   }
 
@@ -77,7 +78,7 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.routerEventsSubscription.unsubscribe();
-    document.body.classList.remove('sidebar-enable', 'app-sidebar-open');
+    document.body.classList.remove('sidebar-enable', 'app-sidebar-open', 'app-sidebar-hidden');
   }
 
   private synchronizeViewportState() {
@@ -85,12 +86,13 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isMobileViewport = window.innerWidth <= this.mobileBreakpoint;
 
     if (this.isMobileViewport) {
-      document.body.classList.remove('vertical-collpsed');
+      document.body.classList.remove('vertical-collpsed', 'app-sidebar-hidden');
       return;
     }
 
     if (wasMobile || this.isMobileSidebarOpen) this.closeMobileSidebar(false);
-    document.body.classList.toggle('vertical-collpsed', this.isDesktopCondensed);
+    document.body.classList.remove('vertical-collpsed');
+    document.body.classList.toggle('app-sidebar-hidden', this.isDesktopSidebarHidden);
   }
 
   private setMobileSidebarOpen(open: boolean, restoreFocus = false) {

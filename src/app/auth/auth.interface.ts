@@ -37,16 +37,19 @@ export interface AssignPermission {
 }
 
 export interface AssignShift {
-    id:         number;
-    day:        string;
-    hour_start: string;
-    hour_end:   string;
+    id:          number;
+    number_day?: number;
+    day:         string;
+    hour_start:  string;
+    hour_end:    string;
+    status?:     boolean;
 }
 
 export interface AssignSucursales {
     id:          number;
     id_sucursal: number;
 }
+
 export interface FormAuth {
     email:    string;
     password: string;
