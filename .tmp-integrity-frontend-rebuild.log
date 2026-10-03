@@ -1,0 +1,9 @@
+- Generating browser application bundles (phase: setup)...
+√ Browser application bundle generation complete.
+√ Browser application bundle generation complete.
+- Copying assets...
+√ Copying assets complete.
+- Generating index html...
+× Index html generation failed.
+Inlining of fonts failed. An error has occurred while retrieving https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap over the internet.
+

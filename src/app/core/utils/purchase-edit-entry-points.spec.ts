@@ -67,12 +67,14 @@ for (const entryPoint of entryPoints) {
         }),
       };
 
+      const userSignal = signal<any>({ role: 'OPERADOR' });
       TestBed.configureTestingModule({
         providers: [
           FormBuilder,
           { provide: ValidatorsService, useValue: {
             decimalLength: signal(2),
             id_sucursal: signal(1),
+            user: userSignal,
             withPermission: permission,
             hasDaysPassedSinceEdit: deadline,
           } },
@@ -87,6 +89,21 @@ for (const entryPoint of entryPoints) {
     it('opens an authorized purchase inside the edit deadline', () => {
       permission.and.returnValue(true);
       deadline.and.returnValue(false);
+
+      component.requestPurchaseEdit(purchase);
+
+      expect(inputsService.resetInput).toHaveBeenCalledTimes(1);
+      expect(inputsService.isEdit).toBeTrue();
+      expect(inputsService.providerSelect()).toBe(purchase.provider);
+      expect(inputsService.dataInputForEdit()).toBe(purchase);
+      expect(navigateByUrl).toHaveBeenCalledOnceWith('/inputs/input-small');
+    });
+
+    it('opens an authorized purchase when user is ADMINISTRADOR even if deadline is expired', () => {
+      permission.and.returnValue(true);
+      deadline.and.returnValue(true);
+      const validators = TestBed.inject(ValidatorsService) as any;
+      validators.user.set({ role: 'ADMINISTRADOR' });
 
       component.requestPurchaseEdit(purchase);
 
@@ -116,7 +133,7 @@ for (const entryPoint of entryPoints) {
       expect(navigateByUrl).not.toHaveBeenCalled();
     });
 
-    it('reports an expired deadline without presenting a permission error', () => {
+    it('reports an expired deadline without presenting a permission error for non-admin', () => {
       permission.and.returnValue(true);
       deadline.and.returnValue(true);
       const alert = spyOn(Swal, 'fire').and.resolveTo({} as any);

@@ -1,0 +1,23 @@
+- Generating browser application bundles (phase: setup)...
+√ Browser application bundle generation complete.
+02 10 2026 16:12:51.118:INFO [karma-server]: Karma v6.4.4 server started at http://localhost:9876/
+02 10 2026 16:12:51.122:INFO [launcher]: Launching browsers ChromeHeadlessNoSandbox with concurrency unlimited
+02 10 2026 16:12:51.127:INFO [launcher]: Starting browser ChromeHeadless
+02 10 2026 16:12:52.625:INFO [Chrome Headless 154.0.0.0 (Windows 10)]: Connected on socket uacjg7G6nauRpwYjAAAB with id 15540858
+Chrome Headless 154.0.0.0 (Windows 10): Executed 0 of 12[32m SUCCESS[39m (0 secs / 0 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 1 of 12[32m SUCCESS[39m (0 secs / 0.016 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 2 of 12[32m SUCCESS[39m (0 secs / 0.021 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 3 of 12[32m SUCCESS[39m (0 secs / 0.024 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 4 of 12[32m SUCCESS[39m (0 secs / 0.027 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 5 of 12[32m SUCCESS[39m (0 secs / 0.03 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 6 of 12[32m SUCCESS[39m (0 secs / 0.042 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 7 of 12[32m SUCCESS[39m (0 secs / 0.044 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 8 of 12[32m SUCCESS[39m (0 secs / 0.046 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 9 of 12[32m SUCCESS[39m (0 secs / 0.072 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 10 of 12[32m SUCCESS[39m (0 secs / 0.072 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 11 of 12[32m SUCCESS[39m (0 secs / 0.073 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 12 of 12[32m SUCCESS[39m (0 secs / 0.073 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 12 of 12[32m SUCCESS[39m (0.085 secs / 0.073 secs)
+[32mTOTAL: 12 SUCCESS[39m
+√ Browser application bundle generation complete.
+√ Browser application bundle generation complete.

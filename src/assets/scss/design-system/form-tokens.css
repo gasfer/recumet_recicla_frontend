@@ -91,7 +91,7 @@
 
 /* Shell desktop RECUMET */
 body:not([data-layout="horizontal"]) #page-topbar { left:var(--erp-shell-sidebar-width); }
-body:not([data-layout="horizontal"]) .vertical-menu { top:0; bottom:0; z-index:1003; height:100dvh; width:var(--erp-shell-sidebar-width); background:var(--erp-shell-sidebar)!important; display:grid; grid-template-rows:52px minmax(0,1fr) 34px; transition:transform .22s ease; }
+body:not([data-layout="horizontal"]) .vertical-menu { top:0; bottom:0; z-index:1003; height:100dvh; width:var(--erp-shell-sidebar-width); background:var(--erp-shell-sidebar)!important; display:flex; flex-direction:column; transition:transform .22s ease; }
 body:not([data-layout="horizontal"]) .main-content { margin-left:var(--erp-shell-sidebar-width); transition:margin-left .22s ease; }
 body:not([data-layout="horizontal"]) #page-topbar { transition:left .22s ease; }
 body.app-sidebar-hidden:not([data-layout="horizontal"]) .vertical-menu { transform:translateX(-100%); pointer-events:none; }

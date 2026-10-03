@@ -2,8 +2,32 @@ export type ProviderSiteRole = 'HEADQUARTERS' | 'BRANCH';
 export type ProviderEntityType = 'PRIVATE' | 'PUBLIC' | 'NGO_FOUNDATION' | 'OTHER';
 export type ProviderFrequency = 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'ANNUAL' | 'EVENTUAL' | 'UNDETERMINED';
 export type ProviderServiceMode = 'DELIVERY_TO_RECUMET' | 'PICKUP_BY_RECUMET' | 'BOTH';
-export type ProviderOriginChannel = 'PROSPECTION' | 'REFERRAL' | 'SICOES' | 'SOCIAL_MEDIA' | 'DOOR' | 'DIRECT_CONTACT' | 'OTHER';
-export type ProviderRelationshipStatus = 'PROSPECT' | 'IN_PROGRESS' | 'ACTIVE_PROVIDER' | 'DORMANT' | 'LOST';
+export type ProviderOriginChannel =
+  | 'DOOR'
+  | 'SEARCHED_BY_RECUMET'
+  | 'ROUTING_VISIT'
+  | 'REFERRAL'
+  | 'SOCIAL_MEDIA'
+  | 'WHATSAPP_CALL'
+  | 'SICOES_TENDER'
+  | 'COMPANY_INVITATION'
+  | 'HISTORICAL'
+  | 'OTHER'
+  | 'PROSPECTION'
+  | 'DIRECT_CONTACT'
+  | 'SICOES';
+
+export type ProviderRelationshipStatus =
+  | 'NEW'
+  | 'FOLLOW_UP'
+  | 'ACTIVE'
+  | 'INACTIVE'
+  | 'TO_RECOVER'
+  | 'LOST'
+  | 'PROSPECT'
+  | 'IN_PROGRESS'
+  | 'ACTIVE_PROVIDER'
+  | 'DORMANT';
 export type ProviderNegotiationCondition = 'DIRECT' | 'QUOTATION' | 'TENDER' | 'AGREEMENT' | 'CONTRACT' | 'OTHER';
 export type ProviderAccountType = 'CAJA_AHORRO' | 'CUENTA_CORRIENTE' | 'OTRA';
 export type ProviderCurrency = 'BOB' | 'USD';

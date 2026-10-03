@@ -1,0 +1,12 @@
+.classified-save-form .erp-field { min-width: 0; }
+.classified-save-form .classified-origin { background: #ecfdf5; border-color: #d1fae5; }
+.classified-save-form .classified-weighing { background: #eff6ff; border-color: #dbeafe; }
+.classified-save-form .erp-entity-chip { width: 100%; min-height: 36px; overflow-wrap: anywhere; }
+.classified-save-form textarea { width: 100%; min-height: 72px; resize: vertical; font-size: 0.84rem; }
+:host ::ng-deep .classified-save-form .p-dropdown,
+:host ::ng-deep .classified-save-form .p-calendar,
+:host ::ng-deep .classified-save-form .p-inputnumber { width: 100%; }
+:host ::ng-deep .classified-save-form .p-inputnumber-input { width: 100%; min-width: 0; }
+@media (max-width: 767px) {
+  .classified-save-form .erp-form-grid { grid-template-columns: minmax(0, 1fr); }
+}

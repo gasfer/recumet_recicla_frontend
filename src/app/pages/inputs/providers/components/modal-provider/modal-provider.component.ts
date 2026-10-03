@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ElementRef, ViewChild } from '@angular/core';
 import { Observable, Subscription, switchMap } from 'rxjs';
@@ -10,6 +10,9 @@ import { ProductsService } from 'src/app/pages/inventories/services/products.ser
 import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 import { BOLIVIA_DEPARTMENTS } from 'src/app/core/constants/bolivia-geography.constants';
 import { SucursalesService } from 'src/app/pages/managements/services/sucursales.service';
+import { UsersService } from 'src/app/pages/managements/services/users.service';
+import { InputsService } from '../../../services/inputs.service';
+import { GetAllInputs, Input } from '../../../interfaces/input.interface';
 import * as L from 'leaflet';
 import { BankService } from 'src/app/pages/managements/services/bank.service';
 import { Bank } from 'src/app/pages/managements/interfaces/bank.interface';
@@ -63,6 +66,8 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   categoriesService = inject( CategoriesService );
   productsService = inject(ProductsService);
   sucursalesService = inject(SucursalesService);
+  usersService      = inject(UsersService);
+  inputsService     = inject(InputsService);
   bankService       = inject(BankService);
   fb                = inject( FormBuilder );
   loading           = signal(false);
@@ -78,10 +83,12 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   isReloadSub$!: Subscription;
   types = signal<{name:string, code:string, id:string}[]>([]);
   categories = signal<{name:string,code:string}[]>([]);
+  rawProducts = signal<{id: number, name:string,code:string,id_category: number, categoryName:string}[]>([]);
   products = signal<{name:string,code:string,categoryName:string}[]>([]);
   sectors = signal<{name:string,code:string}[]>([]);
   departments = BOLIVIA_DEPARTMENTS.map(item => ({ name: item.name, code: item.name }));
   provinces = signal<{ name: string; code: string }[]>([]);
+  commercialUsers = signal<{ id: number; full_names: string }[]>([]);
   locating = signal(false);
   importingLocation = signal(false);
   locationStatus = signal('');
@@ -90,6 +97,25 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   private map?: L.Map;
   private locationMarker?: L.Marker;
   frequencies = signal(PROVIDER_FREQUENCIES.map(option => ({ name: option.label, code: option.value })));
+  frequencyMode = signal<'automatic' | 'manual'>('automatic');
+  frequencyAnalysis = signal<{
+    has_sufficient_history: boolean;
+    total_deliveries: number;
+    average_days: number | null;
+    frequency: string | null;
+    frequency_mode: 'automatic' | 'manual';
+    last_delivery_date: string | null;
+    next_estimated_date: string | null;
+    message?: string;
+  } | null>(null);
+  loadingFrequency = signal(false);
+
+  // Historial compras
+  providerPurchases = signal<Input[]>([]);
+  loadingPurchases = signal(false);
+  totalPurchasesAmount = signal(0);
+  totalPurchasesCount = signal(0);
+  lastPurchaseDate = signal<string | null>(null);
   entityTypes = PROVIDER_ENTITY_TYPES;
   serviceModes = PROVIDER_SERVICE_MODES;
   originChannels = PROVIDER_ORIGIN_CHANNELS;
@@ -116,7 +142,8 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     mayorista: [ false, []],
     name_contact: [ null, [Validators.maxLength(174)]],
     cellphone_contact: [ null, [Validators.min(60000000),Validators.max(79999999)]],
-    id_category: [ '', [Validators.required]],
+    id_category: [ ''],
+    id_categories: [[]],
     id_sucursal: [ null],
     companyContacts:[ '', [Validators.maxLength(254)]],
     commercial_name: ['', [Validators.maxLength(174)]],
@@ -137,6 +164,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     department: [''], province: [''], city: [''], zone: [''], latitude: [null], longitude: [null], geolocation_text: [''], google_maps_url: [''], contact_email: [''],
     id_bank: [''], account_holder: [''], account_number: [''], account_type: [''], currency: ['BOB'],
     frequency:[ 'MONTHLY', [Validators.maxLength(254)]],
+    frequency_mode: ['automatic'],
     workAreaOrPositionOrUnit: ['', [Validators.maxLength(254)]],
     contacts: this.fb.array([]),
     material_ids: [[]],
@@ -166,6 +194,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.getAllSectors();
     this.getAllTypes();
     this.loadBanks();
+    this.loadCommercialUsers();
     this.ensureCollectionRows();
     this.loadAvailableProviders(0);
     this.loadDefaultBranchCity();
@@ -173,10 +202,15 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       this.loadProviderForm(resp);
       this.loadAvailableProviders(resp.id);
       this.providersService.getCommercialDetails(resp.id).subscribe({
-      next: ({ provider }) => {
-          this.loadProviderForm(provider);
-          if (provider.company?.id) this.loadCompanySites(provider.company.id, provider.id);
+        next: ({ provider }) => {
+          if (provider) {
+            this.loadProviderForm(provider);
+            if (provider.company?.id) this.loadCompanySites(provider.company.id, provider.id);
+          }
         },
+        error: () => {
+          // If commercial details request fails, the row data is already loaded cleanly
+        }
       });
     });
     this.isReloadSub$ = this.providersService.reloadCategoriesSectors$
@@ -250,9 +284,22 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.ensureCollectionRows();
     this.bankAccountRows.clear();
     (provider.bankAccounts || []).forEach((account: Record<string, unknown>) => this.addBankAccount(account));
+    const materialIds = (provider.materials || []).filter((item: any) => item.status !== false && item.id_product).map((item: any) => Number(item.id_product));
     this.providerForm.patchValue({
-      material_ids: (provider.materials || []).filter((item: any) => item.status !== false && item.id_product).map((item: any) => Number(item.id_product)),
+      material_ids: materialIds,
     });
+    const all = this.rawProducts();
+    const categoriesFromMaterials = new Set<string>();
+    materialIds.forEach((id: number) => {
+      const prod = all.find(p => p.id === id);
+      if (prod && prod.id_category) categoriesFromMaterials.add(String(prod.id_category));
+    });
+    if (provider.id_category) categoriesFromMaterials.add(String(provider.id_category));
+    const catArray = Array.from(categoriesFromMaterials);
+    if (catArray.length) {
+      this.providerForm.patchValue({ id_categories: catArray });
+      this.filterProductsByCategories(catArray);
+    }
   }
 
   private loadCompanySites(companyId: number, selectedProviderId?: number) {
@@ -326,68 +373,90 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   }
 
   private loadProviderForm(resp: any) {
-      const companyProviders = resp.company?.operatingProviders || [];
-      const corporate = resp.company || resp;
-      this.providerForm.reset({
-        id: resp.id,
-        site_name: resp.full_names,
-        company_id: resp.company?.id || null,
-        full_names: corporate.full_names || resp.full_names,
-        id_sector: resp.sector?.id?.toString() || '',
-        number_document: corporate.number_document || resp.number_document,
-        cellphone: resp.cellphone,
-        direction: resp.direction,
-        id_type_provider: {
-          name: resp.type?.name.toString(),
-          code:resp.type?.code.toString(),
-          id: resp.type?.id.toString(),
-        },
-        mayorista: resp.mayorista ?? false,
-        name_contact: resp.name_contact,
-        companyContacts: resp.companyContacts,
-        commercial_name: corporate.commercial_name || resp.commercial_name,
-        corporate_phone: corporate.corporate_phone || '', corporate_cellphone: corporate.corporate_cellphone || '',
-        corporate_email: corporate.corporate_email || '', website: corporate.website || '',
-        entity_type: corporate.entity_type || resp.entity_type || 'PRIVATE',
-        operational_type: corporate.operational_type || 'RAW_MATERIAL',
-        id_commercial_user: corporate.id_commercial_user || resp.id_commercial_user || this.validatorsService.user()?.id || null,
-        has_branches: resp.company?.has_branches ?? false,
-        provider_ids: companyProviders.filter((item: any) => item.id !== resp.id).map((item: any) => item.id),
-        service_mode: resp.service_mode,
-        origin_channel: corporate.origin_channel || resp.origin_channel || 'DIRECT_CONTACT',
-        relationship_status: corporate.relationship_status || resp.relationship_status || 'PROSPECT',
-        negotiation_condition: corporate.negotiation_condition || resp.negotiation_condition || null,
-        commercial_observations: corporate.commercial_observations || resp.commercial_observations,
-        requires_certificate: corporate.requires_certificate ?? resp.requires_certificate ?? false,
-        requires_traceability_report: corporate.requires_traceability_report ?? resp.requires_traceability_report ?? false,
-        general_observations: corporate.general_observations || resp.general_observations,
-        department: (resp as any).branches?.find((item: any) => item.is_main)?.department || '',
-        province: (resp as any).branches?.find((item: any) => item.is_main)?.province || '',
-        city: (resp as any).branches?.find((item: any) => item.is_main)?.city || '',
-        zone: (resp as any).branches?.find((item: any) => item.is_main)?.zone || '',
-        latitude: (resp as any).branches?.find((item: any) => item.is_main)?.latitude || null,
-        longitude: (resp as any).branches?.find((item: any) => item.is_main)?.longitude || null,
-        geolocation_text: (resp as any).branches?.find((item: any) => item.is_main)?.geolocation_text || '',
-        google_maps_url: (resp as any).branches?.find((item: any) => item.is_main)?.google_maps_url || '',
-        contact_email: (resp as any).contacts?.find((item: any) => item.is_main_contact)?.email || '',
-        id_bank: (resp as any).bankAccounts?.find((item: any) => item.is_main)?.id_bank || '',
-        account_holder: (resp as any).bankAccounts?.find((item: any) => item.is_main)?.account_holder || '',
-        account_number: (resp as any).bankAccounts?.find((item: any) => item.is_main)?.account_number || '',
-        account_type: (resp as any).bankAccounts?.find((item: any) => item.is_main)?.account_type || '',
-        currency: (resp as any).bankAccounts?.find((item: any) => item.is_main)?.currency || 'BOB',
-        frequency: resp.frequency,
-        workAreaOrPositionOrUnit: resp.workAreaOrPositionOrUnit,
-        cellphone_contact: resp.cellphone_contact,
-        id_category: resp.id_category?.toString() || '',
-        status: resp.status,
-      });
-      this.selectedCompanyProviders.set(companyProviders.filter((item: any) => item.id !== resp.id));
-      this.loadCollections(resp);
-      this.updateProvinceOptions(false);
-      this.locationStatus.set((resp as any).branches?.find((item: any) => item.is_main)?.latitude ? 'Ubicación registrada cargada' : '');
-      this.refreshMap('stored');
-      this.selectedBranchId.set(resp.id);
-      this.activeTab.set('company');
+    if (!resp) return;
+    const companyProviders = resp.company?.operatingProviders || [];
+    const corporate = resp.company || resp;
+    const typeCode = resp.type?.code || 'A';
+    this.updateFormLabels(typeCode);
+
+    const mainBranch = (resp.branches || []).find((item: any) => item.is_main) || {};
+    const departmentVal = mainBranch.department || resp.department || '';
+    const zoneVal = mainBranch.zone || resp.zone || '';
+    const directionVal = resp.direction || mainBranch.address || '';
+    const latVal = mainBranch.latitude !== undefined && mainBranch.latitude !== null ? mainBranch.latitude : (resp.latitude ?? null);
+    const lngVal = mainBranch.longitude !== undefined && mainBranch.longitude !== null ? mainBranch.longitude : (resp.longitude ?? null);
+    const geoText = mainBranch.geolocation_text || resp.geolocation_text || '';
+    const gMapsUrl = mainBranch.google_maps_url || resp.google_maps_url || '';
+
+    const mainBank = (resp.bankAccounts || []).find((item: any) => item.is_main) || {};
+    const mainContact = (resp.contacts || []).find((item: any) => item.is_main_contact) || {};
+
+    this.providerForm.patchValue({
+      id: resp.id,
+      site_name: resp.full_names || '',
+      company_id: resp.company?.id || null,
+      full_names: corporate.full_names || resp.full_names || '',
+      id_sector: resp.sector?.id?.toString() || resp.id_sector?.toString() || '',
+      number_document: corporate.number_document || resp.number_document || null,
+      cellphone: resp.cellphone || null,
+      direction: directionVal,
+      id_type_provider: resp.type ? {
+        name: resp.type.name?.toString() || '',
+        code: resp.type.code?.toString() || 'A',
+        id: resp.type.id?.toString() || '',
+      } : this.providerForm.get('id_type_provider')?.value,
+      mayorista: resp.mayorista ?? false,
+      name_contact: mainContact.full_name || resp.name_contact || null,
+      companyContacts: resp.companyContacts || '',
+      commercial_name: corporate.commercial_name || resp.commercial_name || '',
+      corporate_phone: corporate.corporate_phone || '',
+      corporate_cellphone: corporate.corporate_cellphone || '',
+      corporate_email: corporate.corporate_email || '',
+      website: corporate.website || '',
+      entity_type: corporate.entity_type || resp.entity_type || 'PRIVATE',
+      operational_type: corporate.operational_type || resp.operational_type || 'RAW_MATERIAL',
+      id_commercial_user: corporate.id_commercial_user || resp.id_commercial_user || this.validatorsService.user()?.id || null,
+      has_branches: resp.company?.has_branches ?? false,
+      provider_ids: companyProviders.filter((item: any) => item.id !== resp.id).map((item: any) => item.id),
+      service_mode: resp.service_mode || 'BOTH',
+      origin_channel: corporate.origin_channel || resp.origin_channel || 'DIRECT_CONTACT',
+      relationship_status: corporate.relationship_status || resp.relationship_status || 'PROSPECT',
+      negotiation_condition: corporate.negotiation_condition || resp.negotiation_condition || null,
+      commercial_observations: corporate.commercial_observations || resp.commercial_observations || '',
+      requires_certificate: corporate.requires_certificate ?? resp.requires_certificate ?? false,
+      requires_traceability_report: corporate.requires_traceability_report ?? resp.requires_traceability_report ?? false,
+      general_observations: corporate.general_observations || resp.general_observations || '',
+      department: departmentVal,
+      province: mainBranch.province || resp.province || '',
+      city: mainBranch.city || resp.city || '',
+      zone: zoneVal,
+      latitude: latVal,
+      longitude: lngVal,
+      geolocation_text: geoText,
+      google_maps_url: gMapsUrl,
+      contact_email: mainContact.email || resp.contact_email || '',
+      id_bank: mainBank.id_bank || resp.id_bank || '',
+      account_holder: mainBank.account_holder || resp.account_holder || '',
+      account_number: mainBank.account_number || resp.account_number || '',
+      account_type: mainBank.account_type || resp.account_type || '',
+      currency: mainBank.currency || resp.currency || 'BOB',
+      frequency: resp.frequency || 'MONTHLY',
+      frequency_mode: resp.frequency_mode || 'automatic',
+      workAreaOrPositionOrUnit: mainContact.position_area || resp.workAreaOrPositionOrUnit || '',
+      cellphone_contact: mainContact.cellphone || resp.cellphone_contact || null,
+      id_category: resp.id_category?.toString() || '',
+      status: resp.status !== false,
+    });
+    this.selectedCompanyProviders.set(companyProviders.filter((item: any) => item.id !== resp.id));
+    this.loadCollections(resp);
+    this.updateProvinceOptions(false);
+    this.locationStatus.set(latVal ? 'Ubicación registrada cargada' : '');
+    this.refreshMap('stored');
+    this.frequencyMode.set(resp.frequency_mode === 'manual' ? 'manual' : 'automatic');
+    this.selectedBranchId.set(resp.id);
+    this.activeTab.set('company');
+    this.fetchFrequencyAnalysis();
+    this.loadPurchasesHistory(resp.id);
   }
 
   private loadAvailableProviders(currentProviderId: number) {
@@ -709,11 +778,141 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   getAllProducts() {
     this.productsService.getAllAndSearch(1, 2000, true, '', '', false, '', '', 'name', 'ASC', false, '', this.productContext)
       .subscribe({
-        next: response => this.products.set((response.products?.data || []).map((product: any) => ({
-          name: product.name, code: String(product.id), categoryName: product.category?.name || product.Category?.name || '',
-        }))),
-        error: () => this.products.set([]),
+        next: response => {
+          const list = (response.products?.data || []).map((product: any) => ({
+            id: Number(product.id),
+            name: product.name,
+            code: String(product.id),
+            id_category: Number(product.id_category || product.category?.id || product.Category?.id || 0),
+            categoryName: product.category?.name || product.Category?.name || '',
+          }));
+          this.rawProducts.set(list);
+          this.filterProductsByCategories();
+        },
+        error: () => {
+          this.rawProducts.set([]);
+          this.products.set([]);
+        },
       });
+  }
+
+  loadCommercialUsers() {
+    this.usersService.getAllAndSearch(1, 1000, true).subscribe({
+      next: (resp) => {
+        const users = (resp.users?.data || []).map(u => ({
+          id: u.id,
+          full_names: u.full_names || `Usuario #${u.id}`
+        }));
+        this.commercialUsers.set(users);
+      },
+      error: () => this.commercialUsers.set([])
+    });
+  }
+
+  onCategoriesChange(selectedCategoryCodes: string[]) {
+    this.filterProductsByCategories(selectedCategoryCodes);
+  }
+
+  filterProductsByCategories(selectedCategoryCodes?: string[]) {
+    const codes = selectedCategoryCodes || this.providerForm.get('id_categories')?.value || [];
+    const all = this.rawProducts();
+    if (!codes || codes.length === 0) {
+      this.products.set(all);
+      return;
+    }
+    const catNumSet = new Set(codes.map((c: string | number) => Number(c)));
+    const filtered = all.filter(p => catNumSet.has(p.id_category));
+    this.products.set(filtered);
+
+    // Prune material_ids not in filtered list
+    const currentMaterials: (string | number)[] = this.providerForm.get('material_ids')?.value || [];
+    const validProductIds = new Set(filtered.map(p => Number(p.code)));
+    const updatedMaterials = currentMaterials.filter(id => validProductIds.has(Number(id)));
+    if (updatedMaterials.length !== currentMaterials.length) {
+      this.providerForm.patchValue({ material_ids: updatedMaterials });
+    }
+    this.fetchFrequencyAnalysis();
+  }
+
+  onMaterialSelectionChange() {
+    this.fetchFrequencyAnalysis();
+  }
+
+  setFrequencyMode(mode: 'automatic' | 'manual') {
+    this.frequencyMode.set(mode);
+    this.providerForm.patchValue({ frequency_mode: mode });
+    if (mode === 'automatic') {
+      const analysis = this.frequencyAnalysis();
+      if (analysis?.has_sufficient_history && analysis.frequency) {
+        this.providerForm.patchValue({ frequency: analysis.frequency });
+      }
+    }
+  }
+
+  fetchFrequencyAnalysis() {
+    const providerId = this.providerForm.get('id')?.value;
+    if (!providerId) {
+      this.frequencyAnalysis.set(null);
+      return;
+    }
+    const materials = this.providerForm.get('material_ids')?.value || [];
+    const productId = materials.length > 0 ? Number(materials[0]) : undefined;
+    const branchId = Number(this.providerForm.get('id_sucursal')?.value || this.validatorsService.id_sucursal()) || undefined;
+
+    this.loadingFrequency.set(true);
+    this.providersService.getFrequencyAnalysis(Number(providerId), productId, branchId).subscribe({
+      next: (res) => {
+        this.loadingFrequency.set(false);
+        if (res.ok && res.analysis) {
+          this.frequencyAnalysis.set(res.analysis);
+          if (this.frequencyMode() === 'automatic' && res.analysis.has_sufficient_history && res.analysis.frequency) {
+            this.providerForm.patchValue({ frequency: res.analysis.frequency });
+          }
+        }
+      },
+      error: () => {
+        this.loadingFrequency.set(false);
+      }
+    });
+  }
+
+  getFrequencyLabel(freq: string | null | undefined): string {
+    if (!freq) return '—';
+    const found = PROVIDER_FREQUENCIES.find(f => f.value === freq);
+    return found ? found.label : freq;
+  }
+
+  loadPurchasesHistory(providerId?: number, branchId?: number) {
+    const id = providerId || this.providerForm.get('id')?.value;
+    if (!id) {
+      this.providerPurchases.set([]);
+      this.totalPurchasesAmount.set(0);
+      this.totalPurchasesCount.set(0);
+      this.lastPurchaseDate.set(null);
+      return;
+    }
+    const sucursalId = branchId || Number(this.providerForm.get('id_sucursal')?.value || this.validatorsService.id_sucursal()) || undefined;
+    this.loadingPurchases.set(true);
+    const searchParams: any = {
+      id_provider: Number(id),
+      id_sucursal: sucursalId,
+      status: 'ACTIVE'
+    };
+    this.inputsService.getAllAndSearchInputs(1, 50, searchParams).subscribe({
+      next: (res: GetAllInputs) => {
+        this.loadingPurchases.set(false);
+        const data: Input[] = res.inputs?.data || [];
+        this.providerPurchases.set(data);
+        const total = data.reduce((acc: number, item: Input) => acc + (Number(item.total) || 0), 0);
+        this.totalPurchasesAmount.set(total);
+        this.totalPurchasesCount.set(res.inputs?.total || data.length);
+        this.lastPurchaseDate.set(data.length > 0 ? (data[0].date_voucher || data[0].createdAt) : null);
+      },
+      error: () => {
+        this.loadingPurchases.set(false);
+        this.providerPurchases.set([]);
+      }
+    });
   }
 
   isRawMaterialProvider(): boolean {
@@ -910,96 +1109,84 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.loadDefaultBranchCity();
   }
 
-  changeLabelAndForm() {
-    this.resetForm();
-    const type = this.providerForm.get('id_type_provider')?.value;
+  updateFormLabels(typeCode?: string) {
     const defaultFormConfig = {
-      full_names: { label: '', view: true },
-      number_document: { label: '', view: false },
-      direction: { label: '', view: true },
-      companyContacts: { label: '', view: false },
-      id_sector: { label: 'Sector(zonas)', view: true },
-      mayorista: { label: '', view: false },
+      full_names: { label: 'Razón Social / Nombre', view: true },
+      number_document: { label: 'NIT / CI', view: true },
+      direction: { label: 'Dirección exacta', view: true },
+      companyContacts: { label: 'Contactos empresa', view: true },
+      id_sector: { label: 'Sector (zonas)', view: true },
+      mayorista: { label: 'Tipo entrega (Mayorista / Minorista)', view: true },
       name_contact: { label: 'Nombre persona de contacto', view: true },
-      cellphone_contact: { label: 'Celular persona de contacto.', view: true },
-      workAreaOrPositionOrUnit: { label: '', view: false },
-      id_category: { label: 'Categoría(tipo de material que entrega)', view: true },
+      cellphone_contact: { label: 'Celular persona de contacto', view: true },
+      workAreaOrPositionOrUnit: { label: 'Área / Cargo / Unidad dependiente', view: true },
+      id_category: { label: 'Categoría principal', view: true },
       frequency: { label: 'Frecuencia', view: true },
-      //default no document
-      cellphone: { label: 'Celular', view: true },
-      status: { label: 'Estado:', view: true },
+      cellphone: { label: 'Celular principal', view: true },
+      status: { label: 'Estado', view: true },
     };
 
-    switch (type?.code) {
-      //grandes empresas
+    switch (typeCode) {
       case 'A':
         this.formP = {
           ...defaultFormConfig,
           full_names: { label: 'Nombre de empresa', view: true },
-          number_document: { label: 'Nit empresa', view: true },
+          number_document: { label: 'NIT empresa', view: true },
           direction: { label: 'Dirección empresa', view: true },
           companyContacts: { label: 'Contactos empresa', view: true },
-          workAreaOrPositionOrUnit: { label: 'Área de trabajo o cargo o unidad dependiente', view: true },
+          workAreaOrPositionOrUnit: { label: 'Área de trabajo o cargo', view: true },
         };
         break;
-        //pequeñas empresas
       case 'B':
         this.formP = {
           ...defaultFormConfig,
           full_names: { label: 'Nombre del taller o negocio', view: true },
-          number_document: {label:'CI / NIT', view: true},
+          number_document: { label: 'CI / NIT', view: true },
           direction: { label: 'Dirección del taller o negocio', view: true },
         };
         break;
-        //acopiadores mayoristas
       case 'C':
         this.formP = {
           ...defaultFormConfig,
           full_names: { label: 'Nombre Completo Mayorista', view: true },
           direction: { label: 'Dirección de la acopiadora mayorista', view: true },
-          number_document: {label:'CI / NIT', view: true},
-          mayorista: {  label: 'Mayorista o minorista', view: true},
-          name_contact: { label: 'Nombre de contacto', view: false },
-          cellphone_contact: { label: 'Celular de contacto', view: false },
-
+          number_document: { label: 'CI / NIT', view: true },
         };
         break;
-        //acopiadores minoristas
       case 'D':
         this.formP = {
           ...defaultFormConfig,
           full_names: { label: 'Nombre Completo Minorista', view: true },
           direction: { label: 'Dirección de la acopiadora minorista', view: true },
-          number_document: {label:'CI / NIT', view: true},
-          mayorista: {  label: 'Mayorista o minorista', view: false},
-          name_contact: { label: 'Nombre de contacto', view: false },
-          cellphone_contact: { label: 'Celular de contacto', view: false },
+          number_document: { label: 'CI / NIT', view: true },
         };
         break;
-        //domiciliarios nuevos
       case 'E':
         this.formP = {
           ...defaultFormConfig,
-         full_names: { label: 'Nombre completo', view: true },
-          number_document: {label:'CI / Nit', view: true},
-          direction: { label: '', view: true },
-          name_contact: { label: 'Nombre de contacto', view: false },
-          cellphone_contact: { label: 'Celular de contacto', view: false },
+          full_names: { label: 'Nombre completo', view: true },
+          number_document: { label: 'CI / NIT', view: true },
+          direction: { label: 'Dirección', view: true },
         };
         break;
       case 'F':
         this.formP = {
           ...defaultFormConfig,
-          full_names: { label: 'Nombre de empresa publica', view: true },
-          number_document: {label:'Nit empresa', view: true},
+          full_names: { label: 'Nombre de empresa pública', view: true },
+          number_document: { label: 'NIT empresa', view: true },
           direction: { label: 'Dirección empresa', view: true },
-          companyContacts: { label: 'Contactos empresa', view:true },
-          workAreaOrPositionOrUnit: {label: 'Área de trabajo o cargo o unidad dependiente', view: true},
+          companyContacts: { label: 'Contactos empresa', view: true },
+          workAreaOrPositionOrUnit: { label: 'Área de trabajo o cargo', view: true },
         };
         break;
       default:
         this.formP = { ...defaultFormConfig };
         break;
     }
+  }
+
+  changeLabelAndForm() {
+    const type = this.providerForm.get('id_type_provider')?.value;
+    this.updateFormLabels(type?.code);
   }
 }

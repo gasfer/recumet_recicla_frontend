@@ -21,16 +21,23 @@ describe('resolvePurchaseEditEligibility', () => {
     }));
   });
 
-  it('blocks editing when the deadline has expired', () => {
-    expect(resolvePurchaseEditEligibility(true, true)).toEqual(jasmine.objectContaining({
+  it('blocks editing when the deadline has expired for non-admin users', () => {
+    expect(resolvePurchaseEditEligibility(true, true, false)).toEqual(jasmine.objectContaining({
       allowed: false,
       reason: 'deadline',
       message: PURCHASE_EDIT_DEADLINE_MESSAGE,
     }));
   });
 
+  it('allows editing when the user is an ADMINISTRADOR even if the deadline has expired', () => {
+    expect(resolvePurchaseEditEligibility(true, true, true)).toEqual(jasmine.objectContaining({
+      allowed: true,
+      reason: null,
+    }));
+  });
+
   it('prioritizes the missing permission when both restrictions apply', () => {
-    expect(resolvePurchaseEditEligibility(false, true).reason).toBe('permission');
+    expect(resolvePurchaseEditEligibility(false, true, false).reason).toBe('permission');
   });
 
   it('recognizes only an HTTP 403 as a concurrent permission denial', () => {

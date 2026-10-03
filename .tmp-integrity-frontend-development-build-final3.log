@@ -1,0 +1,43 @@
+- Generating browser application bundles (phase: setup)...
+√ Browser application bundle generation complete.
+√ Browser application bundle generation complete.
+- Copying assets...
+√ Copying assets complete.
+- Generating index html...
+√ Index html generation complete.
+
+Initial chunk files                                                                                     | Names                              |  Raw size
+vendor.js                                                                                               | vendor                             |   5.71 MB | 
+styles.css                                                                                              | styles                             |   1.27 MB | 
+main.js                                                                                                 | main                               |   1.07 MB | 
+polyfills.js                                                                                            | polyfills                          | 114.22 kB | 
+scripts.js                                                                                              | scripts                            |  78.87 kB | 
+runtime.js                                                                                              | runtime                            |  12.83 kB | 
+
+                                                                                                        | Initial total                      |   8.25 MB
+
+Lazy chunk files                                                                                        | Names                              |  Raw size
+default-src_app_pages_inputs_inputs_module_ts.js                                                        | inputs-inputs-module               |   1.21 MB | 
+src_app_pages_inventories_inventories_module_ts.js                                                      | inventories-inventories-module     |   1.15 MB | 
+src_app_pages_caja_caja_module_ts.js                                                                    | caja-caja-module                   | 943.25 kB | 
+default-src_app_pages_transfers_transfers_module_ts.js                                                  | transfers-transfers-module         | 685.43 kB | 
+src_app_pages_pages_module_ts.js                                                                        | pages-pages-module                 | 658.78 kB | 
+src_app_pages_managements_managements_module_ts.js                                                      | managements-managements-module     | 406.16 kB | 
+src_app_pages_balanza_balanza_module_ts.js                                                              | balanza-balanza-module             | 400.86 kB | 
+src_app_pages_accounts_accounts_module_ts.js                                                            | accounts-accounts-module           | 363.91 kB | 
+default-src_app_pages_outputs_outputs_module_ts.js                                                      | outputs-outputs-module             | 325.44 kB | 
+default-src_app_pages_classifieds_classifieds_module_ts.js                                              | classifieds-classifieds-module     | 177.95 kB | 
+src_app_pages_dashboard_dashboard_module_ts.js                                                          | dashboard-dashboard-module         | 117.39 kB | 
+src_app_pages_profile_profile_module_ts.js                                                              | profile-profile-module             | 103.89 kB | 
+src_app_auth_auth_module_ts.js                                                                          | auth-auth-module                   |  73.22 kB | 
+src_app_pages_notifications_notifications_module_ts.js                                                  | notifications-notifications-module |  26.12 kB | 
+default-src_app_pages_accounts_services_accounts-payable_service_ts-src_app_pages_inputs_serv-d1ace4.js | inputs-inputs-module               |  18.47 kB | 
+default-src_app_pages_inputs_services_inputs_service_ts.js                                              | inputs-inputs-module               |  16.70 kB | 
+default-node_modules_primeng_fesm2022_primeng-divider_mjs-node_modules_primeng_fesm2022_prime-3c3bc3.js | caja-caja-module                   |  15.97 kB | 
+src_app_pages_assets_assets_module_ts.js                                                                | assets-assets-module               |   9.44 kB | 
+src_app_pages_providers_providers_module_ts.js                                                          | providers-providers-module         |   7.94 kB | 
+src_app_pages_inventories_services_scales_service_ts-src_app_pages_managements_services_bank_-6cc6bb.js | outputs-outputs-module             |   5.62 kB | 
+common.js                                                                                               | common                             |   3.60 kB | 
+src_app_pages_inventories_services_scales_service_ts.js                                                 | inputs-inputs-module               |   2.92 kB | 
+
+Build at: 2026-10-02T20:19:45.946Z - Hash: e971045b5ef63452 - Time: 27785ms

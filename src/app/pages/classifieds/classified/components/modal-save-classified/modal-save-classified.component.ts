@@ -12,8 +12,7 @@ import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 @Component({
   selector: 'app-modal-save-classified',
   templateUrl: './modal-save-classified.component.html',
-  styles: [
-  ]
+  styleUrls: ['./modal-save-classified.component.scss']
 })
 export class ModalSaveClassifiedComponent implements OnInit {
   classifiedService = inject( ClassifiedService );

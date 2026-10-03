@@ -66,6 +66,28 @@ describe('SidebarComponent permission filtering', () => {
     expect(titles).not.toContain('BALANZA_TITULO');
   });
 
+  it('shows sale registration to an operator with the create sale permission', () => {
+    const component = createComponent('OPERADOR', (name, action) => name === 'VENTAS' && action === 'create');
+    component.initialize();
+    const sales = component.menuItems.find(item => item.label === 'Ventas');
+    expect(sales?.subItems?.map(item => item.link)).toEqual(['/outputs/output']);
+  });
+
+  it('keeps clients only inside sales and dashboard and reports as direct links', () => {
+    const component = createComponent('ADMINISTRADOR', () => true);
+    component.initialize();
+    const sales = component.menuItems.find(item => item.label === 'Ventas');
+    const clientLinks = component.menuItems.flatMap(item => [item, ...(item.subItems ?? [])])
+      .filter(item => item.link === '/outputs/clients');
+    expect(clientLinks.length).toBe(1);
+    expect(sales?.subItems).toContain(clientLinks[0]);
+    for (const label of ['Dashboard', 'Reportes']) {
+      const group = component.menuGroups.find(item => item.title === label);
+      expect(group?.directItem?.link).toBeTruthy();
+      expect(group?.directItem?.subItems).toBeUndefined();
+    }
+  });
+
   it('clones submenu arrays instead of mutating the shared manifest', () => {
     const originalProviderCount = MENU.find((item) => item.id === 21)?.subItems?.length;
     const component = createComponent('OPERADOR', () => false);

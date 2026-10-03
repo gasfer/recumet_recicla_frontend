@@ -186,17 +186,17 @@ export class TransferReviewTraceComponent {
     if (item.allowed_action) return item.allowed_action.label;
     if (
       item.reconciliation_status === 'PARCIAL'
-      || (item.difference_type === 'FALTANTE' && Number(item.difference_pending || 0) > 0)
+      || (item.difference_type === 'FALTANTE' && this.decimalFormat.compare(item.difference_pending || 0, 0) > 0)
     ) return 'Incluido en registro consolidado';
     return 'Requiere investigación';
   }
 
   historicalMovementLabel(item: HistoricalDifferenceItem): string {
     if (!item.difference_expected) return 'No corresponde';
-    if (!item.difference_movements.length) return `No encontrado · falta ${Number(item.difference_pending || 0).toFixed(4)} kg`;
-    const covered = Number(item.difference_covered || 0).toFixed(4);
-    const pending = Number(item.difference_pending || 0).toFixed(4);
-    return Number(item.difference_pending || 0) > 0 ? `${covered} kg registrado · ${pending} kg pendiente` : `${covered} kg registrado`;
+    if (!item.difference_movements.length) return `No encontrado · falta ${this.decimalFormat.formatDiagnostic(item.difference_pending)} kg`;
+    const covered = this.decimalFormat.formatDiagnostic(item.difference_covered);
+    const pending = this.decimalFormat.formatDiagnostic(item.difference_pending);
+    return this.decimalFormat.compare(item.difference_pending || 0, 0) > 0 ? `${covered} kg registrado · ${pending} kg pendiente` : `${covered} kg registrado`;
   }
 
   irregularityLabel(direction: string): string {
@@ -252,13 +252,15 @@ export class TransferReviewTraceComponent {
   }
 
   remainingQuantity(detail: ReviewDetail): number {
-    return Math.max(0, Number(detail.quantity_difference) - Number(detail.quantity_resolved || 0));
+    const remaining = this.decimalFormat.subtract(detail.quantity_difference, detail.quantity_resolved || 0);
+    return this.decimalFormat.compare(remaining, 0) > 0 ? Number(remaining) : 0;
   }
 
   retainedQuantity(detail: ReviewDetail): number {
-    return (detail.inventoryHolds || [])
+    const held = (detail.inventoryHolds || [])
       .filter(({ disposition }) => disposition !== 'LIBERADO_POR_AJUSTE')
-      .reduce((total, hold) => total + Number(hold.quantity), 0);
+      .reduce((total, hold) => this.decimalFormat.subtract(total, this.decimalFormat.subtract(0, hold.quantity)), '0.0000');
+    return Number(held);
   }
 
   cases(noteType: string): ReconciliationCase[] {
@@ -642,7 +644,7 @@ export class TransferReviewTraceComponent {
             : operation?.type === 'WASTE_ENTRY'
               ? 'Faltante registrado en MERMAS con Stock y Kardex, vinculado automáticamente a la boleta de recepción.'
           : pendingQuantity > 0
-          ? `${operation?.type || 'Operación'} ${operation?.code || ''} creada. Quedan ${pendingQuantity.toFixed(4)} pendientes.`
+          ? `${operation?.type || 'Operación'} ${operation?.code || ''} creada. Quedan ${this.decimalFormat.formatDiagnostic(pendingQuantity)} pendientes.`
           : `${operation?.type || 'Operación'} ${operation?.code || ''} creada con stock, Kardex e historial. La diferencia quedó conciliada.`;
         this.noteNotice.set({
           noteId: note.id,
@@ -702,7 +704,7 @@ export class TransferReviewTraceComponent {
       ? error.error.details.map((detail: any) => {
         const product = detail.product_cod || `producto ${detail.product_id}`;
         const location = `sucursal ${detail.sucursal_id}, almacén ${detail.storage_id}`;
-        return `${product} (${location}): Stock ${Number(detail.stock || 0).toFixed(4)}, Kardex ${Number(detail.kardex || 0).toFixed(4)}`;
+        return `${product} (${location}): Stock ${this.decimalFormat.formatDiagnostic(detail.stock)}, Kardex ${this.decimalFormat.formatDiagnostic(detail.kardex)}`;
       })
       : [];
     return locations.length ? `${message} ${locations.join('; ')}.` : message;

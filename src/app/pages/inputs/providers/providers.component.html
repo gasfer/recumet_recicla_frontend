@@ -1,4 +1,4 @@
-﻿<div [formGroup]="formReport">
+<div [formGroup]="formReport">
   <div class="card shadow mb-4 icon-box ">
     <div class="card-body">
       <div class="title mb-1">
@@ -84,7 +84,7 @@
 
 
 
-<!-- MODAL: MÁS INFORMACIÓN DETALLADA DEL PROVEEDOR (SOLO LECTURA, MISMO DISEÑO QUE EDITAR) -->
+<!-- MODAL: FICHA INFORMATIVA DEL PROVEEDOR (SOLO LECTURA, RECUMET DESIGN SYSTEM) -->
 <p-dialog
   [header]="'Ficha Informativa de Proveedor: ' + (selectedProvider()?.full_names || '')"
   [visible]="providerInfoVisible()" (visibleChange)="providerInfoVisible.set($event)"
@@ -94,299 +94,439 @@
   [dismissableMask]="true"
   styleClass="app-dialog--xl erp-operational-dialog">
 
-  <div *ngIf="providerInfoLoading()" class="p-4 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando ficha completa...</div>
+  <div *ngIf="providerInfoLoading()" class="p-4 text-center text-slate-500">
+    <i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando ficha completa...
+  </div>
+
   <div *ngIf="selectedProvider() as p" class="space-y-3">
     <!-- Header banner con resumen ejecutivo -->
-    <div class="p-3 rounded-lg bg-slate-800 text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
+    <div class="p-3 rounded-lg bg-[#0b1324] text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-emerald-600/30 border border-emerald-400 flex items-center justify-center text-emerald-300 text-lg">
           <i class="fa-solid fa-truck-moving"></i>
         </div>
         <div>
           <h4 class="font-bold text-sm text-white mb-0 uppercase tracking-wide">{{ p.full_names }}</h4>
-          <span class="text-xs text-slate-300">{{ p.type?.name || 'Proveedor estándar' }} · NIT/CI: {{ p.number_document || 'Sin documento' }}</span>
+          <span class="text-xs text-slate-300">
+            {{ p.type?.name || 'Proveedor' }} · <b>NIT/CI:</b> {{ p.number_document || 'Sin documento' }}
+          </span>
         </div>
       </div>
       <div class="flex items-center gap-2">
         <p-tag [value]="p.status ? 'ACTIVO' : 'INACTIVO'" [severity]="p.status ? 'success' : 'danger'" [rounded]="true"></p-tag>
-        <p-tag *ngIf="p.mayorista" value="MAYORISTA" severity="info" [rounded]="true"></p-tag>
-        <p-tag *ngIf="!p.mayorista" value="MINORISTA" severity="secondary" [rounded]="true"></p-tag>
+        <p-tag *ngIf="p.mayorista" value="MAYORISTA" severity="info" [rounded]="true" icon="fa-solid fa-truck"></p-tag>
+        <p-tag *ngIf="!p.mayorista" value="MINORISTA" severity="secondary" [rounded]="true" icon="fa-solid fa-people-carry-box"></p-tag>
       </div>
     </div>
 
-    <nav class="provider-info-tabs" aria-label="Secciones de la ficha del proveedor">
-      <button type="button" [class.active]="providerInfoTab() === 'company'" (click)="providerInfoTab.set('company')">
-        <i class="fa-solid fa-building"></i>1. Empresa Matriz
+    <!-- Navegación de Pestañas -->
+    <div class="flex gap-2 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
+      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+        [class.btn-success]="providerInfoTab() === 'company'"
+        [class.btn-light]="providerInfoTab() !== 'company'"
+        (click)="providerInfoTab.set('company')">
+        <i class="fa-solid fa-building mr-1"></i> 1. Ficha del Proveedor
       </button>
-      <button type="button" [class.active]="providerInfoTab() === 'branches'" (click)="providerInfoTab.set('branches')">
-        <i class="fa-solid fa-code-branch"></i>2. Sucursales <b>{{ (p.company?.operatingProviders?.length || p.branches?.length || 0) }}</b>
+      <button *ngIf="infoSites().length > 1" type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+        [class.btn-success]="providerInfoTab() === 'branches'"
+        [class.btn-light]="providerInfoTab() !== 'branches'"
+        (click)="providerInfoTab.set('branches')">
+        <i class="fa-solid fa-code-branch mr-1"></i> 2. Sucursales ({{ infoSites().length }})
       </button>
-      <button type="button" [class.active]="providerInfoTab() === 'summary'" (click)="providerInfoTab.set('summary')">
-        <i class="fa-solid fa-chart-column"></i>3. Resumen y Consolidado
+      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+        [class.btn-success]="providerInfoTab() === 'summary'"
+        [class.btn-light]="providerInfoTab() !== 'summary'"
+        (click)="providerInfoTab.set('summary')">
+        <i class="fa-solid fa-receipt mr-1"></i> 3. Historial de Compras
       </button>
-    </nav>
-
-    <div *ngIf="providerInfoTab() === 'company'" class="provider-info-pane">
-    <!-- SECCIÓN 1: TIPO E IDENTIFICACIÓN FISCAL (Fondo suave pizarra/slate) -->
-    <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
-      <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-id-card text-slate-500"></i> 1. Identificación Legal & Tipo de Proveedor
-      </div>
-
-      <div class="erp-form-grid mb-2">
-        <div class="erp-field erp-col-full">
-          <label class="erp-label">Tipo de proveedor</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-tag text-emerald-600 mr-2"></i> {{ p.type?.name || 'Proveedor general' }}
-          </div>
-        </div>
-      </div>
-
-      <div class="erp-form-grid">
-        <div class="erp-field">
-          <label class="erp-label">Razón social o nombre completo</label>
-          <div class="erp-readonly-value font-semibold text-slate-900 uppercase">
-            {{ p.full_names }}
-          </div>
-        </div>
-        <div class="erp-field">
-          <label class="erp-label">NIT / CI / Documento fiscal</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            {{ p.number_document || 'Sin documento registrado' }}
-          </div>
-        </div>
-      </div>
-    </section>
     </div>
 
-    <section *ngIf="providerInfoTab() === 'branches'" class="p-3 rounded-lg border border-violet-200 bg-violet-50/50">
-      <div class="text-xs font-bold text-violet-800 uppercase mb-2"><i class="fa-solid fa-building-columns mr-2"></i>Grupo empresarial y sucursales</div>
+    <!-- PESTAÑA 1: FICHA PROVEEDOR (SOLO LECTURA COMPACTA) -->
+    <div *ngIf="providerInfoTab() === 'company'" class="space-y-3">
+      
+      <!-- SECCIÓN 1: Identificación Legal & Tipo de Proveedor -->
+      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+        <div class="text-xs font-bold text-slate-700 uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-id-card text-slate-500"></i> 1. Identificación Legal & Tipo de Proveedor
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+          <div class="bg-white p-2 rounded border border-slate-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Tipo de proveedor</span>
+            <span class="font-bold text-emerald-800">{{ p.type?.name || 'General' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-slate-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Razón Social / Nombre</span>
+            <span class="font-bold text-slate-900 uppercase">{{ p.full_names }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-slate-200">
+            <span class="text-slate-500 block text-[11px] font-bold">NIT / CI</span>
+            <span class="font-semibold text-slate-800">{{ p.number_document || 'Sin documento' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-slate-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Nombre comercial</span>
+            <span class="font-semibold text-slate-800">{{ selectedCompanyProfile()?.commercial_name || p.commercial_name || '—' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-slate-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Tipo de entidad</span>
+            <span class="font-semibold text-slate-800">{{ getEntityTypeLabel(selectedCompanyProfile()?.entity_type || p.entity_type) }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-slate-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Teléfono empresa</span>
+            <span class="font-semibold text-slate-800">{{ selectedCompanyProfile()?.corporate_phone || p.companyContacts || '—' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-slate-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Celular corporativo</span>
+            <span class="font-semibold text-slate-800">{{ selectedCompanyProfile()?.corporate_cellphone || p.cellphone || '—' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-slate-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Correo electrónico</span>
+            <span class="font-semibold text-slate-800">{{ selectedCompanyProfile()?.corporate_email || '—' }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 2: Ubicación Geográfica & Sector -->
+      <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40">
+        <div class="text-xs font-bold text-emerald-800 uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-map-location-dot text-emerald-600"></i> 2. Ubicación Geográfica & Sector
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs mb-2">
+          <div class="bg-white p-2 rounded border border-emerald-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Departamento</span>
+            <span class="font-bold text-emerald-900">{{ p.department || (p.branches && p.branches[0].department) || '—' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-emerald-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Zona / Barrio</span>
+            <span class="font-semibold text-slate-800 uppercase">{{ p.zone || (p.branches && p.branches[0].zone) || '—' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-emerald-200 sm:col-span-2">
+            <span class="text-slate-500 block text-[11px] font-bold">Dirección exacta</span>
+            <span class="font-semibold text-slate-800 uppercase">{{ p.direction || (p.branches && p.branches[0].address) || 'Sin dirección registrada' }}</span>
+          </div>
+        </div>
+        <div *ngIf="p.latitude || (p.branches && p.branches[0].latitude)" class="bg-white p-2.5 rounded border border-emerald-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-location-dot text-emerald-600 text-lg"></i>
+            <div>
+              <b class="text-slate-800">Coordenadas fijadas:</b>
+              <span class="text-slate-600 ml-1">{{ p.latitude || p.branches?.[0]?.latitude }}, {{ p.longitude || p.branches?.[0]?.longitude }}</span>
+              <small *ngIf="p.geolocation_text || p.branches?.[0]?.geolocation_text" class="block text-slate-500">Ref: {{ p.geolocation_text || p.branches?.[0]?.geolocation_text }}</small>
+            </div>
+          </div>
+          <a *ngIf="p.google_maps_url || p.branches?.[0]?.google_maps_url" [href]="p.google_maps_url || p.branches?.[0]?.google_maps_url" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-outline-success">
+            <i class="fa-brands fa-google mr-1"></i> Abrir en Google Maps
+          </a>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 3: Contacto Comercial -->
+      <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40">
+        <div class="text-xs font-bold text-blue-900 uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-user-tie text-blue-600"></i> 3. Contacto Comercial
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+          <div class="bg-white p-2 rounded border border-blue-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Persona de contacto</span>
+            <span class="font-bold text-slate-900 uppercase">{{ p.name_contact || 'Sin contacto registrado' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-blue-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Celular de contacto</span>
+            <span class="font-bold text-blue-800">{{ p.cellphone_contact || '—' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-blue-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Área / Cargo</span>
+            <span class="font-semibold text-slate-800 uppercase">{{ p.workAreaOrPositionOrUnit || '—' }}</span>
+          </div>
+          <div class="bg-white p-2 rounded border border-blue-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Contactos empresa</span>
+            <span class="font-semibold text-slate-800">{{ p.companyContacts || '—' }}</span>
+          </div>
+        </div>
+        <!-- Contactos repetibles adicionales si existen -->
+        <div *ngIf="p.contacts && p.contacts.length > 0" class="mt-2 pt-2 border-t border-blue-200/60">
+          <small class="font-bold text-blue-900 uppercase block mb-1 text-[11px]">Directorio de contactos vinculados</small>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div *ngFor="let c of p.contacts" class="bg-white p-2 rounded border border-blue-100 flex items-center justify-between">
+              <div>
+                <b class="text-slate-800 uppercase">{{ c.full_name }}</b>
+                <small class="block text-slate-500">{{ c.position_area }} · Cel: {{ c.cellphone }}</small>
+              </div>
+              <span *ngIf="c.is_main_contact" class="badge bg-blue-100 text-blue-800 text-[10px] font-bold">Principal</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 4: MODALIDAD DE OPERACION Y MATERIAL -->
+      <section class="p-3 rounded-lg border border-amber-200 bg-amber-50/40">
+        <div class="text-xs font-bold text-amber-900 uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-boxes-stacked text-amber-600"></i> 4. MODALIDAD DE OPERACION Y MATERIAL
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs mb-2">
+          <div class="bg-white p-2 rounded border border-amber-200 flex items-center justify-between">
+            <span class="text-slate-500 font-bold text-[11px]">Modalidad de entrega:</span>
+            <p-tag [value]="p.mayorista ? 'MAYORISTA' : 'MINORISTA'" [severity]="p.mayorista ? 'info' : 'success'" [rounded]="true"></p-tag>
+          </div>
+          <div class="bg-white p-2 rounded border border-amber-200 flex items-center justify-between">
+            <span class="text-slate-500 font-bold text-[11px]">Estado cuenta:</span>
+            <p-tag [value]="p.status ? 'ACTIVO' : 'INACTIVO'" [severity]="p.status ? 'success' : 'danger'" [rounded]="true"></p-tag>
+          </div>
+          <div class="bg-white p-2 rounded border border-amber-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Modalidad de atención</span>
+            <span class="font-semibold text-slate-800">{{ getServiceModeLabel(p.service_mode) }}</span>
+          </div>
+        </div>
+
+        <!-- Materiales y Categorías registrados -->
+        <div class="bg-white p-2.5 rounded border border-amber-200 mb-2 text-xs">
+          <b class="text-amber-900 block mb-1.5 font-bold uppercase text-[11px]">Materiales y Productos Entregados</b>
+          <div class="flex flex-wrap gap-1.5">
+            <ng-container *ngIf="p.materials && p.materials.length > 0; else noSpecificMaterials">
+              <span *ngFor="let m of p.materials" class="badge bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full text-xs font-semibold">
+                <i class="fa-solid fa-recycle mr-1 text-amber-700"></i>
+                {{ m.product?.name || m.category?.name || 'Material' }}
+              </span>
+            </ng-container>
+            <ng-template #noSpecificMaterials>
+              <span *ngIf="p.category?.name" class="badge bg-amber-100 text-amber-900 px-2 py-1 rounded">
+                {{ p.category?.name }}
+              </span>
+              <span *ngIf="!p.category?.name" class="text-slate-500">Sin materiales específicos registrados</span>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Frecuencia Inteligente -->
+        <div class="p-2.5 rounded-lg bg-emerald-50/80 border border-emerald-200">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="badge bg-emerald-700 text-white font-bold text-xs px-2 py-0.5 rounded">
+              🤖 Frecuencia Inteligente Histórica
+            </span>
+            <span class="text-xs font-extrabold text-emerald-900">
+              Frecuencia: <span class="uppercase text-emerald-700 underline">{{ getFrequencyLabel(infoFrequencyAnalysis()?.frequency || p.frequency) }}</span>
+            </span>
+          </div>
+          <div *ngIf="infoFrequencyAnalysis() as freq" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <div class="bg-white p-2 rounded border border-emerald-200">
+              <span class="text-slate-500 block text-[10px] uppercase font-bold">Promedio:</span>
+              <b class="text-slate-800">{{ freq.average_days ? (freq.average_days + ' días') : 'Sin promedio' }}</b>
+            </div>
+            <div class="bg-white p-2 rounded border border-emerald-200">
+              <span class="text-slate-500 block text-[10px] uppercase font-bold">Entregas analizadas:</span>
+              <b class="text-slate-800">{{ freq.total_deliveries || 0 }}</b>
+            </div>
+            <div class="bg-white p-2 rounded border border-emerald-200">
+              <span class="text-slate-500 block text-[10px] uppercase font-bold">Última entrega:</span>
+              <b class="text-slate-800">{{ freq.last_delivery_date ? (freq.last_delivery_date | date:'dd/MM/yyyy') : '—' }}</b>
+            </div>
+            <div class="bg-white p-2 rounded border border-emerald-200">
+              <span class="text-slate-500 block text-[10px] uppercase font-bold">Próximo contacto:</span>
+              <b class="text-emerald-700 font-extrabold">{{ freq.next_estimated_date ? (freq.next_estimated_date | date:'dd/MM/yyyy') : '—' }}</b>
+            </div>
+          </div>
+          <div *ngIf="!infoFrequencyAnalysis()" class="text-xs text-slate-500">
+            Frecuencia actual registrada: <b>{{ getFrequencyLabel(p.frequency) }}</b> (Modo: {{ p.frequency_mode || 'automatic' }})
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 5: Gestión Comercial -->
+      <section class="p-3 rounded-lg border border-violet-100 bg-violet-50/30">
+        <div class="text-xs font-bold text-violet-900 uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-handshake text-violet-600"></i> 5. Gestión Comercial
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+          <div class="bg-white p-2 rounded border border-violet-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Responsable comercial</span>
+            <span class="font-bold text-violet-900">
+              {{ getCommercialUserName(selectedCompanyProfile()?.id_commercial_user || p.id_commercial_user) }}
+            </span>
+          </div>
+          <div class="bg-white p-2 rounded border border-violet-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Canal de origen</span>
+            <span class="font-semibold text-slate-800">
+              {{ getOriginChannelLabel(selectedCompanyProfile()?.origin_channel || p.origin_channel) }}
+            </span>
+          </div>
+          <div class="bg-white p-2 rounded border border-violet-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Estado de relación</span>
+            <span class="font-semibold text-slate-800">
+              {{ getRelationshipStatusLabel(selectedCompanyProfile()?.relationship_status || p.relationship_status) }}
+            </span>
+          </div>
+          <div class="bg-white p-2 rounded border border-violet-200">
+            <span class="text-slate-500 block text-[11px] font-bold">Condición de negociación</span>
+            <span class="font-semibold text-slate-800">
+              {{ selectedCompanyProfile()?.negotiation_condition || p.negotiation_condition || 'Estándar' }}
+            </span>
+          </div>
+          <div *ngIf="selectedCompanyProfile()?.commercial_observations || p.commercial_observations" class="bg-white p-2 rounded border border-violet-200 md:col-span-4">
+            <span class="text-slate-500 block text-[11px] font-bold">Observaciones comerciales</span>
+            <p class="mb-0 text-slate-700">{{ selectedCompanyProfile()?.commercial_observations || p.commercial_observations }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 6: Requerimientos Documentales -->
+      <section class="p-3 rounded-lg border border-rose-100 bg-rose-50/30">
+        <div class="text-xs font-bold text-rose-900 uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-file-shield text-rose-600"></i> 6. Requerimientos Documentales
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="bg-white p-2.5 rounded border border-rose-200 flex items-center justify-between">
+            <div>
+              <b class="text-slate-800 block">¿Requiere certificado?</b>
+              <small class="text-slate-500">Documento de certificación ambiental / legal</small>
+            </div>
+            <p-tag [value]="(selectedCompanyProfile()?.requires_certificate || p.requires_certificate) ? 'SÍ' : 'NO'"
+                   [severity]="(selectedCompanyProfile()?.requires_certificate || p.requires_certificate) ? 'success' : 'secondary'"
+                   [rounded]="true"></p-tag>
+          </div>
+          <div class="bg-white p-2.5 rounded border border-rose-200 flex items-center justify-between">
+            <div>
+              <b class="text-slate-800 block">¿Requiere informe de trazabilidad?</b>
+              <small class="text-slate-500">Informe de pesajes y destino final</small>
+            </div>
+            <p-tag [value]="(selectedCompanyProfile()?.requires_traceability_report || p.requires_traceability_report) ? 'SÍ' : 'NO'"
+                   [severity]="(selectedCompanyProfile()?.requires_traceability_report || p.requires_traceability_report) ? 'success' : 'secondary'"
+                   [rounded]="true"></p-tag>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 7: Información Bancaria -->
+      <section class="p-3 rounded-lg border border-cyan-100 bg-cyan-50/30">
+        <div class="text-xs font-bold text-cyan-900 uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-building-columns text-cyan-600"></i> 7. Información Bancaria
+        </div>
+        <div *ngIf="p.bankAccounts && p.bankAccounts.length > 0; else noBanks" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div *ngFor="let b of p.bankAccounts" class="bg-white p-2.5 rounded border border-cyan-200">
+            <div class="flex items-center justify-between mb-1">
+              <b class="text-cyan-900">{{ b.bank?.name || 'Banco' }}</b>
+              <span *ngIf="b.is_main" class="badge bg-emerald-100 text-emerald-800 text-[10px] font-bold">Principal</span>
+            </div>
+            <div class="text-slate-700">
+              <span>Titular: <b>{{ b.account_holder || '—' }}</b></span><br>
+              <span>N.º Cuenta: <b>{{ b.account_number }}</b> ({{ b.currency || 'BOB' }})</span><br>
+              <small class="text-slate-500">Tipo: {{ b.account_type || 'CAJA_AHORRO' }}</small>
+            </div>
+          </div>
+        </div>
+        <ng-template #noBanks>
+          <div class="bg-white p-3 rounded border border-cyan-100 text-center text-xs text-slate-500">
+            Sin cuentas bancarias registradas para este proveedor.
+          </div>
+        </ng-template>
+      </section>
+
+      <!-- SECCIÓN 8: Observaciones Generales -->
+      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+        <div class="text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-note-sticky text-slate-500"></i> 8. Observaciones Generales
+        </div>
+        <p class="text-xs mb-0 text-slate-800 bg-white p-2 rounded border border-slate-200">
+          {{ selectedCompanyProfile()?.general_observations || p.general_observations || 'Sin observaciones generales registradas.' }}
+        </p>
+      </section>
+    </div>
+
+    <!-- PESTAÑA 2: SUCURSALES (SI TIENE VARIAS) -->
+    <div *ngIf="providerInfoTab() === 'branches'" class="p-3 rounded-lg border border-violet-200 bg-violet-50/50">
+      <div class="text-xs font-bold text-violet-800 uppercase mb-2"><i class="fa-solid fa-building-columns mr-2"></i>Grupo Empresarial & Sedes</div>
       <div class="flex flex-wrap gap-2 mb-3">
         <button type="button" *ngFor="let site of infoSites()" (click)="selectInfoSite(site)"
           class="px-2 py-1 bg-white border border-violet-200 rounded text-xs"
           [class.border-emerald-500]="selectedInfoSiteId()===site.id" [class.bg-emerald-50]="selectedInfoSiteId()===site.id">
           <i class="fa-solid" [ngClass]="site.site_role==='HEADQUARTERS' ? 'fa-building text-emerald-600' : 'fa-code-branch text-violet-600'"></i>
-          {{ site.full_names }} · {{ site.site_role==='HEADQUARTERS' ? 'Casa matriz' : 'Sucursal' }}
+          {{ site.full_names }} · {{ site.site_role==='HEADQUARTERS' ? 'Casa Matriz' : 'Sucursal' }}
         </button>
-        <span *ngIf="!infoSites().length" class="px-2 py-3 text-slate-500 text-xs">Este proveedor no tiene sedes corporativas registradas.</span>
       </div>
       <div *ngIf="selectedInfoSite() as site" class="grid md:grid-cols-2 gap-2 text-xs">
         <div class="bg-white border border-emerald-100 rounded p-3">
-          <b class="text-emerald-800"><i class="fa-solid fa-map-location-dot mr-1"></i> Ubicación principal</b>
-          <p class="mt-2 mb-1">{{ site.location.department }} · {{ site.location.province || 'Sin provincia' }} · {{ site.location.city }}</p>
-          <p class="mb-1">{{ site.location.zone || 'Sin zona' }} · {{ site.location.address }}</p>
+          <b class="text-emerald-800"><i class="fa-solid fa-map-location-dot mr-1"></i> Ubicación</b>
+          <p class="mt-2 mb-1">{{ site.location.department }} · {{ site.location.zone || 'Sin zona' }}</p>
+          <p class="mb-1">{{ site.location.address }}</p>
           <p class="text-slate-500">{{ site.location.latitude ?? '—' }}, {{ site.location.longitude ?? '—' }}</p>
-          <iframe *ngIf="siteMapUrl(site) as mapUrl" [src]="mapUrl" title="Mapa de la sede" class="w-full h-40 border rounded mt-2" loading="lazy"></iframe>
-          <p *ngIf="!siteMapUrl(site)" class="text-slate-500 text-xs mt-2 mb-0">Sin coordenadas para mostrar el mapa.</p>
-          <a *ngIf="openStreetMapUrl(site)" [href]="openStreetMapUrl(site)" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success mt-1"><i class="fa-solid fa-map"></i> Ver pin en OpenStreetMap</a>
         </div>
         <div class="bg-white border border-blue-100 rounded p-3">
           <b class="text-blue-800"><i class="fa-solid fa-address-book mr-1"></i> Contactos</b>
-          <div *ngFor="let contact of site.contacts" class="mt-2 border-b border-slate-100 pb-1">
-            <strong>{{ contact.full_name }}</strong> · {{ contact.position_area }}<br>{{ contact.cellphone }} <span *ngIf="contact.email">· {{ contact.email }}</span>
-            <span *ngIf="contact.is_main_contact" class="ml-1 text-emerald-700">Principal</span>
-          </div>
-          <span *ngIf="!site.contacts.length" class="text-slate-500">Sin contactos registrados.</span>
-        </div>
-        <div class="bg-white border border-amber-100 rounded p-3">
-          <b class="text-amber-800"><i class="fa-solid fa-recycle mr-1"></i> Materiales y operación</b>
-          <p class="mt-2">Frecuencia: {{ site.frequency }} · Modalidad: {{ site.service_mode }}</p>
-          <span *ngFor="let material of site.materials" class="inline-block mr-1 mt-1 px-2 py-1 rounded bg-amber-50 text-amber-800">{{ material.product?.name || material.category?.name || 'Material' }}</span>
-          <span *ngIf="!site.materials.length" class="text-slate-500">Sin materiales registrados.</span>
-        </div>
-        <div class="bg-white border border-cyan-100 rounded p-3">
-          <b class="text-cyan-800"><i class="fa-solid fa-building-columns mr-1"></i> Cuentas bancarias</b>
-          <div *ngFor="let account of site.bankAccounts" class="mt-2 border-b border-slate-100 pb-1">
-            <strong>{{ account.bank?.name || 'Banco' }}</strong> · {{ maskedAccount(account.account_number) }} · {{ account.currency }}
-            <span *ngIf="account.is_main" class="ml-1 text-emerald-700">Principal</span>
-          </div>
-          <span *ngIf="!site.bankAccounts.length" class="text-slate-500">Sin cuentas bancarias registradas.</span>
-        </div>
-      </div>
-    </section>
-
-    <div *ngIf="providerInfoTab() === 'company'" class="provider-info-pane">
-    <section *ngIf="p.contacts?.length || p.bankAccounts?.length || p.materials?.length" class="p-3 rounded-lg border border-cyan-100 bg-cyan-50/30">
-      <div class="text-xs font-bold text-cyan-900 uppercase mb-2"><i class="fa-solid fa-layer-group mr-2"></i>Datos complementarios registrados</div>
-      <div class="grid md:grid-cols-3 gap-2 text-xs">
-        <div *ngIf="p.contacts?.length" class="bg-white border border-cyan-100 rounded p-2"><b>Contactos</b><div *ngFor="let contact of p.contacts" class="mt-1">{{ contact.full_name || 'Contacto' }} · {{ contact.phone || contact.email || 'Sin dato' }}</div></div>
-        <div *ngIf="p.bankAccounts?.length" class="bg-white border border-cyan-100 rounded p-2"><b>Cuentas bancarias</b><div *ngFor="let bank of p.bankAccounts" class="mt-1">{{ bank.bank?.name || 'Banco' }} · {{ bank.account_number || 'Sin número' }} · {{ bank.currency || 'BOB' }}</div></div>
-        <div *ngIf="p.materials?.length" class="bg-white border border-cyan-100 rounded p-2"><b>Materiales</b><div *ngFor="let material of p.materials" class="mt-1">{{ material.product?.name || material.category?.name || 'Material registrado' }}</div></div>
-      </div>
-    </section>
-
-    <!-- SECCIÓN 2: UBICACIÓN & SECTOR (Fondo suave esmeralda) -->
-    <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40">
-      <div class="text-xs font-bold text-emerald-800 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-map-location-dot text-emerald-600"></i> 2. Sector & Ubicación Geográfica
-      </div>
-
-      <div class="erp-form-grid mb-2">
-        <div class="erp-field">
-          <label class="erp-label">Sector / Zona</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-location-dot text-emerald-600 mr-2"></i> {{ p.sector?.name || 'Sin sector asignado' }}
-          </div>
-        </div>
-        <div class="erp-field">
-          <label class="erp-label">Celular principal</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-phone text-emerald-600 mr-2"></i> {{ p.cellphone || 'Sin número registrado' }}
+          <div *ngFor="let contact of site.contacts" class="mt-1 border-b border-slate-100 pb-1">
+            <strong>{{ contact.full_name }}</strong> · {{ contact.position_area }} · {{ contact.cellphone }}
           </div>
         </div>
       </div>
-
-      <div class="erp-form-grid">
-        <div class="erp-field erp-col-full">
-          <label class="erp-label">Dirección exacta</label>
-          <div class="erp-readonly-value text-slate-800 uppercase">
-            {{ p.direction || 'Sin dirección registrada' }}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECCIÓN 3: CONTACTO & CATEGORÍA (Fondo suave azul) -->
-    <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40">
-      <div class="text-xs font-bold text-blue-900 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-user-tie text-blue-600"></i> 3. Contacto Comercial & Material
-      </div>
-
-      <div class="erp-form-grid mb-2">
-        <div class="erp-field">
-          <label class="erp-label">Persona de contacto</label>
-          <div class="erp-readonly-value font-semibold text-slate-800 uppercase">
-            {{ p.name_contact || 'Sin contacto registrado' }}
-          </div>
-        </div>
-        <div class="erp-field">
-          <label class="erp-label">Celular de contacto</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            {{ p.cellphone_contact || 'Sin número registrado' }}
-          </div>
-        </div>
-      </div>
-
-      <div class="erp-form-grid mb-2">
-        <div class="erp-field">
-          <label class="erp-label">Categoría (material principal)</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-box-open text-blue-600 mr-2"></i> {{ p.category?.name || 'General' }}
-          </div>
-        </div>
-        <div class="erp-field">
-          <label class="erp-label">Área / Cargo / Unidad</label>
-          <div class="erp-readonly-value text-slate-800 uppercase">
-            {{ p.workAreaOrPositionOrUnit || 'No especificado' }}
-          </div>
-        </div>
-      </div>
-
-      <div class="erp-form-grid">
-        <div class="erp-field">
-          <label class="erp-label">Frecuencia de entrega</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-calendar-days text-blue-600 mr-2"></i> {{ p.frequency || 'MENSUAL' }}
-          </div>
-        </div>
-        <div class="erp-field">
-          <label class="erp-label">Contactos adicionales</label>
-          <div class="erp-readonly-value text-slate-700">
-            {{ p.companyContacts || 'Ninguno' }}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECCIÓN 4: MODALIDAD & ESTADO (Fondo suave ámbar) -->
-    <section class="p-3 rounded-lg border border-amber-100 bg-amber-50/30">
-      <div class="text-xs font-bold text-amber-900 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-sliders text-amber-600"></i> 4. Modalidad de Operación & Estado
-      </div>
-
-      <div class="erp-form-grid">
-        <div class="erp-field">
-          <label class="erp-label">Modalidad de entrega</label>
-          <div class="erp-toggle-pill">
-            <p-tag [rounded]="true"
-              [icon]="p.mayorista ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'"
-              [severity]="p.mayorista ? 'info' : 'success'"
-              [value]="p.mayorista ? 'MAYORISTA' : 'MINORISTA'">
-            </p-tag>
-          </div>
-        </div>
-        <div class="erp-field">
-          <label class="erp-label">Estado de la cuenta</label>
-          <div class="erp-toggle-pill">
-            <p-tag [rounded]="true"
-              [icon]="p.status ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-              [styleClass]="p.status ? 'app-status-active' : 'app-status-inactive'"
-              [value]="p.status ? 'ACTIVO' : 'INACTIVO'">
-            </p-tag>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="p-3 rounded-lg border border-violet-100 bg-violet-50/30">
-      <div class="text-xs font-bold text-violet-900 uppercase mb-2"><i class="fa-solid fa-handshake mr-1"></i> 5. Gestión comercial</div>
-      <ng-container *ngIf="selectedCompanyProfile() as company; else noCommercialProfile">
-        <div class="erp-form-grid cols-3 text-xs">
-          <div><b>Nombre comercial</b><p>{{ company.commercial_name || 'No registrado' }}</p></div>
-          <div><b>Tipo de entidad</b><p>{{ company.entity_type || 'No registrado' }}</p></div>
-          <div><b>Responsable</b><p>{{ company.id_commercial_user || 'No asignado' }}</p></div>
-          <div><b>Canal de origen</b><p>{{ company.origin_channel || 'No registrado' }}</p></div>
-          <div><b>Estado de relación</b><p>{{ company.relationship_status || 'No registrado' }}</p></div>
-          <div><b>Negociación</b><p>{{ company.negotiation_condition || 'No registrada' }}</p></div>
-          <div class="erp-col-full"><b>Observaciones comerciales</b><p>{{ company.commercial_observations || 'Sin observaciones' }}</p></div>
-        </div>
-      </ng-container>
-      <ng-template #noCommercialProfile><span class="text-xs text-slate-500">Sin perfil comercial corporativo.</span></ng-template>
-    </section>
-
-    <section class="p-3 rounded-lg border border-rose-100 bg-rose-50/30">
-      <div class="text-xs font-bold text-rose-900 uppercase mb-2"><i class="fa-solid fa-file-shield mr-1"></i> 6. Requerimientos documentales</div>
-      <div *ngIf="selectedCompanyProfile() as company" class="flex gap-2 text-xs">
-        <span class="px-2 py-1 bg-white rounded border">Certificado: {{ company.requires_certificate ? 'Sí' : 'No' }}</span>
-        <span class="px-2 py-1 bg-white rounded border">Informe de trazabilidad: {{ company.requires_traceability_report ? 'Sí' : 'No' }}</span>
-      </div>
-    </section>
-
-    <section class="p-3 rounded-lg border border-cyan-100 bg-cyan-50/30">
-      <div class="text-xs font-bold text-cyan-900 uppercase mb-2"><i class="fa-solid fa-building-columns mr-1"></i> 7. Información bancaria</div>
-      <p class="text-xs text-slate-600 mb-0">Las cuentas se muestran por sede en la pestaña Sucursales y sus números están parcialmente enmascarados.</p>
-    </section>
-
-    <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
-      <div class="text-xs font-bold text-slate-700 uppercase mb-2"><i class="fa-solid fa-note-sticky mr-1"></i> 8. Observaciones generales</div>
-      <p class="text-xs mb-0">{{ selectedCompanyProfile()?.general_observations || p.general_observations || 'Sin observaciones generales.' }}</p>
-    </section>
     </div>
 
-    <!-- SECCIÓN 5: RESUMEN DE OPERACIONES (Fondo suave pizarra) -->
-    <section *ngIf="providerInfoTab() === 'summary'" class="p-3 rounded-lg border border-slate-200 bg-slate-50">
-      <div class="text-xs font-bold text-slate-800 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-chart-line text-slate-600"></i> 5. Resumen de Movimientos & Saldos
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
-          <span class="text-xs text-slate-500 block">Total Compras</span>
-          <b class="text-slate-800 text-sm">{{ p.total_inputs }} reg.</b>
+    <!-- PESTAÑA 3: HISTORIAL DE COMPRAS -->
+    <div *ngIf="providerInfoTab() === 'summary'" class="space-y-3">
+      <!-- KPIs Resumen de Compras -->
+      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50">
+        <div class="text-xs font-bold text-slate-800 uppercase mb-2 flex items-center justify-between">
+          <span><i class="fa-solid fa-receipt text-emerald-600 mr-1"></i> Movimientos Reales de Compra</span>
+          <button type="button" class="btn btn-xs btn-outline-secondary" (click)="loadInfoPurchases(p.id)">
+            <i class="fa-solid fa-rotate mr-1" [class.fa-spin]="infoPurchasesLoading()"></i> Actualizar
+          </button>
         </div>
-        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
-          <span class="text-xs text-slate-500 block">Total Kilogramos</span>
-          <b class="text-slate-800 text-sm">{{ p.total_products }} kg</b>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center shadow-sm">
+            <span class="text-[11px] text-slate-500 font-bold block uppercase">Total Compras</span>
+            <b class="text-slate-800 text-base">{{ infoTotalPurchasesCount() || p.total_inputs || 0 }} reg.</b>
+          </div>
+          <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center shadow-sm">
+            <span class="text-[11px] text-slate-500 font-bold block uppercase">Total Monto</span>
+            <b class="text-emerald-700 text-base">Bs. {{ (infoTotalPurchasesAmount() || 0) | number:'1.2-2' }}</b>
+          </div>
+          <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center shadow-sm">
+            <span class="text-[11px] text-slate-500 font-bold block uppercase">Saldo Pendiente</span>
+            <b class="text-amber-700 text-base">Bs. {{ (p.saldo_cuentas_por_pagar || 0) | number:'1.2-2' }}</b>
+          </div>
+          <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center shadow-sm">
+            <span class="text-[11px] text-slate-500 font-bold block uppercase">Última Compra</span>
+            <span class="text-slate-700 font-semibold text-xs">{{ (infoLastPurchaseDate() || p.date_last_input | date:'dd/MM/yyyy') || 'Sin fecha' }}</span>
+          </div>
         </div>
-        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
-          <span class="text-xs text-slate-500 block">Saldo Pendiente</span>
-          <b class="text-amber-700 text-sm">Bs. {{ (p.saldo_cuentas_por_pagar || 0) | number:'1.2-2' }}</b>
+      </section>
+
+      <!-- Tabla de Compras Reales -->
+      <section class="p-3 rounded-lg border border-slate-200 bg-white">
+        <div *ngIf="infoPurchasesLoading()" class="p-4 text-center text-xs text-slate-500">
+          <i class="fa-solid fa-spinner fa-spin mr-1 text-emerald-600"></i> Cargando compras...
         </div>
-        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
-          <span class="text-xs text-slate-500 block">Última Compra</span>
-          <span class="text-slate-700 font-semibold text-xs">{{ (p.date_last_input | date:'dd/MM/yyyy') || 'Sin fecha' }}</span>
+
+        <div *ngIf="!infoPurchasesLoading() && infoPurchases().length === 0" class="p-4 text-center text-xs text-slate-500 border border-dashed rounded">
+          <i class="fa-solid fa-receipt text-slate-400 text-2xl mb-1 block"></i>
+          No se registran compras recientes para este proveedor en la sucursal actual.
         </div>
-      </div>
-    </section>
+
+        <div *ngIf="!infoPurchasesLoading() && infoPurchases().length > 0" class="overflow-x-auto rounded border border-slate-200">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-800 text-white uppercase text-[11px]">
+              <tr>
+                <th class="p-2">Fecha</th>
+                <th class="p-2">N.º Boleta</th>
+                <th class="p-2 text-right">Total Bs</th>
+                <th class="p-2">Responsable</th>
+                <th class="p-2 text-center">Estado</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr *ngFor="let item of infoPurchases()" class="hover:bg-slate-50">
+                <td class="p-2">{{ (item.date_voucher || item.createdAt) | date:'dd/MM/yyyy' }}</td>
+                <td class="p-2 font-bold">{{ item.cod || item.registry_number || ('#' + item.id) }}</td>
+                <td class="p-2 text-right font-bold text-emerald-700">Bs {{ item.total | number:'1.2-2' }}</td>
+                <td class="p-2">{{ item.user.full_names || '—' }}</td>
+                <td class="p-2 text-center">
+                  <p-tag [value]="item.status === 'ACTIVE' ? 'ACTIVO' : item.status"
+                         [severity]="item.status === 'ACTIVE' ? 'success' : 'danger'"
+                         [rounded]="true"></p-tag>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </div>
 
   <ng-template pTemplate="footer">

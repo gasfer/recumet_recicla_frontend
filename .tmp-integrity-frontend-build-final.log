@@ -1,0 +1,12 @@
+- Generating browser application bundles (phase: setup)...
+√ Browser application bundle generation complete.
+√ Browser application bundle generation complete.
+
+Error: src/app/services/decimal-format.service.ts:40:5 - error TS2322: Type 'string | number | null | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+40     return values.reduce((total, value) => this.subtract(total, this.subtract(0, value)), '0.0000');
+       ~~~~~~
+
+
+

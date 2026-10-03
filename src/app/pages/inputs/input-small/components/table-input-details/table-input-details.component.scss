@@ -1,0 +1,6 @@
+:host { display: block; min-width: 0; }
+.purchase-remove { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+.purchase-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0.5rem; }
+:host ::ng-deep .purchase-number .p-inputnumber-input { height: 36px; min-width: 0; width: 6rem; font-size: 0.84rem; }
+:host ::ng-deep .purchase-number .p-inputnumber-button { height: 18px; }
+:host ::ng-deep .erp-operational-table th { white-space: nowrap; }

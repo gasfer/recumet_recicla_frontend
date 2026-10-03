@@ -1,0 +1,45 @@
+- Generating browser application bundles (phase: setup)...
+√ Browser application bundle generation complete.
+√ Browser application bundle generation complete.
+
+Initial chunk files           | Names                              |  Raw size
+main.f3042b86b684fe2b.js      | main                               |   6.27 MB | 
+styles.5aceadccdf52aa24.css   | styles                             |   1.27 MB | 
+polyfills.4d56873cdfedd19b.js | polyfills                          | 114.70 kB | 
+scripts.79f974a3208dd13f.js   | scripts                            |  78.83 kB | 
+runtime.8fd8fcd63883eae5.js   | runtime                            |  13.34 kB | 
+
+                              | Initial total                      |   7.74 MB
+
+Lazy chunk files              | Names                              |  Raw size
+82.938c9fa2c1485e29.js        | inputs-inputs-module               |   1.16 MB | 
+126.1ce6daa95e113a76.js       | inventories-inventories-module     |   1.08 MB | 
+986.e3056be40047af64.js       | caja-caja-module                   | 838.75 kB | 
+270.7b06daa314fff132.js       | transfers-transfers-module         | 561.22 kB | 
+423.56325db6187ae7f8.js       | pages-pages-module                 | 528.63 kB | 
+94.ec3b5cdd130c8aa2.js        | managements-managements-module     | 406.05 kB | 
+842.d72105815afdae69.js       | balanza-balanza-module             | 377.22 kB | 
+444.bbec6bfe47c64d18.js       | accounts-accounts-module           | 370.47 kB | 
+626.3a19941df27bf315.js       | outputs-outputs-module             | 330.55 kB | 
+566.fd89f40efc7ea3bc.js       | classifieds-classifieds-module     | 182.11 kB | 
+818.10989f8af6ae7231.js       | profile-profile-module             | 103.87 kB | 
+326.3f2d4de6da6546a6.js       | dashboard-dashboard-module         |  74.59 kB | 
+841.42cf98f21a450d86.js       | auth-auth-module                   |  46.09 kB | 
+746.c89f544375b3770a.js       | notifications-notifications-module |  26.64 kB | 
+622.e4702a7ce1e5aa00.js       | inputs-inputs-module               |  19.25 kB | 
+838.9b302705ad07888a.js       | inputs-inputs-module               |  17.39 kB | 
+common.bd8a531889577270.js    | common                             |  15.74 kB | 
+462.10ea30d3db5c3b4c.js       | assets-assets-module               |   9.56 kB | 
+998.88f26cbf1b56e0e4.js       | providers-providers-module         |   8.05 kB | 
+736.8b32e728f78cfd88.js       | outputs-outputs-module             |   5.73 kB | 
+561.bbeaac86e0dff768.js       | inputs-inputs-module               |   2.96 kB | 
+
+Build at: 2026-10-02T20:02:51.021Z - Hash: da67cc346d48740c - Time: 26947ms
+
+Warning: bundle initial exceeded maximum budget. Budget 3.00 MB was not met by 4.74 MB with a total of 7.74 MB.
+
+
+
+Error: bundle initial exceeded maximum budget. Budget 3.00 MB was not met by 4.74 MB with a total of 7.74 MB.
+
+

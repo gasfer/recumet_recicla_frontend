@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable, inject } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, of, catchError } from 'rxjs';
 import { GetAllProviders, GetAllTypesProvider, Provider } from '../interfaces/provider.interface';
 import { environment } from 'src/environments/environment';
 import { GetAllSectorProviders, Sector } from '../interfaces/sector.interface';
@@ -144,6 +144,42 @@ getAllAndSearch(
 
   resolveGoogleMapsLink(url: string) {
     return this.http.get<{ ok: boolean; finalUrl: string; latitude: number; longitude: number }>(`${base_url}/provider/resolve-map-link`, { params: new HttpParams().set('url', url) });
+  }
+
+  getFrequencyAnalysis(providerId: number, productId?: number, branchId?: number) {
+    let params = new HttpParams();
+    if (productId) params = params.set('id_product', productId.toString());
+    if (branchId) params = params.set('id_sucursal', branchId.toString());
+    return this.http.get<{
+      ok: boolean;
+      analysis: {
+        has_sufficient_history: boolean;
+        total_deliveries: number;
+        average_days: number | null;
+        frequency: string | null;
+        frequency_mode: 'automatic' | 'manual';
+        last_delivery_date: string | null;
+        next_estimated_date: string | null;
+        message?: string;
+        details?: any;
+      };
+    }>(`${base_url}/provider/${providerId}/frequency-analysis`, { params }).pipe(
+      catchError(() => {
+        return of({
+          ok: true,
+          analysis: {
+            has_sufficient_history: false,
+            total_deliveries: 0,
+            average_days: null,
+            frequency: null,
+            frequency_mode: 'manual' as const,
+            last_delivery_date: null,
+            next_estimated_date: null,
+            message: 'No hay suficiente historial para calcular automáticamente.'
+          }
+        });
+      })
+    );
   }
 
 

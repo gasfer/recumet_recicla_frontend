@@ -4,7 +4,6 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { TransfersService } from '../services/transfers.service';
 import { SucursalesService } from '../../managements/services/sucursales.service';
 import { FormSearchTransfers, InfoStackItem, Transfer, Transfers, UpdateTransferToReceived } from '../interfaces/transfers.interface';
-import { DecimalPipe } from '@angular/common';
 import { Sucursal } from '../../managements/interfaces/sucursales.interface';
 import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/OptionsTable.interface';
 import { MenuItem } from 'primeng/api';
@@ -37,7 +36,6 @@ export class QueryReceptionsComponent implements OnInit {
   type            = signal('');
   query           = signal('');
   transfers       = signal<Transfers|undefined>(undefined);
-  pipeNumber      = new DecimalPipe('es-BO');
   sucursales      = signal<Sucursal[]>([]);
   id_transfer     = signal(0);
 
@@ -405,7 +403,7 @@ export class QueryReceptionsComponent implements OnInit {
       { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:150px;', tooltip: true, isDate: true},
       { field: 'user_send.full_names', header: 'USUARIO ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isText:true},
       { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
-        tagValue: (val:number)=>  this.pipeNumber.transform(val, this.decimalFormat.digitsInfo),
+        tagValue: (val:number)=> this.decimalFormat.format(val),
         tagColor: (val:number)=> 'primary',
         tagIcon: (val:number)=>  ''
       },
@@ -446,7 +444,7 @@ export class QueryReceptionsComponent implements OnInit {
 
   private transferredWeight(transfer: Transfer): InfoStackItem[] {
     const kilograms = Number(transfer.total_quantity || 0) || transfer.detailsTransfers.reduce((total, detail) => total + Number(detail.quantity || 0), 0);
-    const formatted = this.pipeNumber.transform(kilograms, this.decimalFormat.digitsInfo) || '0';
+    const formatted = this.decimalFormat.format(kilograms) || '0';
     return [{ icon: 'fa-solid fa-weight-hanging', label: 'Trasladado', value: kilograms >= 1000 ? `${formatted} kg · ${(kilograms / 1000).toFixed(2)} t` : `${formatted} kg`, tone: 'warning' }];
   }
 
@@ -459,7 +457,7 @@ export class QueryReceptionsComponent implements OnInit {
         pending_items: note.pending_items,
         details: note.details
           .filter((detail) => detail.reconciliation_status !== 'COMPLETADO')
-          .map((detail) => `${detail.product?.cod || 'Producto'} · ${type}: ${this.pipeNumber.transform(detail.quantity_remaining, this.decimalFormat.digitsInfo) || detail.quantity_remaining}`),
+          .map((detail) => `${detail.product?.cod || 'Producto'} · ${type}: ${this.decimalFormat.format(detail.quantity_remaining) || detail.quantity_remaining}`),
         open: () => this.reviewNote(transfer.id, note.id),
       };
     });

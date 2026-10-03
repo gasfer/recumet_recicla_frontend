@@ -1,0 +1,132 @@
+- Generating browser application bundles (phase: setup)...
+√ Browser application bundle generation complete.
+02 10 2026 16:13:36.007:INFO [karma-server]: Karma v6.4.4 server started at http://localhost:9876/
+02 10 2026 16:13:36.013:INFO [launcher]: Launching browsers ChromeHeadlessNoSandbox with concurrency unlimited
+02 10 2026 16:13:36.017:INFO [launcher]: Starting browser ChromeHeadless
+02 10 2026 16:13:37.396:INFO [Chrome Headless 154.0.0.0 (Windows 10)]: Connected on socket ZWcIBXCVoMo57_RXAAAB with id 718795
+Chrome Headless 154.0.0.0 (Windows 10): Executed 0 of 141[32m SUCCESS[39m (0 secs / 0 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 1 of 141[32m SUCCESS[39m (0 secs / 0.057 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 2 of 141[32m SUCCESS[39m (0 secs / 0.06 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 3 of 141[32m SUCCESS[39m (0 secs / 0.064 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 4 of 141[32m SUCCESS[39m (0 secs / 0.064 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 5 of 141[32m SUCCESS[39m (0 secs / 0.074 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 6 of 141[32m SUCCESS[39m (0 secs / 0.075 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 7 of 141[32m SUCCESS[39m (0 secs / 0.077 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 8 of 141[32m SUCCESS[39m (0 secs / 0.078 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 9 of 141[32m SUCCESS[39m (0 secs / 0.079 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 10 of 141[32m SUCCESS[39m (0 secs / 0.08 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 11 of 141[32m SUCCESS[39m (0 secs / 0.08 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 12 of 141[32m SUCCESS[39m (0 secs / 0.08 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 13 of 141[32m SUCCESS[39m (0 secs / 0.08 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 14 of 141[32m SUCCESS[39m (0 secs / 0.08 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 15 of 141[32m SUCCESS[39m (0 secs / 0.08 secs)
+[1A[2K[31mChrome Headless 154.0.0.0 (Windows 10) QueryReceptionsComponent cancellation actions muestra el bloqueo del backend y oculta la acción a no administradores FAILED[39m
+	Expected undefined to be true.
+	    at <Jasmine>
+	    at UserContext.apply (src/app/pages/transfers/query-receptions/query-receptions.component.spec.ts:94:113)
+	    at _ZoneDelegate.invoke (node_modules/zone.js/fesm2015/zone.js:369:28)
+	    at ProxyZoneSpec.onInvoke (node_modules/zone.js/fesm2015/zone-testing.js:2081:39)
+	    at _ZoneDelegate.invoke (node_modules/zone.js/fesm2015/zone.js:368:34)
+	Expected undefined to be false.
+	    at <Jasmine>
+	    at UserContext.apply (src/app/pages/transfers/query-receptions/query-receptions.component.spec.ts:99:103)
+	    at _ZoneDelegate.invoke (node_modules/zone.js/fesm2015/zone.js:369:28)
+	    at ProxyZoneSpec.onInvoke (node_modules/zone.js/fesm2015/zone-testing.js:2081:39)
+	    at _ZoneDelegate.invoke (node_modules/zone.js/fesm2015/zone.js:368:34)
+Chrome Headless 154.0.0.0 (Windows 10): Executed 16 of 141[31m (1 FAILED)[39m (0 secs / 0.124 secs)
+[1A[2K[31mChrome Headless 154.0.0.0 (Windows 10) QueryReceptionsComponent cancellation actions muestra anulación activa al administrador cuando backend la habilita FAILED[39m
+	Expected undefined to be true.
+	    at <Jasmine>
+	    at UserContext.apply (src/app/pages/transfers/query-receptions/query-receptions.component.spec.ts:87:103)
+	    at _ZoneDelegate.invoke (node_modules/zone.js/fesm2015/zone.js:369:28)
+	    at ProxyZoneSpec.onInvoke (node_modules/zone.js/fesm2015/zone-testing.js:2081:39)
+	    at _ZoneDelegate.invoke (node_modules/zone.js/fesm2015/zone.js:368:34)
+Chrome Headless 154.0.0.0 (Windows 10): Executed 17 of 141[31m (2 FAILED)[39m (0 secs / 0.126 secs)
+[1A[2K[31mChrome Headless 154.0.0.0 (Windows 10) ERROR[39m
+  An error was thrown in afterAll
+  Error: NG02100: InvalidPipeArgument: 'NG0701: Missing locale data for the locale "es-BO".' for pipe 'DecimalPipe'
+  error properties: Object({ code: 2100 })
+      at invalidPipeArgumentError (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4053:12)
+      at DecimalPipe.transform (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4856:19)
+      at QueryReceptionsComponent.transferredWeight (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:449:39)
+      at forEach (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:145:46)
+      at Array.forEach (<anonymous>)
+      at Object.next (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:138:32)
+      at ConsumerObserver.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:91:33)
+      at SafeSubscriber._next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:60:26)
+      at SafeSubscriber.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:31:18)
+      at Observable._subscribe (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/observable/innerFrom.js:51:24)
+  Error: NG02100: InvalidPipeArgument: 'NG0701: Missing locale data for the locale "es-BO".' for pipe 'DecimalPipe'
+  error properties: Object({ code: 2100 })
+      at invalidPipeArgumentError (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4053:12)
+      at DecimalPipe.transform (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4856:19)
+      at QueryReceptionsComponent.transferredWeight (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:449:39)
+      at forEach (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:145:46)
+      at Array.forEach (<anonymous>)
+      at Object.next (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:138:32)
+      at ConsumerObserver.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:91:33)
+      at SafeSubscriber._next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:60:26)
+      at SafeSubscriber.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:31:18)
+      at Observable._subscribe (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/observable/innerFrom.js:51:24)
+  Error: NG02100: InvalidPipeArgument: 'NG0701: Missing locale data for the locale "es-BO".' for pipe 'DecimalPipe'
+  error properties: Object({ code: 2100 })
+      at invalidPipeArgumentError (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4053:12)
+      at DecimalPipe.transform (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4856:19)
+      at QueryReceptionsComponent.transferredWeight (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:449:39)
+      at forEach (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:145:46)
+      at Array.forEach (<anonymous>)
+      at Object.next (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:138:32)
+      at ConsumerObserver.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:91:33)
+      at SafeSubscriber._next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:60:26)
+      at SafeSubscriber.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:31:18)
+      at Observable._subscribe (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/observable/innerFrom.js:51:24)
+Chrome Headless 154.0.0.0 (Windows 10): Executed 17 of 141[31m (2 FAILED)[39m[31m ERROR[39m (0 secs / 0.126 secs)
+Chrome Headless 154.0.0.0 (Windows 10) ERROR
+  An error was thrown in afterAll
+  Error: NG02100: InvalidPipeArgument: 'NG0701: Missing locale data for the locale "es-BO".' for pipe 'DecimalPipe'
+  error properties: Object({ code: 2100 })
+      at invalidPipeArgumentError (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4053:12)
+      at DecimalPipe.transform (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4856:19)
+      at QueryReceptionsComponent.transferredWeight (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:449:39)
+      at forEach (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:145:46)
+      at Array.forEach (<anonymous>)
+      at Object.next (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:138:32)
+      at ConsumerObserver.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:91:33)
+      at SafeSubscriber._next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:60:26)
+      at SafeSubscriber.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:31:18)
+      at Observable._subscribe (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/observable/innerFrom.js:51:24)
+  Error: NG02100: InvalidPipeArgument: 'NG0701: Missing locale data for the locale "es-BO".' for pipe 'DecimalPipe'
+  error properties: Object({ code: 2100 })
+      at invalidPipeArgumentError (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4053:12)
+      at DecimalPipe.transform (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4856:19)
+      at QueryReceptionsComponent.transferredWeight (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:449:39)
+      at forEach (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:145:46)
+      at Array.forEach (<anonymous>)
+      at Object.next (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:138:32)
+      at ConsumerObserver.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:91:33)
+      at SafeSubscriber._next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:60:26)
+      at SafeSubscriber.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:31:18)
+      at Observable._subscribe (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/observable/innerFrom.js:51:24)
+  Error: NG02100: InvalidPipeArgument: 'NG0701: Missing locale data for the locale "es-BO".' for pipe 'DecimalPipe'
+  error properties: Object({ code: 2100 })
+      at invalidPipeArgumentError (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4053:12)
+      at DecimalPipe.transform (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/common/fesm2022/common.mjs:4856:19)
+      at QueryReceptionsComponent.transferredWeight (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:449:39)
+      at forEach (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:145:46)
+      at Array.forEach (<anonymous>)
+      at Object.next (http://localhost:9876/_karma_webpack_/webpack:/src/app/pages/transfers/query-receptions/query-receptions.component.ts:138:32)
+      at ConsumerObserver.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:91:33)
+      at SafeSubscriber._next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:60:26)
+      at SafeSubscriber.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:31:18)
+      at Observable._subscribe (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/observable/innerFrom.js:51:24)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 17 of 141[31m (2 FAILED)[39m[31m ERROR[39m (0.151 secs / 0.126 secs)
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 18 of 141[31m (2 FAILED)[39m[31m ERROR[39m (0.151 secs / 0.13 secs)
+√ Browser application bundle generation complete.
+√ Browser application bundle generation complete.
+[1A[2K[31mChrome Headless 154.0.0.0 (Windows 10) ERROR[39m
+  Disconnected , because no message in 30000 ms.
+Chrome Headless 154.0.0.0 (Windows 10): Executed 18 of 141[31m (2 FAILED)[39m[31m DISCONNECTED[39m (30.169 secs / 0.13 secs)
+Chrome Headless 154.0.0.0 (Windows 10) ERROR
+  Disconnected , because no message in 30000 ms.
+[1A[2KChrome Headless 154.0.0.0 (Windows 10): Executed 18 of 141[31m (2 FAILED)[39m[31m DISCONNECTED[39m (30.169 secs / 0.13 secs)
+√ Browser application bundle generation complete.

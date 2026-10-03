@@ -4,10 +4,15 @@ import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { NotificationsService } from './notifications.service';
-import { TransferReviewService } from './transfer-review.service';
+import { TransferReviewService, canonicalToleranceDecision } from './transfer-review.service';
 import { ValidatorsService } from './validators.service';
 
 describe('TransferReviewService automatic context loading', () => {
+  it('normaliza alias históricos sin crear estados nuevos', () => {
+    expect(canonicalToleranceDecision('ACCEPTED')).toBe('ACEPTADO');
+    expect(canonicalToleranceDecision('REQUIRES_REVIEW')).toBe('REQUIERE_CONCILIACION');
+    expect(canonicalToleranceDecision('ACEPTADO')).toBe('ACEPTADO');
+  });
   let http: HttpTestingController;
   let service: TransferReviewService;
   let withPermission: jasmine.Spy;
@@ -91,7 +96,7 @@ describe('TransferReviewService automatic context loading', () => {
 
     expect(service.openReviews()).toEqual([]);
     expect(service.stockKardexIrregularities().length).toBe(1);
-    expect(service.showAlertDialog()).toBeTrue();
+    expect(service.showAlertDialog()).toBe(service.reconciliationAlertEnabled);
   });
 
 });

@@ -8,8 +8,7 @@ import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 @Component({
   selector: 'app-table-classified-details',
   templateUrl: './table-classified-details.component.html',
-  styles: [
-  ]
+  styleUrls: ['./table-classified-details.component.scss']
 })
 export class TableClassifiedDetailsComponent {
   classifiedService = inject( ClassifiedService );

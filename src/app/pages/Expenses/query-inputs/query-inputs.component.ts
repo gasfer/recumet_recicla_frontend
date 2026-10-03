@@ -248,9 +248,11 @@ export class QueryInputsComponent implements OnInit {
   }
 
   purchaseEditEligibility(input: Input): PurchaseEditEligibility {
+    const isAdmin = this.validatorsService.user()?.role === 'ADMINISTRADOR';
     return resolvePurchaseEditEligibility(
       this.validatorsService.withPermission('COMPRAS', 'update'),
       this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher, 30),
+      isAdmin,
     );
   }
 

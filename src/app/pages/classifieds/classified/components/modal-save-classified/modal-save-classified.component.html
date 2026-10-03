@@ -1,15 +1,21 @@
 <p-dialog [header]="'Registro de clasificado'" [(visible)]="classifiedService.showModalSaveClassified"
     [modal]="true" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true" (onShow)="showModal()" (onHide)="resetModal()" styleClass="app-dialog--sm">
-    <form [formGroup]="formClassified">
+    [resizable]="false" [dismissableMask]="true" (onShow)="showModal()" (onHide)="resetModal()" styleClass="app-dialog--lg erp-operational-dialog">
+    <form [formGroup]="formClassified" class="classified-save-form">
+        <div class="p-2.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 text-xs flex items-center gap-2 mb-3">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Los campos marcados con <b>*</b> son obligatorios.</span>
+        </div>
+        <section class="erp-section classified-origin">
+            <div class="erp-section-title"><i class="fa-solid fa-boxes-stacked"></i> 1. Producto de origen</div>
         <!-- Fila 1: Producto clasificado + Stock a reducir -->
         <div class="erp-form-grid mb-3">
             <div class="erp-field">
-                <label class="erp-label required">Producto clasificado</label>
-                <p-tag [rounded]="true" icon="fa-solid fa-tag"
-                    [severity]="productSelect() ? 'info' : 'warning'"
-                    [value]="productSelect() ? 'COD: ' + productSelect()?.cod+' / ' + productSelect()?.name : 'COD: 0 / SELECCIONE UN PRODUCTO'">
-                </p-tag>
+                <label class="erp-label required">Producto de origen</label>
+                <div class="erp-entity-chip" [ngClass]="productSelect() ? 'active' : 'unselected'">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{ productSelect() ? productSelect()?.cod + ' · ' + productSelect()?.name : 'SELECCIONE UN PRODUCTO' }}</span>
+                </div>
                 <small *ngIf="!productSelect()" class="erp-error-msg">
                     Selecciona un producto
                 </small>
@@ -37,6 +43,9 @@
                 </small>
             </div>
         </div>
+        </section>
+        <section class="erp-section classified-weighing">
+            <div class="erp-section-title"><i class="fa-solid fa-scale-balanced"></i> 2. Pesaje y registro</div>
 
         <!-- Fila 2: Tipo pesaje + Nro. / Mensaje + Balanza -->
         <div class="erp-form-grid mb-3">
@@ -59,7 +68,7 @@
 
             @if (formClassified.get('type_registry')?.value != 'SIN FICHA') {
             <div class="erp-field">
-                <label class="erp-label">Nro.</label>
+                <label class="erp-label">Nro. de pesaje</label>
                 <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="number_registry" placeholder="EJ. 0001"
                     class="erp-input text-uppercase"
@@ -113,14 +122,17 @@
         </div>
 
         <!-- Fila 4: Observaciones -->
+        </section>
+        <section class="erp-section">
+            <div class="erp-section-title"><i class="fa-solid fa-comment"></i> 3. Observaciones</div>
         <div class="erp-form-grid mb-3">
             <div class="erp-field erp-col-full">
                 <label class="erp-label">Observaciones</label>
                 <textarea pInputTextarea
                     [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="comments"
-                    placeholder="EJ. ......"
-                    class="text-uppercase"
+                    placeholder="Ingrese notas sobre la clasificación..."
+                    rows="3" class="text-uppercase w-full"
                     [class.ng-dirty]="validatorsService.inputValid('comments',formClassified)"
                 ></textarea>
                 <small *ngIf="validatorsService.inputValid('comments',formClassified)" class="erp-error-msg">
@@ -128,9 +140,10 @@
                 </small>
             </div>
         </div>
+        </section>
     </form>
     <ng-template pTemplate="footer">
-        <p-button (click)="loading() ? null : saveClassified()" styleClass="p-button-sm p-button-rounded"
+        <p-button (click)="loading() ? null : saveClassified()" styleClass="p-button-sm p-button-rounded p-button-success"
             label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
         <p-button (click)="classifiedService.showModalSaveClassified = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     </ng-template>

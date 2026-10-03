@@ -32,7 +32,7 @@ import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 @Component({
   selector: 'app-modal-save-input',
   templateUrl: './modal-save-input.component.html',
-  styles: [],
+  styleUrls: ['./modal-save-input.component.scss'],
 })
 export class ModalSaveInputComponent implements OnInit {
   readonly pricingGraceHours = INITIAL_PRICING_GRACE_HOURS;

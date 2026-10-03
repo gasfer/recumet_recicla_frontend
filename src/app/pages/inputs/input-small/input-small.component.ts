@@ -13,13 +13,7 @@ import { ProductAccessContext } from 'src/app/core/constants/product-category-ac
 @Component({
   selector: 'app-input-small',
   templateUrl: './input-small.component.html',
-  styles: [`
-    .card {
-      border-radius: 20px;
-      box-sizing: border-box;
-    }
-  `
-  ]
+  styleUrls: ['./input-small.component.scss']
 })
 export class InputSmallComponent  {
   providerService  = inject( ProvidersService );

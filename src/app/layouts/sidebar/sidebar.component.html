@@ -1,75 +1,129 @@
 <!-- ========== Left Sidebar Start ========== -->
+<div class="vertical-menu" [class.is-condensed]="isCondensed">
+  <!-- Cabecera Brand Compacta -->
+  <div class="sidebar-brand-wrapper">
+    <div class="brand-badge-box">
+      <img src="assets/img/logo.png" alt="RECUMET" class="brand-badge-img">
+    </div>
+    <div class="brand-text-col">
+      <div class="brand-title-row">
+        <strong class="brand-name">RECUMET ERP</strong>
+      </div>
+    </div>
+  </div>
 
-<ng-template #contentTemplate>
+  <!-- Buscador de Módulos Rápido -->
+  <div class="sidebar-search-container" *ngIf="!isCondensed">
+    <div class="search-box-wrapper">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input
+        #searchInput
+        type="text"
+        [value]="searchTerm"
+        (input)="onSearchChange($event)"
+        placeholder="Buscar módulo..."
+        class="search-input-field"
+        aria-label="Buscar módulo en el menú"
+      />
+      <kbd class="search-shortcut-kbd">Ctrl K</kbd>
+    </div>
+  </div>
 
-    <!--- Sidemenu -->
-    <div id="sidebar-menu">
-      <!-- Left Menu Start -->
-      <ul class="metismenu list-unstyled" id="side-menu" #sideMenu>
-        <!-- {{menuItems}} -->
-        <ng-container *ngFor="let item of menuItems">
-          <li class="menu-title" *ngIf="item.isTitle">{{ item.label ?? '' | translate }}</li>
-          <li *ngIf="!item.isTitle && !item.isLayout">
-            <a *ngIf="hasItems(item)" href="javascript:void(0);" class="is-parent side-nav-group"
-              [ngClass]="{'has-arrow': !item.badge, 'has-dropdown': item.badge}">
-              <span class="material-symbols-outlined side-nav-symbol" *ngIf="item.icon">{{ materialIcon(item.label) }}</span>
-              <span> {{ item.label ?? '' | translate }}</span>
-              <span class="badge rounded-pill float-end bg-{{item.badge.variant}}" *ngIf="item.badge">{{item.badge.text |
-                translate}}</span>
-            </a>
+  <!-- Contenedor con Scroll de Grupos de Menú -->
+  <ngx-simplebar class="sidebar-scroll" #componentRef>
+    <div class="sidebar-groups-wrapper">
+      <div
+        *ngFor="let group of filteredGroups; trackBy: trackByGroupId"
+        class="group-accordion-card"
+        [class.is-open]="group.isOpen"
+      >
+        <!-- Cabecera de Categoría / Acordeón -->
+        <a *ngIf="group.directItem" [routerLink]="group.directItem.link"
+          routerLinkActive="active" class="nav-link-item-1">
+          <i [class]="getItemIcon(group.directItem)" class="nav-item-icon"></i>
+          <span class="nav-item-label">{{ group.title | translate }}</span>
+        </a>
+        <button
+          *ngIf="!group.directItem"
+          type="button"
+          class="group-header-button"
+          (click)="toggleGroup(group)"
+          [attr.aria-expanded]="group.isOpen"
+        >
+          <div class="group-header-left">
+            <span class="group-indicator-dot"></span>
+            <span class="group-title-text">{{ group.title | translate | uppercase }}</span>
+          </div>
+          <div class="group-header-right">
+            <span class="group-count-badge">{{ group.badgeCount }}</span>
+            <i class="fa-solid fa-chevron-right group-chevron-icon" [class.is-rotated]="group.isOpen"></i>
+          </div>
+        </button>
 
-            <a routerLink="{{item.link}}" *ngIf="!hasItems(item)  && item.link" class="side-nav-link-ref">
-              <span class="material-symbols-outlined side-nav-symbol" *ngIf="item.icon">{{ materialIcon(item.label) }}</span>
-              <span> {{ item.label ?? '' | translate }}</span>
-              <span class="badge rounded-pill bg-{{item.badge.variant}} float-end" *ngIf="item.badge">{{item.badge.text |
-                translate}}</span>
-            </a>
+        <!-- Contenido Desplegable del Grupo -->
+        <div class="group-items-collapse" *ngIf="group.isOpen && !group.directItem">
+          <ul class="nav-items-list">
+            <li *ngFor="let item of group.items; trackBy: trackByItem" class="nav-item-entry">
+              <!-- Ítem Nivel 1 Directo (Ruta) -->
+              <a
+                *ngIf="!hasItems(item) && item.link"
+                [routerLink]="item.link"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: false }"
+                class="nav-link-item-1"
+              >
+                <i [class]="getItemIcon(item)" class="nav-item-icon"></i>
+                <span class="nav-item-label">{{ item.label ?? '' | translate }}</span>
+                <span class="badge rounded-pill bg-{{item.badge.variant}} ms-auto" *ngIf="item.badge">
+                  {{ item.badge.text | translate }}
+                </span>
+              </a>
 
-            <ul *ngIf="hasItems(item)" class="sub-menu" aria-expanded="false">
-              <li *ngFor="let subitem of item.subItems">
-                <a routerLink="{{subitem.link}}" *ngIf="!hasItems(subitem)" class="side-nav-link-ref"
-                  [attr.data-parent]="subitem.parentId" >
-                  {{ subitem.label ?? '' | translate}}
-                  <span class="badge rounded-pill bg-{{subitem.badge.variant}} float-end" *ngIf="subitem.badge">{{subitem.badge.text |
-                    translate}}</span>
+              <!-- Ítem Nivel 1 con Submenú (Menu 1 Padre) -->
+              <div *ngIf="hasItems(item)" class="nav-sub-wrapper">
+                <a
+                  href="javascript:void(0);"
+                  class="nav-link-item-1 has-submenu"
+                  [class.active]="hasActiveSubChild(item)"
+                  (click)="toggleSubItem(item, $event)"
+                >
+                  <i [class]="getItemIcon(item)" class="nav-item-icon"></i>
+                  <span class="nav-item-label">{{ item.label ?? '' | translate }}</span>
+                  <i
+                    class="fa-solid fa-chevron-down sub-toggle-chevron"
+                    [class.is-open]="isSubItemExpanded(item)"
+                  ></i>
                 </a>
-                <a *ngIf="hasItems(subitem)" class="side-nav-link-a-ref has-arrow" href="javascript:void(0);"
-                  [attr.data-parent]="subitem.parentId">
-                  {{ subitem.label ?? '' | translate}}
-                </a>
-                <ul *ngIf="hasItems(subitem)" class="sub-menu mm-collapse" aria-expanded="false">
-                  <li *ngFor="let subSubitem of subitem.subItems">
-                    <a [attr.data-parent]="subSubitem.parentId" routerLink="{{subSubitem.link}}"
-                      class="side-nav-link-ref">
-                      {{ subSubitem.label ?? '' | translate }}
+
+                <!-- Submenú Nivel 2 (Menu 2 Hijos) -->
+                <ul class="nav-sub-list-2" *ngIf="isSubItemExpanded(item)">
+                  <li *ngFor="let subitem of item.subItems; trackBy: trackBySubItem">
+                    <a
+                      [routerLink]="subitem.link"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: false }"
+                      class="nav-link-item-2"
+                    >
+                      <span class="sub-bullet-symbol">›</span>
+                      <span class="sub-label-text">{{ subitem.label ?? '' | translate }}</span>
+                      <span class="badge rounded-pill bg-{{subitem.badge.variant}} ms-auto" *ngIf="subitem.badge">
+                        {{ subitem.badge.text | translate }}
+                      </span>
                     </a>
                   </li>
                 </ul>
-              </li>
-            </ul>
-          </li>
-        </ng-container>
-      </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
-  </ng-template>
-  <!-- Sidebar -->
+  </ngx-simplebar>
 
-  <div class="vertical-menu" [class.is-condensed]="isCondensed">
-    <div class="sidebar-brand-compact">
-      <img src="assets/img/logo.png" alt="RECUMET">
-      <div><strong>RECUMET</strong><span>INDUSTRIAL ERP</span></div>
-      <span class="sidebar-live"><i></i> LIVE</span>
-    </div>
-    <ngx-simplebar class="sidebar-scroll" #componentRef>
-      <div *ngIf="!isCondensed">
-        <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
-      </div>
-      <div *ngIf="isCondensed">
-        <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
-      </div>
-    </ngx-simplebar>
-    <div class="sidebar-status" aria-label="Estado del sistema">
-      <span><i></i> Servidor sincronizado</span><small>v3.4.2</small>
-    </div>
+  <!-- Footer del Sidebar -->
+  <div class="sidebar-footer-status" aria-label="Estado del sistema">
+    <span class="footer-sync-row"><i class="sync-dot"></i> Servidor sincronizado</span>
+    <small class="version-tag-pill">v3.4.2</small>
   </div>
-  <!-- Left Sidebar End -->
+</div>
+<!-- Left Sidebar End -->

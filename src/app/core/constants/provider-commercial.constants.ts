@@ -32,14 +32,23 @@ export const PROVIDER_SERVICE_MODES: ProviderCatalogOption<ProviderServiceMode>[
   { label: 'Recojo por Recumet', value: 'PICKUP_BY_RECUMET' }, { label: 'Ambos', value: 'BOTH' },
 ];
 export const PROVIDER_ORIGIN_CHANNELS: ProviderCatalogOption<ProviderOriginChannel>[] = [
-  { label: 'Prospección', value: 'PROSPECTION' }, { label: 'Referido', value: 'REFERRAL' },
-  { label: 'SICOES', value: 'SICOES' }, { label: 'Redes', value: 'SOCIAL_MEDIA' },
-  { label: 'Puerta', value: 'DOOR' }, { label: 'Contacto directo', value: 'DIRECT_CONTACT' },
+  { label: 'Puerta', value: 'DOOR' },
+  { label: 'Buscado por Recumet', value: 'SEARCHED_BY_RECUMET' },
+  { label: 'Ruteo / Visita', value: 'ROUTING_VISIT' },
+  { label: 'Referido', value: 'REFERRAL' },
+  { label: 'Redes Sociales', value: 'SOCIAL_MEDIA' },
+  { label: 'WhatsApp / Llamada', value: 'WHATSAPP_CALL' },
+  { label: 'SICOES / Licitación', value: 'SICOES_TENDER' },
+  { label: 'Invitación de Empresa', value: 'COMPANY_INVITATION' },
+  { label: 'Histórico', value: 'HISTORICAL' },
   { label: 'Otro', value: 'OTHER' },
 ];
 export const PROVIDER_RELATIONSHIP_STATUSES: ProviderCatalogOption<ProviderRelationshipStatus>[] = [
-  { label: 'Prospecto', value: 'PROSPECT' }, { label: 'En gestión', value: 'IN_PROGRESS' },
-  { label: 'Proveedor activo', value: 'ACTIVE_PROVIDER' }, { label: 'Sin movimiento', value: 'DORMANT' },
+  { label: 'Nuevo', value: 'NEW' },
+  { label: 'En seguimiento', value: 'FOLLOW_UP' },
+  { label: 'Activo', value: 'ACTIVE' },
+  { label: 'Inactivo', value: 'INACTIVE' },
+  { label: 'Por recuperar', value: 'TO_RECOVER' },
   { label: 'Perdido', value: 'LOST' },
 ];
 export const PROVIDER_NEGOTIATION_CONDITIONS: ProviderCatalogOption<ProviderNegotiationCondition>[] = [

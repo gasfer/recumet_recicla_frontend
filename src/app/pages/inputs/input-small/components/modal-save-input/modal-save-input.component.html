@@ -1,8 +1,12 @@
 <p-dialog
   [header]="inputsService.isEdit ? 'Editar compra: ' + inputsService.dataInputForEdit()?.cod : 'Registro de compra'"
   [(visible)]="inputsService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
-  (onHide)="resetModal()" styleClass="app-dialog--xl">
-  <form [formGroup]="formInput">
+  (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog">
+  <form [formGroup]="formInput" class="purchase-save-form">
+    <div class="p-2.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 text-xs flex items-center gap-2 mb-3">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Los campos marcados con <b>*</b> son obligatorios.</span>
+    </div>
 
     <!-- Aviso modo edición -->
     <div *ngIf="inputsService.isEdit" class="mb-2">
@@ -16,7 +20,7 @@
     </div>
 
     <!-- ══ BLOQUE 1: RECEPCIÓN Y PESAJE ══ -->
-    <section class="erp-section">
+    <section class="erp-section purchase-reception">
       <div class="erp-section-title">
         <i class="fa-solid fa-truck-ramp-box"></i> Datos de Recepción y Pesaje
       </div>
@@ -50,7 +54,7 @@
       </div>
 
       <!-- Fila 2: 4 Columnas simétricas y perfectamente alineadas -->
-      <div class="erp-form-grid cols-4">
+      <div class="erp-form-grid cols-4 purchase-section-grid">
         <!-- Factura -->
         <div class="erp-field">
           <label class="erp-label required">Factura</label>
@@ -105,13 +109,13 @@
     </section>
 
     <!-- ══ BLOQUE 2: LIQUIDACIÓN Y PAGO ══ -->
-    <section class="erp-section">
+    <section class="erp-section purchase-payment">
       <div class="erp-section-title">
         <i class="fa-solid fa-money-bill-wave"></i> Liquidación y Condiciones de Pago
       </div>
 
       <!-- Fila 1: Resumen de Importes (Sumas + Descuento + Total a pagar) -->
-      <div class="erp-form-grid cols-3 mb-2 items-center">
+      <div class="erp-form-grid cols-3 purchase-section-grid mb-2">
         <!-- Sumas -->
         <div class="erp-field">
           <label class="erp-label">Subtotal / Sumas</label>
@@ -129,7 +133,7 @@
             (onBlur)="onChangeDescuento()" buttonLayout="horizontal" spinnerMode="horizontal"
             decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-primary"
             incrementButtonIcon="fa-solid fa-plus" decrementButtonIcon="fa-solid fa-minus" [min]="0"
-            [max]="formInput.get('sumas')?.value" class="w-full"
+            [max]="formInput.get('sumas')?.value" class="erp-input w-full"
             [class.ng-dirty]="validatorsService.inputValid('discount',formInput)">
           </p-inputNumber>
           <small *ngIf="validatorsService.inputValid('discount',formInput)" class="erp-error-msg">Descuento no válido</small>
@@ -138,7 +142,7 @@
         <!-- Total -->
         <div class="erp-field">
           <label class="erp-label required">Total a Pagar</label>
-          <div class="erp-toggle-pill justify-between" style="border-color: #059669; background-color: #ecfdf5;">
+          <div class="erp-toggle-pill justify-between purchase-total">
             <span class="text-xs text-emerald-800 font-bold"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>TOTAL</span>
             <span class="font-extrabold text-base text-emerald-700">{{ formInput.get('total')?.value | number:decimalFormat.digitsInfo }} Bs</span>
           </div>
@@ -146,7 +150,7 @@
       </div>
 
       <!-- Fila 2: Modalidad de Pago -->
-      <div class="erp-form-grid cols-3 mb-2">
+      <div class="erp-form-grid cols-3 purchase-section-grid mb-2">
         <!-- Tipo de Pago (Contado / Crédito) -->
         <div class="erp-field">
           <label class="erp-label required">Condición de pago</label>
@@ -167,7 +171,7 @@
             buttonLayout="horizontal" spinnerMode="horizontal" decrementButtonClass="p-button-secondary"
             incrementButtonClass="p-button-primary" incrementButtonIcon="fa-solid fa-plus"
             decrementButtonIcon="fa-solid fa-minus" [min]="0" [max]="formInput.get('total')?.value"
-            class="w-full" [class.ng-dirty]="validatorsService.inputValid('on_account',formInput)">
+            class="erp-input w-full" [class.ng-dirty]="validatorsService.inputValid('on_account',formInput)">
           </p-inputNumber>
           <small *ngIf="blockedInputCredit()" class="erp-error-msg">Monto bloqueado por abonos existentes.</small>
           <small *ngIf="validatorsService.inputValid('on_account',formInput)" class="erp-error-msg">Monto no válido</small>
@@ -223,12 +227,12 @@
 
         <div class="erp-field">
           <label class="erp-label">Comprobante de Pago (Opcional)</label>
-          <div class="flex items-center gap-2 mt-1">
+          <div class="flex items-center gap-2 mt-1 purchase-attachment">
             <input type="file" #fileInput (change)="onVoucherFileChange($event)" accept="image/*,.pdf" class="d-none"/>
             <button type="button" pButton (click)="fileInput.click()" label="Subir Archivo" icon="fa-solid fa-upload" class="p-button-sm p-button-outlined"></button>
             <span class="text-xs text-muted" *ngIf="!voucherFile">Sin archivo adjunto</span>
             <div *ngIf="voucherFile" class="erp-badge erp-badge-success flex items-center gap-1">
-              <span>{{ voucherFile.name }}</span>
+              <span class="purchase-attachment-name">{{ voucherFile.name }}</span>
               <i class="fa-solid fa-circle-xmark text-danger cursor-pointer ml-1" (click)="removeVoucherFile()" pTooltip="Eliminar"></i>
             </div>
           </div>
@@ -283,7 +287,7 @@
         <div class="erp-field">
           <label class="erp-label">Observaciones generales</label>
           <textarea pInputTextarea formControlName="comments" placeholder="Ingrese notas u observaciones..."
-            rows="3" class="w-full text-uppercase" style="resize: none;"
+            rows="3" class="w-full text-uppercase"
             [class.ng-dirty]="validatorsService.inputValid('comments',formInput)"></textarea>
           <small *ngIf="validatorsService.inputValid('comments',formInput)" class="erp-error-msg">
             {{ validatorsService.inputValidMessage("comments",formInput) }}
@@ -319,7 +323,7 @@
   </form>
   <ng-template pTemplate="footer">
     <p-button (click)="loading() ? null : this.inputsService.isEdit ? editInput() : saveInput()"
-      styleClass="p-button-sm p-button-rounded" label="Guardar y continuar" icon="fa-solid fa-floppy-disk"
+      styleClass="p-button-sm p-button-rounded p-button-success" label="Guardar y continuar" icon="fa-solid fa-floppy-disk"
       [loading]="loading()"></p-button>
     <p-button (click)="inputsService.showModalSaveInput = false" label="Cancelar"
       styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>

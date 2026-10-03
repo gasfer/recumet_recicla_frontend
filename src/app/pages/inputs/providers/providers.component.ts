@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/OptionsTable.interface';
 import { Provider, Providers } from '../interfaces/provider.interface';
@@ -13,6 +13,14 @@ import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-t
 import { AccountsPayableService } from '../../accounts/services/accounts-payable.service';
 import { Account, AccountsPayableProvider } from '../../accounts/interfaces/accounts-payable-provider.interface';
 import { ProviderCompanyProfile, ProviderSiteProfile } from '../interfaces/provider-commercial-profile.interface';
+import { InputsService } from '../services/inputs.service';
+import { GetAllInputs, Input } from '../interfaces/input.interface';
+import { UsersService } from 'src/app/pages/managements/services/users.service';
+import {
+  PROVIDER_ACCOUNT_TYPES, PROVIDER_CURRENCIES, PROVIDER_ENTITY_TYPES,
+  PROVIDER_FREQUENCIES, PROVIDER_NEGOTIATION_CONDITIONS, PROVIDER_ORIGIN_CHANNELS,
+  PROVIDER_RELATIONSHIP_STATUSES, PROVIDER_SERVICE_MODES, PROVIDER_OPERATIONAL_TYPES,
+} from 'src/app/core/constants/provider-commercial.constants';
 
 @Component({
   selector: 'app-providers',
@@ -82,6 +90,105 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   accountsLoading = signal(false);
   providerAccounts = signal<AccountsPayableProvider | null>(null);
 
+  private usersService = inject(UsersService);
+  private inputsService = inject(InputsService);
+  commercialUsers = signal<{ id: number; full_names: string }[]>([]);
+  infoFrequencyAnalysis = signal<{
+    has_sufficient_history: boolean;
+    total_deliveries: number;
+    average_days: number | null;
+    frequency: string | null;
+    frequency_mode: 'automatic' | 'manual';
+    last_delivery_date: string | null;
+    next_estimated_date: string | null;
+    message?: string;
+  } | null>(null);
+  infoPurchases = signal<Input[]>([]);
+  infoPurchasesLoading = signal(false);
+  infoTotalPurchasesAmount = signal(0);
+  infoTotalPurchasesCount = signal(0);
+  infoLastPurchaseDate = signal<string | null>(null);
+
+  originChannels = PROVIDER_ORIGIN_CHANNELS;
+  relationshipStatuses = PROVIDER_RELATIONSHIP_STATUSES;
+  entityTypes = PROVIDER_ENTITY_TYPES;
+  serviceModes = PROVIDER_SERVICE_MODES;
+  frequencies = PROVIDER_FREQUENCIES;
+
+  getOriginChannelLabel(code: string | null | undefined): string {
+    if (!code) return 'No registrado';
+    const found = this.originChannels.find(item => item.value === code);
+    return found ? found.label : code;
+  }
+
+  getRelationshipStatusLabel(code: string | null | undefined): string {
+    if (!code) return 'No registrado';
+    const found = this.relationshipStatuses.find(item => item.value === code);
+    return found ? found.label : code;
+  }
+
+  getEntityTypeLabel(code: string | null | undefined): string {
+    if (!code) return 'Privada';
+    const found = this.entityTypes.find(item => item.value === code);
+    return found ? found.label : code;
+  }
+
+  getServiceModeLabel(code: string | null | undefined): string {
+    if (!code) return 'Ambos (Entrega en planta y recojo)';
+    const found = this.serviceModes.find(item => item.value === code);
+    return found ? found.label : code;
+  }
+
+  getFrequencyLabel(code: string | null | undefined): string {
+    if (!code) return 'Mensual';
+    const found = this.frequencies.find(item => item.value === code);
+    return found ? found.label : code;
+  }
+
+  getCommercialUserName(userId: number | null | undefined): string {
+    if (!userId) return 'No asignado';
+    const user = this.commercialUsers().find(u => u.id === Number(userId));
+    return user ? user.full_names : `Usuario #${userId}`;
+  }
+
+  loadCommercialUsers() {
+    this.usersService.getAllAndSearch(1, 1000, true).subscribe({
+      next: (resp) => {
+        const list = (resp.users?.data || []).map(u => ({
+          id: u.id,
+          full_names: u.full_names || `Usuario #${u.id}`
+        }));
+        this.commercialUsers.set(list);
+      },
+      error: () => this.commercialUsers.set([])
+    });
+  }
+
+  loadInfoPurchases(providerId: number) {
+    this.infoPurchasesLoading.set(true);
+    const branchId = Number(this.validatorsService.id_sucursal()) || undefined;
+    const searchParams: any = {
+      id_provider: String(providerId),
+      id_sucursal: branchId ? String(branchId) : undefined,
+      status: 'ACTIVE'
+    };
+    this.inputsService.getAllAndSearchInputs(1, 50, searchParams).subscribe({
+      next: (res: GetAllInputs) => {
+        this.infoPurchasesLoading.set(false);
+        const list = res.inputs?.data || [];
+        this.infoPurchases.set(list);
+        const total = list.reduce((acc: number, item: Input) => acc + (Number(item.total) || 0), 0);
+        this.infoTotalPurchasesAmount.set(total);
+        this.infoTotalPurchasesCount.set(res.inputs?.total || list.length);
+        this.infoLastPurchaseDate.set(list.length > 0 ? (list[0].date_voucher || list[0].createdAt) : null);
+      },
+      error: () => {
+        this.infoPurchasesLoading.set(false);
+        this.infoPurchases.set([]);
+      }
+    });
+  }
+
   showProviderInfo(provider: Provider) {
     this.providerInfoTab.set('company');
     this.selectedProvider.set(provider);
@@ -89,6 +196,15 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     this.selectedInfoSiteId.set(provider.id);
     this.providerInfoVisible.set(true);
     this.providerInfoLoading.set(true);
+    this.infoFrequencyAnalysis.set(null);
+    this.loadInfoPurchases(provider.id);
+
+    this.providersService.getFrequencyAnalysis(provider.id).subscribe({
+      next: (res) => {
+        if (res.ok && res.analysis) this.infoFrequencyAnalysis.set(res.analysis);
+      }
+    });
+
     this.providersService.getCommercialDetails(provider.id).subscribe({
       next: ({ provider: details }) => {
         this.selectedProvider.set({ ...provider, ...details });
@@ -102,10 +218,11 @@ export class ProvidersComponent implements OnInit, OnDestroy {
           });
         }
       },
-      error: () => Swal.fire({ icon: 'error', title: 'No se pudo cargar la ficha', text: 'Intente nuevamente.' }),
+      error: () => {},
       complete: () => this.providerInfoLoading.set(false),
     });
   }
+
 
   infoSites(): ProviderSiteProfile[] { return this.selectedCompanyProfile()?.operatingProviders || []; }
 
@@ -157,6 +274,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   ngOnInit(): void {
+    this.loadCommercialUsers();
     this.getAllTypes();
     this.save$ = this.providersService.save$.subscribe(resp => this.getAllAndSearchProviders(this.page(),this.rows(),this.status()));
   }

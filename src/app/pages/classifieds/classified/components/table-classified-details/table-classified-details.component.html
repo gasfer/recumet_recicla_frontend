@@ -10,14 +10,14 @@
     styleClass="p-datatable-sm app-table-scroll erp-operational-table" responsiveLayout="scroll">
     <ng-template pTemplate="header">
         <tr>
-            <th class="app-u-min-width-280px-e581e86">Producto</th>
+            <th class="classified-product">Producto</th>
             <th class="text-center">Cantidad</th>
             <th class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">Quitar</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product>
         <tr>
-            <td class="app-u-min-width-280px-e581e86">
+            <td class="classified-product">
                 <span class="fw-bold text-slate-800 d-block">{{product.name}}</span>
                 <span class="badge-subtle-code me-1">{{product.cod}}</span>
                 <small class="text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
@@ -35,17 +35,16 @@
                     placeholder="0"
                     [min]="0.1"
                     [max]="99999999999999"
-                    [inputId]="product.id"
+                    [inputId]="'classified-quantity-' + product.id"
                     [(ngModel)]="product.quantity"
-                    (onInput)="updateQuantityProduct($event, product)" class="app-u-height-38px-3b84911">
+                    (onInput)="updateQuantityProduct($event, product)" class="erp-input classified-number">
                 </p-inputNumber>
             </td>
             <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
                 <button type="button" aria-label="Eliminar"
                     (click)="deleteProductForDetailShopping(product.id)"
-                    class="btn btn-sm btn-outline-danger rounded-circle p-1"
-                    pTooltip="Quitar de la lista" tooltipPosition="top"
-                    style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">
+                    class="btn btn-sm btn-outline-danger rounded-circle p-1 classified-remove"
+                    pTooltip="Quitar de la lista" tooltipPosition="top">
                     <i class="fa-regular fa-trash-can"></i>
                 </button>
             </td>
@@ -61,21 +60,21 @@
             </th>
         </tr>
         <tr>
-            <td colspan="2" class="text-end bg-white py-2">
+            <td colspan="3" class="bg-white py-2">
+                <div class="classified-actions">
                 <p-button
                     (click)="clearDetailShopping()"
                     icon="fa-solid fa-ban"
                     label="Cancelar"
                     styleClass="p-button-outlined p-button-sm p-button-danger p-button-rounded">
                 </p-button>
-            </td>
-            <td colspan="1" class="text-center bg-white py-2">
                 <p-button
                     styleClass="p-button-sm p-button-rounded p-button-success"
                     label="Registrar Clasificado"
                     (click)="confirmClassified()"
                     icon="fa-solid fa-floppy-disk">
                 </p-button>
+                </div>
             </td>
         </tr>
     </ng-template>

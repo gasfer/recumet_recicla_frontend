@@ -1,33 +1,67 @@
 <div [class]="containerClasses" role="status" aria-label="Cargando RECUMET">
-  <div class="recumet-brand">
-    <div class="recumet-symbol">
-      <img
-        class="recumet-map"
-        src="assets/recumet/recumet-mapa-bolivia.png"
-        alt="Mapa de Bolivia"
-        aria-hidden="true"
-      />
+  <main class="recumet-loader-main" data-purpose="loading-interface">
+    <!-- Outer Ambient Radial Glow -->
+    <div class="recumet-ambient-halo" aria-hidden="true"></div>
 
-      <div class="recumet-recycle-orbit">
-        <img
-          class="recumet-recycle"
-          src="assets/recumet/recumet-simbolo-reciclaje.svg"
-          alt="Símbolo de Reciclaje"
-          aria-hidden="true"
-        />
+    <!-- Loading Spinners Container -->
+    <div class="recumet-spinner-wrapper">
+      <!-- 1. Outer Delicate Dashed Orbital Track -->
+      <div class="recumet-orbital-track" aria-hidden="true"></div>
+
+      <!-- 2. Dual Counter-Rotating Precision Spinner Rings -->
+      <svg class="recumet-svg-reverse" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient [id]="reverseGradientId" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10B981" stop-opacity="0.6"></stop>
+            <stop offset="50%" stop-color="#059669" stop-opacity="0.1"></stop>
+            <stop offset="100%" stop-color="#047857" stop-opacity="0"></stop>
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" fill="none" r="46" [attr.stroke]="'url(#' + reverseGradientId + ')'" stroke-dasharray="60 120" stroke-linecap="round" stroke-width="1.5"></circle>
+      </svg>
+
+      <!-- 3. Primary Elegant Gradient Arc Spinner -->
+      <svg class="recumet-svg-primary" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient [id]="primaryGradientId" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10B981"></stop>
+            <stop offset="60%" stop-color="#059669"></stop>
+            <stop offset="100%" stop-color="#047857" stop-opacity="0.05"></stop>
+          </linearGradient>
+        </defs>
+        <!-- Base faint guidance track -->
+        <circle cx="50" cy="50" fill="none" r="47.5" stroke="#E2E8F0" stroke-opacity="0.5" stroke-width="2"></circle>
+        <!-- Active rotating stroke segment -->
+        <circle cx="50" cy="50" fill="none" r="47.5" [attr.stroke]="'url(#' + primaryGradientId + ')'" stroke-dasharray="110 200" stroke-linecap="round" stroke-width="2.5"></circle>
+      </svg>
+
+      <!-- 4. Subtle Inner Pulsing Border Ring -->
+      <div class="recumet-inner-ring" aria-hidden="true"></div>
+
+      <!-- 5. Central Clean White Card with Logo Emblem Only -->
+      <div class="recumet-emblem-card">
+        <div class="recumet-emblem-inner">
+          <img
+            alt="RECUMET"
+            class="recumet-emblem-img"
+            loading="eager"
+            src="assets/recumet/recumet-emblem.png"
+          />
+        </div>
       </div>
-
-      <span class="recumet-r">R</span>
     </div>
 
-    <div class="recumet-name" aria-label="RECUMET">
-      <span>R</span><span>E</span><span>C</span><span>U</span><span>M</span><span>E</span><span>T</span>
+    <!-- Dynamic Horizontal Progress Bar & Percentage Display -->
+    <div *ngIf="showLine" class="recumet-progress-container" data-purpose="horizontal-loader">
+      <div class="recumet-progress-track">
+        <div
+          class="recumet-progress-bar"
+          [style.width.%]="currentProgress()"
+        ></div>
+      </div>
+      <div *ngIf="showText" class="recumet-progress-text">
+        <span>{{ displayProgressText() }}</span>
+      </div>
     </div>
-
-    <div *ngIf="showLine" class="recumet-loading-line">
-      <span></span>
-    </div>
-
-    <p *ngIf="showText && text" class="recumet-status">{{ text }}</p>
-  </div>
+  </main>
 </div>

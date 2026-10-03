@@ -5,7 +5,7 @@
 <!--provider new modal-->
 <app-modal-pre-register-provider></app-modal-pre-register-provider>
 
-<div class="erp-header-panel mb-2">
+<div class="erp-header-panel purchase-header mb-3">
     <!-- AVISO MODO EDICIÓN SUTIL -->
     <div *ngIf="inputsService.isEdit" class="erp-edit-mode-banner animated fadeInDown">
         <div class="d-flex align-items-center gap-2">
@@ -18,18 +18,27 @@
         <span class="badge bg-amber-500 text-white fw-bold px-2 py-1 rounded-pill">MODO EDICIÓN</span>
     </div>
 
+    <div class="purchase-heading">
     <div class="erp-panel-title">
         <i class="fa-solid fa-cart-shopping text-emerald-600"></i>
         <span>{{inputsService.isEdit ? 'MODIFICAR COMPRA' : 'REGISTRO DE COMPRAS'}}</span>
     </div>
+    <button type="button" class="btn btn-light border rounded-circle purchase-icon-button"
+        aria-label="Configurar compras" pTooltip="Configurar compras" tooltipPosition="left"
+        (click)="inputsService.showModalConfigInput = true">
+        <i class="fa-solid fa-gear text-slate-500"></i>
+    </button>
+    </div>
 
-    <div class="row align-items-center g-2 mt-1">
-        <div class="col-sm-6 col-12 position-relative">
+    <div class="purchase-provider-grid">
+        <div class="erp-field">
+            <label class="erp-label required">Buscar proveedor</label>
+            <div class="purchase-search">
             <app-input-search (onEnters)="suggestedProvider($event)" (onDebounce)="suggestedProvider($event)"
                 (onBtnNew)="newProvider()" [icon]="'fa-solid fa-truck-moving'" [btnNew]="this.validatorsService.withPermission('PROVEEDORES','create')"
                 [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un proveedor aquí....'">
             </app-input-search>
-            <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
+            <div class="purchase-suggestions">
                 <ul *ngIf="loadingSearchProvider()" class="list-group shadow">
                     <li class="list-group-item list-group-item-action">
                         <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
@@ -50,36 +59,27 @@
                     </li>
                 </ul>
             </div>
+            </div>
         </div>
 
-        <div class="col-sm-5 col-12 d-flex align-items-center gap-2">
-            <span class="text-muted small fw-bold">Proveedor:</span>
+        <div class="erp-field">
+            <span class="erp-label">Proveedor seleccionado</span>
             <div class="erp-entity-chip" [ngClass]="providerSelect() ? 'active' : 'unselected'">
                 <i class="fa-solid fa-truck-moving"></i>
                 <span>{{ providerSelect() ? 'NIT-CI: ' + providerSelectName() : 'SELECCIONE UN PROVEEDOR' }}</span>
-                <span *ngIf="providerSelect()" class="remove-btn"
+                <button type="button" aria-label="Quitar proveedor" *ngIf="providerSelect()" class="remove-btn border-0 bg-transparent"
                     (click)="inputsService.providerSelect.set(undefined)"
                     pTooltip="Quitar Proveedor" tooltipPosition="top">
                     ✕
-                </span>
-            </div>
-        </div>
-
-        <div class="col-sm-1 col-12">
-            <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-sm btn-light border rounded-circle p-2 text-secondary"
-                    pTooltip="Configurar modo de compra" tooltipPosition="left"
-                    (click)="inputsService.showModalConfigInput = true">
-                    <i class="fa-solid fa-gear"></i>
                 </button>
             </div>
         </div>
+
     </div>
 </div>
 
-<div class="row g-2">
-    <div class="col-sm-12"
-        [ngClass]="{'col-md-7': inputsService._inputConfig.viewCardProducts, 'col-md-12': !inputsService._inputConfig.viewCardProducts}">
+<div class="purchase-workspace" [class.purchase-workspace--catalog]="inputsService._inputConfig.viewCardProducts">
+    <div>
         <div class="card erp-card-container border-0 shadow-sm">
             <div class="erp-items-header">
                 <div class="d-flex align-items-center gap-2">
@@ -88,11 +88,11 @@
                 </div>
                 <span class="erp-counter-chip">{{totalItems()}} items</span>
             </div>
-            <div class="p-2 border-bottom" *ngIf="!inputsService._inputConfig.viewCardProducts">
+            <div class="p-3 border-bottom purchase-search" *ngIf="!inputsService._inputConfig.viewCardProducts">
                 <app-input-search (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
                     [icon]="'fa-solid fa-cart-plus'"
                     [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                <div class="purchase-suggestions">
                     <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
                         <li class="list-group-item list-group-item-action">
                             <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    <div *ngIf="inputsService._inputConfig.viewCardProducts" class="col-sm-12 col-md-5">
+    <div *ngIf="inputsService._inputConfig.viewCardProducts">
         <app-dataview-products
             [prominentProductCode]="true"
             [typeFrom]="'INPUT'"

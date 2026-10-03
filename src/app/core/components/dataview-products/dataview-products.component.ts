@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, inject, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormBuilder, FormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { CategoriesService } from 'src/app/pages/inventories/services/categories.service';
@@ -11,9 +12,11 @@ import { ProductAccessContext } from '../../constants/product-category-access.co
   templateUrl: './dataview-products.component.html',
   styleUrls: ['./dataview-products.component.scss']
 })
-export class DataviewProductsComponent implements OnInit, OnChanges {
+export class DataviewProductsComponent implements OnInit, OnChanges, OnDestroy {
   searchFor              = signal([{name: 'Producto', code: 'pos'},{name: 'Categoría', code: 'id_category'}]);
   rows      :number      = 50;
+  first = 0;
+  private productsRequest?: Subscription;
   total     :number      = 0;
   from      :number      = 0;
   to        :number      = 0;
@@ -52,11 +55,23 @@ export class DataviewProductsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['categoryType'] && !changes['categoryType'].firstChange)
-      || (changes['productContext'] && !changes['productContext'].firstChange)) {
-      this.getAllAndSearchProducts(1, this.rows, true);
+    const categoryChanged = ['categoryType', 'productContext'].some(
+      key => changes[key] && !changes[key].firstChange
+    );
+    const locationChanged = ['id_sucursal', 'id_storage'].some(
+      key => changes[key] && !changes[key].firstChange
+    );
+    if (categoryChanged || locationChanged) {
+      const { searchSelect, query } = this.formSearch.value;
+      this.getAllAndSearchProducts(1, this.rows, true, query ? searchSelect : '', query || '');
+    }
+    if (categoryChanged || (changes['id_sucursal'] && !changes['id_sucursal'].firstChange)) {
       this.getAllCategories();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.productsRequest?.unsubscribe();
   }
 
   searchByProduct(txtSearchProduct: string){
@@ -85,8 +100,10 @@ export class DataviewProductsComponent implements OnInit, OnChanges {
   }
 
   getAllAndSearchProducts(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
-    if(!query) {this.loading.set(true);} //not loading in search
-    this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage,'name','ASC',this.withStock,this.categoryType,this.productContext).subscribe({
+    this.productsRequest?.unsubscribe();
+    this.first = (page - 1) * limit;
+    this.loading.set(true);
+    this.productsRequest = this.productsService.getAllAndSearch(page,limit,status,type,query,this.isViewQuantity,this.id_sucursal,this.id_storage,'name','ASC',this.withStock,this.categoryType,this.productContext).subscribe({
       next: (resp) => {
         this.products.set(resp.products.data);
         this.total = resp.products.total;
@@ -109,7 +126,7 @@ export class DataviewProductsComponent implements OnInit, OnChanges {
     if(value){
       this.getAllAndSearchProducts(page,this.rows,true,typeSearch,value);
     } else {
-      this.getAllAndSearchProducts(1,this.rows,true);
+      this.getAllAndSearchProducts(page,this.rows,true);
     }
   }
 

@@ -9,7 +9,7 @@ import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 @Component({
   selector: 'app-table-input-details',
   templateUrl: './table-input-details.component.html',
-  styles: []
+  styleUrls: ['./table-input-details.component.scss']
 })
 export class TableInputDetailsComponent implements OnDestroy {
   inputsService       = inject( InputsService );

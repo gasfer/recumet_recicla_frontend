@@ -1,0 +1,108 @@
+- Generating browser application bundles (phase: setup)...
+√ Browser application bundle generation complete.
+02 10 2026 16:06:38.195:INFO [karma-server]: Karma v6.4.4 server started at http://localhost:9876/
+02 10 2026 16:06:38.204:INFO [launcher]: Launching browsers ChromeHeadless with concurrency unlimited
+02 10 2026 16:06:38.247:INFO [launcher]: Starting browser ChromeHeadless
+02 10 2026 16:06:40.238:ERROR [launcher]: Cannot start ChromeHeadless
+	[25560:41164:1002/160639.373:ERROR:chrome\installer\util\google_update_settings_win.cc:270] Failed opening key Software\Google\Update\ClientStateMedium\{8A69D345-D564-463c-AFF1-A69D9E530F96} to set usagestats; result: 5
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/5f3d1a12-d91e-4f69-819c-afde533d444c
+[25560:41852:1002/160639.673:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:36912:1002/160639.676:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[25560:41852:1002/160639.725:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:41852:1002/160639.771:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:36912:1002/160639.773:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[25560:41852:1002/160639.809:ERROR:components\device_event_log\device_event_log_impl.cc:211] [16:06:39.811] USB: usb_service_win.cc:346 Failed to parse device interface GUID:
+[25560:41852:1002/160639.811:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:40720:1002/160639.819:ERROR:services\device\public\cpp\geolocation\system_geolocation_source_win.cc:124] Failed to create IAppCapability: Acceso denegado. (0x80070005)
+[25560:41852:1002/160639.851:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:41164:1002/160639.853:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[25560:41852:1002/160639.909:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:41852:1002/160639.909:FATAL:content\browser\gpu\gpu_data_manager_impl_private.cc:417] GPU process isn't usable. Goodbye.
+
+02 10 2026 16:06:40.239:ERROR [launcher]: ChromeHeadless stdout: 
+02 10 2026 16:06:40.239:ERROR [launcher]: ChromeHeadless stderr: [25560:41164:1002/160639.373:ERROR:chrome\installer\util\google_update_settings_win.cc:270] Failed opening key Software\Google\Update\ClientStateMedium\{8A69D345-D564-463c-AFF1-A69D9E530F96} to set usagestats; result: 5
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/5f3d1a12-d91e-4f69-819c-afde533d444c
+[25560:41852:1002/160639.673:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:36912:1002/160639.676:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[25560:41852:1002/160639.725:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:41852:1002/160639.771:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:36912:1002/160639.773:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[25560:41852:1002/160639.809:ERROR:components\device_event_log\device_event_log_impl.cc:211] [16:06:39.811] USB: usb_service_win.cc:346 Failed to parse device interface GUID:
+[25560:41852:1002/160639.811:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:40720:1002/160639.819:ERROR:services\device\public\cpp\geolocation\system_geolocation_source_win.cc:124] Failed to create IAppCapability: Acceso denegado. (0x80070005)
+[25560:41852:1002/160639.851:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:41164:1002/160639.853:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[25560:41852:1002/160639.909:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[25560:41852:1002/160639.909:FATAL:content\browser\gpu\gpu_data_manager_impl_private.cc:417] GPU process isn't usable. Goodbye.
+
+02 10 2026 16:06:40.427:INFO [launcher]: Trying to start ChromeHeadless again (1/2).
+02 10 2026 16:06:41.981:ERROR [launcher]: Cannot start ChromeHeadless
+	[41540:30856:1002/160641.131:ERROR:chrome\installer\util\google_update_settings_win.cc:270] Failed opening key Software\Google\Update\ClientStateMedium\{8A69D345-D564-463c-AFF1-A69D9E530F96} to set usagestats; result: 5
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/4dacb7e1-5a8d-4852-9290-88976b3a61c6
+[41540:13300:1002/160641.439:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:41908:1002/160641.441:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[41540:13300:1002/160641.493:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:13300:1002/160641.540:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:30856:1002/160641.542:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[41540:13300:1002/160641.578:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:13300:1002/160641.613:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:30856:1002/160641.613:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[41540:13300:1002/160641.666:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:13300:1002/160641.666:FATAL:content\browser\gpu\gpu_data_manager_impl_private.cc:417] GPU process isn't usable. Goodbye.
+
+02 10 2026 16:06:41.984:ERROR [launcher]: ChromeHeadless stdout: 
+02 10 2026 16:06:41.984:ERROR [launcher]: ChromeHeadless stderr: [41540:30856:1002/160641.131:ERROR:chrome\installer\util\google_update_settings_win.cc:270] Failed opening key Software\Google\Update\ClientStateMedium\{8A69D345-D564-463c-AFF1-A69D9E530F96} to set usagestats; result: 5
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/4dacb7e1-5a8d-4852-9290-88976b3a61c6
+[41540:13300:1002/160641.439:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:41908:1002/160641.441:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[41540:13300:1002/160641.493:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:13300:1002/160641.540:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:30856:1002/160641.542:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[41540:13300:1002/160641.578:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:13300:1002/160641.613:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:30856:1002/160641.613:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[41540:13300:1002/160641.666:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[41540:13300:1002/160641.666:FATAL:content\browser\gpu\gpu_data_manager_impl_private.cc:417] GPU process isn't usable. Goodbye.
+
+02 10 2026 16:06:42.098:INFO [launcher]: Trying to start ChromeHeadless again (2/2).
+02 10 2026 16:06:43.500:ERROR [launcher]: Cannot start ChromeHeadless
+	[36512:41184:1002/160642.753:ERROR:chrome\installer\util\google_update_settings_win.cc:270] Failed opening key Software\Google\Update\ClientStateMedium\{8A69D345-D564-463c-AFF1-A69D9E530F96} to set usagestats; result: 5
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/90b5c80a-98a3-4572-88be-35336bb0370d
+[36512:39124:1002/160642.995:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:41184:1002/160642.995:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[36512:39124:1002/160643.048:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:39124:1002/160643.090:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:17004:1002/160643.092:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[36512:39124:1002/160643.107:ERROR:components\device_event_log\device_event_log_impl.cc:211] [16:06:43.101] USB: usb_service_win.cc:346 Failed to parse device interface GUID:
+[36512:34848:1002/160643.113:ERROR:services\device\public\cpp\geolocation\system_geolocation_source_win.cc:124] Failed to create IAppCapability: Acceso denegado. (0x80070005)
+[36512:39124:1002/160643.133:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:39124:1002/160643.180:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:41184:1002/160643.183:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[36512:39124:1002/160643.239:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:39124:1002/160643.239:FATAL:content\browser\gpu\gpu_data_manager_impl_private.cc:417] GPU process isn't usable. Goodbye.
+
+02 10 2026 16:06:43.500:ERROR [launcher]: ChromeHeadless stdout: 
+02 10 2026 16:06:43.500:ERROR [launcher]: ChromeHeadless stderr: [36512:41184:1002/160642.753:ERROR:chrome\installer\util\google_update_settings_win.cc:270] Failed opening key Software\Google\Update\ClientStateMedium\{8A69D345-D564-463c-AFF1-A69D9E530F96} to set usagestats; result: 5
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/90b5c80a-98a3-4572-88be-35336bb0370d
+[36512:39124:1002/160642.995:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:41184:1002/160642.995:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[36512:39124:1002/160643.048:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:39124:1002/160643.090:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:17004:1002/160643.092:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[36512:39124:1002/160643.107:ERROR:components\device_event_log\device_event_log_impl.cc:211] [16:06:43.101] USB: usb_service_win.cc:346 Failed to parse device interface GUID:
+[36512:34848:1002/160643.113:ERROR:services\device\public\cpp\geolocation\system_geolocation_source_win.cc:124] Failed to create IAppCapability: Acceso denegado. (0x80070005)
+[36512:39124:1002/160643.133:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:39124:1002/160643.180:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:41184:1002/160643.183:ERROR:components\viz\host\persistent_cache_sandboxed_file_factory.cc:153] Failed to open persistent cache files in directory "C:\Users\RECUME~1\AppData\Local\Temp\karma-3328524\GPUPersistentCache\DawnGraphiteCache\H6POMLZSBZPTMTLBCTMXRDH27BAKUDTA", error: 0: El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso. (0x20)
+[36512:39124:1002/160643.239:ERROR:content\browser\gpu\gpu_process_host.cc:1130] GPU process exited unexpectedly: exit_code=-1073741790
+[36512:39124:1002/160643.239:FATAL:content\browser\gpu\gpu_data_manager_impl_private.cc:417] GPU process isn't usable. Goodbye.
+
+02 10 2026 16:06:43.605:ERROR [launcher]: ChromeHeadless failed 2 times (cannot start). Giving up.
+√ Browser application bundle generation complete.
+√ Browser application bundle generation complete.

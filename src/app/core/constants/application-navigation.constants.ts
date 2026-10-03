@@ -26,6 +26,7 @@ const destination = (
 
 export const NAVIGATION_DESTINATIONS = {
   dashboard: destination('/dashboard/home', 'Dashboard'),
+  reports: destination('/reports', 'Reportes'),
 
   providers: destination('/inputs/providers', 'Proveedores', 'PROVEEDORES'),
   providerPickup: destination('/providers/schedule-pickup', 'Agendar recojo', 'RECOJO', 'create'),

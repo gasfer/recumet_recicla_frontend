@@ -13,4 +13,5 @@ export interface MenuItem {
     badge?: any;
     parentId?: number;
     isLayout?: boolean;
+    isExpanded?: boolean;
 }

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
+  { path: 'reports', loadComponent: () => import('./reports/reports.component').then(m => m.ReportsComponent) },
   { path: 'dashboard' ,loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
   { path: 'inputs', loadChildren: () => import('./inputs/inputs.module').then(m => m.InputsModule) },
   { path: 'outputs', loadChildren: () => import('./outputs/outputs.module').then(m => m.OutputsModule) },

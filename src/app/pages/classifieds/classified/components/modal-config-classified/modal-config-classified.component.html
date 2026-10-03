@@ -1,8 +1,8 @@
 <p-dialog [header]="'Configuración de clasificados'" [(visible)]="classifiedService.showModalConfigClassified"
     [modal]="true" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--sm">
+    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--sm erp-operational-dialog">
     <app-alert-notify [subTitle]="'Configurar los aspectos del módulo de clasificados.'" [subTitle2]="'Por favor, tenga en cuenta que los casilleros de verificación se consideran como afirmativos.'" [required]="false"></app-alert-notify>
-    <div [formGroup]="formConfig">
+    <div [formGroup]="formConfig" class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
         <div class="field-checkbox">
             <p-checkbox class="m-1" [binary]="true"  formControlName="searchForCode"  inputId="codigoB"></p-checkbox>
             <label class="cursor-pointer m-1" for="codigoB">Buscador por lector Cod. Barra</label>
@@ -21,7 +21,7 @@
         </div>
       </div>
       <ng-template pTemplate="footer">
-        <p-button (click)="saveConfig()" styleClass="p-button-sm p-button-rounded"
+        <p-button (click)="saveConfig()" styleClass="p-button-sm p-button-rounded p-button-success"
             label="Guardar" icon="fa-solid fa-floppy-disk"></p-button>
         <p-button (click)="classifiedService.showModalConfigClassified = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     </ng-template>

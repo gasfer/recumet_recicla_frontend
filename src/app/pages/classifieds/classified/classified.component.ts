@@ -14,8 +14,7 @@ import { ProductAccessContext } from 'src/app/core/constants/product-category-ac
 @Component({
   selector: 'app-classified',
   templateUrl: './classified.component.html',
-  styles: [
-  ]
+  styleUrls: ['./classified.component.scss']
 })
 export class ClassifiedComponent implements OnInit {
   readonly productContext = ProductAccessContext.Classifieds;

@@ -24,6 +24,7 @@ export const isPurchaseEditPermissionDenied = (error: unknown): boolean =>
 export const resolvePurchaseEditEligibility = (
   canUpdatePurchases: boolean,
   editDeadlineExpired: boolean,
+  isAdmin: boolean = false,
 ): PurchaseEditEligibility => {
   if (!canUpdatePurchases) {
     return {
@@ -36,7 +37,7 @@ export const resolvePurchaseEditEligibility = (
     };
   }
 
-  if (editDeadlineExpired) {
+  if (editDeadlineExpired && !isAdmin) {
     return {
       allowed: false,
       reason: 'deadline',

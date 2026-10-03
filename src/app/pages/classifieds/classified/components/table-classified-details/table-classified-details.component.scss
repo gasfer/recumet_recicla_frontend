@@ -1,0 +1,6 @@
+:host { display: block; min-width: 0; }
+.classified-remove { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+.classified-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0.5rem; }
+.classified-product { min-width: 180px; }
+:host ::ng-deep .classified-number .p-inputnumber-input { height: 36px; width: 7rem; min-width: 0; font-size: 0.84rem; }
+:host ::ng-deep .classified-number .p-inputnumber-button { height: 18px; }

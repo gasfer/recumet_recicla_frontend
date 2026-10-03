@@ -36,9 +36,9 @@
                     placeholder="0"
                     [min]="0"
                     [max]="99999999999999"
-                    [inputId]="product.id"
+                    [inputId]="'purchase-quantity-' + product.id"
                     [(ngModel)]="product.quantity"
-                    (onInput)="updateQuantityProduct($event, product)" class="app-u-height-38px-3b84911">
+                    (onInput)="updateQuantityProduct($event, product)" class="erp-input purchase-number">
                 </p-inputNumber>
             </td>
             <td class="text-center">
@@ -54,10 +54,10 @@
                     placeholder="0.00"
                     [min]="0"
                     [max]="99999999999999"
-                    [inputId]="product.id"
+                    [inputId]="'purchase-cost-' + product.id"
                     [(ngModel)]="product.costo"
                     (dblclick)="openModalUpdateMontoSus($event,product)"
-                    (onInput)="updateCostProduct($event, product)" class="app-u-height-38px-3b84911">
+                    (onInput)="updateCostProduct($event, product)" class="erp-input purchase-number">
                 </p-inputNumber>
             </td>
             <td class="app-u-min-width-110px-365391b app-u-max-width-150px-7eba571 fw-bold text-slate-800">
@@ -66,9 +66,8 @@
             <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
                 <button type="button" aria-label="Eliminar"
                     (click)="deleteProductForDetailShopping(product.id)"
-                    class="btn btn-sm btn-outline-danger rounded-circle p-1"
-                    pTooltip="Quitar de la lista" tooltipPosition="top"
-                    style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">
+                    class="btn btn-sm btn-outline-danger rounded-circle p-1 purchase-remove"
+                    pTooltip="Quitar de la lista" tooltipPosition="top">
                     <i class="fa-regular fa-trash-can"></i>
                 </button>
             </td>
@@ -85,6 +84,7 @@
         </tr>
         <tr>
             <td colspan="5" class="text-end bg-white py-2">
+                <div class="purchase-actions">
                 <p-button
                     (click)="clearDetailShopping()"
                     icon="fa-solid fa-ban"
@@ -92,11 +92,12 @@
                     styleClass="p-button-sm p-button-outlined p-button-danger p-button-rounded">
                 </p-button>
                 <p-button
-                    styleClass="p-button-sm p-button-rounded p-button-success ms-2"
+                    styleClass="p-button-sm p-button-rounded p-button-success"
                     label="Confirmar Compra"
                     (click)="confirmInput()"
                     icon="fa-solid fa-floppy-disk">
                 </p-button>
+                </div>
             </td>
         </tr>
     </ng-template>

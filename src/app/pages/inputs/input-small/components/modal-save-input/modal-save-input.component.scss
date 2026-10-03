@@ -1,0 +1,26 @@
+.purchase-save-form .erp-field { min-width: 0; }
+.purchase-save-form .erp-section { padding: 0.75rem; }
+.purchase-save-form .purchase-reception { background: #ecfdf5; border-color: #d1fae5; }
+.purchase-save-form .purchase-payment { background: #eff6ff; border-color: #dbeafe; }
+.purchase-save-form .purchase-total { background: #ecfdf5; border-color: #a7f3d0; }
+.purchase-save-form textarea { resize: vertical; min-height: 72px; font-size: 0.84rem; }
+.purchase-save-form .purchase-attachment { flex-wrap: wrap; }
+.purchase-save-form .purchase-attachment-name { overflow-wrap: anywhere; min-width: 0; }
+.purchase-save-form .purchase-section-grid { grid-template-columns: minmax(0, 1fr); }
+
+:host ::ng-deep .purchase-save-form .p-inputnumber,
+:host ::ng-deep .purchase-save-form .p-dropdown,
+:host ::ng-deep .purchase-save-form .p-calendar { width: 100%; }
+:host ::ng-deep .purchase-save-form .p-inputnumber-input { width: 100%; min-width: 0; }
+:host ::ng-deep .purchase-save-form .p-inputnumber-button { height: 36px; }
+
+@media (max-width: 599px) {
+  .purchase-save-form .erp-col-2 { grid-column: auto; }
+}
+@media (min-width: 768px) {
+  .purchase-save-form .purchase-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1200px) {
+  .purchase-save-form .purchase-section-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .purchase-save-form .purchase-section-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}

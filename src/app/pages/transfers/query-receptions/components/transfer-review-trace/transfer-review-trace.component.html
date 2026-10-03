@@ -67,11 +67,11 @@
                   <td class="text-center">{{ detail.quantity_normal_received | number:decimalFormat.digitsInfo }}</td>
                   <td class="text-center" [class.text-danger]="historicalItem.difference_type === 'FALTANTE'" [class.text-warning]="historicalItem.difference_type === 'EXCEDENTE'">
                     <strong>{{ historicalTypeLabel(historicalItem.difference_type) }}</strong>
-                    <small *ngIf="historicalItem.difference_expected">{{ historicalItem.difference_expected | number:decimalFormat.digitsInfo }} kg</small>
+                    <small *ngIf="historicalItem.difference_expected">{{ historicalItem.difference_expected | number:decimalFormat.diagnosticDigitsInfo }} kg</small>
                   </td>
                   <td class="text-center">
                     <ng-container *ngIf="historicalItem.difference_type === 'FALTANTE'; else historicalRetained">
-                      <strong class="text-danger">Faltante: {{ historicalItem.difference_expected | number:decimalFormat.digitsInfo }}</strong>
+                      <strong class="text-danger">Faltante: {{ historicalItem.difference_expected | number:decimalFormat.diagnosticDigitsInfo }}</strong>
                       <small class="d-block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small>
                     </ng-container>
                     <ng-template #historicalRetained>{{ detail.quantity_held | number:decimalFormat.digitsInfo }} / {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</ng-template>
@@ -93,7 +93,7 @@
                 </td></tr>
               </ng-container>
               <tr *ngIf="!historicalItemForProduct(trace.historical_difference_reconciliation, detail.product.id)">
-                <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td><td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:decimalFormat.digitsInfo) }}</td><td class="text-center">{{ detail.quantity_normal_received | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ detail.quantity_blocked_difference | number:decimalFormat.digitsInfo }}</td><td class="text-center"><ng-container *ngIf="detail.is_shortage; else standardRetained"><strong class="text-danger">Faltante: {{ detail.quantity_shortage_pending | number:decimalFormat.digitsInfo }}</strong><small class="d-block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small></ng-container><ng-template #standardRetained>{{ detail.quantity_held | number:decimalFormat.digitsInfo }} / {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</ng-template></td><td class="text-center">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : 'Contabilizado' }}</td><td>{{ detail.observation || '—' }}</td>
+                <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td><td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:decimalFormat.digitsInfo) }}</td><td class="text-center">{{ detail.quantity_normal_received | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ detail.quantity_blocked_difference | number:decimalFormat.diagnosticDigitsInfo }}</td><td class="text-center"><ng-container *ngIf="detail.is_shortage; else standardRetained"><strong class="text-danger">Faltante: {{ detail.quantity_shortage_pending | number:decimalFormat.diagnosticDigitsInfo }}</strong><small class="d-block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small></ng-container><ng-template #standardRetained>{{ detail.quantity_held | number:decimalFormat.digitsInfo }} / {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</ng-template></td><td class="text-center">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : 'Contabilizado' }}</td><td>{{ detail.observation || '—' }}</td>
               </tr>
             </ng-container>
           </tbody>
@@ -479,10 +479,10 @@
                         Cantidad a conciliar
                         <p-inputNumber
                           formControlName="quantity"
-                          [min]="0.0001"
+                          [min]="decimalFormat.minimumQuantity"
                           [max]="remainingQuantity(detail)"
-                          [minFractionDigits]="4"
-                          [maxFractionDigits]="4">
+                          [minFractionDigits]="decimalFormat.decimals()"
+                          [maxFractionDigits]="decimalFormat.decimals()">
                         </p-inputNumber>
                       </label>
                     </div>
@@ -553,6 +553,19 @@
             <div>
               <strong>{{ eventLabel(event.event_type) }}</strong>
               <p>{{ event.description }}</p>
+              <div *ngIf="event.metadata?.integrity?.length" class="table-responsive">
+                <table class="table table-sm erp-operational-table" aria-label="Saldos del efecto de inventario">
+                  <caption>Un único efecto de inventario, comprobado en sus tres representaciones</caption>
+                  <thead><tr><th>Producto / ubicación</th><th>Stock</th><th>Kardex detalle</th><th>Kardex físico</th><th>Diferencia</th></tr></thead>
+                  <tbody><tr *ngFor="let balance of event.metadata?.integrity">
+                    <td>{{ balance.productId }} · {{ balance.sucursalId }} / {{ balance.storageId }}</td>
+                    <td>{{ decimalFormat.formatDiagnostic(balance.physicalStock) }}</td>
+                    <td>{{ decimalFormat.formatDiagnostic(balance.kardexBalance) }}</td>
+                    <td>{{ decimalFormat.formatDiagnostic(balance.physicalKardexBalance) }}</td>
+                    <td [class.text-danger]="!balance.consistent">{{ decimalFormat.formatDiagnostic(balance.difference) }}</td>
+                  </tr></tbody>
+                </table>
+              </div>
               <div *ngIf="event.metadata" class="trace-event-reference">
                 <span *ngIf="event.metadata.inventory_effect === 'NONE' || event.metadata.inventory_effect === 'VERIFIED_EXISTING_OPERATION'">{{ event.metadata.inventory_effect === 'VERIFIED_EXISTING_OPERATION' ? 'Operación existente verificada' : 'Sin ajuste de inventario' }}</span>
                 <span *ngIf="event.metadata.reason_code">Motivo: {{ reasonLabel(event.metadata.reason_code || '') }}</span>

@@ -241,6 +241,7 @@ export interface TransferTraceability {
       event_type: string;
       description: string;
       metadata?: {
+        integrity?: Array<{ productId: number; sucursalId: number; storageId: number; physicalStock: string; kardexBalance: string; physicalKardexBalance: string; difference: string; physicalDifference: string; consistent: boolean }>;
         action_type?: string;
         detail_id?: number;
         reference_type?: string;
@@ -280,6 +281,10 @@ interface OpenReviewContext {
 }
 
 const baseUrl = environment.base_url;
+
+export const canonicalToleranceDecision = (value: string | undefined): string | undefined => ({
+  ACCEPTED: 'ACEPTADO', REQUIRES_REVIEW: 'REQUIERE_CONCILIACION', UNDETERMINED: 'NO_EVALUABLE',
+} as Record<string, string>)[value || ''] || value;
 
 @Injectable({ providedIn: 'root' })
 export class TransferReviewService {
@@ -371,6 +376,9 @@ export class TransferReviewService {
       finalize(() => this.traceLoading.set(false)),
     ).subscribe({
       next: ({ traceability }) => {
+        traceability.detailsTransfers = traceability.detailsTransfers.map((detail) => ({
+          ...detail, tolerance_decision: canonicalToleranceDecision(detail.tolerance_decision),
+        }));
         this.traceability.set(traceability);
         setTimeout(() => {
           const content = document.querySelector('.transfer-review-trace-dialog .p-dialog-content');
