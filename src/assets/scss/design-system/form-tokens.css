@@ -9,8 +9,10 @@
    ---------------------------------------------------------- */
 :root {
   /* Paleta principal */
-  --color-primary:       #059669;  /* Emerald 600 */
-  --color-primary-hover: #047857;  /* Emerald 700 */
+  --color-primary:       #00a96b;  /* Verde RECUMET */
+  --color-primary-rgb:   0 169 107;
+  --color-primary-hover-rgb: 0 140 89;
+  --color-primary-hover: #008c59;  /* Verde RECUMET al pasar el cursor */
   --color-primary-light: #ecfdf5;  /* Emerald 50 */
 
   /* Superficies */
@@ -33,7 +35,7 @@
   --color-danger-light:  #FEE2E2;  /* Red 100 */
   --color-warning:       #F59E0B;  /* Amber 500 */
   --color-warning-light: #FEF3C7;  /* Amber 100 */
-  --color-success:       #10B981;  /* Emerald 500 */
+  --color-success:       var(--color-primary);
   --color-success-light: #D1FAE5;  /* Emerald 100 */
   --color-info:          #2563EB;  /* Blue 600 */
   --color-info-light:    #DBEAFE;  /* Blue 100 */

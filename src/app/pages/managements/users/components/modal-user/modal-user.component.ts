@@ -4,10 +4,12 @@ import { UsersService } from '../../../services/users.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Subscription } from 'rxjs';
+import { USER_ROLE_OPTIONS, userRolePresentation } from 'src/app/core/constants/user-role.constants';
 
 @Component({
   selector: 'app-modal-user',
-  templateUrl: './modal-user.component.html'
+  templateUrl: './modal-user.component.html',
+  styleUrls: ['./modal-user.component.scss'],
 })
 export class ModalUserComponent implements OnInit, OnDestroy {
   validatorsService = inject( ValidatorsService );
@@ -15,11 +17,8 @@ export class ModalUserComponent implements OnInit, OnDestroy {
   fb                = inject( FormBuilder );
   loading           = signal(false);
   changePassword    = signal(false);
-  roles = signal([
-    { name: 'ADMINISTRADOR/A', code: 'ADMINISTRADOR'},
-    { name: 'ENCARGADO/A', code: 'ENCARGADO'},
-    { name: 'OPERADOR/A', code: 'OPERADOR'},
-  ]);
+  roles = signal(USER_ROLE_OPTIONS);
+  readonly rolePresentation = userRolePresentation;
   sex = signal([
     { name: 'MASCULINO', code: 'MASCULINO'},
     { name: 'FEMENINO', code: 'FEMENINO'},
@@ -63,6 +62,7 @@ export class ModalUserComponent implements OnInit, OnDestroy {
   }
   
   newUser() {
+    if (this.loading()) return;
     this.userForm.markAllAsTouched();
     if(!this.userForm.valid) return;
     this.loading.set(true);
@@ -84,6 +84,7 @@ export class ModalUserComponent implements OnInit, OnDestroy {
   }
 
   editUser() {
+    if (this.loading()) return;
     this.userForm.markAllAsTouched();
     if(!this.userForm.valid) return;
     this.loading.set(true);

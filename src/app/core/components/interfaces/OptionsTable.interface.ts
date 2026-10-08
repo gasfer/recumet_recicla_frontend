@@ -40,6 +40,7 @@ export interface ColsTable {
     isDocument?: boolean;
     isProviderIdentity?: boolean;
     isSucursalBadge?: boolean;
+    isUserRole?: boolean;
     activeSortable?: boolean;
     class?: string;
     tagColor?:Function;

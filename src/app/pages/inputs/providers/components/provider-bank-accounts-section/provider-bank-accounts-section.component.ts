@@ -8,7 +8,7 @@ interface SelectOption { label: string; value: string; }
   selector: 'app-provider-bank-accounts-section',
   template: `
     <div class="flex items-center justify-between mb-2.5">
-      <div class="text-xs font-bold text-cyan-900 uppercase"><i class="fa-solid fa-building-columns text-cyan-600"></i> Información bancaria de la sede</div>
+      <div class="text-xs font-bold text-cyan-900 uppercase"><i class="fa-solid fa-building-columns text-cyan-600"></i> {{ sectionNumber ? sectionNumber + '. ' : '' }}Información bancaria de la sede</div>
       <button type="button" class="btn btn-sm btn-outline-primary" (click)="add.emit()"><i class="fa-solid fa-plus"></i> Cuenta</button>
     </div>
     <div *ngFor="let account of accounts.controls; let i = index" [formGroup]="asGroup(account)" class="erp-form-grid cols-3 mb-2 p-2.5 bg-white rounded-lg border border-cyan-100 shadow-sm">
@@ -65,6 +65,7 @@ interface SelectOption { label: string; value: string; }
   `,
 })
 export class ProviderBankAccountsSectionComponent {
+  @Input() sectionNumber: number | null = null;
   @Input({ required: true }) accounts!: FormArray;
   @Input() banks: Bank[] = [];
   @Input() accountTypes: readonly SelectOption[] = [];
@@ -132,4 +133,3 @@ export class ProviderBankAccountsSectionComponent {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 }
-

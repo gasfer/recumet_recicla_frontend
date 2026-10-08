@@ -5,6 +5,7 @@ import { User } from '../../../interfaces/user.interface';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Permission } from '../../../interfaces/permissions.interfaces';
 import Swal from 'sweetalert2';
+import { userRolePresentation } from 'src/app/core/constants/user-role.constants';
 import {
   PRODUCT_ACCESS_MODULE_COLUMN_LABEL,
   PRODUCT_ACCESS_CONTEXT_OPTIONS,
@@ -41,6 +42,7 @@ export const updateAllowedCategoryTypes = (
   styles: []
 })
 export class ModalAssignPermissionsComponent implements OnInit, OnDestroy {
+  readonly rolePresentation = userRolePresentation;
   readonly productAccessRows = [...PRODUCT_ACCESS_CONTEXT_OPTIONS];
   readonly productCategoryTypes = [...PRODUCT_CATEGORY_TYPE_OPTIONS];
   readonly productAccessSectionTitle = PRODUCT_ACCESS_SECTION_TITLE;
@@ -77,6 +79,7 @@ permissionGroups = signal<PermissionGroup[]>([
     icon: 'fa-arrow-down-to-line',
     expanded: true,
     permissions: [
+      { id_user: null, module: "LISTA PROVEEDORES", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "CONSULTAR COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
       { id_user: null, module: "REPORTE COMPRAS", view: false, create: false, update: false, delete: false, reports: false, status: true },
@@ -299,14 +302,15 @@ ngOnInit(): void {
   }
 
   addPermission(permission: Permission) {
+    const listOnly = permission.module === 'LISTA PROVEEDORES';
     const permissionGroup = this.fb.group({
       id_user: [permission.id_user],
       module: [permission.module],
       view: [permission.view],
       create: [permission.create],
-      update: [permission.update],
-      delete: [permission.delete],
-      reports: [permission.reports],
+      update: [{ value: listOnly ? false : permission.update, disabled: listOnly }],
+      delete: [{ value: listOnly ? false : permission.delete, disabled: listOnly }],
+      reports: [{ value: listOnly ? false : permission.reports, disabled: listOnly }],
       allowed_category_types: [permission.allowed_category_types ?? []],
       status: [permission.status]
     });

@@ -32,6 +32,7 @@ export const PROVIDER_SERVICE_MODES: ProviderCatalogOption<ProviderServiceMode>[
   { label: 'Recojo por Recumet', value: 'PICKUP_BY_RECUMET' }, { label: 'Ambos', value: 'BOTH' },
 ];
 export const PROVIDER_ORIGIN_CHANNELS: ProviderCatalogOption<ProviderOriginChannel>[] = [
+  { label: 'Contacto directo', value: 'DIRECT_CONTACT' },
   { label: 'Puerta', value: 'DOOR' },
   { label: 'Buscado por Recumet', value: 'SEARCHED_BY_RECUMET' },
   { label: 'Ruteo / Visita', value: 'ROUTING_VISIT' },

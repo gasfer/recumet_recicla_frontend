@@ -10,8 +10,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'erp-primary':      '#059669',
-        'erp-primary-hover':'#047857',
+        'erp-primary':      'rgb(var(--color-primary-rgb) / <alpha-value>)',
+        'erp-primary-hover':'rgb(var(--color-primary-hover-rgb) / <alpha-value>)',
         'erp-surface':      '#ffffff',
         'erp-bg':           '#F1F5F9',
         'erp-border':       '#E2E8F0',
@@ -20,11 +20,11 @@ module.exports = {
         'erp-text-muted':   '#64748B',
         'erp-danger':       '#EF4444',
         'erp-warning':      '#F59E0B',
-        'erp-success':      '#10B981',
+        'erp-success':      'rgb(var(--color-primary-rgb) / <alpha-value>)',
         'erp-info':         '#2563EB',
         brand: {
-          emerald: '#059669',
-          'emerald-light': '#10B981',
+          emerald: 'rgb(var(--color-primary-rgb) / <alpha-value>)',
+          'emerald-light': 'rgb(var(--color-primary-rgb) / <alpha-value>)',
           navy: '#0b1324',
           'navy-card': '#111c35',
           'navy-light': '#1e293b',

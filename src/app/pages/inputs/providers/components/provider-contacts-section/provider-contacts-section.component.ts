@@ -6,13 +6,13 @@ import { FormArray, FormGroup } from '@angular/forms';
   template: `
     <div class="mt-3 border-t border-blue-100 pt-2">
       <div class="flex items-center justify-between mb-2">
-        <b class="text-xs text-blue-900">Contactos registrados por sede</b>
+        <b class="text-xs text-blue-900">{{ commercial ? 'Contactos comerciales' : 'Contactos registrados por sede' }}</b>
         <button type="button" class="btn btn-sm btn-outline-primary" (click)="add.emit()"><i class="fa-solid fa-plus"></i> Contacto</button>
       </div>
       <div *ngFor="let contact of contacts.controls; let i = index" [formGroup]="asGroup(contact)" class="erp-form-grid cols-4 mb-2 p-2 bg-white rounded border border-blue-100">
-        <div class="erp-field"><label class="erp-label required">Nombre completo</label><input pInputText formControlName="full_name" class="erp-input w-full"></div>
-        <div class="erp-field"><label class="erp-label required">Cargo / Área</label><input pInputText formControlName="position_area" class="erp-input w-full"></div>
-        <div class="erp-field"><label class="erp-label required">Celular</label><input pInputText formControlName="cellphone" class="erp-input w-full"></div>
+        <div class="erp-field"><label class="erp-label required">{{ commercial ? 'Nombre persona de contacto' : 'Nombre completo' }}</label><input pInputText formControlName="full_name" class="erp-input w-full"></div>
+        <div class="erp-field"><label class="erp-label" [class.required]="requireDetails">{{ commercial ? 'Área de trabajo o cargo' : 'Cargo / Área' }}</label><input pInputText formControlName="position_area" class="erp-input w-full"></div>
+        <div class="erp-field"><label class="erp-label" [class.required]="requireDetails">{{ commercial ? 'Celular persona de contacto' : 'Celular' }}</label><input pInputText formControlName="cellphone" class="erp-input w-full"></div>
         <div class="erp-field"><label class="erp-label">Correo</label><input pInputText formControlName="email" class="erp-input w-full"></div>
         <div class="erp-col-full flex items-center justify-between">
           <label class="text-xs"><input type="radio" name="mainContact" [checked]="contact.get('is_main_contact')?.value" (change)="main.emit(i)"> Contacto principal</label>
@@ -26,6 +26,8 @@ import { FormArray, FormGroup } from '@angular/forms';
 export class ProviderContactsSectionComponent {
   @Input({ required: true }) contacts!: FormArray;
   @Input() errors: string[] = [];
+  @Input() commercial = false;
+  @Input() requireDetails = true;
   @Output() add = new EventEmitter<void>();
   @Output() remove = new EventEmitter<number>();
   @Output() main = new EventEmitter<number>();

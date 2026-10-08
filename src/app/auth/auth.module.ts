@@ -8,6 +8,7 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { DialogAccessibilityModule } from '../core/directives/dialog-accessibility.module';
+import { CoreModule } from '../core/core.module';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { DialogAccessibilityModule } from '../core/directives/dialog-accessibili
   ],
   imports: [
     CommonModule,
+    CoreModule,
     FormsModule,
     ReactiveFormsModule,
     AuthRoutingModule,

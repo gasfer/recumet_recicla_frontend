@@ -1,147 +1,115 @@
-<p-dialog [header]="!userService.isEdit ? 'Registro Usuario' : 'Modificar Usuario'" [(visible)]="userService.showModal"
-    [modal]="true" [draggable]="false"
-    [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true" styleClass="app-dialog--sm">
-    <form [formGroup]="userForm">
-        <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="field">
-                    <label class="block mb-0">Nombre Completo<span class="text-danger">*</span>
-                    </label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="full_names" placeholder="EJ. DANIEL CASTRO QUIROGA"
-                        [class.ng-dirty]="validatorsService.inputValid('full_names',userForm)" class="text-uppercase"/>
-                    <small *ngIf="validatorsService.inputValid('full_names',userForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("full_names",userForm) }}
-                    </small>
-                </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">N. Carnet<span class="text-danger">*</span>
-                        </label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="number_document" placeholder="EJ. 93....4"
-                            [class.ng-dirty]="validatorsService.inputValid('number_document',userForm)" class="text-uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('number_document',userForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("number_document",userForm) }}
-                        </small>
-                    </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Celular<span class="text-danger">*</span>
-                        </label>
-                        <input
-                            type="number"
-                            pInputText
-                            placeholder="EJ. 79....03"
-                            formControlName="cellphone"
-                            pKeyFilter="int"
-                            [class.ng-dirty]="validatorsService.inputValid('cellphone',userForm)"
-                        />
-                        <small *ngIf="validatorsService.inputValid('cellphone',userForm)" class="p-error block">
-                            {{ 'Celular no valido' }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Sex<span class="text-danger">*</span>
-                        </label>
-                        <p-dropdown [options]="sex()"
-                          placeholder="Selecciona un sex"
-                          optionLabel="name"
-                          optionValue="code"
-                          appendTo="body"
-                          formControlName="sex"
-                          [class.ng-dirty]="validatorsService.inputValid('sex',userForm)"
-                        >
-                        </p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('sex',userForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("sex",userForm) }}
-                        </small>
-                    </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Posición<span class="text-danger">*</span>
-                        </label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="position" placeholder="ALMACENERO"
-                            [class.ng-dirty]="validatorsService.inputValid('position',userForm)" class="text-uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('position',userForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("position",userForm) }}
-                        </small>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Correo<span class="text-danger">*</span>
-                        </label>
-                        <input type="text" pInputText
-                            formControlName="email"
-                            [class.ng-dirty]="validatorsService.inputValid('email',userForm)" />
-                        <small *ngIf="validatorsService.inputValid('email',userForm)" class="p-error block">
-                            {{ 'Correo no valido' }}
-                        </small>
-                    </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Contraseña<span *ngIf="!userService.isEdit || changePassword()" class="text-danger">*</span>
-                        </label>
-                        <p-password  [toggleMask]="true"
-                                    formControlName="password"
-                                    [class.ng-dirty]="validatorsService.inputValid('password',userForm)"
-                        ></p-password>
-                        <small *ngIf="validatorsService.inputValid('password',userForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("password",userForm) }}
-                        </small>
-                        <div *ngIf="userService.isEdit" class="mt-2 flex align-items-center gap-2">
-                            <p-inputSwitch
-                                [ngModel]="changePassword()"
-                                [ngModelOptions]="{standalone: true}"
-                                (onChange)="togglePasswordChange($event.checked)">
-                            </p-inputSwitch>
-                            <label>Cambiar contraseña</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Role<span class="text-danger">*</span>
-                        </label>
-                        <p-dropdown [options]="roles()"
-                            placeholder="Selecciona un rol"
-                            optionLabel="name"
-                            optionValue="code"
-                            appendTo="body"
-                            formControlName="role"
-                            [class.ng-dirty]="validatorsService.inputValid('role',userForm)"
-                        ></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('role',userForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("role",userForm) }}
-                        </small>
-                    </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <div class="row mt-1 ">
-                            <label class="block">Estado:<span class="text-danger">*</span></label>
-                        </div>
-                        <div class="row mt-0">
-                            <div class="col-3">
-                                <p-inputSwitch formControlName="status"></p-inputSwitch>
-                            </div>
-                            <div class="col">
-                                <p-tag  [rounded]="true"
-                                        [icon]="userForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                                        [styleClass]="userForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
-                                        [value]="userForm.get('status')!.value ? 'Activo' : 'Inactivo'">
-                                </p-tag>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<p-dialog [header]="userService.isEdit ? 'Modificar usuario' : 'Registrar usuario'"
+  [(visible)]="userService.showModal" [modal]="true" [draggable]="false" [resizable]="false"
+  (onHide)="resetModal()" [dismissableMask]="!loading()" styleClass="app-dialog--md erp-operational-dialog user-editor-dialog">
+  <form [formGroup]="userForm" class="user-editor-form p-fluid" (ngSubmit)="userService.isEdit ? editUser() : newUser()">
+    <div class="flex items-center gap-2 mb-3 p-2.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 text-xs">
+      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+      <span>Los campos marcados con <b>*</b> son obligatorios.</span>
+    </div>
+    <div *ngIf="userService.isEdit" class="flex items-center gap-2 mb-3 p-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-800 text-xs">
+      <i class="fa-solid fa-user-pen" aria-hidden="true"></i>
+      <span>Modificando usuario: <b>{{ userForm.get('full_names')?.value }}</b></span>
+    </div>
+    <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70 mb-3" aria-labelledby="user-identity-title">
+      <h3 id="user-identity-title" class="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase mb-3">
+        <i class="fa-solid fa-id-card" aria-hidden="true"></i> Datos personales
+      </h3>
+      <div class="erp-form-grid">
+        <div class="erp-field erp-col-full">
+          <label for="user-full-name" class="erp-label required">Nombre completo</label>
+          <input id="user-full-name" pInputText class="erp-input text-uppercase w-full" formControlName="full_names" autocomplete="name"
+            placeholder="Ej. Daniel Castro Quiroga" [pKeyFilter]="validatorsService.expRegValidInput" [class.ng-dirty]="validatorsService.inputValid('full_names',userForm)">
+          <small *ngIf="validatorsService.inputValid('full_names',userForm)" class="p-error">{{ validatorsService.inputValidMessage('full_names',userForm) }}</small>
         </div>
-    </form>
-    <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ? (userService.isEdit ? editUser() : newUser()) : null" styleClass="p-button-sm p-button-rounded"
-            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
-        <p-button (click)="userService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
-    </ng-template>
+        <div class="erp-field">
+          <label for="user-document" class="erp-label required">Carnet de identidad</label>
+          <input id="user-document" pInputText class="erp-input w-full" formControlName="number_document" placeholder="Número de documento"
+            [pKeyFilter]="validatorsService.expRegValidInput" [class.ng-dirty]="validatorsService.inputValid('number_document',userForm)">
+          <small *ngIf="validatorsService.inputValid('number_document',userForm)" class="p-error">{{ validatorsService.inputValidMessage('number_document',userForm) }}</small>
+        </div>
+        <div class="erp-field">
+          <label for="user-cellphone" class="erp-label required">Celular</label>
+          <input id="user-cellphone" type="tel" inputmode="numeric" pInputText pKeyFilter="int" class="erp-input w-full" formControlName="cellphone"
+            autocomplete="tel" placeholder="Ej. 70000000" [class.ng-dirty]="validatorsService.inputValid('cellphone',userForm)">
+          <small *ngIf="validatorsService.inputValid('cellphone',userForm)" class="p-error">Ingresa un celular válido.</small>
+        </div>
+        <div class="erp-field">
+          <label for="user-sex" class="erp-label required">Sexo</label>
+          <p-dropdown inputId="user-sex" [options]="sex()" optionLabel="name" optionValue="code" appendTo="body" formControlName="sex"
+            placeholder="Selecciona una opción" [class.ng-dirty]="validatorsService.inputValid('sex',userForm)"></p-dropdown>
+          <small *ngIf="validatorsService.inputValid('sex',userForm)" class="p-error">{{ validatorsService.inputValidMessage('sex',userForm) }}</small>
+        </div>
+        <div class="erp-field">
+          <label for="user-position" class="erp-label required">Cargo / Posición</label>
+          <input id="user-position" pInputText class="erp-input text-uppercase w-full" formControlName="position" placeholder="Ej. Auxiliar contable"
+            [pKeyFilter]="validatorsService.expRegValidInput" [class.ng-dirty]="validatorsService.inputValid('position',userForm)">
+          <small *ngIf="validatorsService.inputValid('position',userForm)" class="p-error">{{ validatorsService.inputValidMessage('position',userForm) }}</small>
+        </div>
+      </div>
+    </section>
+    <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40 mb-3" aria-labelledby="user-security-title">
+      <h3 id="user-security-title" class="flex items-center gap-2 text-xs font-bold text-blue-800 uppercase mb-3">
+        <i class="fa-solid fa-lock" aria-hidden="true"></i> Acceso y seguridad
+      </h3>
+      <div class="erp-form-grid">
+        <div class="erp-field">
+          <label for="user-email" class="erp-label required">Correo electrónico</label>
+          <input id="user-email" type="email" pInputText class="erp-input w-full" formControlName="email" autocomplete="username" placeholder="nombre@empresa.com"
+            [class.ng-dirty]="validatorsService.inputValid('email',userForm)">
+          <small *ngIf="validatorsService.inputValid('email',userForm)" class="p-error">Ingresa un correo válido.</small>
+        </div>
+        <div class="erp-field">
+          <label for="user-password" class="erp-label" [class.required]="!userService.isEdit || changePassword()">Contraseña</label>
+          <p-password inputId="user-password" [toggleMask]="true" [feedback]="false" autocomplete="new-password" formControlName="password"
+            placeholder="Mínimo 8 caracteres" [class.ng-dirty]="validatorsService.inputValid('password',userForm)"></p-password>
+          <small *ngIf="validatorsService.inputValid('password',userForm)" class="p-error">{{ validatorsService.inputValidMessage('password',userForm) }}</small>
+          <div *ngIf="userService.isEdit" class="flex items-center gap-2 mt-2 text-xs text-slate-600">
+            <p-inputSwitch inputId="user-change-password" [ngModel]="changePassword()" [ngModelOptions]="{standalone: true}"
+              (onChange)="togglePasswordChange($event.checked)"></p-inputSwitch>
+            <label for="user-change-password" class="mb-0">Cambiar contraseña</label>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40" aria-labelledby="user-role-title">
+      <h3 id="user-role-title" class="flex items-center gap-2 text-xs font-bold text-emerald-800 uppercase mb-3">
+        <i class="fa-solid fa-user-shield" aria-hidden="true"></i> Rol y estado
+      </h3>
+      <div class="erp-form-grid">
+        <div class="erp-field erp-col-full">
+          <label for="user-role" class="erp-label required">Rol del usuario</label>
+          <p-dropdown inputId="user-role" [options]="roles()" optionLabel="name" optionValue="code" appendTo="body" formControlName="role"
+            panelStyleClass="user-role-options" placeholder="Selecciona un rol" [class.ng-dirty]="validatorsService.inputValid('role',userForm)">
+            <ng-template pTemplate="item" let-role>
+              <span class="user-role-chip inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs border" [ngClass]="rolePresentation(role.code).classes">
+                <i [class]="rolePresentation(role.code).icon" aria-hidden="true"></i>{{ rolePresentation(role.code).label }}
+              </span>
+            </ng-template>
+            <ng-template pTemplate="selectedItem" let-role>
+              <span class="user-role-chip inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs border" [ngClass]="rolePresentation(role.code).classes">
+                <i [class]="rolePresentation(role.code).icon" aria-hidden="true"></i>{{ rolePresentation(role.code).label }}
+              </span>
+            </ng-template>
+          </p-dropdown>
+          <small *ngIf="validatorsService.inputValid('role',userForm)" class="p-error">{{ validatorsService.inputValidMessage('role',userForm) }}</small>
+          <small class="text-xs text-slate-500">Los permisos, sucursales y turnos se asignan desde el listado de usuarios.</small>
+        </div>
+        <div class="erp-field erp-col-full">
+          <label for="user-status" class="erp-label">Estado de la cuenta</label>
+          <div class="flex items-center gap-3">
+            <p-inputSwitch inputId="user-status" formControlName="status"></p-inputSwitch>
+            <p-tag [rounded]="true" [icon]="userForm.get('status')?.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-pause'"
+              [styleClass]="userForm.get('status')?.value ? 'app-status-active' : 'app-status-inactive'"
+              [value]="userForm.get('status')?.value ? 'Activo' : 'Inactivo'"></p-tag>
+          </div>
+        </div>
+      </div>
+    </section>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button (click)="userService.isEdit ? editUser() : newUser()" [disabled]="loading()" [loading]="loading()"
+      styleClass="p-button-sm p-button-rounded p-button-success" [label]="userService.isEdit ? 'Guardar cambios' : 'Crear usuario'" icon="fa-solid fa-floppy-disk"></p-button>
+    <p-button (click)="userService.showModal = false" [disabled]="loading()" label="Cancelar" icon="fa-solid fa-xmark"
+      styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+  </ng-template>
 </p-dialog>

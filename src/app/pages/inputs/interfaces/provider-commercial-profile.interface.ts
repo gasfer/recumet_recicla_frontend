@@ -91,6 +91,7 @@ export interface ProviderSiteProfile {
   number_document: string;
   cellphone?: string | null;
   frequency: ProviderFrequency;
+  frequency_mode?: string;
   service_mode: ProviderServiceMode;
   status: boolean;
   location: ProviderLocationProfile;
@@ -100,6 +101,7 @@ export interface ProviderSiteProfile {
 }
 
 export interface ProviderCompanyProfile {
+  documents?: { document_type: string; original_name: string }[];
   id?: number;
   full_names: string;
   commercial_name?: string | null;

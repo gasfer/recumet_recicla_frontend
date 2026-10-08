@@ -77,6 +77,12 @@ export class TotalStockRecumetComponent implements OnInit {
         this.downloadConsolidatedExcelReport();
       },
     },
+    {
+      label: 'Reporte compras x sucursal',
+      icon: 'fa-regular fa-file-excel',
+      iconStyle: { color: '#00A96B' },
+      command: () => this.downloadConsolidatedExcelReport(true),
+    },
   ];
 
   title = signal('CONSOLIDADO DE STOCK (MP Y PT) RECUMET');
@@ -485,18 +491,18 @@ export class TotalStockRecumetComponent implements OnInit {
     return moment(dates).format('YYYY-MM-DD');
   }
 
-  downloadConsolidatedExcelReport(): void {
+  downloadConsolidatedExcelReport(purchasesByBranch = false): void {
     this.formReport.markAllAsTouched();
     if (!this.formReport.valid) return;
     this.formParamsByForm();
     Swal.fire({
       title: 'Generando Reporte!',
-      html: `Construyendo consolidado de inventario...`,
+      html: purchasesByBranch ? 'Construyendo reporte compras x sucursal...' : 'Construyendo consolidado de inventario...',
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
         this.kardexService
-          .getReportExcelConsolidatedTotalStock(
+          [purchasesByBranch ? 'getReportExcelPurchasesByBranch' : 'getReportExcelConsolidatedTotalStock'](
             this.paramsSearch(),
             this.type(),
             this.query(),
@@ -509,7 +515,7 @@ export class TotalStockRecumetComponent implements OnInit {
               const anchor = document.createElement('a');
               anchor.href = fileURL;
               const datePart = this.getDatePartForFilename();
-              anchor.download = `consolidado_inventario_${datePart}.xlsx`;
+              anchor.download = `${purchasesByBranch ? 'reporte_compras_x_sucursal' : 'consolidado_inventario'}_${datePart}.xlsx`;
               document.body.appendChild(anchor);
               anchor.click();
               document.body.removeChild(anchor);
@@ -521,7 +527,7 @@ export class TotalStockRecumetComponent implements OnInit {
               Swal.fire({
                 icon: 'error',
                 title: 'Error al generar reporte',
-                text: err?.error?.errors?.[0]?.msg || 'Ocurrió un error al generar el consolidado de inventario',
+                text: err?.error?.errors?.[0]?.msg || (purchasesByBranch ? 'Ocurrió un error al generar el reporte de compras por sucursal' : 'Ocurrió un error al generar el consolidado de inventario'),
               });
             },
           });

@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { User, AssignPermission } from 'src/app/auth/auth.interface';
 import { permissionModuleLabel } from 'src/app/core/constants/permission-presentation.constants';
 import Swal from 'sweetalert2';
+import { userRolePresentation } from 'src/app/core/constants/user-role.constants';
 
 export interface ReadonlyPermissionGroup {
   name: string;
@@ -17,6 +18,7 @@ export interface ReadonlyPermissionGroup {
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
+  readonly rolePresentation = userRolePresentation;
   activeTab = signal<'general' | 'security' | 'assignments'>('assignments');
   loading = signal(false);
   savingProfile = signal(false);

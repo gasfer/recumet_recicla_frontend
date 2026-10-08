@@ -1,0 +1,163 @@
+<aside class="provider-filter-panel rounded-xl shadow-sm p-3.5 flex flex-col gap-3.5">
+  <!-- Filter Header -->
+  <div class="provider-filter-heading flex items-center justify-between">
+    <div class="flex items-center gap-2 text-slate-800">
+      <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-sm font-bold">
+        <i class="fa-solid fa-filter"></i>
+      </div>
+      <h2 class="font-bold text-sm text-white mb-0">Filtros Avanzados</h2>
+    </div>
+  </div>
+
+  <!-- Error / Loading -->
+  <div *ngIf="catalogLoading" class="p-3 text-center text-xs text-slate-500">
+    <i class="fa-solid fa-spinner fa-spin mr-1.5 text-emerald-600"></i>Cargando filtros del sistema...
+  </div>
+  <div *ngIf="error" class="p-2 rounded bg-rose-50 text-rose-700 border border-rose-200 text-xs flex items-center justify-between">
+    <span>{{ error }}</span>
+    <button *ngIf="!catalog" type="button" (click)="loadCatalogs()" class="btn btn-xs btn-outline-danger">Reintentar</button>
+  </div>
+
+  <!-- Form Body -->
+  <form *ngIf="catalog" [formGroup]="form" (ngSubmit)="apply()" class="flex flex-col gap-3">
+
+    <!-- 1. Identificación Rápida -->
+    <div class="flex flex-col gap-1">
+      <label class="text-[11px] uppercase font-bold tracking-wider text-emerald-800 flex items-center gap-1">
+        <i class="fa-solid fa-magnifying-glass text-emerald-600"></i> Identificación Rápida
+      </label>
+      <div class="relative flex items-center">
+        <input type="text" formControlName="query" (keyup.enter)="apply()"
+          placeholder="Nombre, CI o NIT..."
+          class="w-full h-9 px-3 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:bg-white focus:border-emerald-500 focus:outline-none transition-all shadow-inner" />
+      </div>
+    </div>
+
+    <!-- 2. Sucursales y Almacenes -->
+    <div class="flex flex-col gap-2 pt-1 border-t border-emerald-200">
+      <label class="text-[11px] uppercase font-bold tracking-wider text-emerald-800 flex items-center gap-1">
+        <i class="fa-solid fa-building text-emerald-600"></i> Sucursales y Almacenes
+      </label>
+      <div class="flex flex-col gap-1.5">
+        <div>
+          <span class="text-[11px] text-slate-500 block mb-0.5">Sucursales<span class="text-rose-500">*</span></span>
+          <p-multiSelect formControlName="id_sucursal" [options]="branchOptions" optionLabel="name" optionValue="id"
+            placeholder="Seleccione sucursales..." appendTo="body"
+            [filter]="true" filterBy="name" [showClear]="true" display="chip" styleClass="w-full text-xs"
+            (onChange)="onBranchChange()">
+          </p-multiSelect>
+        </div>
+        <div>
+          <span class="text-[11px] text-slate-500 block mb-0.5">Área / Almacén</span>
+          <p-multiSelect formControlName="id_storage" [options]="filteredStorages()" optionLabel="name" optionValue="id"
+            placeholder="Seleccione almacenes..." appendTo="body"
+            [filter]="true" filterBy="name" [showClear]="true" display="chip" styleClass="w-full text-xs"
+            (onChange)="apply()">
+          </p-multiSelect>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Período Operativo -->
+    <div class="flex flex-col gap-2 pt-1 border-t border-emerald-200">
+      <label class="text-[11px] uppercase font-bold tracking-wider text-emerald-800 flex items-center gap-1">
+        <i class="fa-solid fa-calendar-days text-emerald-600"></i> Período Operativo
+      </label>
+      <div class="flex flex-col gap-1.5">
+        <div>
+          <span class="text-[11px] text-slate-500 block mb-0.5">Rango temporal</span>
+          <p-dropdown formControlName="date_mode" [options]="modes" optionLabel="label" optionValue="value"
+            (onChange)="dateModeChanged(); apply()" styleClass="w-full text-xs" appendTo="body"></p-dropdown>
+        </div>
+        <div>
+          <span class="text-[11px] text-slate-500 block mb-0.5">Fecha de referencia</span>
+          <p-dropdown formControlName="date_basis" [options]="dateBasisOptions" optionLabel="label" optionValue="value"
+            (onChange)="apply()" styleClass="w-full text-xs" appendTo="body"></p-dropdown>
+        </div>
+        <div *ngIf="form.get('date_mode')?.value !== 'ALL'" class="grid grid-cols-2 gap-2 mt-0.5">
+          <div>
+            <span class="text-[11px] text-slate-500 block mb-0.5">{{ form.get('date_mode')?.value === 'RANGE' ? 'Desde' : 'Fecha' }}</span>
+            <input formControlName="date" [type]="form.get('date_mode')?.value === 'MONTH' ? 'month' : form.get('date_mode')?.value === 'YEAR' ? 'number' : 'date'"
+              class="w-full h-8 px-2 text-xs bg-slate-50 border border-slate-200 rounded text-slate-800 focus:bg-white focus:border-emerald-500 focus:outline-none" />
+          </div>
+          <div *ngIf="form.get('date_mode')?.value === 'RANGE'">
+            <span class="text-[11px] text-slate-500 block mb-0.5">Hasta</span>
+            <input formControlName="date_end" type="date"
+              class="w-full h-8 px-2 text-xs bg-slate-50 border border-slate-200 rounded text-slate-800 focus:bg-white focus:border-emerald-500 focus:outline-none" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Clasificación Material & Ubicación -->
+    <div class="flex flex-col gap-2 pt-1 border-t border-emerald-200">
+      <label class="text-[11px] uppercase font-bold tracking-wider text-emerald-800 flex items-center gap-1">
+        <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Clasificación Material
+      </label>
+      <div class="flex flex-col gap-1.5">
+        <div>
+          <span class="text-[11px] text-slate-500 block mb-0.5">Categorías</span>
+          <p-multiSelect formControlName="id_categories" [options]="categoryOptions" optionLabel="name" optionValue="id"
+            placeholder="Seleccione categorías..." appendTo="body"
+            [filter]="true" filterBy="name" [showClear]="true" display="chip" styleClass="w-full text-xs"
+            (onChange)="apply()">
+          </p-multiSelect>
+        </div>
+        <div>
+          <span class="text-[11px] text-slate-500 block mb-0.5">Productos</span>
+          <p-multiSelect formControlName="id_products" [options]="productOptions" optionLabel="name" optionValue="id"
+            placeholder="Seleccione productos..." appendTo="body"
+            [filter]="true" filterBy="name,cod" [showClear]="true" display="chip" styleClass="w-full text-xs"
+            (onChange)="apply()">
+            <ng-template let-product pTemplate="item">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-400 text-[11px] font-mono">{{ product.cod }}</span>
+                <span class="text-slate-300">|</span>
+                <span class="font-semibold text-slate-800 text-xs">{{ product.name }}</span>
+              </div>
+            </ng-template>
+          </p-multiSelect>
+        </div>
+        <div>
+          <span class="text-[11px] text-slate-500 block mb-0.5">Departamento / Región</span>
+          <p-dropdown formControlName="department" [options]="departmentOptions" optionLabel="label" optionValue="value"
+            [showClear]="true" [filter]="true" placeholder="Todos los departamentos" (onChange)="apply()"
+            styleClass="w-full text-xs" appendTo="body"></p-dropdown>
+        </div>
+        <div>
+          <span class="text-[11px] text-slate-500 block mb-1">Calificación Comercial / Tipo</span>
+          <div class="flex items-center gap-1 flex-wrap">
+            <button *ngFor="let g of grades" type="button" (click)="setTypeGrade(g.code)"
+              [class.bg-emerald-700]="isGradeSelected(g.code)"
+              [class.text-white]="isGradeSelected(g.code)"
+              [class.font-bold]="isGradeSelected(g.code)"
+              [class.shadow-sm]="isGradeSelected(g.code)"
+              [class.bg-slate-100]="!isGradeSelected(g.code)"
+              [class.text-slate-700]="!isGradeSelected(g.code)"
+              class="px-2 py-1 text-xs rounded border border-slate-200 hover:border-emerald-500 transition-all cursor-pointer">
+              {{ g.code }}
+            </button>
+            <button *ngIf="form.get('id_type_provider')?.value" type="button" (click)="form.patchValue({id_type_provider: null}); apply()"
+              class="px-2 py-1 text-xs rounded border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 transition-all cursor-pointer" title="Quitar calificación">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Acción de Filtro -->
+    <div class="flex flex-col gap-2 pt-2 border-t border-emerald-200">
+      <button type="submit" [disabled]="loading"
+        class="w-full h-9 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow transition-all flex items-center justify-center gap-2 cursor-pointer border-0">
+        <i class="fa-solid fa-check-double text-sm"></i>
+        <span>Aplicar Filtros</span>
+      </button>
+      <button type="button" (click)="clear()" [disabled]="loading"
+        class="w-full h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200">
+        <i class="fa-solid fa-rotate-left text-xs"></i>
+        <span>Restablecer Filtros</span>
+      </button>
+    </div>
+  </form>
+</aside>

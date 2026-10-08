@@ -9,6 +9,8 @@ import { NAVIGATION_DESTINATIONS as NAV, childPath, routeData } from 'src/app/co
 const breadcrumb = (title: string) => [{ title: 'Entradas' }, { title: 'Compras' }, { title, active: true }];
 
 export const INPUT_ROUTES: Routes = [
+  { path: childPath(NAV.providerList, '/inputs'), component: ProvidersComponent,
+    data: { ...routeData(NAV.providerList, breadcrumb(NAV.providerList.title)), providerList: true } },
   { path: childPath(NAV.providers, '/inputs'), component: ProvidersComponent,
     data: routeData(NAV.providers, breadcrumb(NAV.providers.title)) },
   { path: childPath(NAV.createPurchase, '/inputs'), component: InputSmallComponent,

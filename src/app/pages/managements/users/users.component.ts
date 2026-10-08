@@ -23,7 +23,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     { field: `full_names`, header: 'NOMBRE COMPLETO' , style:'min-width:300px;', tooltip: true  },
     { field: `cellphone`, header: 'CELULAR' , style:'min-width:150px;max-width:150px;',tooltip: true  },
     { field: `email`, header: 'CORREO' , style:'min-width:220px;max-width:250px;',tooltip: true  },
-    { field: `role`, header: 'ROLE' , style:'min-width:200px;',tooltip: true , },
+    { field: `role`, header: 'ROL' , style:'min-width:200px;', isUserRole: true },
     { 
       field: 'options', header: 'OPCIONES', style:'min-width:250px;max-width:250px', isButton:true,
     }

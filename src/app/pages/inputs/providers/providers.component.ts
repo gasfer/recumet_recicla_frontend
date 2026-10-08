@@ -2,8 +2,10 @@ import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/OptionsTable.interface';
 import { Provider, Providers } from '../interfaces/provider.interface';
+import { ProviderManagementQuery } from '../interfaces/provider-management.interface';
 import { ProvidersService } from '../services/providers.service';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
@@ -28,6 +30,23 @@ import {
   styleUrls: ['./providers.component.scss']
 })
 export class ProvidersComponent implements OnInit, OnDestroy {
+  private managementQuery: ProviderManagementQuery = {};
+  private managementReady = false;
+  private listRequest?: Subscription;
+  applyManagementFilters(query: ProviderManagementQuery) {
+    this.managementQuery = query;
+    this.managementReady = true;
+    this.query.set(''); this.type.set(''); this.page.set(1);
+    const selected = this.types().find((item: any) => String(item.id) === String(query['id_type_provider'] || ''));
+    this.formReport.patchValue({id_type_provider:selected || {code:'ALL',id:''}});
+    this.getAllAndSearchProviders(1, this.rows(), this.status());
+  }
+  private readonly route = inject(ActivatedRoute);
+  isProviderList(): boolean { return this.route.snapshot.data['providerList'] === true; }
+  canProviderAction(action: 'view' | 'create' | 'update' | 'delete'): boolean {
+    if (this.isProviderList() && (action === 'update' || action === 'delete')) return false;
+    return this.validatorsService.withPermission(this.isProviderList() ? 'LISTA PROVEEDORES' : 'PROVEEDORES', action);
+  }
   searchItems = signal<MenuItem[]>([
     { label: 'Activos',   icon: 'fa-solid fa-circle-check' ,
       iconStyle: { 'color': '#3B71CA'}, command: () => {
@@ -79,7 +98,66 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     {name: 'RANGO', code: 'RANGE'},
   ]);
 
-    providers = signal<Providers|undefined>(undefined);
+  providers = signal<Providers|undefined>(undefined);
+  activeTab = signal<'ACTIVOS' | 'INACTIVOS' | 'PENDIENTES'>('ACTIVOS');
+
+  setTab(tab: 'ACTIVOS' | 'INACTIVOS' | 'PENDIENTES') {
+    this.activeTab.set(tab);
+    this.type.set('');
+    this.query.set('');
+    this.page.set(1);
+    if (tab === 'ACTIVOS') {
+      this.estadoRegistro.set('');
+      this.status.set(true);
+      this.getAllAndSearchProviders(1, this.rows(), true);
+    } else if (tab === 'INACTIVOS') {
+      this.estadoRegistro.set('');
+      this.status.set(false);
+      this.getAllAndSearchProviders(1, this.rows(), false);
+    } else {
+      this.estadoRegistro.set('PENDIENTE');
+      this.status.set(true);
+      this.getAllAndSearchProviders(1, this.rows(), true);
+    }
+  }
+
+  totalPurchasesSum(): number {
+    const list = this.providers()?.data || [];
+    return list.reduce((acc, p) => acc + (Number((p as any).total_amount) || 0), 0);
+  }
+
+  totalPendingDebtSum(): number {
+    const list = this.providers()?.data || [];
+    return list.reduce((acc, p) => acc + (Number((p as any).saldo_cuentas_por_pagar) || 0), 0);
+  }
+
+  activeRatio(): number {
+    const list = this.providers()?.data || [];
+    if (!list.length) return 100;
+    const active = list.filter(p => p.status !== false).length;
+    return Math.round((active / list.length) * 100);
+  }
+
+  onQuickSort(sortKey: string) {
+    if (sortKey === 'amount') {
+      this.fieldSort.set('total_amount');
+      this.order.set('DESC');
+    } else if (sortKey === 'balance') {
+      this.fieldSort.set('saldo_cuentas_por_pagar');
+      this.order.set('DESC');
+    } else if (sortKey === 'last') {
+      this.fieldSort.set('date_last_input');
+      this.order.set('DESC');
+    } else if (sortKey === 'name') {
+      this.fieldSort.set('full_names');
+      this.order.set('ASC');
+    } else {
+      this.fieldSort.set('id');
+      this.order.set('DESC');
+    }
+    this.getAllAndSearchProviders(1, this.rows(), this.status());
+  }
+
   providerInfoVisible = signal(false);
   providerInfoLoading = signal(false);
   providerInfoTab = signal<'company' | 'branches' | 'summary'>('company');
@@ -190,40 +268,11 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   }
 
   showProviderInfo(provider: Provider) {
-    this.providerInfoTab.set('company');
-    this.selectedProvider.set(provider);
-    this.selectedCompanyProfile.set(null);
-    this.selectedInfoSiteId.set(provider.id);
-    this.providerInfoVisible.set(true);
-    this.providerInfoLoading.set(true);
-    this.infoFrequencyAnalysis.set(null);
-    this.loadInfoPurchases(provider.id);
-
-    this.providersService.getFrequencyAnalysis(provider.id).subscribe({
-      next: (res) => {
-        if (res.ok && res.analysis) this.infoFrequencyAnalysis.set(res.analysis);
-      }
-    });
-
-    this.providersService.getCommercialDetails(provider.id).subscribe({
-      next: ({ provider: details }) => {
-        this.selectedProvider.set({ ...provider, ...details });
-        const companyId = details.company?.id;
-        if (companyId) {
-          this.providersService.getCommercialCompany(companyId).subscribe({
-            next: ({ company }) => {
-              this.selectedCompanyProfile.set(company);
-              this.selectedInfoSiteId.set(provider.id);
-            },
-          });
-        }
-      },
-      error: () => {},
-      complete: () => this.providerInfoLoading.set(false),
-    });
+    this.providersService.isInfo = true;
+    this.providersService.isEdit = true;
+    this.providersService.editSubs.emit(provider);
+    this.providersService.showModal = true;
   }
-
-
   infoSites(): ProviderSiteProfile[] { return this.selectedCompanyProfile()?.operatingProviders || []; }
 
   selectedInfoSite(): ProviderSiteProfile | null {
@@ -274,21 +323,34 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   decimalLength     = signal(this.validatorsService.decimalLength());
   decimal           = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   ngOnInit(): void {
+    if (!this.isProviderList()) {
+      document.body.classList.add('app-sidebar-hidden');
+    }
     this.loadCommercialUsers();
     this.getAllTypes();
     this.save$ = this.providersService.save$.subscribe(resp => this.getAllAndSearchProviders(this.page(),this.rows(),this.status()));
   }
   ngOnDestroy(): void {
+    if (!this.isProviderList()) {
+      document.body.classList.remove('app-sidebar-hidden');
+    }
     this.save$.unsubscribe();
+    this.listRequest?.unsubscribe();
   }
 
 
   getAllAndSearchProviders(page: number, limit: number, status:boolean,type: string = '', query: string = '') {
+    if (!this.isProviderList() && !this.managementReady) return;
+    this.listRequest?.unsubscribe();
+    this.loading.set(true);
     if(!query) {this.loading.set(true);} //not loading in search
     this.status.set(status);
     this.cols.set(this.loadColsTableByType());
     const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
-    this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '', this.estadoRegistro()).subscribe({
+    const request = this.isProviderList()
+      ? this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '', this.estadoRegistro())
+      : this.providersService.getManagement({...this.managementQuery, page, limit, status, ...(query ? {type, query} : {}), field_sort:this.fieldSort(), order:this.order(), ...(this.estadoRegistro() ? {estado_registro:this.estadoRegistro()} : {})});
+    this.listRequest = request.subscribe({
       next: (resp) => {
         this.providers.set(resp.providers);
         this.providers()!.data.forEach((provider) => {
@@ -310,7 +372,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               label: '',
               icon: 'fa-solid fa-circle-info',
               tooltip: 'Más información',
-              class: 'p-button-rounded p-button-help p-button-sm ms-1',
+              class: 'p-button-rounded p-button-info p-button-outlined p-button-sm ms-1',
               eventClick: () => {
                 this.showProviderInfo(provider);
               }
@@ -318,7 +380,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
             {
               label:'',icon:'fas fa-edit',
               tooltip: 'Editar',
-              disabled: this.validatorsService.withPermission('PROVEEDORES','update'),
+              disabled: this.canProviderAction('update'),
               class:'p-button-rounded p-button-warning p-button-sm ms-1',
               eventClick: () => {
                 this.editShowModal(provider);
@@ -327,7 +389,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
             {
               label:'',icon:'fa-solid fa-trash-can',
               tooltip: 'Inactivar',
-              disabled: this.validatorsService.withPermission('PROVEEDORES','delete'),
+              disabled: this.canProviderAction('delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
               eventClick: () => {
                 this.updateStatus(provider,false);
@@ -338,7 +400,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               label: '',
               icon: 'fa-solid fa-circle-info',
               tooltip: 'Más información',
-              class: 'p-button-rounded p-button-help p-button-sm',
+              class: 'p-button-rounded p-button-info p-button-outlined p-button-sm',
               eventClick: () => {
                 this.showProviderInfo(provider);
               }
@@ -346,17 +408,21 @@ export class ProvidersComponent implements OnInit, OnDestroy {
             {
               label:'',icon:'fa-solid fa-circle-check',
               tooltip: 'Activar',
-              disabled: this.validatorsService.withPermission('PROVEEDORES','delete'),
+              disabled: this.canProviderAction('delete'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
                 this.updateStatus(provider,true);
               }
             },
           ] ;
+          provider.options = provider.options.filter(option => option.disabled !== false);
         });
       },
       complete: () =>  this.loading.set(false),
-      error: () => this.loading.set(false)
+      error: (error) => {
+        this.loading.set(false);
+        if (!this.isProviderList()) Swal.fire({icon:'error',title:'No se pudo consultar proveedores',text:error.error?.errors?.[0]?.msg || 'Intenta nuevamente.'});
+      }
     });
   }
   showTraceability(provider: Provider) {
@@ -393,6 +459,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   }
 
   updateStatus(provider: Provider,newStatus: boolean) {
+    if (!this.canProviderAction('delete')) return;
     if (!newStatus) {
       this.confirmProviderDeactivation(provider);
       return;
@@ -475,6 +542,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     let {field, order} = $sort;
     this.fieldSort.set(field);
     this.order.set(order);
+    if (!this.isProviderList()) this.getAllAndSearchProviders(1,this.rows(),this.status(),this.type(),this.query());
   }
 
   search($query:any) {
@@ -485,11 +553,15 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   }
 
   showModal() {
+    if (!this.canProviderAction('create')) return;
+    this.providersService.isInfo = false;
     this.providersService.isEdit = false;
     this.providersService.showModal = true;
   }
 
   editShowModal(provider:Provider) {
+    if (!this.canProviderAction('update')) return;
+    this.providersService.isInfo = false;
     this.providersService.isEdit = true;
     this.providersService.editSubs.emit(provider);
     this.providersService.showModal = true;
@@ -545,7 +617,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         isProviderIdentity: true,
       },
       { field: 'date_last_input', header: 'ULT. COMPRA', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true, isDate: true, isNotDateAndHour: true },
-      { field: 'total_products', header: 'COMPRAS [KG]', style:'min-width:100px;max-width:120px;', tooltip: true, isTag: true, field2: 'total_inputs', isDoubleValue: true,
+      { field: this.isProviderList() ? 'total_products' : 'total_amount', header: this.isProviderList() ? 'COMPRAS [KG]' : 'COMPRAS [BS] · PERÍODO', style:'min-width:150px;max-width:170px;', tooltip: true, isTag: true, field2: 'total_inputs', isDoubleValue: true,
         tagValue: (val: string) => val ? this.pipeNumber.transform(val, this.decimal()) : 0,
         tagColor: (val: string) => 'info',
         tagIcon: (val: string) => '',
@@ -563,7 +635,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   loadColsTableByType(): any[] {
     const columns = this.getDefaultColumns();
     const type = this.formReport.get('id_type_provider')?.value;
-    switch (type.code) {
+    switch (type?.code || 'ALL') {
       case 'A': case 'F':
         return [...columns,
           { field: 'number_document', header: 'NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },

@@ -134,6 +134,13 @@ getDailyKardex(page: number, limit: number, params: FormSearchKardex, type: stri
     });
   }
 
+  getReportExcelPurchasesByBranch(params: FormSearchKardex, type: string = '', query?: string, field_sort: string = 'product.cod', order: string = 'ASC') {
+    return this.http.get(`${base_url}/kardex/total-stock-recumet/excel-purchases-by-branch`, {
+      params: new HttpParams({ fromObject: { ...params, type, query: query || '', field_sort, order } }),
+      responseType: 'blob',
+    });
+  }
+
   //* Reportes Detalles */
   getReportPdf(params: FormSearchKardex, field_sort: string = 'id', order: string = 'DESC') {
     const url = `${base_url}/kardex/pdf?field_sort=${field_sort}&order=${order}`;

@@ -179,6 +179,7 @@ export interface MenuGroup {
 
       /* Tarjeta de Grupo / Cabecera Accordion */
       .group-accordion-card {
+        flex-shrink: 0;
         border-radius: 10px;
         background: #0e172b;
         border: 1px solid rgba(255, 255, 255, 0.05);
@@ -525,13 +526,13 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
         if (groupTitleMatch || itemLabelMatch) {
           matchingItems.push({
             ...item,
-            isExpanded: item.subItems && item.subItems.length > 0 ? true : item.isExpanded,
+            isExpanded: false,
           });
         } else if (matchingSubItems.length > 0) {
           matchingItems.push({
             ...item,
             subItems: matchingSubItems,
-            isExpanded: true,
+            isExpanded: false,
           });
         }
       }
@@ -539,12 +540,22 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
       if (matchingItems.length > 0) {
         filtered.push({
           ...group,
-          isOpen: true,
+          isOpen: group.isOpen,
           items: matchingItems,
         });
       }
     }
 
+    const openGroup = filtered.find((group) => group.isOpen && !group.directItem)
+      || filtered.find((group) => !group.directItem);
+    filtered.forEach((group) => {
+      group.isOpen = group === openGroup;
+      const expandedItem = group.items.find((item) => item.isExpanded)
+        || group.items.find((item) => this.hasItems(item));
+      group.items.forEach((item) => {
+        item.isExpanded = group.isOpen && item === expandedItem;
+      });
+    });
     this.filteredGroups = filtered;
   }
 
@@ -561,13 +572,21 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   toggleGroup(group: MenuGroup): void {
-    group.isOpen = !group.isOpen;
+    const shouldOpen = !group.isOpen;
+    for (const candidate of new Set([...this.menuGroups, ...this.filteredGroups])) {
+      candidate.isOpen = shouldOpen && candidate.id === group.id;
+    }
   }
 
   toggleSubItem(item: MenuItem, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    (item as any).isExpanded = !(item as any).isExpanded;
+    const shouldExpand = !this.isSubItemExpanded(item);
+    for (const group of new Set([...this.menuGroups, ...this.filteredGroups])) {
+      for (const candidate of group.items) {
+        candidate.isExpanded = shouldExpand && candidate.id === item.id;
+      }
+    }
   }
 
   isSubItemExpanded(item: MenuItem): boolean {
@@ -649,6 +668,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     const currentPath = window.location.pathname;
+    let openedGroup = false;
     groups.forEach((group) => {
       let count = 0;
       let hasActiveChild = false;
@@ -669,7 +689,8 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
 
       group.badgeCount = count;
       // Inicialmente solo se abre si el usuario se encuentra dentro de una de sus rutas
-      group.isOpen = hasActiveChild;
+      group.isOpen = !group.directItem && hasActiveChild && !openedGroup;
+      openedGroup ||= group.isOpen;
     });
 
     this.menuGroups = groups.filter((g) => g.items.length > 0);
@@ -678,14 +699,19 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
 
   updateActiveStateFromUrl(): void {
     const currentPath = window.location.pathname;
+    let openedGroup = false;
     this.menuGroups.forEach((group) => {
       const hasActiveChild = group.items.some((item) => {
         if (item.link && currentPath.includes(item.link)) return true;
         return (item.subItems ?? []).some((sub) => sub.link && currentPath.includes(sub.link));
       });
-      if (hasActiveChild) {
-        group.isOpen = true;
-      }
+      group.isOpen = !group.directItem && hasActiveChild && !openedGroup;
+      openedGroup ||= group.isOpen;
+      let expandedItem = false;
+      group.items.forEach((item) => {
+        item.isExpanded = group.isOpen && this.hasActiveSubChild(item) && !expandedItem;
+        expandedItem ||= item.isExpanded;
+      });
     });
     this.applyFilter();
   }

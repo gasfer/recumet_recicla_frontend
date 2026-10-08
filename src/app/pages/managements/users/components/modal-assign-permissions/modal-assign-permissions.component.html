@@ -15,6 +15,10 @@
         <i class="fa-solid fa-user text-primary fs-12"></i>
         <div>
           <span class="fw-bold fs-12">{{ user()?.full_names }}</span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 ml-2 rounded-full text-xs font-semibold border" [ngClass]="rolePresentation(user()?.role).classes">
+            <i [class]="rolePresentation(user()?.role).icon" aria-hidden="true"></i>
+            {{ rolePresentation(user()?.role).label }}
+          </span>
           <span class="text-muted ms-2" *ngIf="user()?.email">
             ({{ user()?.email }})
           </span>
@@ -24,7 +28,7 @@
 
     <app-alert-notify
       [subTitle]="'Selecciona los accesos por módulo.'"
-      [subTitle2]="'Se restringirá el acceso'"
+      [subTitle2]="'En Entradas → Lista de proveedores habilita Ver y Crear. La administración completa está en Comercial → Gestión de proveedores.'"
       [required]="false">
     </app-alert-notify>
 

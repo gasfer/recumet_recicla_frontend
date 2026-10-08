@@ -1,19 +1,34 @@
 <p-dialog
-  [header]="!providersService.isEdit ? 'Registro de Proveedor' : 'Modificar Proveedor'"
+  [header]="providersService.isInfo ? 'Información del proveedor' : (!providersService.isEdit ? 'Registro de Proveedor' : 'Modificar Proveedor')"
   [(visible)]="providersService.showModal"
   [modal]="true"
   [draggable]="false"
   [resizable]="false"
   (onHide)="resetModal()"
-  (onShow)="initializeLocationMap()"
+  (onShow)="initializeLocationMap(); !providersService.isEdit && restoreRegistrationDraft()"
   [dismissableMask]="true"
-  styleClass="app-dialog--xl erp-operational-dialog">
+  [styleClass]="'app-dialog--xl erp-operational-dialog' + (providersService.isInfo ? ' provider-letter-dialog provider-template-' + providerForm.get('id_type_provider')?.value?.code : '')">
 
-  <form [formGroup]="providerForm">
-    <app-alert-notify></app-alert-notify>
+  <ng-template pTemplate="header">
+    <div *ngIf="providersService.isInfo; else editingTitle" class="provider-sheet-heading provider-type-theme" [attr.data-provider-type]="providerForm.get('id_type_provider')?.value?.code">
+      <span class="provider-sheet-icon"><i class="fa-solid fa-building" aria-hidden="true"></i></span>
+      <div><strong>Ficha Maestra de Proveedor</strong><small>ID: {{ providerForm.get('id')?.value || 'Sin registrar' }} · Sistema Recumet</small></div>
+      <span class="provider-status" [class.provider-status-inactive]="providerForm.get('status')?.value === false">{{ providerForm.get('status')?.value === false ? 'Inactivo' : 'Activo' }}</span>
+      <span class="provider-heading-type">Tipo {{ providerForm.get('id_type_provider')?.value?.code }}</span>
+    </div>
+    <ng-template #editingTitle>{{ providersService.isEdit ? 'Modificar Proveedor' : 'Registro de Proveedor' }}</ng-template>
+  </ng-template>
+
+  <form [formGroup]="providerForm" [class.provider-readonly]="providersService.isInfo" class="provider-type-theme" [attr.data-provider-type]="providerForm.get('id_type_provider')?.value?.code">
+    <app-alert-notify *ngIf="!providersService.isInfo"></app-alert-notify>
+    <div *ngIf="!providersService.isInfo && draftNotice()" class="p-2 mb-2 rounded border border-blue-200 bg-blue-50 text-blue-800 text-xs" role="status">{{ draftNotice() }} Los archivos adjuntos pendientes deben volver a seleccionarse.</div>
+    <div *ngIf="!providersService.isInfo && validationMessages().length" class="provider-validation-summary" role="alert" aria-live="polite">
+      <strong><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Revise estos datos antes de guardar:</strong>
+      <ul><li *ngFor="let error of validationMessages()"><button type="button" (click)="focusValidationField(error.path)">{{ error.message }}</button></li></ul>
+    </div>
 
     <!-- AVISO MODO EDICIÓN CON COLOR BAJITO SUTIL -->
-    <div *ngIf="providersService.isEdit" class="mb-3 animated fadeInDown">
+    <div *ngIf="providersService.isEdit && !providersService.isInfo" class="mb-3 animated fadeInDown">
       <div class="p-3 rounded-lg border border-amber-300 bg-amber-50 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-pen-to-square text-amber-600 text-lg"></i>
@@ -31,21 +46,21 @@
       </div>
     </div>
 
-    <div *ngIf="providersService.isEdit && isTypeA()" class="branch-notice">
+    <div *ngIf="providersService.isEdit && !providersService.isInfo && isTypeA()" class="branch-notice">
       <i class="fa-solid fa-building-columns mr-2"></i>
       <b>Grupo empresarial:</b> {{ providerForm.get('full_names')?.value }} ·
       <b>{{ companyBranchCount() }} sede(s) vinculada(s)</b>. La matriz y sus sucursales se muestran primero para evitar editar la entidad equivocada.
     </div>
 
-    <!-- Pestañas Corporativas (Solo si es Tipo A) -->
-    <div *ngIf="isTypeA() || providersService.isEdit" class="flex gap-2 mb-3 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
+    <!-- Pestañas de la ficha del proveedor -->
+    <div *ngIf="supportsBranches() || providersService.isEdit" class="flex gap-2 mb-3 bg-slate-100 p-1.5 rounded-lg border border-slate-200" [class.provider-sheet-tabs]="providersService.isInfo">
       <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
         [class.btn-success]="activeTab()==='company'"
         [class.btn-light]="activeTab()!=='company'"
         (click)="setActiveTab('company')">
-        <i class="fa-solid fa-building mr-1"></i> 1. Empresa Matriz
+        <i class="fa-solid fa-building mr-1"></i> 1. {{ providersService.isInfo ? 'Empresa Matriz & Ficha General' : 'Empresa Matriz' }}
       </button>
-      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+      <button *ngIf="supportsBranches()" type="button" class="btn btn-sm flex-1 font-semibold text-xs"
         [class.btn-success]="activeTab()==='branches'"
         [class.btn-light]="activeTab()!=='branches'"
         (click)="setActiveTab('branches')">
@@ -55,15 +70,18 @@
         [class.btn-success]="activeTab()==='summary'"
         [class.btn-light]="activeTab()!=='summary'"
         (click)="setActiveTab('summary')">
-        <i class="fa-solid fa-receipt mr-1"></i> 3. Historial compras
+        <i class="fa-solid fa-receipt mr-1"></i> {{ supportsBranches() ? '3' : '2' }}. Historial compras
+        <span *ngIf="providersService.isInfo" class="ml-1 text-xs">({{ totalPurchasesCount() }})</span>
       </button>
+      <span *ngIf="providersService.isInfo" class="provider-readonly-label self-center px-2"><i class="fa-solid fa-lock mr-1" aria-hidden="true"></i> Solo lectura</span>
     </div>
 
     <!-- â•â• CONTENIDO FICHA GENERAL (ESTRUCTURA ORIGINAL CON FONDOS BAJOS SUTILES) â•â• -->
-    <div *ngIf="activeTab()==='company'" class="space-y-3">
+    <ng-container *ngIf="providersService.isInfo && activeTab()==='company'" [ngTemplateOutlet]="providerInformation"></ng-container>
+    <div *ngIf="!providersService.isInfo && activeTab()==='company'" class="space-y-3 provider-fields">
 
       <!-- SECCIÓN 1: TIPO E IDENTIFICACIÓN FISCAL (Fondo suave pizarra/slate) -->
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+      <section class="p-3 rounded-lg border border-slate-300 bg-slate-100/70">
         <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
           <i class="fa-solid fa-id-card text-slate-500"></i> 1. Identificación Legal & Tipo de Proveedor
         </div>
@@ -111,6 +129,9 @@
             </small>
           </div>
         </div>
+        <div *ngIf="usesCommercialTerms()" class="erp-form-grid mt-2">
+          <div class="erp-field erp-col-full"><label class="erp-label">{{ isTypeA() ? 'Nombre comercial' : 'Nombre comercial / Acopiadora' }}</label><input pInputText formControlName="commercial_name" class="erp-input text-uppercase w-full"></div>
+        </div>
         <div *ngIf="isTypeA()" class="erp-form-grid cols-3 mt-2">
           <div class="erp-field"><label class="erp-label">Nombre comercial</label><input pInputText formControlName="commercial_name" class="erp-input w-full"></div>
           <div class="erp-field"><label class="erp-label required">Tipo de entidad</label><p-dropdown [options]="entityTypes" optionLabel="label" optionValue="value" formControlName="entity_type" appendTo="body" class="w-full"></p-dropdown></div>
@@ -123,13 +144,13 @@
       </section>
 
       <!-- SECCIÓN 2: UBICACIÓN & SECTOR (Fondo suave esmeralda) -->
-      <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40">
+      <section class="p-3 rounded-lg border border-emerald-200 bg-emerald-50">
         <div class="text-xs font-bold text-emerald-800 uppercase mb-2.5 flex items-center gap-1.5">
           <i class="fa-solid fa-map-location-dot text-emerald-600"></i> 2. Sector & Ubicación Geográfica
         </div>
 
-        <div class="erp-form-grid mb-2" *ngIf="!isTypeA()">
-          <div class="erp-field">
+        <div class="erp-form-grid mb-2" *ngIf="!supportsBranches() && !isTypeD()">
+          <div *ngIf="formP.companyContacts.view" class="erp-field">
             <label class="erp-label">Contactos / teléfonos de la empresa</label>
             <input pInputText formControlName="companyContacts" placeholder="TELÉFONO FIJO, WHATSAPP U OTRO CONTACTO" class="erp-input text-uppercase w-full">
           </div>
@@ -156,7 +177,7 @@
               placeholder="Seleccione departamento" [filter]="true" appendTo="body" class="erp-input w-full"></p-dropdown>
           </div>
           <div class="erp-field">
-            <label class="erp-label">Zona / Barrio</label>
+            <label class="erp-label">{{ isTypeB() ? 'Zona / Sector' : 'Zona / Barrio' }}</label>
             <input pInputText formControlName="zone" placeholder="Zona, barrio o sector" class="erp-input text-uppercase w-full">
           </div>
         </div>
@@ -180,13 +201,13 @@
 
         <div class="location-editor mt-2">
           <div class="location-toolbar">
-            <div><b><i class="fa-solid fa-location-crosshairs"></i> Punto geográfico de la empresa</b><small>Capture la ubicación actual o registre las coordenadas del pin.</small></div>
+            <div><b [class.required]="providersService.isEdit"><i class="fa-solid fa-location-crosshairs"></i> Punto geográfico de la empresa</b><small>Capture la ubicación actual o registre las coordenadas del pin.</small></div>
             <button type="button" class="btn btn-sm btn-success" (click)="captureCurrentLocation()" [disabled]="locating()"><i class="fa-solid" [ngClass]="locating() ? 'fa-spinner fa-spin' : 'fa-location-crosshairs'"></i> Usar ubicación actual</button>
             <button type="button" class="btn btn-sm btn-outline-primary" (click)="shareLocation()" [disabled]="!providerForm.get('latitude')?.value"><i class="fa-solid fa-share-nodes"></i> Compartir ubicación</button>
           </div>
           <div class="erp-form-grid cols-3">
-            <div class="erp-field"><label class="erp-label">Latitud</label><input type="number" step="0.0000001" pInputText formControlName="latitude" class="erp-input w-full" (input)="refreshMap()"></div>
-            <div class="erp-field"><label class="erp-label">Longitud</label><input type="number" step="0.0000001" pInputText formControlName="longitude" class="erp-input w-full" (input)="refreshMap()"></div>
+            <div class="erp-field"><label class="erp-label" [class.required]="providersService.isEdit">Latitud</label><input type="number" step="0.0000001" pInputText formControlName="latitude" class="erp-input w-full" (input)="refreshMap()"></div>
+            <div class="erp-field"><label class="erp-label" [class.required]="providersService.isEdit">Longitud</label><input type="number" step="0.0000001" pInputText formControlName="longitude" class="erp-input w-full" (input)="refreshMap()"></div>
             <div class="erp-field"><label class="erp-label">Referencia geográfica</label><input pInputText formControlName="geolocation_text" placeholder="Ej. Portón verde, frente a..." class="erp-input w-full"></div>
           </div>
           <div class="google-map-search mt-2">
@@ -207,14 +228,14 @@
         <small *ngFor="let error of serverErrorsFor('location')" class="erp-error-msg block mt-1">{{ error }}</small>
       </section>
 
-      <!-- SECCIÓN 3: CONTACTO COMERCIAL (Fondo suave azul) -->
-      <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40">
+      <!-- SECCIÓN 3: CONTACTO COMERCIAL -->
+      <section class="p-3 rounded-lg border border-blue-200 bg-blue-50">
         <div class="text-xs font-bold text-blue-900 uppercase mb-2.5 flex items-center gap-1.5">
           <i class="fa-solid fa-user-tie text-blue-600"></i> 3. Contacto Comercial
         </div>
 
         <!-- Nombre contacto + Celular contacto -->
-        <div class="erp-form-grid mb-2" *ngIf="!isTypeA() && (formP.name_contact.view || formP.cellphone_contact.view)">
+        <div class="erp-form-grid mb-2" *ngIf="!supportsMultipleContacts() && (formP.name_contact.view || formP.cellphone_contact.view)">
           <div *ngIf="formP.name_contact.view" class="erp-field" [class.erp-col-full]="!formP.cellphone_contact.view">
             <label class="erp-label">{{formP.name_contact.label}}</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
@@ -240,7 +261,7 @@
         </div>
 
         <!-- Categoría de Material + Área / Cargo -->
-        <div class="erp-form-grid mb-2" *ngIf="!isTypeA()">
+        <div class="erp-form-grid mb-2" *ngIf="!supportsBranches() && (formP.id_category.view || formP.workAreaOrPositionOrUnit.view)">
           <div *ngIf="formP.id_category.view" class="erp-field" [class.erp-col-full]="!formP.workAreaOrPositionOrUnit.view">
             <label class="erp-label required">{{formP.id_category.label}}</label>
             <p-dropdown [options]="categories()"
@@ -271,10 +292,10 @@
         </div>
 
         <!-- Frecuencia + Contactos adicionales -->
-        <div class="erp-form-grid" *ngIf="!isTypeA() && (formP.frequency.view || formP.companyContacts.view)">
+        <div class="erp-form-grid" *ngIf="!supportsBranches() && (formP.frequency.view || formP.companyContacts.view)">
           <div *ngIf="formP.frequency.view" class="erp-field" [class.erp-col-full]="!formP.companyContacts.view">
             <label class="erp-label">{{formP.frequency.label}}</label>
-            <p-dropdown [options]="frequencies()"
+            <p-dropdown *ngIf="!isTypeB()" [options]="frequencies()"
               placeholder="Selecciona {{formP.frequency.label}}"
               optionLabel="name"
               optionValue="code"
@@ -286,6 +307,7 @@
               class="erp-input w-full"
               [class.ng-dirty]="validatorsService.inputValid('frequency',providerForm)">
             </p-dropdown>
+            <p-dropdown *ngIf="isTypeB()" [options]="wholesaleFrequencies" optionLabel="label" optionValue="value" formControlName="contact_frequency" appendTo="body" class="w-full"></p-dropdown>
             <small *ngIf="validatorsService.inputValid('frequency',providerForm)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("frequency",providerForm) }}
             </small>
@@ -302,34 +324,15 @@
           </div>
         </div>
 
-        <app-provider-contacts-section *ngIf="isTypeA()"
+        <app-provider-contacts-section *ngIf="supportsMultipleContacts()" [requireDetails]="supportsBranches()"
+          [commercial]="isTypeB()"
           [contacts]="contactRows" [errors]="serverErrorsFor('contacts')"
           (add)="addContact()" (remove)="removeContact($event)" (main)="setMainContact($event)">
         </app-provider-contacts-section>
-      </section>
-
-      <!-- SECCIÓN 4: MODALIDAD DE OPERACION Y MATERIAL (Fondo suave ámbar) -->
-      <section class="p-3 rounded-lg border border-amber-100 bg-amber-50/30">
-        <div class="text-xs font-bold text-amber-900 uppercase mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-boxes-stacked text-amber-600"></i> 4. MODALIDAD DE OPERACION Y MATERIAL
-        </div>
-
-        <div class="erp-form-grid">
-          <!-- Mayorista / Minorista -->
-          <div *ngIf="formP.mayorista.view" class="erp-field">
-            <label class="erp-label required">{{formP.mayorista.label || 'Tipo entrega'}}</label>
-            <div class="erp-toggle-pill">
-              <p-inputSwitch formControlName="mayorista"></p-inputSwitch>
-              <p-tag [rounded]="true"
-                [icon]="providerForm.get('mayorista')!.value ? 'fa-solid fa-truck' : 'fa-solid fa-people-carry-box'"
-                [severity]="providerForm.get('mayorista')!.value ? 'info' : 'success'"
-                [value]="providerForm.get('mayorista')!.value ? 'MAYORISTA' : 'MINORISTA'">
-              </p-tag>
-            </div>
-          </div>
+        <div class="erp-form-grid mt-2">
 
           <!-- Estado Proveedor -->
-          <div *ngIf="formP.status.view" class="erp-field" [class.erp-col-full]="!formP.mayorista.view">
+          <div *ngIf="formP.status.view" class="erp-field">
             <label class="erp-label required">{{formP.status.label || 'Estado'}}</label>
             <div class="erp-toggle-pill">
               <p-inputSwitch formControlName="status"></p-inputSwitch>
@@ -341,23 +344,49 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- SECCIÓN 4: MODALIDAD DE OPERACION Y MATERIAL (Fondo suave ámbar) -->
+      <section class="p-3 rounded-lg border border-amber-200 bg-amber-50">
+        <div class="text-xs font-bold text-amber-900 uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-boxes-stacked text-amber-600"></i> 4. MODALIDAD DE OPERACION Y MATERIAL
+        </div>
 
         <!-- Categorías y Productos Multi-Select -->
         <div class="erp-form-grid mt-2">
-          <div class="erp-field erp-col-full">
-            <label class="erp-label">Categoría(s) de material entregado (puede seleccionar varias)</label>
+          <div class="erp-field">
+            <label class="erp-label" [class.required]="providersService.isEdit">Categoría(s) de material entregado (puede seleccionar varias)</label>
             <p-multiSelect [options]="categories()" optionLabel="name" optionValue="code"
-              formControlName="id_categories" defaultLabel="Seleccione una o más categorías"
+              display="chip" [maxSelectedLabels]="1000" [filter]="true" [showClear]="true" formControlName="id_categories" defaultLabel="Seleccione una o más categorías"
               appendTo="body" class="w-full" (onChange)="onCategoriesChange($event.value)"></p-multiSelect>
           </div>
-          <div class="erp-field erp-col-full">
+          <div class="erp-field">
             <label class="erp-label required">Producto(s) según categoría seleccionada (puede seleccionar varios)</label>
             <p-multiSelect [options]="products()" optionLabel="name" optionValue="code"
-              formControlName="material_ids" defaultLabel="Seleccione productos reales del catálogo"
+              display="chip" [maxSelectedLabels]="1000" [filter]="true" [showClear]="true" formControlName="material_ids" defaultLabel="Seleccione productos reales del catálogo"
               appendTo="body" class="w-full" (onChange)="onMaterialSelectionChange()"></p-multiSelect>
             <small *ngFor="let error of serverErrorsFor('materials')" class="erp-error-msg block mt-1">{{ error }}</small>
           </div>
         </div>
+
+        <div *ngIf="isTypeB()" class="mt-2" formArrayName="wholesale_materials">
+          <div *ngFor="let material of wholesaleMaterialRows.controls; let i = index" [formGroupName]="i" class="erp-form-grid cols-3 p-2 mb-2 rounded-lg border border-amber-100 bg-white">
+            <div class="erp-field"><label class="erp-label">Material / Producto</label><span class="text-xs text-slate-700 py-2">{{ materialName(material.get('id_product')?.value) }}</span></div>
+            <div class="erp-field"><label class="erp-label">Volumen estimado por material (kg)</label><p-inputNumber formControlName="estimated_volume" [min]="0" [maxFractionDigits]="3" class="w-full" placeholder="Sin determinar"></p-inputNumber></div>
+            <div class="erp-field">
+              <label class="erp-label">Frecuencia por producto</label>
+              <span *ngIf="frequencyMode()==='automatic' && materialFrequencySuggestions()[material.get('id_product')?.value]?.has_sufficient_history" class="text-xs text-emerald-800 p-2 rounded border border-emerald-100 bg-emerald-50">
+                <i class="fa-solid fa-robot"></i> Sugerida: {{ getFrequencyLabel(materialFrequencySuggestions()[material.get('id_product')?.value]?.frequency) }}
+              </span>
+              <p-dropdown *ngIf="frequencyMode()==='manual' || !materialFrequencySuggestions()[material.get('id_product')?.value]?.has_sufficient_history" [options]="wholesaleFrequencies" optionLabel="label" optionValue="value" formControlName="frequency" appendTo="body" class="w-full"></p-dropdown>
+              <small *ngIf="!loadingFrequency() && !materialFrequencySuggestions()[material.get('id_product')?.value]?.has_sufficient_history" class="text-xs text-slate-500">Sin historial suficiente: seleccione la frecuencia manualmente.</small>
+            </div>
+          </div>
+        </div>
+          <div *ngIf="isTypeB()" class="erp-form-grid mt-2">
+            <div class="erp-field"><label class="erp-label">Modalidad de atención</label><p-dropdown [options]="serviceModes" optionLabel="label" optionValue="value" formControlName="service_mode" appendTo="body" class="w-full"></p-dropdown></div>
+            <div class="erp-field"><label class="erp-label">Modalidad habitual</label><p-dropdown [options]="serviceModes" optionLabel="label" optionValue="value" formControlName="usual_service_mode" [showClear]="true" placeholder="Seleccione modalidad" appendTo="body" class="w-full"></p-dropdown></div>
+          </div>
 
         <!-- Frecuencia Inteligente & Modalidad de atención -->
         <div class="mt-3 pt-2.5 border-t border-amber-200/60">
@@ -384,6 +413,25 @@
             <div *ngIf="loadingFrequency()" class="p-2 text-center text-xs text-slate-500">
               <i class="fa-solid fa-spinner fa-spin mr-1"></i> Calculando frecuencia histórica...
             </div>
+            <div *ngIf="!loadingFrequency() && frequencyAnalysis() as analysis" class="p-2 mb-2 rounded border border-emerald-200 bg-emerald-50 text-xs">
+              <b class="block text-emerald-900 mb-2">Historial completo del proveedor · Todas las sucursales</b>
+              <div class="erp-form-grid cols-4">
+                <div><span class="block text-slate-500">Primera compra</span><b>{{ analysis.first_delivery_date ? (analysis.first_delivery_date | date:'dd/MM/yyyy') : 'Sin compras' }}</b></div>
+                <div><span class="block text-slate-500">Última compra</span><b>{{ analysis.last_delivery_date ? (analysis.last_delivery_date | date:'dd/MM/yyyy') : 'Sin compras' }}</b></div>
+                <div><span class="block text-slate-500">Periodo analizado</span><b>{{ analysis.elapsed_days || 0 }} días</b></div>
+                <div><span class="block text-slate-500">Compras / Días con entrega</span><b>{{ analysis.total_purchases || 0 }} / {{ analysis.total_deliveries }}</b></div>
+                <div><span class="block text-slate-500">Total recibido</span><b>{{ (analysis.total_kg || 0) | number:'1.0-3' }} kg</b></div>
+                <div><span class="block text-slate-500">Volumen promedio por compra</span><b>{{ analysis.estimated_volume != null ? (analysis.estimated_volume | number:'1.0-3') : 'Sin registro en kg' }}<span *ngIf="analysis.estimated_volume != null"> kg</span></b></div>
+              </div>
+              <p class="mt-2 mb-0 text-slate-600">Intervalo promedio = días entre primera y última compra ÷ (días con entrega − 1). Varias compras el mismo día cuentan como una fecha. Los kilos incluyen únicamente productos con unidad kg.</p>
+              <p *ngIf="analysis.overdue_days" class="mt-1 mb-0 font-bold text-amber-800">La fecha estimada pasó hace {{ analysis.overdue_days }} días: se recomienda contactar hoy.</p>
+              <details *ngIf="analysis.purchases?.length" class="mt-2">
+                <summary class="cursor-pointer font-bold text-emerald-800">Ver todas las compras analizadas ({{ analysis.purchases?.length }})</summary>
+                <div class="overflow-auto mt-1" style="max-height:220px">
+                  <table class="w-full text-xs"><thead><tr><th class="text-left p-1">Compra</th><th class="text-left p-1">Fecha</th><th class="text-right p-1">Kg</th></tr></thead><tbody><tr *ngFor="let purchase of analysis.purchases"><td class="p-1">{{ purchase.cod || purchase.id }}</td><td class="p-1">{{ purchase.purchase_date | date:'dd/MM/yyyy' }}</td><td class="p-1 text-right">{{ purchase.total_kg | number:'1.0-3' }}</td></tr></tbody></table>
+                </div>
+              </details>
+            </div>
             <div *ngIf="!loadingFrequency() && frequencyAnalysis()?.has_sufficient_history" class="smart-frequency-card">
               <div class="flex items-center justify-between mb-2">
                 <span class="smart-frequency-badge"><i class="fa-solid fa-robot"></i> 🤖 Automática</span>
@@ -406,14 +454,14 @@
                 </div>
                 <div class="bg-white/90 p-2 rounded border border-emerald-200">
                   <span class="text-slate-500 block text-[10px] uppercase font-bold">Próximo contacto:</span>
-                  <b class="text-emerald-700 font-extrabold">{{ frequencyAnalysis()?.next_estimated_date ? (frequencyAnalysis()?.next_estimated_date | date:'dd/MM/yyyy') : '—' }}</b>
+                  <b class="text-emerald-700 font-extrabold">{{ (frequencyAnalysis()?.recommended_contact_date || frequencyAnalysis()?.next_estimated_date) ? ((frequencyAnalysis()?.recommended_contact_date || frequencyAnalysis()?.next_estimated_date) | date:'dd/MM/yyyy') : '—' }}</b>
                 </div>
               </div>
             </div>
             <div *ngIf="!loadingFrequency() && !frequencyAnalysis()?.has_sufficient_history" class="p-2.5 rounded-lg border border-amber-200 bg-amber-50/80 text-xs">
               <div class="flex items-center gap-1.5 font-bold text-amber-900 mb-1.5">
                 <i class="fa-solid fa-circle-exclamation text-amber-600 text-sm"></i>
-                No hay suficiente historial para calcular automáticamente.
+                {{ frequencyAnalysis()?.message || 'No hay suficiente historial para calcular automáticamente.' }}
               </div>
               <span class="text-slate-600 block mb-1.5">Seleccione la frecuencia manualmente:</span>
               <p-dropdown [options]="frequencies()" optionLabel="name" optionValue="code" formControlName="frequency" appendTo="body" class="w-full"></p-dropdown>
@@ -428,7 +476,7 @@
             </div>
           </div>
 
-          <div class="erp-form-grid cols-2 mt-2">
+          <div *ngIf="!isTypeB()" class="erp-form-grid cols-2 mt-2">
             <div class="erp-field">
               <label class="erp-label required">Modalidad de atención</label>
               <p-dropdown [options]="serviceModes" optionLabel="label" optionValue="value" formControlName="service_mode" appendTo="body" class="w-full"></p-dropdown>
@@ -438,32 +486,55 @@
       </section>
 
       <!-- SECCIÓN 5: GESTIÓN COMERCIAL -->
-      <section class="p-3 rounded-lg border border-violet-100 bg-violet-50/30">
+      <section class="p-3 rounded-lg border border-violet-200 bg-violet-50">
         <div class="text-xs font-bold text-violet-900 uppercase mb-2.5"><i class="fa-solid fa-handshake text-violet-600"></i> 5. Gestión Comercial</div>
-        <div class="erp-form-grid cols-3">
+        <div class="erp-form-grid cols-2">
           <div class="erp-field">
             <label class="erp-label required">Responsable comercial</label>
             <p-dropdown [options]="commercialUsers()" optionLabel="full_names" optionValue="id"
               formControlName="id_commercial_user" placeholder="Seleccione responsable comercial"
               [filter]="true" filterBy="full_names" appendTo="body" class="w-full"></p-dropdown>
           </div>
-          <div class="erp-field"><label class="erp-label required">Canal de origen</label><p-dropdown [options]="originChannels" optionLabel="label" optionValue="value" formControlName="origin_channel" appendTo="body" class="w-full"></p-dropdown></div>
-          <div class="erp-field"><label class="erp-label required">Estado de relación</label><p-dropdown [options]="relationshipStatuses" optionLabel="label" optionValue="value" formControlName="relationship_status" appendTo="body" class="w-full"></p-dropdown></div>
-          <div class="erp-field erp-col-full"><label class="erp-label">Condición de negociación</label><p-dropdown [options]="negotiationConditions" optionLabel="label" optionValue="value" formControlName="negotiation_condition" [showClear]="true" appendTo="body" class="w-full"></p-dropdown></div>
+          <div class="erp-field"><label class="erp-label required">Canal de origen</label><p-dropdown [options]="isTypeB() ? wholesaleOriginChannels : originChannels" optionLabel="label" optionValue="value" formControlName="origin_channel" appendTo="body" class="w-full"></p-dropdown></div>
+          <div class="erp-field"><label class="erp-label required">Estado de relación</label><p-dropdown [options]="isTypeB() ? wholesaleRelationshipStatuses : relationshipStatuses" optionLabel="label" optionValue="value" formControlName="relationship_status" appendTo="body" class="w-full"></p-dropdown></div>
+          <div class="erp-field"><label class="erp-label">Condición de negociación</label><p-dropdown [options]="negotiationConditions" optionLabel="label" optionValue="value" formControlName="negotiation_condition" [showClear]="true" appendTo="body" class="w-full"></p-dropdown></div>
+          <div *ngIf="isTypeB()" class="erp-field"><label class="erp-label">Modalidad de negociación</label><p-dropdown [options]="negotiationModes" optionLabel="label" optionValue="value" formControlName="negotiation_mode" [showClear]="true" placeholder="Seleccione modalidad" appendTo="body" class="w-full"></p-dropdown></div>
+          <div *ngIf="usesCommercialTerms()" class="erp-field">
+            <label class="erp-label required">Condición logística</label>
+            <p-dropdown [options]="logisticsConditions" optionLabel="label" optionValue="value" formControlName="logistics_condition" placeholder="Seleccione condición logística" appendTo="body" class="w-full" [class.ng-dirty]="validatorsService.inputValid('logistics_condition',providerForm)"></p-dropdown>
+            <small *ngIf="validatorsService.inputValid('logistics_condition',providerForm)" class="erp-error-msg">Seleccione una condición logística.</small>
+          </div>
+          <div *ngIf="usesCommercialTerms()" class="erp-field">
+            <label class="erp-label required">Nivel de precio</label>
+            <p-dropdown [options]="priceLevels" optionLabel="label" optionValue="value" formControlName="price_policy" placeholder="Seleccione nivel de precio" appendTo="body" class="w-full" [class.ng-dirty]="validatorsService.inputValid('price_policy',providerForm)"></p-dropdown>
+            <small *ngIf="validatorsService.inputValid('price_policy',providerForm)" class="erp-error-msg">Seleccione un nivel de precio.</small>
+          </div>
+          <div *ngIf="usesCommercialTerms()" class="erp-field">
+            <label class="erp-label">Ajuste habitual</label>
+            <input pInputText formControlName="habitual_price_adjustment" placeholder="Diferencia respecto al precio minorista establecido" class="erp-input w-full">
+            <small *ngIf="validatorsService.inputValid('habitual_price_adjustment',providerForm)" class="erp-error-msg">Máximo 500 caracteres.</small>
+          </div>
+
+          <div *ngIf="usesCommercialTerms()" class="erp-field erp-col-full">
+            <label class="erp-label">Instrucciones de manejo comercial</label>
+            <textarea pInputTextarea rows="2" formControlName="commercial_observations" placeholder="Forma particular de trabajar con el proveedor" class="erp-input w-full"></textarea>
+            <small *ngIf="validatorsService.inputValid('commercial_observations',providerForm)" class="erp-error-msg">Máximo 2000 caracteres.</small>
+          </div>
         </div>
+
       </section>
 
       <!-- SECCIÓN 6: REQUERIMIENTOS DOCUMENTALES -->
-      <section class="p-3 rounded-lg border border-rose-100 bg-rose-50/30">
+      <section *ngIf="!isTypeC() && !isTypeD()" class="p-3 rounded-lg border border-rose-200 bg-rose-50">
         <div class="text-xs font-bold text-rose-900 uppercase mb-2.5"><i class="fa-solid fa-file-shield text-rose-600"></i> 6. Requerimientos Documentales</div>
         <div class="erp-form-grid cols-2">
           <div class="erp-field"><label class="erp-label required">¿Requiere certificado?</label><p-inputSwitch formControlName="requires_certificate"></p-inputSwitch></div>
-          <div class="erp-field"><label class="erp-label required">¿Requiere informe de trazabilidad?</label><p-inputSwitch formControlName="requires_traceability_report"></p-inputSwitch></div>
+          <div *ngIf="!isTypeB()" class="erp-field"><label class="erp-label required">¿Requiere informe de trazabilidad?</label><p-inputSwitch formControlName="requires_traceability_report"></p-inputSwitch></div>
         </div>
         <div class="erp-form-grid mt-2">
           <div *ngIf="providerForm.get('requires_certificate')?.value" class="erp-field erp-col-full">
-            <label class="erp-label font-bold text-rose-900">Adjuntar Certificado (PDF o Imagen)</label>
-            <div class="border-2 border-dashed border-rose-300 hover:border-rose-500 rounded-lg p-3 bg-white text-center cursor-pointer transition-colors"
+            <label class="erp-label font-bold text-rose-900">Adjuntar Certificado (PDF o Imagen)</label><small *ngIf="isTypeB() && storedCertificate()" class="text-xs text-emerald-700 mb-1"><i class="fa-solid fa-circle-check"></i> {{ providersService.isInfo ? 'Certificado registrado.' : 'Certificado registrado. Puede adjuntar otro para reemplazarlo.' }}</small>
+            <div *ngIf="!providersService.isInfo" class="border-2 border-dashed border-rose-300 hover:border-rose-500 rounded-lg p-3 bg-white text-center cursor-pointer transition-colors"
                  (dragover)="$event.preventDefault()" (drop)="onDocumentDrop('CERTIFICATE', $event)" (click)="certificateInput.click()">
               <input #certificateInput type="file" accept="application/pdf,image/*" hidden (change)="selectDocument('CERTIFICATE', $event)">
               <div *ngIf="!documentFiles().CERTIFICATE" class="py-1">
@@ -479,16 +550,16 @@
                     <span class="text-[10px] text-slate-500">Archivo listo para guardar</span>
                   </div>
                 </div>
-                <button type="button" class="btn btn-xs btn-outline-danger text-xs px-2 py-0.5" (click)="documentFiles().CERTIFICATE = undefined">
+                <button type="button" class="btn btn-xs btn-outline-danger text-xs px-2 py-0.5" (click)="removeDocument('CERTIFICATE')">
                   <i class="fa-solid fa-xmark"></i> Quitar
                 </button>
               </div>
             </div>
           </div>
 
-          <div *ngIf="providerForm.get('requires_traceability_report')?.value" class="erp-field erp-col-full">
+          <div *ngIf="!isTypeB() && providerForm.get('requires_traceability_report')?.value" class="erp-field erp-col-full">
             <label class="erp-label font-bold text-rose-900">Adjuntar Informe de Trazabilidad (PDF o Imagen)</label>
-            <div class="border-2 border-dashed border-rose-300 hover:border-rose-500 rounded-lg p-3 bg-white text-center cursor-pointer transition-colors"
+            <div *ngIf="!providersService.isInfo" class="border-2 border-dashed border-rose-300 hover:border-rose-500 rounded-lg p-3 bg-white text-center cursor-pointer transition-colors"
                  (dragover)="$event.preventDefault()" (drop)="onDocumentDrop('TRACEABILITY_REPORT', $event)" (click)="traceabilityInput.click()">
               <input #traceabilityInput type="file" accept="application/pdf,image/*" hidden (change)="selectDocument('TRACEABILITY_REPORT', $event)">
               <div *ngIf="!documentFiles().TRACEABILITY_REPORT" class="py-1">
@@ -504,7 +575,7 @@
                     <span class="text-[10px] text-slate-500">Archivo listo para guardar</span>
                   </div>
                 </div>
-                <button type="button" class="btn btn-xs btn-outline-danger text-xs px-2 py-0.5" (click)="documentFiles().TRACEABILITY_REPORT = undefined">
+                <button type="button" class="btn btn-xs btn-outline-danger text-xs px-2 py-0.5" (click)="removeDocument('TRACEABILITY_REPORT')">
                   <i class="fa-solid fa-xmark"></i> Quitar
                 </button>
               </div>
@@ -513,26 +584,27 @@
         </div>
       </section>
 
-      <section class="p-3 rounded-lg border border-cyan-100 bg-cyan-50/30">
+      <section class="p-3 rounded-lg border border-cyan-200 bg-cyan-50">
         <app-provider-bank-accounts-section
+          [sectionNumber]="isTypeB() ? 7 : null"
           [accounts]="bankAccountRows" [banks]="banks()" [accountTypes]="accountTypes" [currencies]="currencies"
           [errors]="serverErrorsFor('bankAccounts')"
           (add)="addBankAccount()" (remove)="removeBankAccount($event)" (main)="setMainBankAccount($event)">
         </app-provider-bank-accounts-section>
       </section>
 
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+      <section class="p-3 rounded-lg border border-slate-300 bg-slate-100/70">
         <div class="text-xs font-bold text-slate-700 uppercase mb-2.5"><i class="fa-solid fa-note-sticky"></i> 8. Observaciones Generales</div>
         <textarea pInputTextarea rows="3" formControlName="general_observations" class="erp-input w-full" placeholder="Información adicional relevante para la empresa o sus sedes"></textarea>
       </section>
     </div>
 
     <!-- â•â• PESTAÑA: SUCURSALES (TIPO A) â•â• -->
-    <div *ngIf="isTypeA() && activeTab()==='branches'" class="animated fadeIn">
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+    <div *ngIf="supportsBranches() && activeTab()==='branches'" class="animated fadeIn">
+      <section class="p-3 rounded-lg border border-slate-300 bg-slate-100/70">
         <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
           <i class="fa-solid fa-code-branch text-emerald-600"></i> Gestión de Sucursales Vinculadas
-          <button type="button" class="btn btn-sm btn-success ml-auto" (click)="startNewBranch()"><i class="fa-solid fa-plus"></i> Nueva sucursal</button>
+          <button *ngIf="!providersService.isInfo" type="button" class="btn btn-sm btn-success ml-auto" (click)="startNewBranch()"><i class="fa-solid fa-plus"></i> Nueva sucursal</button>
         </div>
         <div class="erp-form-grid mb-3">
           <div class="erp-field">
@@ -561,7 +633,9 @@
             </button>
           </aside>
 
-          <main class="col-span-2 flex flex-col gap-2">
+                    <main class="col-span-2 flex flex-col gap-2 provider-fields">
+            <ng-container *ngIf="providersService.isInfo" [ngTemplateOutlet]="providerInformation" [ngTemplateOutletContext]="{ branch: true }"></ng-container>
+            <ng-container *ngIf="!providersService.isInfo">
             <div class="erp-form-grid">
               <div class="erp-field erp-col-full"><label class="erp-label required">Nombre de la sede / sucursal</label><input pInputText formControlName="site_name" class="erp-input w-full" placeholder="Ej. Sucursal Cotoca - Planta Principal"></div>
             </div>
@@ -588,8 +662,8 @@
                 <button type="button" class="btn btn-sm btn-outline-primary" (click)="shareLocation()" [disabled]="!providerForm.get('latitude')?.value"><i class="fa-solid fa-share-nodes"></i> Compartir</button>
               </div>
               <div class="erp-form-grid cols-3">
-                <div class="erp-field"><label class="erp-label">Latitud</label><input type="number" step="0.0000001" pInputText formControlName="latitude" class="erp-input w-full" (input)="refreshMap()"></div>
-                <div class="erp-field"><label class="erp-label">Longitud</label><input type="number" step="0.0000001" pInputText formControlName="longitude" class="erp-input w-full" (input)="refreshMap()"></div>
+                <div class="erp-field"><label class="erp-label" [class.required]="providersService.isEdit">Latitud</label><input type="number" step="0.0000001" pInputText formControlName="latitude" class="erp-input w-full" (input)="refreshMap()"></div>
+                <div class="erp-field"><label class="erp-label" [class.required]="providersService.isEdit">Longitud</label><input type="number" step="0.0000001" pInputText formControlName="longitude" class="erp-input w-full" (input)="refreshMap()"></div>
                 <div class="erp-field"><label class="erp-label">Referencia</label><input pInputText formControlName="geolocation_text" placeholder="Portón, calle o punto de referencia" class="erp-input w-full"></div>
               </div>
               <div class="p-inputgroup mt-2"><input pInputText formControlName="google_maps_url" placeholder="Enlace de Google Maps" class="erp-input"><button type="button" pButton label="Importar punto" icon="fa-solid fa-map-pin" (click)="importGoogleMapsLocation()" [loading]="importingLocation()"></button></div>
@@ -617,15 +691,19 @@
             <div class="erp-form-grid">
               <div class="erp-field"><label class="erp-label required">Frecuencia</label><p-dropdown [options]="frequencies()" optionLabel="name" optionValue="code" formControlName="frequency" appendTo="body" class="w-full"></p-dropdown></div>
               <div class="erp-field"><label class="erp-label required">Modalidad</label><p-dropdown [options]="serviceModes" optionLabel="label" optionValue="value" formControlName="service_mode" appendTo="body" class="w-full"></p-dropdown></div>
-              <div class="erp-field erp-col-full"><label class="erp-label required">Materiales</label><p-multiSelect [options]="categories()" optionLabel="name" optionValue="code" formControlName="material_ids" defaultLabel="Seleccione materiales" appendTo="body" class="w-full"></p-multiSelect></div>
+              <div class="erp-col-full erp-form-grid provider-fields">
+                <div class="erp-field"><label class="erp-label" [class.required]="providersService.isEdit">Categoría(s) de material entregado</label><p-multiSelect [options]="categories()" optionLabel="name" optionValue="code" display="chip" [maxSelectedLabels]="1000" [filter]="true" [showClear]="true" formControlName="id_categories" defaultLabel="Seleccione categorías" appendTo="body" class="w-full" (onChange)="onCategoriesChange($event.value)"></p-multiSelect></div>
+                <div class="erp-field"><label class="erp-label required">Producto(s) según categoría seleccionada</label><p-multiSelect [options]="products()" optionLabel="name" optionValue="code" display="chip" [maxSelectedLabels]="1000" [filter]="true" [showClear]="true" formControlName="material_ids" defaultLabel="Seleccione productos" appendTo="body" class="w-full" (onChange)="onMaterialSelectionChange()"></p-multiSelect></div>
+              </div>
             </div>
-            <section class="border border-cyan-100 bg-cyan-50/30 rounded p-2">
+            <section class="border border-cyan-200 bg-cyan-50 rounded p-2">
               <app-provider-bank-accounts-section
                 [accounts]="bankAccountRows" [banks]="banks()" [accountTypes]="accountTypes" [currencies]="currencies"
                 [errors]="serverErrorsFor('bankAccounts')"
                 (add)="addBankAccount()" (remove)="removeBankAccount($event)" (main)="setMainBankAccount($event)">
               </app-provider-bank-accounts-section>
             </section>
+            </ng-container>
           </main>
         </div>
       </section>
@@ -633,7 +711,7 @@
 
     <!-- â•â• PESTAÑA: CONSOLIDADO (TIPO A) â•â• -->
     <div *ngIf="activeTab()==='summary'" class="animated fadeIn">
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+      <section class="p-3 rounded-lg border border-slate-300 bg-slate-100/70">
         <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center justify-between">
           <div class="flex items-center gap-1.5">
             <i class="fa-solid fa-receipt text-emerald-600"></i> Historial de Compras: {{ providerForm.get('full_names')?.value }}
@@ -712,14 +790,67 @@
         </div>
       </section>
     </div>
+    <ng-template #providerInformation let-branch="branch">
+      <div class="provider-identity-card">
+        <span class="provider-avatar">{{ providerInitials() }}</span>
+        <div class="provider-identity-text">
+          <h2>{{ (branch ? providerForm.get('site_name')?.value : providerForm.get('full_names')?.value) || 'Sin registrar' }}</h2>
+          <span class="provider-type-badge">{{ providerForm.get('id_type_provider')?.value?.name }}</span>
+          <p>CI / NIT: {{ providerForm.get('number_document')?.value || 'Sin registrar' }} · {{ providerForm.get('department')?.value || 'Departamento sin registrar' }}</p>
+        </div>
+        <div class="provider-summary-metrics">
+          <div><small>Frecuencia</small><strong>{{ getFrequencyLabel(providerForm.get('frequency')?.value) }}</strong></div>
+          <div><small>Compras</small><strong>{{ totalPurchasesCount() | number }}</strong></div>
+          <div><small>Última compra</small><strong>{{ lastPurchaseDate() ? (lastPurchaseDate() | date:'dd/MM/yyyy') : 'Sin historial' }}</strong></div>
+        </div>
+      </div>
+      <div class="provider-information">
+        <div *ngFor="let column of informationColumns(branch); trackBy: trackInformationColumn" class="provider-information-column">
+        <section *ngFor="let section of column; trackBy: trackInformationSection" class="provider-information-section" [attr.data-tone]="section.tone" [style.order]="section.id">
+          <h3><span class="provider-section-number">{{ section.id }}</span> {{ section.title }}</h3>
+          <dl *ngIf="section.fields.length" class="provider-information-grid">
+            <div *ngFor="let field of section.fields" [class.information-full]="field.full">
+              <dt>{{ field.label }}</dt>
+              <dd [class.information-empty]="field.value === 'Sin registrar'">{{ field.value }}</dd>
+            </div>
+          </dl>
+          <article *ngFor="let record of section.records" class="provider-information-record">
+            <h4>{{ record.title }}</h4>
+            <dl class="provider-information-grid">
+              <div *ngFor="let field of record.fields" [class.information-full]="field.full">
+                <dt>{{ field.label }}</dt>
+                <dd [class.information-empty]="field.value === 'Sin registrar'">{{ field.value }}</dd>
+              </div>
+            </dl>
+          </article>
+          <p *ngIf="section.id === 7 && !section.records.length" class="information-empty mb-0 text-xs">Sin cuentas bancarias registradas.</p>
+          <div *ngIf="section.map && hasInformationCoordinates()" class="provider-information-map">
+            <h4><i class="fa-solid fa-location-dot"></i> Punto geográfico de la empresa</h4>
+            <div #locationMap class="location-map" aria-label="Mapa de la ubicación registrada del proveedor"></div>
+            <p *ngIf="providerForm.get('latitude')?.value == null || providerForm.get('longitude')?.value == null" class="information-empty mb-0 mt-2 text-xs">Este proveedor no tiene coordenadas registradas.</p>
+          </div>
+        </section>
+        </div>
+      </div>
+    </ng-template>
   </form>
 
   <ng-template pTemplate="footer">
-    <p-button (click)="!loading() ? (activeTab()==='branches' ? saveBranch() : (providersService.isEdit ? editProvider() : newProvider())) : null"
+    <p-button *ngIf="!providersService.isInfo" label="Guardar avance" icon="fa-solid fa-file-pen" (click)="saveRegistrationDraft()" [loading]="savingDraft()" [disabled]="loading()" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    <p-button *ngIf="providersService.isInfo" (click)="exportRegistrationSheet(true)" label="Vista previa" icon="fa-solid fa-eye" [disabled]="loading() || exportingSheet()" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+    <p-button *ngIf="providersService.isInfo" (click)="exportRegistrationSheet()" label="Exportar PDF" icon="fa-solid fa-file-pdf" [loading]="exportingSheet()" [disabled]="loading()" styleClass="p-button-sm p-button-rounded"></p-button>
+    <p-button *ngIf="!providersService.isInfo" (click)="!loading() ? (activeTab()==='branches' ? saveBranch() : (providersService.isEdit ? editProvider() : newProvider())) : null"
       styleClass="p-button-sm p-button-rounded" [label]="activeTab()==='branches' ? (creatingBranch() ? 'Crear sucursal' : 'Guardar sede') : (providersService.isEdit ? 'Guardar cambios' : 'Guardar proveedor')"
-      icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
-    <p-button (click)="providersService.showModal = false" label="Cancelar"
+      icon="fa-solid fa-floppy-disk" [loading]="loading()" [disabled]="savingDraft()"></p-button>
+    <p-button (click)="providersService.showModal = false" [label]="providersService.isInfo ? 'Cerrar' : 'Cancelar'"
       styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+  </ng-template>
+</p-dialog>
+<p-dialog header="Ficha técnica de proveedor · PDF" [(visible)]="sheetPreviewVisible" [modal]="true" [draggable]="false" [resizable]="false" appendTo="body" (onHide)="closeSheetPreview()" styleClass="app-dialog--xl erp-operational-dialog provider-pdf-preview">
+  <iframe *ngIf="sheetPreviewUrl" [src]="sheetPreviewUrl" title="Vista previa de la ficha de registro del proveedor" class="provider-pdf-frame"></iframe>
+  <ng-template pTemplate="footer">
+    <p-button label="Descargar PDF" icon="fa-solid fa-download" (click)="downloadSheetPreview()" styleClass="p-button-sm p-button-rounded"></p-button>
+    <p-button label="Cerrar" (click)="closeSheetPreview()" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
   </ng-template>
 </p-dialog>
 <app-modal-sectors></app-modal-sectors>

@@ -1,52 +1,130 @@
-<div [formGroup]="formReport">
-  <div class="card shadow mb-4 icon-box ">
-    <div class="card-body">
-      <div class="title mb-1">
-        <h3 class="app-u-color-bg-2665c-99da769 text-center app-u-flex-1-97445a8 app-u-margin-right-auto-471df91">
-          <b>CONSULTA DE PROVEEDORES</b>
-        </h3>
-        <div *ngIf="validatorsService.withPermission('PROVEEDORES','create')" class="ms-1">
-          <p-button icon="fa-solid fa-circle-plus" (click)="showModal()" pTooltip="Añadir Nuevo" tooltipPosition="left"
-            [rounded]="true" label="Añadir"></p-button>
-        </div>
+<div class="mb-4">
+  <!-- Top Breadcrumb & Actions Bar -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+    <div>
+      <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+        <span>Comercial</span>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+        <span>Compras</span>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+        <span class="text-emerald-700 font-bold">Proveedores</span>
       </div>
-      <p-tag *ngIf="estadoRegistro() === 'PENDIENTE'" severity="warning" icon="fa-solid fa-clock" value="Pendientes de validación comercial"></p-tag>
-      <p-accordion [activeIndex]="1">
-        <p-accordionTab header="Filtros">
-            <div class="field col-12">
-              <div class=" row mt-1">
-                <div class="p-fluid col-12 col-sm-6">
-                    <label class="block mb-1">Tipo proveedor</label>
-                    <p-dropdown [options]="types()" placeholder="Selecciona una opción"
-                      optionLabel="name" appendTo="body" formControlName="id_type_provider"
-                      [disabled]="loading()"
-                      (onChange)="!loading() ? this.getAllAndSearchProviders(1,rows(),true) : null"
-                      [class.ng-dirty]="validatorsService.inputValid('id_type_provider',formReport)"></p-dropdown>
-                </div>
-                <div class="col-12 col-sm-6 mt-3">
-                  <div class="text-end">
-                    <p-button  *ngIf="validatorsService.withPermission('COMPRAS','reports')" (click)="!loading() ? this.printPdfReport() : null"
-                    styleClass="p-button-rounded p-button-success p-button-sm" label="Exportar excel"
-                      icon="fas fa-file-excel" [loading]="loadingReport()"></p-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </p-accordionTab>
-      </p-accordion>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        {{ isProviderList() ? 'Lista de Proveedores' : 'Gestión de Proveedores' }}
+        <span *ngIf="providers()?.total" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+          {{ providers()?.total }} registros
+        </span>
+      </h1>
     </div>
-    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
-      [activeItem]="searchItems()[0]"></p-tabMenu>
 
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2">
+      <button *ngIf="validatorsService.withPermission('PROVEEDORES','reports')"
+        type="button"
+        (click)="!loading() ? printPdfReport() : null"
+        [disabled]="loadingReport()"
+        class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm transition-all">
+        <i class="fa-solid fa-file-excel text-emerald-600"></i>
+        <span>Exportar Excel</span>
+      </button>
+
+      <button *ngIf="canProviderAction('create')"
+        type="button"
+        (click)="showModal()"
+        class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 shadow-sm transition-all">
+        <i class="fa-solid fa-plus"></i>
+        <span>Nuevo Proveedor</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Status Tabs Bar & Live Indicator -->
+  <div class="provider-status-bar flex flex-wrap items-center justify-between gap-2">
+    <div class="provider-status-tabs" role="group" aria-label="Estado de proveedores">
+      <button type="button" class="tab-btn tab-btn--active" [attr.aria-pressed]="activeTab() === 'ACTIVOS'" [class.active]="activeTab() === 'ACTIVOS'" (click)="setTab('ACTIVOS')">
+        <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+        <span>Activos</span>
+      </button>
+      <button type="button" class="tab-btn tab-btn--inactive" [attr.aria-pressed]="activeTab() === 'INACTIVOS'" [class.active]="activeTab() === 'INACTIVOS'" (click)="setTab('INACTIVOS')">
+        <i class="fa-solid fa-circle-xmark text-rose-500 text-xs"></i>
+        <span>Inactivos</span>
+      </button>
+      <button type="button" class="tab-btn tab-btn--pending" [attr.aria-pressed]="activeTab() === 'PENDIENTES'" [class.active]="activeTab() === 'PENDIENTES'" (click)="setTab('PENDIENTES')">
+        <i class="fa-solid fa-clock text-amber-500 text-xs"></i>
+        <span>Pendientes Validación</span>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2 text-xs text-slate-500">
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span class="font-medium">Directorio Operativo Sincronizado</span>
+    </div>
   </div>
 </div>
-<app-table responsiveStrategy="scroll" *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
-  (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
-</app-table>
-<app-table responsiveStrategy="scroll" *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
-  (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
-</app-table>
 
+  <!-- Basic Filter Toolbar for Provider List -->
+  <div *ngIf="isProviderList()" [formGroup]="formReport" class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm my-3 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <label class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+        <i class="fa-solid fa-filter text-emerald-700"></i> Tipo Proveedor:
+      </label>
+      <p-dropdown [options]="types()" placeholder="Selecciona un tipo"
+        optionLabel="name" appendTo="body" formControlName="id_type_provider"
+        [disabled]="loading()"
+        (onChange)="!loading() ? getAllAndSearchProviders(1, rows(), status()) : null"
+        styleClass="text-xs min-w-[220px]">
+      </p-dropdown>
+    </div>
+  </div>
+
+  <!-- Main Management Layout (Filters Sidebar + Table Results) -->
+  <div [class.management-grid]="!isProviderList()" [class.w-full]="isProviderList()">
+    <!-- Left Column: Advanced Filters Sidebar -->
+    <aside *ngIf="!isProviderList()">
+      <app-provider-management-filters
+        [loading]="loading()"
+        (applyFilters)="applyManagementFilters($event)">
+      </app-provider-management-filters>
+    </aside>
+
+    <!-- Right / Full Column: Providers Table Results & Sorting Toolbar -->
+    <main class="provider-results flex flex-col gap-2" [class.w-full]="isProviderList()">
+    <!-- Table Sub-Header Toolbar -->
+    <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Resultados</span>
+        <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium border border-slate-200">
+          {{ providers()?.data?.length || 0 }} de {{ providers()?.total || 0 }}
+        </span>
+      </div>
+
+      <!-- Quick Sorting options -->
+      <div class="flex items-center gap-1.5 text-xs text-slate-600">
+        <span class="font-medium text-slate-500">Ordenar por:</span>
+        <button type="button" (click)="onQuickSort('amount')"
+          class="px-2 py-1 rounded hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all font-medium">
+          Mayor Compra
+        </button>
+        <button type="button" (click)="onQuickSort('balance')"
+          class="px-2 py-1 rounded hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all font-medium">
+          Saldo Pendiente
+        </button>
+        <button type="button" (click)="onQuickSort('last')"
+          class="px-2 py-1 rounded hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all font-medium">
+          Última Entrada
+        </button>
+      </div>
+    </div>
+
+    <!-- App Table Component -->
+    <app-table responsiveStrategy="scroll" *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+      (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
+    </app-table>
+    <app-table responsiveStrategy="scroll" *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+      (rows$)="paginate($event)" (search$)="search($event)" [data]="providers()" [loading]="loading()">
+    </app-table>
+  </main>
+</div>
 <app-modal-provider></app-modal-provider>
 <app-purchase-traceability-timeline mode="provider" [data]="traceabilityData()" [visible]="traceabilityVisible()"
   (visibleChange)="traceabilityVisible.set($event)"></app-purchase-traceability-timeline>

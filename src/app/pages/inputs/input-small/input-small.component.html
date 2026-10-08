@@ -35,7 +35,7 @@
             <label class="erp-label required">Buscar proveedor</label>
             <div class="purchase-search">
             <app-input-search (onEnters)="suggestedProvider($event)" (onDebounce)="suggestedProvider($event)"
-                (onBtnNew)="newProvider()" [icon]="'fa-solid fa-truck-moving'" [btnNew]="this.validatorsService.withPermission('PROVEEDORES','create')"
+                (onBtnNew)="newProvider()" [icon]="'fa-solid fa-truck-moving'" [btnNew]="this.validatorsService.withPermission('PROVEEDORES','create') || this.validatorsService.withPermission('LISTA PROVEEDORES','create')"
                 [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un proveedor aquí....'">
             </app-input-search>
             <div class="purchase-suggestions">

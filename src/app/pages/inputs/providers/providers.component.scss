@@ -1,4 +1,82 @@
 .title { display:flex; justify-content:space-between; align-items:center; }
+.management-grid {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+@media (max-width: 1024px) {
+  .management-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.provider-results {
+  min-width: 0;
+  width: 100%;
+}
+.kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.kpi-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border-color: #cbd5e1;
+}
+.tab-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tab-btn.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 5px rgba(4, 120, 87, .18);
+}
+.tab-btn:hover:not(.active) {
+  background: #ecfdf5;
+  color: #047857;
+}
+.provider-status-bar {
+  margin-top: .75rem;
+  padding: .65rem .75rem;
+  background: #ffffff;
+  border: 1px solid #d1fae5;
+  border-radius: .75rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+}
+.provider-status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  padding: .25rem;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: .65rem;
+}
+.tab-btn { min-height: 36px; border: 1px solid transparent; }
+.tab-btn.active i { color: inherit !important; }
+.tab-btn--inactive.active { background: #fff1f2; border-color: #fda4af; color: #9f1239; box-shadow: none; }
+.tab-btn--pending.active { background: #fffbeb; border-color: #fcd34d; color: #92400e; box-shadow: none; }
+.tab-btn:focus-visible { outline: 2px solid #059669; outline-offset: 2px; }
+@media (max-width: 600px) {
+  .provider-status-tabs { width: 100%; }
+  .tab-btn { flex: 1 1 auto; justify-content: center; padding: .5rem .65rem; }
+}
 .provider-info-tabs { display:flex; overflow:auto; margin:0 -1rem 1rem; padding:0 1rem; background:#fff; border-bottom:1px solid #e2e8f0; }
 .provider-info-tabs button { flex:1; min-width:180px; border:0; border-bottom:2px solid transparent; background:#fff; padding:.75rem 1rem; color:#64748b; font-size:.73rem; font-weight:700; white-space:nowrap; }
 .provider-info-tabs button.active { border-color:#059669; background:#ecfdf5; color:#047857; }

@@ -55,7 +55,7 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.isDesktopSidebarHidden = !this.isDesktopSidebarHidden;
+    this.isDesktopSidebarHidden = !document.body.classList.contains('app-sidebar-hidden');
     document.body.classList.toggle('app-sidebar-hidden', this.isDesktopSidebarHidden);
     document.body.classList.remove('vertical-collpsed');
     document.body.classList.remove('sidebar-enable', 'app-sidebar-open');

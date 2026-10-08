@@ -9,6 +9,7 @@ import { ComponentsService } from '../../services/components.service';
 import { Router } from '@angular/router';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { getSucursalBadgeStyle } from '../../utils/sucursal-badge.util';
+import { userRolePresentation } from '../../constants/user-role.constants';
 
 @Component({
   selector: 'app-table',
@@ -430,6 +431,7 @@ import { getSucursalBadgeStyle } from '../../utils/sucursal-badge.util';
   `]
 })
 export class TableComponent implements OnInit, OnDestroy, OnChanges {
+  readonly rolePresentation = userRolePresentation;
   readonly getSucursalBadgeStyle = getSucursalBadgeStyle;
   @Input() cols: ColsTable[] = [];
   @Input() searchFor: SearchFor[] = [];

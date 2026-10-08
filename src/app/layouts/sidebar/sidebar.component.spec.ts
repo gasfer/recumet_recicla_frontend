@@ -2,6 +2,58 @@ import { SidebarComponent } from './sidebar.component';
 import { MENU } from './menu';
 import Swal from 'sweetalert2';
 
+describe('SidebarComponent exclusive accordion', () => {
+  const createComponent = () => {
+    const component = Object.create(SidebarComponent.prototype) as SidebarComponent;
+    component.searchTerm = '';
+    component.menuGroups = [
+      { id: 1, title: 'Entradas', badgeCount: 1, isOpen: true, items: [
+        { id: 11, label: 'Compras', isExpanded: true, subItems: [{ link: '/inputs/input-small' }] },
+        { id: 12, label: 'Recepciones', subItems: [{ link: '/inputs/receptions' }] },
+      ] },
+      { id: 2, title: 'Administración', badgeCount: 1, isOpen: false, items: [
+        { id: 21, label: 'Configuración', subItems: [{ link: '/settings' }] },
+      ] },
+    ];
+    component.filteredGroups = component.menuGroups;
+    return component;
+  };
+
+  it('closes the previous group and allows closing the selected group', () => {
+    const component = createComponent();
+    component.toggleGroup(component.menuGroups[1]);
+    expect(component.menuGroups.map(group => group.isOpen)).toEqual([false, true]);
+    component.toggleGroup(component.menuGroups[1]);
+    expect(component.menuGroups.every(group => !group.isOpen)).toBeTrue();
+  });
+
+  it('closes sibling submenus when another submenu is expanded', () => {
+    const component = createComponent();
+    component.toggleSubItem(component.menuGroups[0].items[1], new Event('click'));
+    expect(component.menuGroups[0].items.map(item => item.isExpanded)).toEqual([false, true]);
+  });
+
+  it('keeps only one search result group open and synchronizes toggles when search clears', () => {
+    const component = createComponent();
+    component.searchTerm = 'c';
+    component.applyFilter();
+    expect(component.filteredGroups.filter(group => group.isOpen).length).toBe(1);
+    component.toggleGroup(component.filteredGroups[1]);
+    component.searchTerm = '';
+    component.applyFilter();
+    expect(component.filteredGroups.map(group => group.isOpen)).toEqual([false, true]);
+  });
+
+  it('closes manually opened groups when the active route is restored', () => {
+    const component = createComponent();
+    spyOn(component, 'hasActiveSubChild').and.returnValue(false);
+    component.menuGroups[0].items[0].link = window.location.pathname;
+    component.menuGroups[1].isOpen = true;
+    component.updateActiveStateFromUrl();
+    expect(component.menuGroups.map(group => group.isOpen)).toEqual([true, false]);
+  });
+});
+
 describe('SidebarComponent title filtering', () => {
   it('ignores matching menu entries without subitems', () => {
     const component = Object.create(SidebarComponent.prototype) as SidebarComponent;

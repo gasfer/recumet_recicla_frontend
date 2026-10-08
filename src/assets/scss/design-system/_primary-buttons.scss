@@ -1,0 +1,37 @@
+$green-actions: '.btn-primary, .btn-success, .erp-btn-primary, .btn-scale, button.bg-primary, button.bg-success, a.bg-primary, a.bg-success, button.bg-emerald-500, button.bg-emerald-600, button.bg-emerald-700, button.bg-emerald-800, button.bg-green-500, button.bg-green-600, button.bg-green-700, a.bg-emerald-500, a.bg-emerald-600, a.bg-emerald-700, a.bg-emerald-800, a.bg-green-500, a.bg-green-600, a.bg-green-700';
+
+body :is(#{$green-actions}),
+body .p-button.p-button-success:not(.p-button-outlined):not(.p-button-text) {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+body :is(#{$green-actions}):not(:disabled):not(.disabled):hover,
+body .p-button.p-button-success:not(.p-button-outlined):not(.p-button-text):enabled:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+body :is(#{$green-actions}):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+body :is(.btn-outline-primary, .btn-outline-success),
+body .p-button:is(.p-button-outlined, .p-button-text):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-secondary) {
+  background-color: transparent !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+body :is(.btn-outline-primary, .btn-outline-success):not(:disabled):hover,
+body .p-button:is(.p-button-outlined, .p-button-text):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-secondary):enabled:hover {
+  background-color: var(--color-primary-light) !important;
+}
+
+body .p-button.p-button-success:is(.p-button-outlined, .p-button-text) :is(.p-button-label, .p-button-icon) {
+  color: var(--color-primary) !important;
+}
+
+body :is(#{$green-actions}) i { color: inherit !important; }

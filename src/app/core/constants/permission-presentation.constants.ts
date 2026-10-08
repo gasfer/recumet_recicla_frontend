@@ -1,7 +1,8 @@
 import { PermissionAction } from './application-navigation.constants';
 
 export const PERMISSION_MODULE_LABELS: Readonly<Record<string, string>> = Object.freeze({
-  PROVEEDORES: 'Proveedores',
+  PROVEEDORES: 'Gestión de proveedores',
+  'LISTA PROVEEDORES': 'Lista de proveedores',
   RECOJO: 'Recojo',
   CERTIFICAR: 'Certificación de proveedores',
   'CUENTAS PROVEEDOR': 'Cuentas de proveedor',

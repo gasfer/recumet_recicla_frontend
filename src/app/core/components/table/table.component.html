@@ -212,6 +212,11 @@
             </span>
           </div>
 
+          <span *ngIf="col.isUserRole" class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold" [ngClass]="rolePresentation(getRowData(rowData,col)).classes">
+            <i [class]="rolePresentation(getRowData(rowData,col)).icon" aria-hidden="true"></i>
+            {{ rolePresentation(getRowData(rowData,col)).label }}
+          </span>
+
           <div *ngIf="col.isInfoStack" class="app-table-info-stack">
             <div *ngFor="let item of getRowData(rowData,col)" class="app-table-info-stack__item"
                  [ngClass]="'app-table-info-stack__item--' + (item.tone || 'neutral')">
@@ -235,7 +240,7 @@
 
           <div *ngIf="!col.isLink && !col.isDoubleValue && !col.isButton && !col.isArray
                       && !col.isTag && !col.isImg && !col.isText && !col.isValueUpdate && !col.isTextArray && !col.isSucursalBadge
-                      && !col.isInfoStack && !col.isReviewNotes && !col.isDocument && !col.isProviderIdentity">
+                      && !col.isInfoStack && !col.isReviewNotes && !col.isDocument && !col.isProviderIdentity && !col.isUserRole">
             {{ getRowData(rowData,col) }}
           </div>
         </td>

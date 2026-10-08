@@ -3,6 +3,7 @@ import { EventEmitter, Injectable, inject } from '@angular/core';
 import { Observable, Subject, of, catchError } from 'rxjs';
 import { GetAllProviders, GetAllTypesProvider, Provider } from '../interfaces/provider.interface';
 import { environment } from 'src/environments/environment';
+import { ProviderManagementCatalogs, ProviderManagementQuery } from '../interfaces/provider-management.interface';
 import { GetAllSectorProviders, Sector } from '../interfaces/sector.interface';
 import {
   ProviderBankAccountProfile,
@@ -21,8 +22,30 @@ const base_url = environment.base_url;
   providedIn: 'root'
 })
 export class ProvidersService {
+  getRegistrationDraft(key: string) {
+    return this.http.get<{ ok: boolean; draft: { values: Record<string, any>; updated_at: string } | null }>(`${base_url}/provider/drafts/${key}`);
+  }
+  saveRegistrationDraft(key: string, values: Record<string, unknown>) {
+    return this.http.put<{ ok: boolean }>(`${base_url}/provider/drafts/${key}`, { values });
+  }
+  deleteRegistrationDraft(key: string) {
+    return this.http.delete(`${base_url}/provider/drafts/${key}`);
+  }
+  exportRegistrationSheet(sheet: unknown): Observable<Blob> {
+    return this.http.post(`${base_url}/provider/registration-sheet`, sheet, { responseType: 'blob' });
+  }
+  getManagementCatalogs(): Observable<{ok: boolean; catalogs: ProviderManagementCatalogs}> {
+    return this.http.get<{ok: boolean; catalogs: ProviderManagementCatalogs}>(`${base_url}/provider/management/catalogs`);
+  }
+
+  getManagement(query: ProviderManagementQuery): Observable<GetAllProviders> {
+    let params = new HttpParams();
+    for (const [key, value] of Object.entries(query)) if (value !== null && value !== '') params = params.set(key, String(value));
+    return this.http.get<GetAllProviders>(`${base_url}/provider/management`, {params});
+  }
   private http = inject(HttpClient);
   isEdit: boolean = false;
+  isInfo: boolean = false;
   showModal : boolean = false;
   showPreRegisterModal : boolean = false;
   showModalNewSector : boolean = false;
@@ -127,7 +150,7 @@ getAllAndSearch(
     return this.http.get<{ ok: boolean, providers: Provider[] }>(`${base_url}/provider/autocomplete`, { params });
   }
 
-  preRegister(form: { full_names: string | null; number_document?: string | null; cellphone?: string | null }) {
+  preRegister(form: { full_names: string | null; number_document?: string | null; cellphone?: string | null; id_sucursal: number }) {
     return this.http.post<{ ok: boolean, provider: Provider }>(`${base_url}/provider/pre-register`, form);
   }
 
@@ -160,13 +183,21 @@ getAllAndSearch(
         frequency_mode: 'automatic' | 'manual';
         last_delivery_date: string | null;
         next_estimated_date: string | null;
+        first_delivery_date?: string | null;
+        total_purchases?: number;
+        elapsed_days?: number;
+        total_kg?: number;
+        estimated_volume?: number | null;
+        recommended_contact_date?: string | null;
+        overdue_days?: number;
+        purchases?: { id: number; cod: string; purchase_date: string; total_kg: number }[];
         message?: string;
         details?: any;
       };
     }>(`${base_url}/provider/${providerId}/frequency-analysis`, { params }).pipe(
       catchError(() => {
         return of({
-          ok: true,
+          ok: false,
           analysis: {
             has_sufficient_history: false,
             total_deliveries: 0,
@@ -175,7 +206,7 @@ getAllAndSearch(
             frequency_mode: 'manual' as const,
             last_delivery_date: null,
             next_estimated_date: null,
-            message: 'No hay suficiente historial para calcular automáticamente.'
+            message: 'No se pudo consultar el historial. Intente calcular nuevamente.'
           }
         });
       })
@@ -191,7 +222,7 @@ getAllAndSearch(
   createCommercialCompany(body: ProviderCompanyProfile | { company: ProviderCompanyProfile; headquarters: ProviderSiteProfile }) {
     return this.http.post<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers`, body);
   }
-  updateCommercialCompany(id: number, body: ProviderCompanyProfile) {
+  updateCommercialCompany(id: number, body: ProviderCompanyProfile | { company: ProviderCompanyProfile; headquarters: ProviderSiteProfile }) {
     return this.http.put<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${id}`, body);
   }
   uploadCommercialCompanyDocument(id: number, type: 'CERTIFICATE' | 'TRACEABILITY_REPORT', file: File) {
@@ -200,6 +231,11 @@ getAllAndSearch(
     return this.http.post<{ ok: boolean; document: { id: number; document_type: string; original_name: string } }>(
       `${base_url}/commercial_providers/${id}/documents/${type}`, body,
     );
+  }
+  uploadProviderCertificate(id: number, file: File) {
+    const body = new FormData();
+    body.append('document', file, file.name);
+    return this.http.post<{ ok: boolean; certificate_file_name: string; original_name: string }>(`${base_url}/provider/${id}/certificate`, body);
   }
   setCommercialCompanyProviders(id: number, provider_ids: number[]) {
     return this.http.put<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${id}/providers`, { provider_ids });

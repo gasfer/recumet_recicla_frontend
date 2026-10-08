@@ -4,6 +4,7 @@ import { Subscription, debounceTime, distinctUntilChanged, filter, switchMap } f
 import { InputsService } from '../../../services/inputs.service';
 import { ProvidersService } from '../../../services/providers.service';
 import { Provider } from '../../../interfaces/provider.interface';
+import { ValidatorsService } from 'src/app/services/validators.service';
 
 @Component({
   selector: 'app-modal-pre-register-provider',
@@ -13,6 +14,7 @@ export class ModalPreRegisterProviderComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private providersService = inject(ProvidersService);
   private inputsService = inject(InputsService);
+  private validatorsService = inject(ValidatorsService);
   loading = signal(false);
   duplicate = signal<Provider | undefined>(undefined);
   private duplicateSubscription?: Subscription;
@@ -40,7 +42,10 @@ export class ModalPreRegisterProviderComponent implements OnInit, OnDestroy {
     this.form.markAllAsTouched();
     if (this.form.invalid || this.duplicate()) return;
     this.loading.set(true);
-    this.providersService.preRegister(this.form.getRawValue()).subscribe({
+    this.providersService.preRegister({
+      ...this.form.getRawValue(),
+      id_sucursal: this.validatorsService.id_sucursal(),
+    }).subscribe({
       next: ({ provider }) => {
         this.inputsService.providerSelect.set(provider);
         this.providersService.showPreRegisterModal = false;

@@ -29,6 +29,7 @@ export const NAVIGATION_DESTINATIONS = {
   reports: destination('/reports', 'Reportes'),
 
   providers: destination('/inputs/providers', 'Proveedores', 'PROVEEDORES'),
+  providerList: destination('/inputs/provider-list', 'Lista de proveedores', 'LISTA PROVEEDORES'),
   providerPickup: destination('/providers/schedule-pickup', 'Agendar recojo', 'RECOJO', 'create'),
   providerCertification: destination('/providers/certify', 'Certificar proveedor', 'CERTIFICAR', 'create'),
   providerAccounts: destination('/providers/accounts', 'Cuentas de proveedor', 'CUENTAS PROVEEDOR'),

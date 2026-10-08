@@ -20,6 +20,8 @@ import { PurchaseReportComponent } from './purchase-report/purchase-report.compo
 import { ModalPreRegisterProviderComponent } from './input-small/components/modal-pre-register-provider/modal-pre-register-provider.component';
 import { ProviderContactsSectionComponent } from './providers/components/provider-contacts-section/provider-contacts-section.component';
 import { ProviderBankAccountsSectionComponent } from './providers/components/provider-bank-accounts-section/provider-bank-accounts-section.component';
+import { ProviderManagementFiltersComponent } from './providers/provider-management-filters.component';
+
 @NgModule({
   declarations: [
     ProvidersComponent,
@@ -44,6 +46,7 @@ import { ProviderBankAccountsSectionComponent } from './providers/components/pro
     CoreModule,
     ChipModule,
     AccordionModule,
+    ProviderManagementFiltersComponent,
   ],
   exports: [
     ModalViewDetailsComponent
