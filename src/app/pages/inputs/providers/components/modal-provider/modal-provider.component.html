@@ -837,20 +837,12 @@
 
   <ng-template pTemplate="footer">
     <p-button *ngIf="!providersService.isInfo" label="Guardar avance" icon="fa-solid fa-file-pen" (click)="saveRegistrationDraft()" [loading]="savingDraft()" [disabled]="loading()" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
-    <p-button *ngIf="providersService.isInfo" (click)="exportRegistrationSheet(true)" label="Vista previa" icon="fa-solid fa-eye" [disabled]="loading() || exportingSheet()" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
-    <p-button *ngIf="providersService.isInfo" (click)="exportRegistrationSheet()" label="Exportar PDF" icon="fa-solid fa-file-pdf" [loading]="exportingSheet()" [disabled]="loading()" styleClass="p-button-sm p-button-rounded"></p-button>
+    <p-button *ngIf="providersService.isInfo" (click)="exportRegistrationSheet()" label="Vista previa / imprimir PDF" icon="fa-solid fa-eye" [loading]="exportingSheet()" [disabled]="loading()" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     <p-button *ngIf="!providersService.isInfo" (click)="!loading() ? (activeTab()==='branches' ? saveBranch() : (providersService.isEdit ? editProvider() : newProvider())) : null"
       styleClass="p-button-sm p-button-rounded" [label]="activeTab()==='branches' ? (creatingBranch() ? 'Crear sucursal' : 'Guardar sede') : (providersService.isEdit ? 'Guardar cambios' : 'Guardar proveedor')"
       icon="fa-solid fa-floppy-disk" [loading]="loading()" [disabled]="savingDraft()"></p-button>
     <p-button (click)="providersService.showModal = false" [label]="providersService.isInfo ? 'Cerrar' : 'Cancelar'"
       styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
-  </ng-template>
-</p-dialog>
-<p-dialog header="Ficha técnica de proveedor · PDF" [(visible)]="sheetPreviewVisible" [modal]="true" [draggable]="false" [resizable]="false" appendTo="body" (onHide)="closeSheetPreview()" styleClass="app-dialog--xl erp-operational-dialog provider-pdf-preview">
-  <iframe *ngIf="sheetPreviewUrl" [src]="sheetPreviewUrl" title="Vista previa de la ficha de registro del proveedor" class="provider-pdf-frame"></iframe>
-  <ng-template pTemplate="footer">
-    <p-button label="Descargar PDF" icon="fa-solid fa-download" (click)="downloadSheetPreview()" styleClass="p-button-sm p-button-rounded"></p-button>
-    <p-button label="Cerrar" (click)="closeSheetPreview()" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
   </ng-template>
 </p-dialog>
 <app-modal-sectors></app-modal-sectors>

@@ -1,7 +1,7 @@
 <p-dialog
   [header]="inputsService.isEdit ? 'Editar compra: ' + inputsService.dataInputForEdit()?.cod : 'Registro de compra'"
   [(visible)]="inputsService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
-  (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog">
+  (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog purchase-save-dialog">
   <form [formGroup]="formInput" class="purchase-save-form">
     <div class="p-2.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 text-xs flex items-center gap-2 mb-3">
       <i class="fa-solid fa-circle-info"></i>

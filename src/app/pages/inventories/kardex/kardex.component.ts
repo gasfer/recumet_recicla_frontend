@@ -10,6 +10,7 @@ import { ColsTable } from 'src/app/core/components/interfaces/OptionsTable.inter
 import { Product } from '../interfaces/products.interface';
 import { ProductsService } from '../services/products.service';
 import Swal from 'sweetalert2';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-kardex',
@@ -33,6 +34,7 @@ export class KardexComponent implements OnInit {
   providersService = inject(ProvidersService);
   kardexService = inject(KardexService);
   productService = inject(ProductsService);
+  pdfActions = inject(PdfDocumentActionsService);
 
   // =========
   // SIGNALS
@@ -364,10 +366,9 @@ export class KardexComponent implements OnInit {
       title: 'Generando Reporte',
       didOpen: () => {
         Swal.showLoading();
-        this.kardexService.getReportPdf(this.paramsSearch(), this.fieldSort(), this.order()).subscribe({
+        this.pdfActions.prepareRequest(this.kardexService.getReportPdf(this.paramsSearch(), this.fieldSort(), this.order())).subscribe({
           next: data => {
-            const fileURL = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
-            window.open(fileURL);
+            this.pdfActions.show(data, 'reporte_kardex.pdf', 'Reporte de kardex');
             Swal.close();
           },
           error: () => Swal.close()
@@ -399,8 +400,8 @@ export class KardexComponent implements OnInit {
   }
 
   printTransferReviewNote(id: number) {
-    this.kardexService.getTransferReviewNotePdf(id).subscribe({
-      next: (data) => window.open(URL.createObjectURL(data)),
+    this.pdfActions.prepareRequest(this.kardexService.getTransferReviewNotePdf(id)).subscribe({
+      next: (data) => this.pdfActions.show(data, `nota_revision_traslado_${id}.pdf`, 'Nota de revisión de traslado'),
       error: () => Swal.fire('No se pudo generar la nota', '', 'warning')
     });
   }

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ValidatorsService } from 'src/app/services/validators.service';
@@ -14,12 +14,16 @@ import { MenuItem } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { CategoriesService } from '../services/categories.service';
 import { ProductsService } from '../services/products.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, finalize, Observable, Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ProvidersService } from '../../inputs/services/providers.service';
+import { Provider, TypesProvider } from '../../inputs/interfaces/provider.interface';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-total-stock-recumet',
   templateUrl: './total-stock-recumet.component.html',
-  styles: [],
+  styleUrls: ['./total-stock-recumet.component.scss'],
 })
 export class TotalStockRecumetComponent implements OnInit {
   fb = inject(FormBuilder);
@@ -30,7 +34,17 @@ export class TotalStockRecumetComponent implements OnInit {
   authService = inject(AuthService);
   categoriesService = inject(CategoriesService);
   productService = inject(ProductsService);
+  pdfActions = inject(PdfDocumentActionsService);
 
+  private destroyRef = inject(DestroyRef);
+  private stockRequest?: Subscription;
+  private providerRequest?: Subscription;
+  exporting = signal(false);
+  loadingProviderTypes = signal(true);
+  providersService = inject(ProvidersService);
+  providerTypes = signal<TypesProvider[]>([]);
+  providers = signal<Provider[]>([]);
+  loadingProviders = signal(false);
   loading = signal(false);
   rows = signal(50);
   page = signal(1);
@@ -85,6 +99,17 @@ export class TotalStockRecumetComponent implements OnInit {
     },
   ];
 
+  loadProviders(): void {
+    this.providerRequest?.unsubscribe();
+    this.providers.set([]);
+    this.formReport.patchValue({ id_provider: '' });
+    this.loadingProviders.set(true);
+    this.providerRequest = this.kardexService.getStockProviderOptions(String(this.formReport.get('id_type_provider')?.value || '')).pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.loadingProviders.set(false))).subscribe({
+      next: response => { this.providers.set(response.providers); this.loadingProviders.set(false); },
+      error: () => { this.providers.set([]); this.loadingProviders.set(false); Swal.fire('Error', 'No se pudieron cargar los proveedores.', 'error'); }
+    });
+  }
+
   title = signal('CONSOLIDADO DE STOCK (MP Y PT) RECUMET');
 
   paramsSearch = signal<FormSearchKardex>({
@@ -112,6 +137,8 @@ export class TotalStockRecumetComponent implements OnInit {
     type_kardex: [''],
     id_sucursal: [[], [Validators.required]],
     id_storage: [[]],
+    id_provider: [''],
+    id_type_provider: [''],
     showZeroSaldo: [false]
   });
 
@@ -173,6 +200,11 @@ export class TotalStockRecumetComponent implements OnInit {
     const idStorage = this.validatorsService.id_storage();
     this.formReport.patchValue({ id_storage: idStorage ? [idStorage] : [] });
 
+    this.providersService.getAllTypesProvider().pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.loadingProviderTypes.set(false))).subscribe({
+      next: response => this.providerTypes.set(response.typesProvider),
+      error: () => Swal.fire('Error', 'No se pudieron cargar los tipos de proveedor.', 'error')
+    });
+    this.loadProviders();
     this.getSucursales();
     this.loadCategories();
     this.loadDropdownProducts(true);
@@ -285,11 +317,10 @@ export class TotalStockRecumetComponent implements OnInit {
 
     this.formParamsByForm();
 
-    if (!query) {
-      this.loading.set(true);
-    }
+    this.stockRequest?.unsubscribe();
+    this.loading.set(true);
 
-    this.kardexService.getTotalStockRecumet(
+    this.stockRequest = this.kardexService.getTotalStockRecumet(
       page,
       limit,
       this.paramsSearch(),
@@ -341,7 +372,8 @@ export class TotalStockRecumetComponent implements OnInit {
         id_storages: storageIdsStr,
         category_ids: categoryIdsStr,
         id_products: productIdsStr,
-        id_provider: '',
+        id_provider: String(this.formReport.get('id_provider')?.value || ''),
+        id_type_provider: String(this.formReport.get('id_type_provider')?.value || ''),
         id_product: '',
         filterBy: filterBy,
         date1:
@@ -398,6 +430,8 @@ export class TotalStockRecumetComponent implements OnInit {
       dates: [new Date('2025-01-01'), new Date()],
       id_sucursal: [this.validatorsService.id_sucursal()],
       id_storage: this.validatorsService.id_storage() ? [this.validatorsService.id_storage()] : [],
+      id_provider: '',
+      id_type_provider: '',
       showZeroSaldo: false,
     });
     this.selectedCategoryIds.set([]);
@@ -405,75 +439,37 @@ export class TotalStockRecumetComponent implements OnInit {
     this.selectedProductIds.set([]);
     this.selectedProductValues = [];
     this.onSucursalesChange();
+    this.loadProviders();
     this.loadDropdownProducts(true);
     this.getAllAndSearchKardex(1, this.rows());
   }
 
+  private exportBlob(request: Observable<Blob>, filename?: string): void {
+    this.exporting.set(true);
+    this.pdfActions.prepareRequest(request.pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.exporting.set(false))), !filename).subscribe({
+      next: data => {
+        if (!filename) {
+          this.pdfActions.show(data, 'reporte_stock_total.pdf', 'Reporte de stock total');
+          return;
+        }
+        this.pdfActions.download(data, filename);
+      },
+      error: () => Swal.fire('Error al generar reporte', 'No se pudo generar el reporte. Intente nuevamente.', 'error'),
+    });
+  }
+
   printPdfReport(): void {
     this.formReport.markAllAsTouched();
-    if (!this.formReport.valid) return;
+    if (!this.formReport.valid || this.exporting()) return;
     this.formParamsByForm();
-    Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
-      didOpen: () => {
-        Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.kardexService
-            .getReportPdfTotalStock(
-              this.paramsSearch(),
-              this.type(),
-              this.query(),
-              this.fieldSort(),
-              this.order(),
-            )
-            .subscribe({
-              next: (data) => {
-                const file = new Blob([data], { type: 'application/pdf' });
-                const fileURL = URL.createObjectURL(file);
-                window.open(fileURL);
-                Swal.close();
-              },
-              error: (err) => {
-                Swal.close();
-              },
-            });
-        });
-      },
-    });
+    this.exportBlob(this.kardexService.getReportPdfTotalStock(this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()));
   }
 
   printExcelReport(): void {
     this.formReport.markAllAsTouched();
-    if (!this.formReport.valid) return;
+    if (!this.formReport.valid || this.exporting()) return;
     this.formParamsByForm();
-    Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
-      didOpen: () => {
-        Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.kardexService
-            .getReportExcelTotalStock(
-              this.paramsSearch(),
-              this.type(),
-              this.query(),
-              this.fieldSort(),
-              this.order(),
-            )
-            .subscribe({
-              next: (data) => {
-                const fileURL = window.URL.createObjectURL(data);
-                window.open(fileURL);
-                Swal.close();
-              },
-              error: (err) => {
-                Swal.close();
-              },
-            });
-        });
-      },
-    });
+    this.exportBlob(this.kardexService.getReportExcelTotalStock(this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()), 'listado_stock_' + this.getDatePartForFilename() + '.xlsx');
   }
 
   getDatePartForFilename(): string {
@@ -493,46 +489,11 @@ export class TotalStockRecumetComponent implements OnInit {
 
   downloadConsolidatedExcelReport(purchasesByBranch = false): void {
     this.formReport.markAllAsTouched();
-    if (!this.formReport.valid) return;
+    if (!this.formReport.valid || this.exporting()) return;
     this.formParamsByForm();
-    Swal.fire({
-      title: 'Generando Reporte!',
-      html: purchasesByBranch ? 'Construyendo reporte compras x sucursal...' : 'Construyendo consolidado de inventario...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-        this.kardexService
-          [purchasesByBranch ? 'getReportExcelPurchasesByBranch' : 'getReportExcelConsolidatedTotalStock'](
-            this.paramsSearch(),
-            this.type(),
-            this.query(),
-            this.fieldSort(),
-            this.order(),
-          )
-          .subscribe({
-            next: (data: Blob) => {
-              const fileURL = window.URL.createObjectURL(data);
-              const anchor = document.createElement('a');
-              anchor.href = fileURL;
-              const datePart = this.getDatePartForFilename();
-              anchor.download = `${purchasesByBranch ? 'reporte_compras_x_sucursal' : 'consolidado_inventario'}_${datePart}.xlsx`;
-              document.body.appendChild(anchor);
-              anchor.click();
-              document.body.removeChild(anchor);
-              window.URL.revokeObjectURL(fileURL);
-              Swal.close();
-            },
-            error: (err) => {
-              Swal.close();
-              Swal.fire({
-                icon: 'error',
-                title: 'Error al generar reporte',
-                text: err?.error?.errors?.[0]?.msg || (purchasesByBranch ? 'Ocurrió un error al generar el reporte de compras por sucursal' : 'Ocurrió un error al generar el consolidado de inventario'),
-              });
-            },
-          });
-      },
-    });
+    const method = purchasesByBranch ? 'getReportExcelPurchasesByBranch' : 'getReportExcelConsolidatedTotalStock';
+    const filename = purchasesByBranch ? 'reporte_compras_x_sucursal' : 'consolidado_inventario';
+    this.exportBlob(this.kardexService[method](this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()), filename + '_' + this.getDatePartForFilename() + '.xlsx');
   }
 
   getSucursalesList(): any[] {

@@ -10,6 +10,7 @@ import { ErrorLogsService } from 'src/app/core/services/error-logs.service';
 import { CategoriesService } from '../services/categories.service';
 import Swal from 'sweetalert2';
 import { Subject, Subscription } from 'rxjs';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-list-costs-product',
@@ -21,6 +22,7 @@ export class ListCostsProductComponent implements OnInit, OnDestroy {
   productsService   = inject(ProductsService);
   errorLogsService  = inject(ErrorLogsService);
   categoriesService = inject(CategoriesService);
+  pdfActions        = inject(PdfDocumentActionsService);
 
 
 
@@ -213,10 +215,10 @@ printPdfReport() {
     didOpen: () => {
       Swal.showLoading();
       this.pdfSub?.unsubscribe(); // ✅ cancela anterior
-      this.pdfSub = this.productsService
-        .getReportProductCostPdf(id_category, this.fieldSort(), this.order())
+      this.pdfSub = this.pdfActions.prepareRequest(this.productsService
+        .getReportProductCostPdf(id_category, this.fieldSort(), this.order()))
         .subscribe({
-          next:  (data) => { window.open(window.URL.createObjectURL(data)); Swal.close(); },
+          next:  (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_costos_productos.pdf', 'Reporte de costos de productos'); },
           error: ()     => Swal.close()
         });
     },

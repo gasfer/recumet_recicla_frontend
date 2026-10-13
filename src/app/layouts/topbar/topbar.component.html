@@ -146,7 +146,7 @@
                   [attr.aria-expanded]="userDropdownOpen()"
                   (click)="toggleUserDropdown($event)">
             <img class="rounded-circle header-profile-user"
-                 [src]="authService.getUser.photo || defaultAvatar"
+                 [src]="userAvatar"
                  (error)="onImageError($event)"
                  alt="Header Avatar"
                  style="object-fit: cover;">

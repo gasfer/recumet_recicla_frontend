@@ -27,6 +27,10 @@ export class TopbarComponent implements OnInit{
   countryName:any;
   valueset:any;
   defaultAvatar = 'assets/img/not-user.jpg';
+  get userAvatar(): string {
+    const photo = this.authService.getUser?.photo;
+    return photo && photo !== 'NONE' ? photo : this.defaultAvatar;
+  }
   userDropdownOpen = signal(false);
   notificationsDropdownOpen = signal(false);
 

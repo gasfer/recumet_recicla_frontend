@@ -102,6 +102,7 @@ export enum Type {
 
 
 export interface FormSearchKardex {
+    id_type_provider?: string;
     filterBy: string;
     date1: string;
     date2: string;

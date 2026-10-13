@@ -67,6 +67,12 @@ getDailyKardex(page: number, limit: number, params: FormSearchKardex, type: stri
     });
   }
 
+  getStockProviderOptions(id_type_provider = ''): Observable<{ providers: import('../../inputs/interfaces/provider.interface').Provider[] }> {
+    return this.http.get<{ providers: import('../../inputs/interfaces/provider.interface').Provider[] }>(base_url + '/kardex/total-stock-recumet/providers', {
+      params: new HttpParams().set('id_type_provider', id_type_provider),
+    });
+  }
+
   getTotalStockRecumet(page: number, limit: number, params: FormSearchKardex, type: string = '', query?: string, field_sort: string = 'product.cod', order: string = 'ASC'): Observable<GetAllKardexes> {
     let url = '';
     if (type === '') {
@@ -140,6 +146,7 @@ getDailyKardex(page: number, limit: number, params: FormSearchKardex, type: stri
       responseType: 'blob',
     });
   }
+
 
   //* Reportes Detalles */
   getReportPdf(params: FormSearchKardex, field_sort: string = 'id', order: string = 'DESC') {

@@ -1,3 +1,4 @@
+import { downloadBlobFile } from 'src/app/core/helpers/download-blob-file';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
@@ -9,11 +10,13 @@ import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/Options
 import { MenuItem } from 'primeng/api';
 import * as moment from 'moment';
 import Swal from 'sweetalert2';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 import { TransferReviewService } from 'src/app/services/transfer-review.service';
 import { ActivatedRoute } from '@angular/router';
 import { getSucursalBadgeStyle } from 'src/app/core/utils/sucursal-badge.util';
 import { canCancelReception, isTransferCancellationAdministrator, receptionCancellationMessage } from '../utils/transfer-cancellation-actions.util';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-query-receptions',
@@ -29,6 +32,7 @@ export class QueryReceptionsComponent implements OnInit {
   reviewService          = inject(TransferReviewService);
   route                  = inject(ActivatedRoute);
   decimalFormat          = inject(DecimalFormatService);
+  pdfActions             = inject(PdfDocumentActionsService);
 
   loading         = signal(false);
   rows            = signal(50);
@@ -272,7 +276,10 @@ export class QueryReceptionsComponent implements OnInit {
       showLoaderOnConfirm: true,
       allowOutsideClick: () => !Swal.isLoading(),
       preConfirm: (value) => new Promise((resolve) => {
-        this.transfersService.cancelReception(transfer.id, String(value).trim()).subscribe({
+        const releaseWriteLoader = this.validatorsService.beginWriteLoading();
+        this.transfersService.cancelReception(transfer.id, String(value).trim()).pipe(
+          finalize(() => releaseWriteLoader()),
+        ).subscribe({
           next: () => resolve(true),
           error: (error) => {
             const message = error?.error?.errors?.[0]?.msg || 'No se pudo anular la recepción.';
@@ -312,13 +319,8 @@ export class QueryReceptionsComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.transfersService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.transfersService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_recepciones.pdf', 'Reporte de recepciones'); },
             error: (err) => {
               Swal.close();
             },
@@ -340,8 +342,7 @@ export class QueryReceptionsComponent implements OnInit {
         new Promise((resolve, reject) => {
           this.transfersService.getReportExcel(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
             next: (data) => {
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
+              downloadBlobFile(data, 'reporte_recepciones.xlsx');
               Swal.close();
             },
             error: (err) => {

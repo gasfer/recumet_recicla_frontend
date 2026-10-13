@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { of, Subject } from 'rxjs';
+import { EMPTY, of, Subject } from 'rxjs';
 import { PurchaseReportComponent } from './purchase-report.component';
 import { InputsService } from '../services/inputs.service';
 import { SucursalesService } from '../../managements/services/sucursales.service';
@@ -23,7 +23,7 @@ describe('PurchaseReportComponent catalog scope', () => {
         FormBuilder,
         { provide: ValidatorsService, useValue: { id_sucursal: () => 1, id_storage: () => 10 } },
         { provide: AuthService, useValue: { getUser: { role: 'OPERADOR', assign_sucursales: [{ id_sucursal: 1 }] } } },
-        { provide: InputsService, useValue: { getOperationalDate: () => of({ ok: true, date: '2026-09-15' }), getPurchaseReport: () => of({ inputs: { data: [] } }) } },
+        { provide: InputsService, useValue: { referral_sources: () => [], getPurchaseProviderCatalog: () => of({ providers: [], types: [] }), getOperationalDate: () => of({ ok: true, date: '2026-09-15' }), getPurchaseReport: () => of({ inputs: { data: [] } }) } },
         { provide: SucursalesService, useValue: { getAllAndSearch: () => of({ sucursales: { data: [
           { id: 1, name: 'Autorizada', storage: [{ id: 10, name: 'Central', status: true }] },
           { id: 2, name: 'No autorizada', storage: [{ id: 20, name: 'Externo', status: true }] },
@@ -65,5 +65,31 @@ describe('PurchaseReportComponent catalog scope', () => {
     expect(component.storages().map(storage => storage.id)).toEqual([20]);
     expect(component.categories().map(category => category.id)).toEqual([102]);
     expect(component.products().map(product => product.id)).toEqual([202]);
+  });
+
+  it('stops loading and clears the table when the server returns no content', () => {
+    const inputsService = TestBed.inject(InputsService) as jasmine.SpyObj<InputsService>;
+    spyOn(inputsService, 'getPurchaseReport').and.returnValue(EMPTY);
+    component.form.patchValue({ id_sucursal: [1] });
+    component.loading.set(true);
+
+    component.search();
+
+    expect(component.loading()).toBeFalse();
+    expect(component.inputs()?.data).toEqual([]);
+    expect(component.inputs()?.total).toBe(0);
+  });
+
+  it('treats a 204 response as an empty result and stops loading', () => {
+    const inputsService = TestBed.inject(InputsService) as jasmine.SpyObj<InputsService>;
+    spyOn(inputsService, 'getPurchaseReport').and.returnValue(of(null as any));
+    component.form.patchValue({ id_sucursal: [1] });
+    component.loading.set(true);
+
+    component.search();
+
+    expect(component.loading()).toBeFalse();
+    expect(component.inputs()?.data).toEqual([]);
+    expect(component.inputs()?.total).toBe(0);
   });
 });

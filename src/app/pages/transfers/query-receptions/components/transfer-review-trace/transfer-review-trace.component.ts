@@ -398,12 +398,13 @@ export class TransferReviewTraceComponent {
     });
     if (!confirmation.isConfirmed) return;
     this.historicalSaving.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
     this.historicalError.set('');
     this.reviewService.completeHistoricalDifference(trace.id, item.id, {
       preview_fingerprint: preview.fingerprint,
       reason: this.historicalCompletionForm.controls.reason.value?.trim() || '',
       id_merma_product: this.historicalCompletionForm.controls.id_merma_product.value,
-    }).pipe(finalize(() => this.historicalSaving.set(false))).subscribe({
+    }).pipe(finalize(() => { this.historicalSaving.set(false); releaseWriteLoader(); })).subscribe({
       next: () => {
         this.historicalNotice.set('El registro histórico fue completado y quedó vinculado a la boleta. La investigación operativa permanece separada.');
         this.cancelHistoricalCompletion();
@@ -439,8 +440,9 @@ export class TransferReviewTraceComponent {
 
     this.assignmentError.set('');
     this.assignmentSaving.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
     this.reviewService.assign(note.id, userId, observation).pipe(
-      finalize(() => this.assignmentSaving.set(false)),
+      finalize(() => { this.assignmentSaving.set(false); releaseWriteLoader(); }),
     ).subscribe({
       next: () => {
         const assigned = this.reviewService.assignableUsers().find(({ id }) => id === userId);
@@ -616,6 +618,7 @@ export class TransferReviewTraceComponent {
 
     this.formError.set('');
     this.saving.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
     const payload = {
       solution_code: form.solution_code || '',
       id_target_product: form.id_target_product,
@@ -633,7 +636,7 @@ export class TransferReviewTraceComponent {
         quantity: candidate.id === detail.id ? quantity : this.remainingQuantity(candidate),
       })))
       : this.reviewService.confirmAutomaticResolution(note.id, detail.id, payload);
-    request.pipe(finalize(() => this.saving.set(false))).subscribe({
+    request.pipe(finalize(() => { this.saving.set(false); releaseWriteLoader(); })).subscribe({
       next: (result: any) => {
         const pendingQuantity = Number(result?.pending_quantity || 0);
         const operation = result?.operation;

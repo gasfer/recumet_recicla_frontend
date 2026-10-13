@@ -187,6 +187,7 @@ saveOutput() {
   if (!this.formOutput.valid) return;
 
   this.loading.set(true);
+  const releaseWriteLoader = this.validatorsService.beginWriteLoading();
 
   // 🔹 Detalle
   const outputDetail = this.outputService.detailSale().map((prod) => ({
@@ -238,8 +239,8 @@ saveOutput() {
 
       this.componentService.clearInputSearch$.next(true);
     },
-    error: () => this.loading.set(false),
-    complete: () => this.loading.set(false),
+    error: () => { this.loading.set(false); releaseWriteLoader(); },
+    complete: () => { this.loading.set(false); releaseWriteLoader(); },
   });
 }
 

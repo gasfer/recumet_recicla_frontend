@@ -137,6 +137,7 @@ export class ModalSaveInputComponent implements OnInit {
     if (!this.formInput.valid) return;
 
     this.loading.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
 
     const inputDetail = this.inputsService.detailShopping().map((prod) => ({
       quantity: prod.quantity,
@@ -180,8 +181,8 @@ export class ModalSaveInputComponent implements OnInit {
           this.afterSaveInput(resp.id_input);
         }
       },
-      complete: () => this.loading.set(false),
-      error: (err) => this.loading.set(false),
+      complete: () => { this.loading.set(false); releaseWriteLoader(); },
+      error: (err) => { this.loading.set(false); releaseWriteLoader(); },
     });
   }
 
@@ -241,6 +242,7 @@ export class ModalSaveInputComponent implements OnInit {
     this.formInput.markAllAsTouched();
     if (!this.formInput.valid) return;
     this.loading.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
     const inputDetail = this.inputsService.detailShopping().map((prod) => ({
       quantity: prod.quantity,
       cost: prod.costo,
@@ -281,9 +283,10 @@ export class ModalSaveInputComponent implements OnInit {
             this.afterEditInput(resp.id_input);
           }
         },
-        complete: () => this.loading.set(false),
+        complete: () => { this.loading.set(false); releaseWriteLoader(); },
         error: (error) => {
           this.loading.set(false);
+          releaseWriteLoader();
           if (isPurchaseEditAuthorizationRequired(error)) {
             this.handlePurchaseEditAuthorizationError(error);
           }

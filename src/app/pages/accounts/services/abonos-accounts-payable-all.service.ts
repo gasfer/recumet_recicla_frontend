@@ -6,12 +6,14 @@ import { FormPayMultiple } from '../interfaces/accounts-payable-provider.interfa
 import { FormSearchAbonosPayables, GetAllAbonosPayableAccountAll } from '../interfaces/abonos-accounts-payable-all.interface';
 import { FormSearchAccountsPayables } from '../interfaces/accounts-payable.interface';
 import Swal from 'sweetalert2';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 
 @Injectable({
   providedIn: 'root'
 })
 export class AbonosAccountPayableAllService {
+  private pdfActions = inject(PdfDocumentActionsService);
   private mutationOptions() { return { headers: new HttpHeaders({ 'Idempotency-Key': globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}` }) }; }
   private http = inject(HttpClient);
   showModalNewAbono: boolean = false;
@@ -83,11 +85,9 @@ export class AbonosAccountPayableAllService {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.getPrintAbonoMultipleAccountPayable(id_abono_account_payable_multiple).subscribe({
+          this.pdfActions.prepareRequest(this.getPrintAbonoMultipleAccountPayable(id_abono_account_payable_multiple)).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, `comprobante_abono_multiple_cuentas_por_pagar_${id_abono_account_payable_multiple}.pdf`, 'Comprobante de abonos por pagar');
               Swal.close();
             },
             error: (err) => Swal.close()

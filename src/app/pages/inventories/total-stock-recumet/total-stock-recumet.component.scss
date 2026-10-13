@@ -1,0 +1,10 @@
+:host ::ng-deep .stock-filters {
+  .row { row-gap: .6rem; }
+  label { font-size: .84rem; margin-bottom: .25rem; color: #334155; }
+  .p-dropdown, .p-multiselect, .p-calendar { width: 100%; min-height: 36px; border-radius: .5rem; }
+  .p-dropdown-label, .p-multiselect-label, .p-inputtext { padding: .45rem .65rem; font-size: .84rem; }
+  .p-calendar .p-inputtext, .p-calendar .p-button { height: 36px; }
+  .p-multiselect-token { padding: .15rem .4rem; font-size: .8rem; }
+}
+:host ::ng-deep .card-body { padding: .8rem; }
+:host h3 { font-size: 1.05rem; color: #0b1324; margin-bottom: .75rem; }

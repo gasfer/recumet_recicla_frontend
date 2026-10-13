@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { Provider } from '../interfaces/provider.interface';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app/core/utils/purchase-edit-access';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 @Component({
   selector: 'app-query-inputs',
   templateUrl: './query-inputs.component.html',
@@ -26,6 +27,7 @@ import { PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app
   `]
 })
 export class QueryInputsComponent implements OnInit {
+  private pdfActions = inject(PdfDocumentActionsService);
   fb                = inject(FormBuilder);
   validatorsService = inject(ValidatorsService);
   inputsService     = inject(InputsService);
@@ -512,16 +514,6 @@ export class QueryInputsComponent implements OnInit {
     if(!this.formReport.valid) return;
     this.formParamsByForm();
 
-    // Reserve the tab during the user gesture. Opening it after the HTTP
-    // response is commonly blocked by the browser as an unsolicited popup.
-    const previewWindow = window.open('', '_blank');
-    if (!previewWindow) {
-      Swal.fire('Previsualización bloqueada', 'Permita ventanas emergentes para visualizar el PDF de compras.', 'warning');
-      return;
-    }
-    previewWindow.document.title = 'Generando reporte de compras';
-    previewWindow.document.body.innerHTML = '<p style="font-family:Arial;padding:24px">Generando reporte de compras…</p>';
-
     Swal.fire({
       title: 'Generando Reporte!',
       html: `Con los parámetros seleccionados`,
@@ -531,15 +523,12 @@ export class QueryInputsComponent implements OnInit {
       },
     });
 
-    this.inputsService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
+    this.pdfActions.prepareRequest(this.inputsService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
       next: (data) => {
-        const fileURL = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
-        previewWindow.location.replace(fileURL);
+        this.pdfActions.show(data, 'reporte_compras.pdf', 'Reporte de compras');
         Swal.close();
-        setTimeout(() => URL.revokeObjectURL(fileURL), 120000);
       },
       error: () => {
-        previewWindow.close();
         Swal.fire('No se pudo generar el PDF', 'Revise los filtros e intente nuevamente.', 'error');
       },
     });
@@ -581,11 +570,9 @@ export class QueryInputsComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.inputsService.getReportDetailsPdf(this.paramsSearch()).subscribe({
+          this.pdfActions.prepareRequest(this.inputsService.getReportDetailsPdf(this.paramsSearch())).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, 'reporte_compras_resumen_producto.pdf', 'Resumen de compras por producto');
               Swal.close();
             },
             error: (err) => {
@@ -607,11 +594,9 @@ export class QueryInputsComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.inputsService.getReportDetailsCPPPdf(this.paramsSearch()).subscribe({
+          this.pdfActions.prepareRequest(this.inputsService.getReportDetailsCPPPdf(this.paramsSearch())).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, 'reporte_compras_costo_promedio.pdf', 'Detalle de costo promedio');
               Swal.close();
             },
             error: (err) => {

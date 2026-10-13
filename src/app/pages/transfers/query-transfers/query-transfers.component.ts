@@ -1,3 +1,4 @@
+import { downloadBlobFile } from 'src/app/core/helpers/download-blob-file';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
@@ -12,6 +13,7 @@ import { Sucursal } from '../../managements/interfaces/sucursales.interface';
 import { SucursalesService } from '../../managements/services/sucursales.service';
 import { isTransferCancellationAdministrator } from '../utils/transfer-cancellation-actions.util';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-query-transfers',
@@ -30,6 +32,7 @@ export class QueryTransfersComponent implements OnInit {
   transfersService       = inject(TransfersService);
   sucursalService        = inject(SucursalesService);
   decimalFormat          = inject(DecimalFormatService);
+  pdfActions             = inject(PdfDocumentActionsService);
 
   loading         = signal(false);
   rows            = signal(50);
@@ -239,13 +242,8 @@ export class QueryTransfersComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.transfersService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.transfersService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_traslados.pdf', 'Reporte de traslados'); },
             error: (err) => {
               Swal.close();
             },
@@ -267,8 +265,7 @@ export class QueryTransfersComponent implements OnInit {
         new Promise((resolve, reject) => {
           this.transfersService.getReportExcel(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
             next: (data) => {
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
+              downloadBlobFile(data, 'reporte_traslados.xlsx');
               Swal.close();
             },
             error: (err) => {

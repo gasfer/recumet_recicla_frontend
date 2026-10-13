@@ -1,12 +1,15 @@
+<app-loading *ngIf="loading() || exporting() || loadingCategories() || loadingProducts() || loadingProviders() || loadingProviderTypes()"
+  [fullscreen]="true" [text]="exporting() ? 'Generando reporte...' : 'Cargando stock RECUMET...'">
+</app-loading>
 <form [formGroup]="formReport">
   <div class="card shadow mb-4 icon-box ">
     <div class="card-body">
       <div class="row text-center">
         <h3 class="app-u-color-bg-2665c-99da769"><b>{{ title() }}</b></h3>
       </div>
-      <p-accordion [activeIndex]="1">
+      <p-accordion [activeIndex]="0">
         <p-accordionTab header="Filtros">
-          <div class="p-fluid">
+          <div class="p-fluid stock-filters">
             <div class="row">
               <!-- Sucursales Multiselect -->
               <div class="col-12 col-md-3">
@@ -66,7 +69,7 @@
 
             <div class="row mt-3">
               <!-- Categorías Multiselect -->
-              <div class="col-12 col-md-4">
+              <div class="col-12 col-md-3">
                 <label class="block mb-1">Categorías</label>
                 <p-multiSelect [options]="dropdownCategories()" [(ngModel)]="selectedCategoryValues"
                   [ngModelOptions]="{standalone: true}" (onChange)="onCategoryChange($event.value)" optionLabel="name"
@@ -76,7 +79,7 @@
               </div>
 
               <!-- Productos Multiselect -->
-              <div class="col-12 col-md-4">
+              <div class="col-12 col-md-3">
                 <label class="block mb-1">Productos</label>
                 <p-multiSelect [options]="dropdownProducts()" [(ngModel)]="selectedProductValues"
                   [ngModelOptions]="{standalone: true}" (onChange)="onProductChange($event.value)" optionLabel="name"
@@ -92,8 +95,29 @@
                 </p-multiSelect>
               </div>
 
+              <div class="col-12 col-md-3">
+                <label class="erp-label" for="providerType">Tipo de proveedor</label>
+                <p-dropdown inputId="providerType" [options]="providerTypes()" formControlName="id_type_provider"
+                  optionLabel="name" optionValue="id" placeholder="Todos los tipos" [showClear]="true"
+                  appendTo="body" (onChange)="loadProviders()"></p-dropdown>
+              </div>
+              <div class="col-12 col-md-3">
+                <label class="erp-label" for="provider">Nombre del proveedor</label>
+                <p-dropdown inputId="provider" [options]="providers()" formControlName="id_provider"
+                  optionLabel="full_names" optionValue="id" placeholder="Todos los proveedores" [filter]="true"
+                  filterBy="full_names,number_document" [showClear]="true" [loading]="loadingProviders()" appendTo="body">
+                  <ng-template pTemplate="item" let-provider>
+                    <span>{{ provider.type?.code }} · {{ provider.full_names }} · {{ provider.number_document }}</span>
+                  </ng-template>
+                </p-dropdown>
+                <small class="text-muted" *ngIf="formReport.get('id_provider')?.value || formReport.get('id_type_provider')?.value">
+                  Stock total de los productos comprados al proveedor en cada sucursal.
+                </small>
+              </div>
+            </div>
+            <div class="row mt-2">
               <!-- Filtrar Saldos -->
-              <div class="col-12 col-md-4">
+              <div class="col-12 col-md-3">
                 <label class="block mb-1">Filtrar Saldos</label>
 
                 <div class="d-flex align-items-center gap-3 mt-2">
@@ -115,12 +139,12 @@
           <div class="text-end mt-3">
             <p-button (click)="!loading() ? getAllAndSearchKardex(1,this.rows()) : null"
               styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
-              [loading]="loading()">
+              [loading]="loading()" [disabled]="exporting()">
             </p-button>
 
             <p-splitButton *ngIf="validatorsService.withPermission('KARDEX','reports')" icon="fas fa-file-export"
               label="Exportar reportes" [model]="this.buttonItems" [menuStyle]="{'min-width':'18em'}" [size]="'small'"
-              [rounded]="true" [severity]="'danger'" (onClick)="!loading() ? this.printPdfReport() : null"
+              [disabled]="loading() || exporting()" [rounded]="true" [severity]="'danger'" (onClick)="!loading() ? this.printPdfReport() : null"
               styleClass="ms-1">
             </p-splitButton>
 

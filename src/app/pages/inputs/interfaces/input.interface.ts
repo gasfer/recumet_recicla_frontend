@@ -60,10 +60,11 @@ export interface GetOneInput {
     input:  Input;
 }
 export interface Inputs {
-    previousPage: null;
+    previousPage: number | null;
     currentPage:  number;
-    nextPage:     null;
+    nextPage:     number | null;
     total:        number;
+    total_all?:   number;
     per_page:     number;
     from:         number;
     to:           number;
@@ -73,6 +74,10 @@ export interface Inputs {
 interface Totals {
     totalInput: number,
     totalQuantity: number,
+    total_amount?: number,
+    kg_quantity?: number,
+    kg_total?: number,
+    kg_purchase_price?: number | null,
 }
 export interface Input {
     id:              number;

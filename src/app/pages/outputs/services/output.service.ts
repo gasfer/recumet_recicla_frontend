@@ -5,12 +5,14 @@ import { Client, FormSearchOutputs, GetAllOutputs, GetOneOutput, NewOutputForm, 
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 
 @Injectable({
   providedIn: 'root'
 })
 export class OutputService {
+  private pdfActions = inject(PdfDocumentActionsService);
   detailSale        = signal<Product[]>([]);
   clientSelect      = signal<Client|undefined>(undefined);
   dataOutputForEdit = signal<Output|undefined>(undefined);
@@ -175,13 +177,8 @@ updateDetailSale(product: Product, updateQuantity: boolean = true, newQuantity: 
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.getPrintVoucherOutput(id_output).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.getPrintVoucherOutput(id_output)).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, `boleta_venta_${id_output}.pdf`, `Boleta de venta ${id_output}`); },
             error: (err) => Swal.close()
           });
         });

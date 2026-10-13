@@ -6,12 +6,14 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClassifiedService {
+  private pdfActions = inject(PdfDocumentActionsService);
   detailSale        = signal<Product[]>([]);
   productSelect     = signal<Product|undefined>(undefined);
   types_registry    = signal([{name: 'FICHA', code: 'FICHA'},{name: 'BOLETA', code: 'BOLETA'},{name: 'SIN FICHA', code: 'SIN FICHA'},]);
@@ -150,13 +152,8 @@ export class ClassifiedService {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.getPrintVoucherClassified(id_classified).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.getPrintVoucherClassified(id_classified)).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, `boleta_clasificado_${id_classified}.pdf`, `Boleta de clasificado ${id_classified}`); },
             error: (err) => Swal.close()
           });
         });

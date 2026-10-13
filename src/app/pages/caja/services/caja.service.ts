@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 import { FormNewDetail, GetAllTotalesMovements } from '../interfaces/adm-caja.interface';
 import { GetAllConsultaCaja } from '../interfaces/query-caja.interface';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -12,6 +13,7 @@ const base_url = environment.base_url;
 })
 export class CajaService {
   private http = inject(HttpClient);
+  private pdfActions = inject(PdfDocumentActionsService);
   showModalOpenCaja: boolean = false;
   showModalMovementCaja: boolean = false;
   type_event: 'OPEN_CAJA' | 'CLOSE_CAJA' | 'UPDATE_CAJA' = 'OPEN_CAJA';
@@ -67,11 +69,9 @@ export class CajaService {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.getPrintVoucherCaja(id_caja_small).subscribe({
+          this.pdfActions.prepareRequest(this.getPrintVoucherCaja(id_caja_small)).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, `arqueo_caja_${id_caja_small}.pdf`, `Arqueo de caja ${id_caja_small}`);
               Swal.close();
             },
             error: (err) => Swal.close()

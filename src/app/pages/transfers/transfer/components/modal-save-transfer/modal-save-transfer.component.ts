@@ -84,6 +84,7 @@ export class ModalSaveTransferComponent {
     this.formTransferData.patchValue({id_sucursal_send:this.id_sucursal_send,id_storage_send:this.id_storage_send, total: this.totalSummary()})
     if(!this.formTransferData.valid) return;
     this.loading.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
     const transferDetail = this.transfersService.detailTransfer().map(prod=> ({
       quantity: prod.quantity,
       cost: prod.costo,
@@ -111,8 +112,8 @@ export class ModalSaveTransferComponent {
         }
         this.componentService.clearInputSearch$.next(true);
       },
-      complete: () => this.loading.set(false),
-      error: () => this.loading.set(false)
+      complete: () => { this.loading.set(false); releaseWriteLoader(); },
+      error: () => { this.loading.set(false); releaseWriteLoader(); }
     });
   }
 

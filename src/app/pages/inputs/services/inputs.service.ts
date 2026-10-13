@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { Observable, timeout } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -14,6 +15,7 @@ const base_url = environment.base_url;
 })
 export class InputsService {
   private traceabilityApi = inject(PurchaseTraceabilityApiService);
+  private pdfActions = inject(PdfDocumentActionsService);
   private mutationOptions() { return { headers: new HttpHeaders({ 'Idempotency-Key': globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}` }) }; }
   detailShopping = signal<Product[]>([]);
   providerSelect = signal<Provider | undefined>(undefined);
@@ -160,6 +162,14 @@ export class InputsService {
     });
   }
 
+  getPurchaseProviderCatalog(id_type_provider = '', query = '', id_sucursal = ''): Observable<any> {
+    return this.http.get(base_url + '/input/purchase-report/provider-catalog', { params: new HttpParams().set('id_type_provider', id_type_provider).set('query', query).set('id_sucursal', id_sucursal) });
+  }
+  getPurchaseProviderDetailsExcel(params: FormSearchInputs, type = '', query = ''): Observable<Blob> {
+    return this.http.get(base_url + '/input/purchase-report/excel-branch-product-provider', {
+      params: new HttpParams({ fromObject: { ...params, type, query } }), responseType: 'blob',
+    });
+  }
   getPurchaseReportExcel(params: FormSearchInputs, field_sort: string = 'id', order: string = 'DESC', type: string = '', query: string = '') {
     const search = type ? `&type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}` : '';
     return this.http.get(`${base_url}/input/purchase-report/excel?field_sort=${field_sort}&order=${order}${search}`, {
@@ -286,58 +296,13 @@ getPurchaseReportPdf(params: FormSearchInputs, field_sort: string = 'date_vouche
       }
     });
 
-    this.getPrintVoucherInput(id_input).pipe(
+    this.pdfActions.prepareRequest(this.getPrintVoucherInput(id_input).pipe(
       timeout({ first: 20000 })
-    ).subscribe({
+    )).subscribe({
       next: (data) => {
-        const file = new Blob([data], { type: 'application/pdf' });
-        const fileURL = URL.createObjectURL(file);
-
-        const iframe = document.createElement('iframe');
-        iframe.classList.add('app-print-frame');
-        iframe.src = fileURL;
-        let cleanedUp = false;
-        let cleanupTimeout: ReturnType<typeof setTimeout> | undefined;
-        const cleanupPrintFrame = () => {
-          if (cleanedUp) return;
-          cleanedUp = true;
-          if (cleanupTimeout) clearTimeout(cleanupTimeout);
-          iframe.remove();
-          URL.revokeObjectURL(fileURL);
-          this.voucherPrintInProgress = false;
-        };
-
-        iframe.onload = () => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              const printWindow = iframe.contentWindow;
-              if (!printWindow) {
-                Swal.close();
-                cleanupPrintFrame();
-                void Swal.fire('No se pudo abrir la boleta', 'Intente imprimir nuevamente.', 'error');
-                return;
-              }
-
-              cleanupTimeout = setTimeout(cleanupPrintFrame, 60000);
-              try {
-                Swal.close();
-                printWindow.focus();
-                printWindow.print();
-              } catch (error) {
-                console.error('Error al abrir el diálogo de impresión:', error);
-                cleanupPrintFrame();
-                void Swal.fire('No se pudo abrir la impresión', 'Intente nuevamente.', 'error');
-              }
-            });
-          });
-        };
-        iframe.onerror = () => {
-          Swal.close();
-          cleanupPrintFrame();
-          void Swal.fire('No se pudo cargar la boleta', 'Intente imprimir nuevamente.', 'error');
-        };
-
-        document.body.appendChild(iframe);
+        Swal.close();
+        this.pdfActions.show(data, `boleta_compra_${id_input}.pdf`, `Boleta de compra ${id_input}`);
+        this.voucherPrintInProgress = false;
       },
       error: (err) => {
         this.voucherPrintInProgress = false;

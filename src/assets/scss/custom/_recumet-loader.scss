@@ -1,5 +1,5 @@
 /* ==========================================================================
-   RECUMET — Loader Circular Puro CSS con Fondo Blanco
+   RECUMET — Loader circular
    Animaciones:
    1) Glow radial ambiental con halo pulsante
    2) Anillo exterior punteado de rotación lenta (7s)
@@ -64,7 +64,7 @@
   box-sizing: border-box;
   width: 100%;
   padding: 1.5rem 1rem;
-  background: #ffffff;
+  background: transparent;
   user-select: none;
 }
 
@@ -73,16 +73,23 @@
 .recumet-loader.recumet-fullscreen {
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  z-index: 2147483000;
   width: 100vw;
   height: 100vh;
   margin: 0;
   padding: 0;
-  background: #ffffff;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+/* Escrituras operativas: deja ver el contexto mientras bloquea interacciones. */
+.recumet-loader--write-overlay {
+  background: rgba(15, 23, 42, 0.24);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
 }
 
 /* Modo Inline (tablas, tarjetas, modales) */

@@ -5,8 +5,14 @@ import { FormBuilder, UntypedFormGroup } from '@angular/forms';
 @Component({
   selector: 'app-modal-config-input',
   templateUrl: './modal-config-input.component.html',
-  styles: [
-  ]
+  styles: [`
+    :host ::ng-deep .purchase-config-dialog .p-dialog-header { background:#0b1324; color:#fff; }
+    :host ::ng-deep .purchase-config-dialog .p-dialog-title { color:#fff; }
+    .purchase-config-options { padding:.65rem .8rem!important; }
+    .purchase-config-options .field-checkbox { margin:0; min-height:34px; padding:.3rem .1rem!important; border-bottom:1px solid #e2e8f0; }
+    .purchase-config-options .field-checkbox:last-child { border-bottom:0; }
+    .purchase-config-options label { color:#334155; font-size:.8rem; line-height:1.35; }
+  `]
 })
 export class ModalConfigInputComponent implements OnInit {
   inputsService = inject( InputsService );

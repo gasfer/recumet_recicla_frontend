@@ -72,4 +72,5 @@ describe('InputsService reporte de compras', () => {
     service.getConsolidatedInventoryExcel(params).subscribe();
     http.expectOne(req => path(req).endsWith('/kardex/total-stock-recumet/excel-consolidated') && req.method === 'GET').flush(new Blob());
   });
+
 });

@@ -16,6 +16,7 @@ import { InputsService } from '../../inputs/services/inputs.service';
 import { OutputService } from '../../outputs/services/output.service';
 import { ClassifiedService } from '../../classifieds/services/classified.service';
 import { TransfersService } from '../../transfers/services/transfers.service';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-kardex-existencia',
@@ -40,6 +41,7 @@ export class KardexExistenciaComponent implements OnInit{
   outputService         = inject( OutputService );
   classifiedService     = inject( ClassifiedService );
   transfersService      = inject( TransfersService );
+  pdfActions            = inject( PdfDocumentActionsService );
 
   providers             = signal<{name:string, code:string}[]>([]);
   loading               = signal(false);
@@ -499,11 +501,9 @@ export class KardexExistenciaComponent implements OnInit{
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.kardexService.getReportPdfExistencia(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
+          this.pdfActions.prepareRequest(this.kardexService.getReportPdfExistencia(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, 'reporte_existencias.pdf', 'Reporte de existencias');
               Swal.close();
             },
             error: (err) => {

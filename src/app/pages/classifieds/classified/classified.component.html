@@ -35,15 +35,19 @@
                 </ul>
                 <ul class="list-group shadow cursor-pointer">
                     <li *ngFor="let product of suggestedProducts()"
-                        class="list-group-item list-group-item-action" (click)="selectProduct(product)">
-                        <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
-                        <br>
-                        <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between gap-3" (click)="selectProduct(product)">
+                        <span class="d-flex flex-column">
+                            <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
+                            <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                        </span>
+                        <span class="badge-subtle-stock flex-shrink-0">
+                            Stock: {{ product.total_stock | number: decimal() }}
+                        </span>
                     </li>
                 </ul>
                 <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
                     <li class="list-group-item list-group-item-action text-danger">
-                        <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                            <span class='fw-bold'> No se encontró producto con stock disponible: "{{txtSearchProduct() | uppercase}}"</span>
                     </li>
                 </ul>
             </div>

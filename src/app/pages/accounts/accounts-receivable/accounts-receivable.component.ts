@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TableComponent } from 'src/app/core/components/table/table.component';
 import { AbonosAccountReceivableAllService } from '../services/abonos-accounts-receivable-all.service';
 import { AccountsReceivablesAll } from '../interfaces/abonos-accounts-receivable-all.interface';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-accounts-receivable',
@@ -29,6 +30,7 @@ import { AccountsReceivablesAll } from '../interfaces/abonos-accounts-receivable
   ]
 })
 export class AccountsReceivableComponent implements OnInit {
+  private pdfActions = inject(PdfDocumentActionsService);
   fb = inject(FormBuilder);
   validatorsService = inject(ValidatorsService);
   clientsService = inject(ClientsService);
@@ -400,11 +402,9 @@ export class AccountsReceivableComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.accountsReceivableService.getReportAccountsReceivablePdf(this.paramsSearch(), this.fieldSort(), this.order()).subscribe({
+          this.pdfActions.prepareRequest(this.accountsReceivableService.getReportAccountsReceivablePdf(this.paramsSearch(), this.fieldSort(), this.order())).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, 'reporte_cuentas_por_cobrar.pdf', 'Reporte de cuentas por cobrar');
               Swal.close();
             },
             error: (err) => {
@@ -426,11 +426,9 @@ export class AccountsReceivableComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.abonosAccountReceivableAllService.getReportAccountsPayableAbonosPdf(this.paramsSearch(), this.type(), this.query(), this.fieldSortAbonos(), this.orderAbonos()).subscribe({
+          this.pdfActions.prepareRequest(this.abonosAccountReceivableAllService.getReportAccountsPayableAbonosPdf(this.paramsSearch(), this.type(), this.query(), this.fieldSortAbonos(), this.orderAbonos())).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, 'reporte_abonos_cuentas_por_cobrar.pdf', 'Reporte de abonos por cobrar');
               Swal.close();
             },
             error: (err) => {

@@ -1,5 +1,11 @@
 .purchase-save-form .erp-field { min-width: 0; }
-.purchase-save-form .erp-section { padding: 0.75rem; }
+.purchase-save-form .erp-section { padding: 0.65rem 0.75rem; margin-bottom: .5rem; }
+.purchase-save-form .erp-section-title { margin-bottom: .4rem; font-size: .7rem; }
+.purchase-save-form .erp-form-grid { gap: .5rem .65rem; }
+.purchase-save-form .erp-field { gap: .2rem; }
+.purchase-save-form .erp-label { margin-bottom: 0; }
+.purchase-save-form .erp-error-msg { margin-top: 0; }
+.purchase-save-form .purchase-total { min-height: 34px; }
 .purchase-save-form .purchase-reception { background: #ecfdf5; border-color: #d1fae5; }
 .purchase-save-form .purchase-payment { background: #eff6ff; border-color: #dbeafe; }
 .purchase-save-form .purchase-total { background: #ecfdf5; border-color: #a7f3d0; }
@@ -12,7 +18,12 @@
 :host ::ng-deep .purchase-save-form .p-dropdown,
 :host ::ng-deep .purchase-save-form .p-calendar { width: 100%; }
 :host ::ng-deep .purchase-save-form .p-inputnumber-input { width: 100%; min-width: 0; }
-:host ::ng-deep .purchase-save-form .p-inputnumber-button { height: 36px; }
+:host ::ng-deep .purchase-save-form .p-inputnumber-button { height: 34px; }
+:host ::ng-deep .purchase-save-form .p-dropdown-label,
+:host ::ng-deep .purchase-save-form .p-inputtext { padding-top: .35rem; padding-bottom: .35rem; }
+:host ::ng-deep .purchase-save-dialog .p-dialog-header { background:#0b1324; color:#fff; }
+:host ::ng-deep .purchase-save-dialog .p-dialog-title { color:#fff; }
+:host ::ng-deep .purchase-save-dialog .p-dialog-content { background:#fff; }
 
 @media (max-width: 599px) {
   .purchase-save-form .erp-col-2 { grid-column: auto; }

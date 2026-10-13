@@ -6,6 +6,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { Product } from '../../inventories/interfaces/products.interface';
 import { Sucursal } from '../../managements/interfaces/sucursales.interface';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -13,6 +14,7 @@ const base_url = environment.base_url;
 })
 export class TransfersService {
   private http   = inject(HttpClient);
+  private pdfActions = inject(PdfDocumentActionsService);
   detailsSubs$: EventEmitter<Transfer> = new EventEmitter<Transfer>();
   showModalDetailsTransfer: boolean = false;
   showModalConfigTransfer: boolean = false;
@@ -128,12 +130,11 @@ export class TransfersService {
       html: `Estamos generando la ${voucherName.toLowerCase()}`,
       didOpen: () => {
         Swal.showLoading();
-        requestVoucher().subscribe({
+        this.pdfActions.prepareRequest(requestVoucher()).subscribe({
           next: (data) => {
             const file = new Blob([data], { type: 'application/pdf' });
-            const fileURL = URL.createObjectURL(file);
-            window.open(fileURL);
             Swal.close();
+            this.pdfActions.show(file, `${voucherName.toLowerCase().replace(/\s+/g, '_')}_${id_transfer}.pdf`, `${voucherName} ${id_transfer}`);
           },
           error: () => {
             Swal.fire({

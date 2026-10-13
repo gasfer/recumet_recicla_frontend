@@ -74,7 +74,7 @@ describe('Validación explícita de la ficha', () => {
 });
 
 describe('Vista previa del PDF de proveedor', () => {
-  it('muestra la ficha registrada y libera el archivo temporal al cerrar', () => {
+  it('abre la ficha generada mediante el visor PDF común', () => {
     const component = Object.create(ModalProviderComponent.prototype) as ModalProviderComponent;
     component.providerForm = new FormBuilder().group({ id: [12], full_names: ['Proveedor registrado'], status: [false] });
     component.exportingSheet = signal(false);
@@ -84,18 +84,12 @@ describe('Vista previa del PDF de proveedor', () => {
     spyOn(component, 'informationSections').and.returnValue(sections as any);
     const exportSheet = jasmine.createSpy('exportRegistrationSheet').and.returnValue(of(new Blob(['pdf'], { type: 'application/pdf' })));
     (component as any).providersService = { isInfo: true, exportRegistrationSheet: exportSheet };
-    (component as any).sanitizer = { bypassSecurityTrustResourceUrl: (url: string) => url };
-    spyOn(URL, 'createObjectURL').and.returnValue('blob:ficha-prueba');
-    const revoke = spyOn(URL, 'revokeObjectURL');
-    component.exportRegistrationSheet(true);
+    const show = jasmine.createSpy('show');
+    (component as any).pdfActions = { show };
+    component.exportRegistrationSheet();
     expect(exportSheet).toHaveBeenCalledWith({ name: 'Proveedor registrado', reference: 'ID: 12', status: 'Inactivo', sections });
-    expect(component.sheetPreviewVisible).toBeTrue();
-    expect(component.sheetPreviewUrl).toBe('blob:ficha-prueba');
+    expect(show).toHaveBeenCalledWith(jasmine.any(Blob), 'ficha-proveedor-12.pdf', 'Ficha técnica de proveedor');
     expect(component.exportingSheet()).toBeFalse();
-    component.closeSheetPreview();
-    expect(component.sheetPreviewVisible).toBeFalse();
-    expect(component.sheetPreviewUrl).toBeNull();
-    expect(revoke).toHaveBeenCalledWith('blob:ficha-prueba');
   });
 });
 

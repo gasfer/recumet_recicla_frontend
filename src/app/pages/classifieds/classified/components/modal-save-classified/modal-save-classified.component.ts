@@ -70,6 +70,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
     }
 
     this.loading.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
     const classifiedDetail = this.classifiedService.detailSale().map(prod=> ({
       quantity: prod.quantity,
       cost: prod.costo,
@@ -96,8 +97,8 @@ export class ModalSaveClassifiedComponent implements OnInit {
         }
         this.componentService.clearInputSearch$.next(true);
       },
-      complete: () => this.loading.set(false),
-      error: () => this.loading.set(false)
+      complete: () => { this.loading.set(false); releaseWriteLoader(); },
+      error: () => { this.loading.set(false); releaseWriteLoader(); }
     });
   }
 

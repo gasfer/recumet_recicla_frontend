@@ -88,7 +88,7 @@
                 </div>
                 <span class="erp-counter-chip">{{totalItems()}} items</span>
             </div>
-            <div class="p-3 border-bottom purchase-search" *ngIf="!inputsService._inputConfig.viewCardProducts">
+            <div class="p-2 border-bottom purchase-search" *ngIf="!inputsService._inputConfig.viewCardProducts">
                 <app-input-search (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
                     [icon]="'fa-solid fa-cart-plus'"
                     [placeholder]="'Busque un producto aquí....'"></app-input-search>

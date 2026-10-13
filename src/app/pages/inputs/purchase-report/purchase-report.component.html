@@ -1,8 +1,12 @@
-<form [formGroup]="form">
-  <div class="card shadow mb-4 icon-box"><div class="card-body">
-    <h3 class="text-center app-u-color-bg-2665c-99da769"><b>REPORTE DE COMPRAS</b></h3>
-    <p-accordion [activeIndex]="0"><p-accordionTab header="Filtros">
-      <div class="erp-form-grid cols-4 mb-3">
+<app-loading *ngIf="loading()" text="Cargando reporte de compras..."></app-loading>
+<form [formGroup]="form" class="purchase-report-filters">
+  <div class="card shadow-sm mb-3 icon-box"><div class="card-body">
+    <div class="purchase-report-heading"><span class="report-heading-icon"><i class="fa-solid fa-chart-column" aria-hidden="true"></i></span><h3 class="purchase-report-title">Reporte de compras</h3></div>
+    <p-accordion [activeIndex]="0"><p-accordionTab><ng-template pTemplate="header"><span class="purchase-filter-label"><i class="fa-solid fa-sliders" aria-hidden="true"></i> Filtros del reporte</span></ng-template>
+      <div class="purchase-filter-sections">
+      <section class="purchase-filter-section section-inventory" aria-label="Sucursal y productos">
+        <h4><span class="section-icon"><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i></span>Sucursal y productos</h4>
+        <div class="erp-form-grid purchase-section-grid">
         <div class="erp-field">
           <label class="erp-label required">Sucursal</label>
           <p-multiSelect [options]="branches()" formControlName="id_sucursal" optionLabel="name" optionValue="id" display="chip" [filter]="true" [showClear]="true" [selectionLimit]="1" (onChange)="onBranchChange()" placeholder="Seleccione sucursal" class="erp-input"></p-multiSelect>
@@ -19,6 +23,19 @@
           <label class="erp-label">Productos</label>
           <p-multiSelect [options]="products()" formControlName="id_products" optionLabel="name" optionValue="id" display="chip" [filter]="true" filterBy="name,cod" [showClear]="true" placeholder="Seleccione productos" class="erp-input"><ng-template let-product pTemplate="item">{{ product.cod }} · {{ product.name }}</ng-template></p-multiSelect>
         </div>
+        </div>
+      </section>
+      <section class="purchase-filter-section section-provider" aria-label="Proveedor y período">
+        <h4><span class="section-icon"><i class="fa-solid fa-address-card" aria-hidden="true"></i></span>Proveedor y período</h4>
+        <div class="erp-form-grid purchase-section-grid">
+        <div class="erp-field">
+          <label class="erp-label" for="purchaseProviderType">Tipo de proveedor</label>
+          <p-dropdown inputId="purchaseProviderType" [options]="providerTypes()" formControlName="id_type_provider" optionLabel="name" optionValue="id" [showClear]="true" placeholder="Todos los tipos" appendTo="body" (onChange)="loadProviders()" class="erp-input"></p-dropdown>
+        </div>
+        <div class="erp-field">
+          <label class="erp-label" for="purchaseProvider">Proveedor</label>
+          <p-dropdown inputId="purchaseProvider" [options]="providers()" formControlName="id_provider" optionLabel="full_names" optionValue="id" [filter]="true" filterBy="full_names,number_document" (onFilter)="filterProviders($event.filter)" [loading]="loadingProviders()" filterPlaceholder="Buscar nombre o CI/NIT" [showClear]="true" placeholder="Todos los proveedores" appendTo="body" class="erp-input"></p-dropdown>
+        </div>
         <div class="erp-field">
           <label class="erp-label">Tipo filtrado</label>
           <p-dropdown [options]="filterTypes" formControlName="filterBy" optionLabel="name" optionValue="code" (onChange)="onFilterChange()" class="erp-input"></p-dropdown>
@@ -30,12 +47,14 @@
           <p-calendar *ngIf="form.value.filterBy === 'YEAR'" formControlName="dates" view="year" dateFormat="yy" [showIcon]="true" class="erp-input"></p-calendar>
           <p-calendar *ngIf="form.value.filterBy === 'DAY'" formControlName="dates" dateFormat="dd/mm/yy" [showIcon]="true" class="erp-input"></p-calendar>
         </div>
+        </div>
+      </section>
       </div>
-      <div class="flex justify-end gap-2 mt-3 flex-wrap">
+      <div class="flex justify-end gap-2 mt-2 flex-wrap purchase-filter-actions">
         <p-button label="Buscar" icon="fa-solid fa-magnifying-glass" [loading]="loading()" (onClick)="search(true)"></p-button>
-        <p-splitButton label="PDF" icon="fa-solid fa-file-pdf" [model]="pdfReports" styleClass="p-button-danger" [disabled]="loading()"></p-splitButton>
-        <p-splitButton label="Excel" icon="fa-solid fa-file-excel" [model]="excelReports" styleClass="p-button-success" [disabled]="loading()"></p-splitButton>
-        <p-button label="Limpiar" icon="fa-solid fa-broom" styleClass="p-button-secondary" [disabled]="loading()" (onClick)="clear()"></p-button>
+        <p-splitButton label="PDF" icon="fa-solid fa-file-pdf" [model]="pdfReports" [outlined]="true" severity="danger" [disabled]="loading()"></p-splitButton>
+        <p-splitButton label="Excel" icon="fa-solid fa-file-excel" [model]="excelReports" [outlined]="true" severity="success" [disabled]="loading()"></p-splitButton>
+        <p-button label="Limpiar" icon="fa-solid fa-broom" styleClass="p-button-outlined p-button-secondary" [disabled]="loading()" (onClick)="clear()"></p-button>
       </div>
     </p-accordionTab></p-accordion>
   </div></div>

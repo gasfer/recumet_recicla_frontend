@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-products',
@@ -19,6 +20,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   validatorsService = inject(ValidatorsService);
   productsService   = inject(ProductsService);
   router            = inject(Router);
+  pdfActions        = inject(PdfDocumentActionsService);
 
   pipeNumber    = new DecimalPipe('en-US');
   decimalLength = signal(this.validatorsService.decimalLength());
@@ -242,10 +244,10 @@ printPdfReport() {
     didOpen: () => {
       Swal.showLoading();
       this.pdfSub?.unsubscribe();
-      this.pdfSub = this.productsService
-        .getReportProductCostPdf(id_category, id_sucursal, this.fieldSort(), this.order(), type, query)
+      this.pdfSub = this.pdfActions.prepareRequest(this.productsService
+        .getReportProductCostPdf(id_category, id_sucursal, this.fieldSort(), this.order(), type, query))
         .subscribe({
-          next:  (data) => { window.open(window.URL.createObjectURL(data)); Swal.close(); },
+          next:  (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_costos_productos.pdf', 'Reporte de costos de productos'); },
           error: ()     => Swal.close()
         });
     },

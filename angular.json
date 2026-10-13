@@ -46,8 +46,8 @@
             "styles": [
               "src/assets/scss/bootstrap.scss",
               "src/assets/scss/icons.scss",
-                "node_modules/@fortawesome/fontawesome-free/css/all.css",
-                "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.css",
+              "node_modules/leaflet/dist/leaflet.css",
               "node_modules/primeng/resources/themes/saga-blue/theme.css",
               "node_modules/primeng/resources/primeng.min.css",
               "node_modules/animate.css/animate.compat.css",

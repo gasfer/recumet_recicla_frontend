@@ -29,6 +29,7 @@ export class ModalNewAbonosMultipleReceivableComponent {
   viewDetailsSub$!: Subscription;
   bankService = inject(BankService);
   nameClient = signal('');
+  private releaseWriteLoader?: () => void;
   abonoForm: FormGroup = this.fb.group({
     id_client: [],
     date_abono: [new Date(), [Validators.required]],
@@ -69,6 +70,7 @@ export class ModalNewAbonosMultipleReceivableComponent {
     this.abonoForm.markAllAsTouched();
     if (!this.abonoForm.valid) return;
     this.loading.set(true);
+    this.releaseWriteLoader = this.validatorsService.beginWriteLoading();
     this.AbonosAccountReceivableAllService.postNewAbonoMultipleAccountReceivable(this.abonoForm.value).subscribe({
       next: (resp) => {
         this.loading.set(false);
@@ -93,6 +95,8 @@ export class ModalNewAbonosMultipleReceivableComponent {
           customClass: { container: 'swal-alert' },
         });
         this.loading.set(false);
+        this.releaseWriteLoader?.();
+        this.releaseWriteLoader = undefined;
       }
     });
   }

@@ -1,239 +1,67 @@
 <form [formGroup]="formReport">
-  <div class="card shadow mb-4 icon-box">
+  <div class="card shadow-sm mb-3 icon-box purchase-management-card">
     <div class="card-body">
-      <div class="row text-center">
-        <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE COMPRAS</b></h3>
+      <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+        <h3 class="purchase-management-title">Consulta de compras</h3>
       </div>
       <p-accordion [activeIndex]="1">
-        <p-accordionTab header="Filtros">
-          <div class="p-fluid grid mb-2">
-            <div class="field col-12">
-              <div class="row mt-1">
-                <div class="col-12 col-sm-6">
-                  <div class="row">
-                    <div class="col-12 col-sm-6">
-                      <label class="block mb-1"
-                        >Tipo Filtrado<span class="text-danger">*</span></label
-                      >
-                      <p-dropdown
-                        [options]="types_filtrado()"
-                        formControlName="filterBy"
-                        optionLabel="name"
-                        optionValue="code"
-                        appendTo="body"
-                        (onChange)="onChangeTypesFilter()"
-                      >
-                      </p-dropdown>
-                    </div>
-                    <div class="col-12 col-sm-6">
-                      <label class="block mb-1"
-                        >Fecha<span class="text-danger">*</span>
-                      </label>
-                      <p-calendar
-                        *ngIf="formReport.get('filterBy')?.value == 'MONTH'"
-                        formControlName="dates"
-                        view="month"
-                        dateFormat="mm/yy"
-                        [readonlyInput]="true"
-                        inputId="monthpicker"
-                        placeholder="MM/YYYY"
-                        [class.ng-dirty]="
-                          validatorsService.inputValid('dates', formReport)
-                        "
-                        [showIcon]="true"
-                      >
-                      </p-calendar>
-                      <p-calendar
-                        *ngIf="formReport.get('filterBy')?.value == 'RANGE'"
-                        formControlName="dates"
-                        selectionMode="range"
-                        dateFormat="dd/mm/yy"
-                        [readonlyInput]="true"
-                        inputId="range"
-                        placeholder="DD/MM/YYYY"
-                        [class.ng-dirty]="
-                          validatorsService.inputValid('dates', formReport)
-                        "
-                        [showIcon]="true"
-                      >
-                      </p-calendar>
-                      <p-calendar
-                        *ngIf="formReport.get('filterBy')?.value == 'YEAR'"
-                        formControlName="dates"
-                        view="year"
-                        dateFormat="yy"
-                        inputId="yearpicker"
-                        [showIcon]="true"
-                        placeholder="YYYY"
-                        [class.ng-dirty]="
-                          validatorsService.inputValid('dates', formReport)
-                        "
-                      >
-                      </p-calendar>
-                      <p-calendar
-                        *ngIf="formReport.get('filterBy')?.value == 'DAY'"
-                        formControlName="dates"
-                        inputId="basic"
-                        dateFormat="dd/mm/yy"
-                        [showIcon]="true"
-                        placeholder="DD/MM/YYYY"
-                        [class.ng-dirty]="
-                          validatorsService.inputValid('dates', formReport)
-                        "
-                      >
-                      </p-calendar>
-                      <small
-                        *ngIf="
-                          validatorsService.inputValid('dates', formReport)
-                        "
-                        class="p-error block"
-                      >
-                        {{
-                          validatorsService.inputValidMessage(
-                            "dates",
-                            formReport
-                          )
-                        }}
-                      </small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-6">
-                  <div class="row">
-                    <div class="col-12 col-sm-6">
-                      <label class="block mb-1">Tipo Registro</label>
-                      <p-dropdown
-                        [options]="types_registry()"
-                        [showClear]="true"
-                        placeholder="Selecciona una opción"
-                        optionLabel="name"
-                        optionValue="code"
-                        appendTo="body"
-                        formControlName="type_registry"
-                        [class.ng-dirty]="
-                          validatorsService.inputValid(
-                            'type_registry',
-                            formReport
-                          )
-                        "
-                      ></p-dropdown>
-                    </div>
-                    <div class="col-12 col-sm-6">
-                      <label class="block mb-0">Almacén activo</label>
-                      <p-tag
-                        severity="info"
-                        icon="fa-solid fa-warehouse"
-                        [value]="activeStorageName()"
-                      ></p-tag>
-                      <small class="block mt-1 text-muted">Se toma del almacén seleccionado en la cabecera.</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="row">
-                    <div class="col-12 col-sm-3">
-                      <label class="block mb-0">¿Cómo nos conociste?</label>
-                      <p-dropdown
-                        [options]="referral_sources()"
-                        placeholder="Selecciona una referencia"
-                        optionLabel="name"
-                        optionValue="code"
-                        formControlName="referral_sources"
-                        [showClear]="true"
-                      ></p-dropdown>
-                    </div>
-
-                    <div class="col-12 col-sm-3">
-                      <label class="block mb-1">Tipo proveedor</label>
-                      <p-dropdown
-                        [options]="types()"
-                        placeholder="Selecciona una opción"
-                        optionLabel="name"
-                        optionValue="id"
-                        formControlName="id_type_provider"
-                      ></p-dropdown>
-                    </div>
-
-                    <div class="col-12 col-sm-3">
-                      <label class="block mb-1">Proveedor</label>
-                        <app-input-search  (onEnters)="suggestedsProvider($event)" (onDebounce)="suggestedsProvider($event)"
-                            [icon]="'fa-solid fa-magnifying-glass-arrow-right'"
-                            [placeholder]="'Busque un proveedor aquí....'"></app-input-search>
-                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
-                            <ul *ngIf="loadingSearchProvider()" class="list-group shadow">
-                                <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'>Cargando....</span>
-                                </li>
-                            </ul>
-                            <ul class="list-group shadow cursor-pointer">
-                                <li *ngFor="let provider of suggestedProvider()"
-                                    class="list-group-item list-group-item-action" (click)="selectProvider(provider)">
-                                    <span class='fw-bold'>{{provider.type?.code}} - {{ provider.full_names}} - {{ provider.number_document}}</span>
-                                </li>
-                            </ul>
-                            <ul *ngIf="suggestedProvider().length == 0 && txtSearchProvider() && !loadingSearchProvider()" class="list-group shadow">
-                                <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'> No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-3">
-                      <label class="block mb-1">Proveedor Seleccionado:</label>
-                      <div class="mt-1">
-                        <p-tag
-                          [rounded]="true"
-                          icon="fa-solid fa-tag"
-                          [severity]="providerSelect() ? 'info' : 'warning'"
-                          [value]="
-                            providerSelect()
-                              ? providerSelect()?.type?.code + ' - ' +
-                                providerSelect()?.full_names + ' - ' +
-                                (providerSelect()?.number_document ?? '')
-                              : 'SELECCIONE UN PROVEEDOR'">
-                          <p-badge
-                            *ngIf="providerSelect()"
-                            class="cursor-pointer"
-                            severity="danger"
-                            (click)="clearSelectProvider()"
-                            [value]="'X'"
-                            pTooltip="Quitar Proveedor"
-                            tooltipPosition="top"
-                          ></p-badge>
-                        </p-tag>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-12 col-sm-2">
-                      <label class="block mb-0">¿Cliente antiguo?</label>
-                      <p-dropdown
-                        [options]="yes_no_type()"
-                        placeholder="Seleccione"
-                        optionLabel="name"
-                        optionValue="code"
-                        formControlName="old_customer"
-                        [showClear]="true"
-                      ></p-dropdown>
-                    </div>
-                    <div class="col-12 col-sm-2">
-                      <label class="block mb-0">¿Con recojo?</label>
-                      <p-dropdown
-                        [options]="yes_no_type()"
-                        placeholder="Seleccione"
-                        optionLabel="name"
-                        optionValue="code"
-                        formControlName="with_pickup"
-                        [showClear]="true"
-                      ></p-dropdown>
-                    </div>
-                  </div>
-                </div>
+        <p-accordionTab><ng-template pTemplate="header"><span class="d-flex align-items-center gap-2"><i class="fa-solid fa-filter text-emerald-700"></i>Filtros de compras</span></ng-template>
+          <div class="purchase-filter-grid">
+            <div class="purchase-filter-field">
+              <label class="block mb-1">Tipo filtrado<span class="text-danger">*</span></label>
+              <p-dropdown [options]="types_filtrado()" formControlName="filterBy" optionLabel="name" optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()"></p-dropdown>
+            </div>
+            <div class="purchase-filter-field">
+              <label class="block mb-1">Fecha<span class="text-danger">*</span></label>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'" formControlName="dates" view="month" dateFormat="mm/yy" [readonlyInput]="true" inputId="monthpicker" placeholder="MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates', formReport)" [showIcon]="true"></p-calendar>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value == 'RANGE'" formControlName="dates" selectionMode="range" dateFormat="dd/mm/yy" [readonlyInput]="true" inputId="range" placeholder="DD/MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates', formReport)" [showIcon]="true"></p-calendar>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" formControlName="dates" view="year" dateFormat="yy" inputId="yearpicker" [showIcon]="true" placeholder="YYYY" [class.ng-dirty]="validatorsService.inputValid('dates', formReport)"></p-calendar>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value == 'DAY'" formControlName="dates" inputId="basic" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="DD/MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates', formReport)"></p-calendar>
+              <small *ngIf="validatorsService.inputValid('dates', formReport)" class="p-error block">{{ validatorsService.inputValidMessage('dates', formReport) }}</small>
+            </div>
+            <div class="purchase-filter-field">
+              <label class="block mb-1">Tipo de registro</label>
+              <p-dropdown [options]="types_registry()" [showClear]="true" placeholder="Todos los registros" optionLabel="name" optionValue="code" appendTo="body" formControlName="type_registry" [class.ng-dirty]="validatorsService.inputValid('type_registry', formReport)"></p-dropdown>
+            </div>
+            <div class="purchase-filter-field purchase-filter-storage">
+              <label class="block mb-1">Almacén activo</label>
+              <p-tag severity="info" icon="fa-solid fa-warehouse" [value]="activeStorageName()"></p-tag>
+              <small class="text-muted">Se toma del almacén seleccionado en la cabecera.</small>
+            </div>
+            <div class="purchase-filter-field">
+              <label class="block mb-1">¿Cómo nos conociste?</label>
+              <p-dropdown [options]="referral_sources()" placeholder="Todas las referencias" optionLabel="name" optionValue="code" formControlName="referral_sources" [showClear]="true"></p-dropdown>
+            </div>
+            <div class="purchase-filter-field">
+              <label class="block mb-1">Tipo de proveedor</label>
+              <p-dropdown [options]="types()" placeholder="Todos los tipos" optionLabel="name" optionValue="id" formControlName="id_type_provider" [showClear]="true"></p-dropdown>
+            </div>
+            <div class="purchase-filter-field purchase-filter-provider">
+              <label class="block mb-1">Buscar proveedor</label>
+              <app-input-search (onEnters)="suggestedsProvider($event)" (onDebounce)="suggestedsProvider($event)" [icon]="'fa-solid fa-magnifying-glass-arrow-right'" [placeholder]="'Nombre, CI o NIT'"></app-input-search>
+              <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                <ul *ngIf="loadingSearchProvider()" class="list-group shadow"><li class="list-group-item"><span class="fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i>Cargando...</span></li></ul>
+                <ul class="list-group shadow cursor-pointer"><li *ngFor="let provider of suggestedProvider()" class="list-group-item list-group-item-action" (click)="selectProvider(provider)"><span class="fw-bold">{{provider.type?.code}} - {{ provider.full_names}} - {{ provider.number_document}}</span></li></ul>
+                <ul *ngIf="suggestedProvider().length == 0 && txtSearchProvider() && !loadingSearchProvider()" class="list-group shadow"><li class="list-group-item"><span class="fw-bold">No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span></li></ul>
               </div>
             </div>
+            <div class="purchase-filter-field purchase-filter-selected-provider">
+              <label class="block mb-1">Proveedor seleccionado</label>
+              <div class="purchase-provider-selection">
+                <p-tag [rounded]="true" icon="fa-solid fa-tag" [severity]="providerSelect() ? 'info' : 'warning'" [value]="providerSelect() ? providerSelect()?.type?.code + ' - ' + providerSelect()?.full_names + ' - ' + (providerSelect()?.number_document ?? '') : 'Seleccione un proveedor'"></p-tag>
+                <button *ngIf="providerSelect()" type="button" class="purchase-clear-provider" (click)="clearSelectProvider()" aria-label="Quitar proveedor" pTooltip="Quitar proveedor"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+            <div class="purchase-filter-field">
+              <label class="block mb-1">¿Cliente antiguo?</label>
+              <p-dropdown [options]="yes_no_type()" placeholder="Todos" optionLabel="name" optionValue="code" formControlName="old_customer" [showClear]="true"></p-dropdown>
+            </div>
+            <div class="purchase-filter-field">
+              <label class="block mb-1">¿Con recojo?</label>
+              <p-dropdown [options]="yes_no_type()" placeholder="Todos" optionLabel="name" optionValue="code" formControlName="with_pickup" [showClear]="true"></p-dropdown>
+            </div>
           </div>
-          <div class="text-end">
+          <div class="purchase-filter-actions">
             <p-button
               (click)="
                 !loading() ? this.getAllAndSearchInputs(1, rows()) : null

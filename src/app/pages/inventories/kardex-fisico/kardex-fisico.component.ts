@@ -17,6 +17,7 @@ import { Category, CategoryType } from '../interfaces/categories.interface';
 import Swal from 'sweetalert2';
 import { DecimalPipe } from '@angular/common';
 import { ValuedKardexMovement } from '../interfaces/valued-kardex.interface';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-kardex-fisico',
@@ -33,6 +34,7 @@ export class KardexFisicoComponent {
   productService = inject(ProductsService);
   categoriesService = inject(CategoriesService);
   activatedRoute = inject(ActivatedRoute);
+  pdfActions = inject(PdfDocumentActionsService);
 
 
   providers = signal<{ name: string; code: string }[]>([]);
@@ -686,11 +688,9 @@ const request$ = this.activeView() === this.ALL_HISTORY
               this.fieldSort(),
               this.order(),
             );
-          report$.subscribe({
+          this.pdfActions.prepareRequest(report$).subscribe({
               next: (data) => {
-                const file = new Blob([data], { type: 'application/pdf' });
-                const fileURL = URL.createObjectURL(file);
-                window.open(fileURL);
+                this.pdfActions.show(data, 'reporte_kardex_fisico.pdf', 'Reporte de kardex físico');
                 Swal.close();
               },
               error: (err) => {
@@ -713,18 +713,17 @@ const request$ = this.activeView() === this.ALL_HISTORY
         Swal.showLoading();
         new Promise((resolve, reject) => {
           const report$ = this.activeView() === this.ALL_HISTORY
-            ? this.kardexService.getReportExcel(this.paramsSearch(), this.fieldSort(), this.order())
-            : this.kardexService.getReportExcelFisico(
+            ? this.kardexService.getReportPdf(this.paramsSearch(), this.fieldSort(), this.order())
+            : this.kardexService.getReportPdfFisico(
               this.paramsSearch(),
               this.type(),
               this.query(),
               this.fieldSort(),
               this.order(),
             );
-          report$.subscribe({
+          this.pdfActions.prepareRequest(report$).subscribe({
               next: (data) => {
-                const fileURL = window.URL.createObjectURL(data);
-                window.open(fileURL);
+                this.pdfActions.show(data, 'reporte_kardex_fisico.pdf', 'Reporte de kardex físico');
                 Swal.close();
               },
               error: (err) => {

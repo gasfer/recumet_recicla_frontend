@@ -13,6 +13,7 @@ import { FormSearchOutputs, Output, Outputs } from '../interfaces/output.interfa
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
 import { Client } from '../interfaces/client.interface';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-query-outputs',
@@ -34,6 +35,7 @@ export class QueryOutputsComponent {
   router            = inject(Router);
   sucursalService   = inject(SucursalesService);
   authService       = inject(AuthService);
+  pdfActions        = inject(PdfDocumentActionsService);
   pipeNumber        = new DecimalPipe('en-US');
   paramsSearch = signal<FormSearchOutputs>({
     type_registry: '',
@@ -406,13 +408,8 @@ export class QueryOutputsComponent {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.outputService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.outputService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_ventas.pdf', 'Reporte de ventas'); },
             error: (err) => {
               Swal.close();
             },
@@ -458,13 +455,8 @@ export class QueryOutputsComponent {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.outputService.getReportDetailsPdf(this.paramsSearch()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.outputService.getReportDetailsPdf(this.paramsSearch())).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_ventas_detalle.pdf', 'Detalle de ventas'); },
             error: (err) => {
               Swal.close();
             },

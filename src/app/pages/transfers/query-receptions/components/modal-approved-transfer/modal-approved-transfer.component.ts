@@ -7,6 +7,7 @@ import { Transfer } from '../../../interfaces/transfers.interface';
 import { ProductsService } from 'src/app/pages/inventories/services/products.service';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-modal-approved-transfer',
@@ -236,6 +237,7 @@ getTotalDiffClass(): string {
       return;
     }
     this.loading.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
 
     const formValue = this.approvedForm.value;
     const payload = {
@@ -251,9 +253,11 @@ getTotalDiffClass(): string {
       }))
     };
 
-    this.transfersService.putTransferToReceived(payload).subscribe({
+    this.transfersService.putTransferToReceived(payload).pipe(finalize(() => {
+      this.loading.set(false);
+      releaseWriteLoader();
+    })).subscribe({
       next: (resp) => {
-        this.loading.set(false);
         Swal.fire({
           title: 'Éxito!',
           text: `Traslado recepcionado exitosamente`,
@@ -265,7 +269,6 @@ getTotalDiffClass(): string {
         this.resetModal();
         this.save$.next(true);
       },
-      error: (err) => this.loading.set(false)
     })
 
   }

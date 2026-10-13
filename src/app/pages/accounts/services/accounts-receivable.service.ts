@@ -5,11 +5,13 @@ import { Observable, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AccountReceivable, FormSearchAccountsReceivable, GetAllAccountsReceivable, NewAbonoAccountReceivable, ResponseNewAbono } from '../interfaces/accounts-receivable.interface';
 import { FormPayMultiple, GetAllAccountsPayableForClient } from '../interfaces/accounts-payable-client.interface';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
 export class AccountsReceivableService {
+  private pdfActions = inject(PdfDocumentActionsService);
 
   private http   = inject(HttpClient);
   detailsSubs$: EventEmitter<AccountReceivable> = new EventEmitter<AccountReceivable>();
@@ -84,11 +86,9 @@ export class AccountsReceivableService {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.getPrintAccountReceivable(id_account_receivable).subscribe({
+          this.pdfActions.prepareRequest(this.getPrintAccountReceivable(id_account_receivable)).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, `comprobante_cuenta_por_cobrar_${id_account_receivable}.pdf`, 'Comprobante de cuenta por cobrar');
               Swal.close();
             },
             error: (err) => Swal.close()
@@ -113,11 +113,9 @@ export class AccountsReceivableService {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.getPrintVoucherAbonoAccountReceivable(id_abono_account_receivable).subscribe({
+          this.pdfActions.prepareRequest(this.getPrintVoucherAbonoAccountReceivable(id_abono_account_receivable)).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, `comprobante_abono_cuenta_por_cobrar_${id_abono_account_receivable}.pdf`, 'Comprobante de abono por cobrar');
               Swal.close();
             },
             error: (err) => Swal.close()

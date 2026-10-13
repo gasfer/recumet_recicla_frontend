@@ -1,3 +1,4 @@
+import { downloadBlobFile } from 'src/app/core/helpers/download-blob-file';
 import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MenuItem } from 'primeng/api';
@@ -13,22 +14,53 @@ import { Router } from '@angular/router';
 import { Provider } from '../interfaces/provider.interface';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app/core/utils/purchase-edit-access';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 @Component({
   selector: 'app-query-inputs',
   templateUrl: './query-inputs.component.html',
   styles: [`
-    .card {
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0.1px 0 30px rgba(0, 0, 0, 0.1);
-    }
+    :host { display:block; min-width:0; }
+    .purchase-management-card { margin-bottom:.75rem; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 1px 3px rgba(15,23,42,.06); }
+    .purchase-management-title { margin:0; color:#0b1324; font-size:1rem; font-weight:700; letter-spacing:.01em; }
+    .purchase-management-card ::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link { padding:.55rem .75rem; background:#f8fafc; border-color:#e2e8f0; color:#334155; font-size:.8rem; font-weight:700; }
+    .purchase-management-card ::ng-deep .p-accordion .p-accordion-content { padding:.75rem; border-color:#e2e8f0; }
+    .purchase-management-card ::ng-deep .purchase-filter-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start; gap:.65rem .75rem; margin:0; }
+    .purchase-management-card ::ng-deep .purchase-filter-field { display:flex; flex-direction:column; min-width:0; margin:0; }
+    .purchase-management-card ::ng-deep .purchase-filter-field > .row { display:contents; }
+    .purchase-management-card ::ng-deep .purchase-filter-field > .row > [class*="col-"] { width:auto; max-width:none; flex:none; padding:0; }
+    .purchase-management-card ::ng-deep .purchase-filter-field > label { display:block; margin:0 0 .25rem; color:#475569; font-size:.72rem; font-weight:650; }
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-dropdown,
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-multiselect,
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-calendar,
+    .purchase-management-card ::ng-deep .purchase-filter-field .erp-input { width:100%; min-width:0; }
+    .purchase-management-card ::ng-deep .purchase-filter-field app-input-search { display:block; width:100%; min-width:0; }
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-dropdown,
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-multiselect,
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-inputtext { min-height:36px; font-size:.78rem; }
+    .purchase-management-card ::ng-deep .purchase-filter-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.5rem; padding-top:.65rem; border-top:1px solid #e2e8f0; }
+    .purchase-management-card ::ng-deep .purchase-filter-field > label { overflow-wrap:anywhere; }
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-dropdown,
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-calendar { display:flex; }
+    .purchase-management-card ::ng-deep .purchase-filter-storage { align-items:flex-start; gap:.25rem; }
+    .purchase-management-card ::ng-deep .purchase-filter-storage small { font-size:.68rem; line-height:1.25; }
+    .purchase-management-card ::ng-deep .purchase-provider-selection { display:flex; align-items:flex-start; gap:.35rem; min-width:0; }
+    .purchase-management-card ::ng-deep .purchase-clear-provider { width:28px; height:28px; flex:0 0 28px; border:1px solid #fecdd3; border-radius:50%; background:#fff1f2; color:#be123c; }
+    .purchase-management-card ::ng-deep .purchase-filter-selected-provider p-tag { display:flex; width:fit-content; max-width:100%; white-space:normal; }
+    .purchase-management-card ::ng-deep .purchase-filter-selected-provider .p-tag-value { white-space:normal; overflow-wrap:anywhere; }
+    .purchase-management-card ::ng-deep .purchase-filter-provider { position:relative; }
+    .purchase-management-card ::ng-deep .purchase-filter-provider > div.position-absolute { top:100%; left:0; right:0; width:100%; z-index:20; }
+    .purchase-management-card ::ng-deep .purchase-filter-provider ul { max-height:220px; overflow:auto; margin:0; }
+    .purchase-management-card ::ng-deep .purchase-filter-actions { grid-column:1/-1; }
+    @media(max-width:1050px) { .purchase-management-card ::ng-deep .purchase-filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+    @media(max-width:760px) { .purchase-management-card ::ng-deep .purchase-filter-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:520px) { .purchase-management-card ::ng-deep .purchase-filter-grid { grid-template-columns:minmax(0,1fr); } .purchase-management-card ::ng-deep .purchase-filter-actions > * { flex:1 1 100%; } }
   `]
 })
 export class QueryInputsComponent implements OnInit {
   fb                = inject(FormBuilder);
   validatorsService = inject(ValidatorsService);
   inputsService     = inject(InputsService);
+  pdfActions        = inject(PdfDocumentActionsService);
   providersService  = inject(ProvidersService);
   router            = inject(Router);
   pipeNumber = new DecimalPipe('en-US');
@@ -409,21 +441,6 @@ export class QueryInputsComponent implements OnInit {
       Swal.close();
       this.traceabilityData.set(response.traceability);
       this.traceabilityVisible.set(true);
-      return;
-      const trace = response.traceability;
-      const events = trace.events || [];
-      const html = events.length ? events.map((event: any) => {
-        const actor = this.escapeHtml(event.actor?.full_names || 'Usuario no disponible');
-        const authorizer = event.authorizer ? `<div><b>Autorizó:</b> ${this.escapeHtml(event.authorizer.full_names)}</div>` : '';
-        const changes = (event.changed_fields || []).map((change: any) => `<li><b>${this.escapeHtml(change.field)}</b>: ${this.escapeHtml(change.before ?? '—')} → ${this.escapeHtml(change.after ?? '—')}</li>`).join('');
-        return `<article style="border-left:4px solid #0ea5e9;padding:.65rem .9rem;margin:.6rem 0;background:#f8fafc;text-align:left;border-radius:6px">
-          <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap"><b>${this.escapeHtml(event.event_type)}</b><span>${this.escapeHtml(new Date(event.createdAt).toLocaleString())}</span></div>
-          <div><b>Realizó:</b> ${actor}</div>${authorizer}
-          ${event.reason ? `<div><b>Motivo:</b> ${this.escapeHtml(event.reason)}</div>` : ''}
-          ${event.historical_incomplete ? '<div style="color:#b45309"><b>Antecedente general:</b> no existe detalle anterior disponible.</div>' : ''}
-          ${changes ? `<ul style="margin:.4rem 0 0;padding-left:1.2rem">${changes}</ul>` : ''}</article>`;
-      }).join('') : '<p>No existen eventos de trazabilidad para esta boleta.</p>';
-      await Swal.fire({ title: `Trazabilidad · ${this.escapeHtml(input.cod)}`, html, width: 'min(980px, 96vw)', confirmButtonText: 'Cerrar', customClass: { container: 'sweetalert2' } });
     } catch {
       await Swal.fire('Atención', 'No se pudo consultar la trazabilidad de la compra.', 'error');
     }
@@ -545,16 +562,6 @@ export class QueryInputsComponent implements OnInit {
     if(!this.formReport.valid) return;
     this.formParamsByForm();
 
-    // Reserve the tab during the user gesture. Opening it after the HTTP
-    // response is commonly blocked by the browser as an unsolicited popup.
-    const previewWindow = window.open('', '_blank');
-    if (!previewWindow) {
-      Swal.fire('Previsualización bloqueada', 'Permita ventanas emergentes para visualizar el PDF de compras.', 'warning');
-      return;
-    }
-    previewWindow.document.title = 'Generando reporte de compras';
-    previewWindow.document.body.innerHTML = '<p style="font-family:Arial;padding:24px">Generando reporte de compras…</p>';
-
     Swal.fire({
       title: 'Generando Reporte!',
       html: `Con los parámetros seleccionados`,
@@ -564,15 +571,12 @@ export class QueryInputsComponent implements OnInit {
       },
     });
 
-    this.inputsService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
+    this.pdfActions.prepareRequest(this.inputsService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
       next: (data) => {
-        const fileURL = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
-        previewWindow.location.replace(fileURL);
         Swal.close();
-        setTimeout(() => URL.revokeObjectURL(fileURL), 120000);
+        this.pdfActions.show(data, 'reporte_compras.pdf', 'Reporte de compras');
       },
       error: () => {
-        previewWindow.close();
         Swal.fire('No se pudo generar el PDF', 'Revise los filtros e intente nuevamente.', 'error');
       },
     });
@@ -590,8 +594,7 @@ export class QueryInputsComponent implements OnInit {
         new Promise((resolve, reject) => {
           this.inputsService.getReportExcel(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
             next: (data) => {
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
+              downloadBlobFile(data, 'reporte_compras_detallado.xlsx');
               Swal.close();
             },
             error: (err) => {
@@ -614,13 +617,8 @@ export class QueryInputsComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.inputsService.getReportDetailsPdf(this.paramsSearch()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.inputsService.getReportDetailsPdf(this.paramsSearch())).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_compras_resumen_por_producto.pdf', 'Resumen de compras por producto'); },
             error: (err) => {
               Swal.close();
             },
@@ -640,13 +638,8 @@ export class QueryInputsComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.inputsService.getReportDetailsCPPPdf(this.paramsSearch()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.inputsService.getReportDetailsCPPPdf(this.paramsSearch())).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_compras_costo_promedio.pdf', 'Detalle de costo promedio'); },
             error: (err) => {
               Swal.close();
             },
@@ -669,8 +662,7 @@ export class QueryInputsComponent implements OnInit {
           this.inputsService.getReportDetailsExcel(this.paramsSearch()).subscribe({
             next: (data) => {
               this.loading.set(false);
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
+              downloadBlobFile(data, 'reporte_compras_costo_promedio.xlsx');
               Swal.close();
             },
             error: (err) => {

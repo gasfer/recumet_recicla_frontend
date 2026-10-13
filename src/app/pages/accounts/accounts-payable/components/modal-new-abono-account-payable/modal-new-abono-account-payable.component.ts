@@ -26,6 +26,7 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
   banks                   = signal<Bank[]>([]);
   bankService             = inject( BankService );
   voucherFile?            : File;
+  private releaseWriteLoader?: () => void;
 
   abonoForm: FormGroup = this.fb.group({
     id_account_payable: [],
@@ -57,6 +58,7 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
     this.abonoForm.markAllAsTouched();
     if(!this.abonoForm.valid) return;
     this.loading.set(true);
+    this.releaseWriteLoader = this.validatorsService.beginWriteLoading();
     this.accountsPayableService.postNewAbonoAccountPayable(this.abonoForm.value).subscribe({
       next: (resp) => {
         if (this.voucherFile) {
@@ -87,6 +89,8 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
           customClass: { container: 'swal-alert'},
         });
         this.loading.set(false);
+        this.releaseWriteLoader?.();
+        this.releaseWriteLoader = undefined;
       }
     });
   }
@@ -94,6 +98,8 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
   afterSaveAbono(resp: any) {
     this.accountsPayableService.reloadAccountsPayable$.next(this.abonoForm.get('id_account_payable')?.value);
     this.loading.set(false);
+    this.releaseWriteLoader?.();
+    this.releaseWriteLoader = undefined;
     this.accountsPayableService.showModalNewAbono = false;
     //si paga todo cerramos el modal de detalle
     if(this.accountPayable()?.monto_restante == this.abonoForm.get('monto_abono')?.value) {

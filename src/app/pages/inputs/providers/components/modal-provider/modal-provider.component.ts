@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ElementRef, ViewChild } from '@angular/core';
 import { Observable, Subscription, switchMap, forkJoin, of, catchError, map } from 'rxjs';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ProvidersService } from '../../../services/providers.service';
 import Swal from 'sweetalert2';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 import { CategoriesService } from 'src/app/pages/inventories/services/categories.service';
 import { ProductsService } from 'src/app/pages/inventories/services/products.service';
 import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
@@ -951,32 +951,13 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     return sections;
   }
   exportingSheet = signal(false);
-  sheetPreviewVisible = false;
-  sheetPreviewUrl: SafeResourceUrl | null = null;
-  private sheetObjectUrl: string | null = null;
-  private sheetFileName = 'ficha-proveedor.pdf';
-  private readonly sanitizer = inject(DomSanitizer);
-
-  closeSheetPreview() {
-    this.sheetPreviewVisible = false;
-    this.sheetPreviewUrl = null;
-    if (this.sheetObjectUrl) URL.revokeObjectURL(this.sheetObjectUrl);
-    this.sheetObjectUrl = null;
-  }
-
-  downloadSheetPreview() {
-    if (!this.sheetObjectUrl) return;
-    const link = document.createElement('a');
-    link.href = this.sheetObjectUrl;
-    link.download = this.sheetFileName;
-    link.click();
-  }
+  private readonly pdfActions = inject(PdfDocumentActionsService);
 
   providerInitials(): string {
     return String(this.providerForm.get('full_names')?.value || '').trim().split(/\s+/).slice(0, 2).map(word => word[0] || '').join('') || 'PR';
   }
 
-  exportRegistrationSheet(preview = false) {
+  exportRegistrationSheet() {
     if (!this.providersService.isInfo || this.exportingSheet() || this.loading()) return;
     const value = this.providerForm.getRawValue();
     const branch = this.activeTab() === 'branches';
@@ -987,23 +968,9 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       sections: this.informationSections(branch),
     };
     this.exportingSheet.set(true);
-    this.providersService.exportRegistrationSheet(sheet).subscribe({
+    this.pdfActions.prepareRequest(this.providersService.exportRegistrationSheet(sheet)).subscribe({
       next: blob => {
-        const url = URL.createObjectURL(blob);
-        if (preview) {
-          this.closeSheetPreview();
-          this.sheetObjectUrl = url;
-          this.sheetFileName = `ficha-proveedor-${value.id || 'registro'}.pdf`;
-          this.sheetPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-          this.sheetPreviewVisible = true;
-          this.exportingSheet.set(false);
-          return;
-        }
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `ficha-proveedor-${value.id || 'registro'}.pdf`;
-        link.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        this.pdfActions.show(blob, `ficha-proveedor-${value.id || 'registro'}.pdf`, 'Ficha técnica de proveedor');
         this.exportingSheet.set(false);
       },
       error: () => {
@@ -1237,7 +1204,6 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.closeSheetPreview();
     this.frequencyRequest?.unsubscribe();
     this.map?.remove();
     this.isEditSub$.unsubscribe();

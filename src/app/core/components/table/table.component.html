@@ -265,7 +265,7 @@
     <ng-template pTemplate="footer" let-rowData let-columns>
       <tr *ngIf="!loading && hasFooter(columns)">
         @for (col of columns; track $index) {
-          <td ngClass="tdwith" [style]="col.style" class="text-start app-u-white-space-normal-f8f979b">{{ col.footer }}</td>
+          <td ngClass="tdwith" [style]="col.style" class="text-start app-u-white-space-normal-f8f979b">{{ col.footerValue ?? col.footer }}</td>
         }
       </tr>
     </ng-template>

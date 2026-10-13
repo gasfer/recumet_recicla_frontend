@@ -30,6 +30,7 @@ export class ModalNewAbonosMultiplePayableComponent implements OnInit {
   bankService = inject(BankService);
   nameProvider = signal('');
   voucherFile? : File;
+  private releaseWriteLoader?: () => void;
 
   abonoForm: FormGroup = this.fb.group({
     id_provider: [],
@@ -77,6 +78,7 @@ export class ModalNewAbonosMultiplePayableComponent implements OnInit {
     this.abonoForm.markAllAsTouched();
     if (!this.abonoForm.valid) return;
     this.loading.set(true);
+    this.releaseWriteLoader = this.validatorsService.beginWriteLoading();
     this.AbonosAccountPayableAllService.postNewAbonoMultipleAccountPayable(this.abonoForm.value).subscribe({
       next: (resp) => {
         if (this.voucherFile) {
@@ -107,12 +109,17 @@ export class ModalNewAbonosMultiplePayableComponent implements OnInit {
           customClass: { container: 'swal-alert' },
         });
         this.loading.set(false);
+        this.releaseWriteLoader?.();
+        this.releaseWriteLoader = undefined;
       }
     });
   }
 
   afterSaveAbono(resp: any) {
     this.loading.set(false);
+    this.releaseWriteLoader?.();
+    this.releaseWriteLoader = undefined;
+    // The optional voucher upload is part of this same write flow.
     //si paga todo cerramos el modal de detalle
     this.accountsPayableService.reloadAccountsPayable$.next(0);
     Swal.fire({

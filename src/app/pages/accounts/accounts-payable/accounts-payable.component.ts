@@ -14,6 +14,7 @@ import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { AbonosAccountPayableAllService } from '../services/abonos-accounts-payable-all.service';
 import { AccountsPayableAll } from '../interfaces/abonos-accounts-payable-all.interface';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-accounts-payable',
@@ -29,6 +30,7 @@ import { AccountsPayableAll } from '../interfaces/abonos-accounts-payable-all.in
   ]
 })
 export class AccountsPayableComponent implements OnInit {
+  private pdfActions = inject(PdfDocumentActionsService);
   fb = inject(FormBuilder);
   validatorsService = inject(ValidatorsService);
   providersService = inject(ProvidersService);
@@ -446,11 +448,9 @@ export class AccountsPayableComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.accountsPayableService.getReportAccountsPayablePdf(this.paramsSearch(), this.fieldSort(), this.order()).subscribe({
+          this.pdfActions.prepareRequest(this.accountsPayableService.getReportAccountsPayablePdf(this.paramsSearch(), this.fieldSort(), this.order())).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, 'reporte_cuentas_por_pagar.pdf', 'Reporte de cuentas por pagar');
               Swal.close();
             },
             error: (err) => {
@@ -472,11 +472,9 @@ export class AccountsPayableComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.abonosAccountPayableAllService.getReportAccountsPayableAbonosPdf(this.paramsSearch(), this.type(), this.query(), this.fieldSortAbonos(), this.orderAbonos()).subscribe({
+          this.pdfActions.prepareRequest(this.abonosAccountPayableAllService.getReportAccountsPayableAbonosPdf(this.paramsSearch(), this.type(), this.query(), this.fieldSortAbonos(), this.orderAbonos())).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, 'reporte_abonos_cuentas_por_pagar.pdf', 'Reporte de abonos por pagar');
               Swal.close();
             },
             error: (err) => {

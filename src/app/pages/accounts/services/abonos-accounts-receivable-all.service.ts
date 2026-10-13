@@ -6,12 +6,14 @@ import { FormPayMultiple } from '../interfaces/accounts-payable-provider.interfa
 import { FormSearchAbonosReceivables, GetAllAbonosReceivableAccountAll } from '../interfaces/abonos-accounts-receivable-all.interface';
 import { FormSearchAccountsReceivable } from '../interfaces/accounts-receivable.interface';
 import Swal from 'sweetalert2';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 
 @Injectable({
   providedIn: 'root'
 })
 export class AbonosAccountReceivableAllService {
+  private pdfActions = inject(PdfDocumentActionsService);
   private http = inject(HttpClient);
   showModalNewAbono: boolean = false;
   reloadAccountsPayable$: Subject<number> = new Subject();
@@ -81,11 +83,9 @@ export class AbonosAccountReceivableAllService {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.getPrintAbonoMultipleAccountReceivable(id_abono_account_receivable_multiple).subscribe({
+          this.pdfActions.prepareRequest(this.getPrintAbonoMultipleAccountReceivable(id_abono_account_receivable_multiple)).subscribe({
             next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
+              this.pdfActions.show(data, `comprobante_abono_multiple_cuentas_por_cobrar_${id_abono_account_receivable_multiple}.pdf`, 'Comprobante de abonos por cobrar');
               Swal.close();
             },
             error: (err) => Swal.close()

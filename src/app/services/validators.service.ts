@@ -14,10 +14,24 @@ export class ValidatorsService {
   emailPattern    = signal('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$');
   numberCiPattern = signal('^(?:(?=[eE][-])([1-9][0-9]{3,7})|([eE][-])?[1-9][0-9]{3,7}|[1-9][0-9]{3,7}[-][1-9][0-9A-Za-z]?)$');
   loadingPage     = signal(false);
+  readonly loadingWrite = signal(false);
+  private writeLoadingCount = 0;
   isPageViewMovil = signal(false);
   expRegValidInput: RegExp = /^[^<>*!$~@%^&`¡;+¥¿?=]/;
 
   decimalLength = signal(2);
+
+  beginWriteLoading(): () => void {
+    this.writeLoadingCount += 1;
+    this.loadingWrite.set(true);
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      this.writeLoadingCount = Math.max(0, this.writeLoadingCount - 1);
+      this.loadingWrite.set(this.writeLoadingCount > 0);
+    };
+  }
 
   localCompressedURl: any;
   //localCompressedURl1: any;

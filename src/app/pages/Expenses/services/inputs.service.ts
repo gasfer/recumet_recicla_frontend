@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -14,6 +15,7 @@ const base_url = environment.base_url;
 })
 export class InputsService {
   private traceabilityApi = inject(PurchaseTraceabilityApiService);
+  private pdfActions = inject(PdfDocumentActionsService);
   private mutationOptions() { return { headers: new HttpHeaders({ 'Idempotency-Key': globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}` }) }; }
   detailShopping   = signal<Product[]>([]);
   providerSelect   = signal<Provider|undefined>(undefined);
@@ -190,28 +192,10 @@ export class InputsService {
     didOpen: () => {
       Swal.showLoading();
       new Promise((resolve, reject) => {
-        this.getPrintVoucherInput(id_input).subscribe({
+        this.pdfActions.prepareRequest(this.getPrintVoucherInput(id_input)).subscribe({
           next: (data) => {
-            const file = new Blob([data], { type: 'application/pdf' });
-            const fileURL = URL.createObjectURL(file);
-
-            // ✅ Abrir en iframe oculto y lanzar print() automáticamente
-            const iframe = document.createElement('iframe');
-            iframe.classList.add('app-print-frame--hidden');
-            iframe.src = fileURL;
-            const cleanupPrintFrame = () => {
-              iframe.remove();
-              URL.revokeObjectURL(fileURL);
-            };
-            document.body.appendChild(iframe);
-
-            iframe.onload = () => {
-              iframe.contentWindow?.focus();
-              iframe.contentWindow?.print();
-              Swal.close();
-              setTimeout(cleanupPrintFrame, 1000);
-            };
-            iframe.onerror = cleanupPrintFrame;
+            Swal.close();
+            this.pdfActions.show(data, `boleta_gasto_${id_input}.pdf`, `Boleta de gasto ${id_input}`);
           },
           error: () => Swal.close()
         });

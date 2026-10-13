@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import * as moment from 'moment';
 import { Product } from '../../inventories/interfaces/products.interface';
 import { ProductsService } from '../../inventories/services/products.service';
+import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
   selector: 'app-query-classifieds',
@@ -28,6 +29,7 @@ export class QueryClassifiedsComponent implements OnInit {
   sucursalService   = inject(SucursalesService);
   authService       = inject(AuthService);
   productService    = inject(ProductsService );
+  pdfActions       = inject(PdfDocumentActionsService);
 
   pipeNumber = new DecimalPipe('en-US');
   minDate!: Date;
@@ -345,14 +347,8 @@ export class QueryClassifiedsComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.classifiedService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
-            next: (data) => {
-              this.loading.set(false);
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.classifiedService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
+            next: (data) => { this.loading.set(false); Swal.close(); this.pdfActions.show(data, 'reporte_clasificados.pdf', 'Reporte de clasificados'); },
             error: (err) => {
               Swal.close();
             },
@@ -398,13 +394,8 @@ export class QueryClassifiedsComponent implements OnInit {
       didOpen: () => {
         Swal.showLoading();
         new Promise((resolve, reject) => {
-          this.classifiedService.getReportDetailsPdf(this.paramsSearch()).subscribe({
-            next: (data) => {
-              const file = new Blob([data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              window.open(fileURL);
-              Swal.close();
-            },
+          this.pdfActions.prepareRequest(this.classifiedService.getReportDetailsPdf(this.paramsSearch())).subscribe({
+            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_clasificados_detalle.pdf', 'Detalle de clasificados'); },
             error: (err) => {
               Swal.close();
             },

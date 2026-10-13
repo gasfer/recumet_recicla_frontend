@@ -53,10 +53,12 @@ export class ModalNewAbonoAccountReceivableComponent implements OnInit {
     this.abonoForm.markAllAsTouched();
     if(!this.abonoForm.valid) return;
     this.loading.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
     this.accountsReceivableService.postNewAbonoAccountReceivable(this.abonoForm.value).subscribe({
       next: (resp) => {
         this.accountsReceivableService.reloadAccountsReceivable$.next(this.abonoForm.get('id_account_receivable')?.value);
         this.loading.set(false);
+        releaseWriteLoader();
         this.accountsReceivableService.showModalNewAbono = false;
         //si paga todo cerramos el modal de detalle
         if(this.accountReceivable()?.monto_restante == this.abonoForm.get('monto_abono')?.value) {
@@ -79,6 +81,7 @@ export class ModalNewAbonoAccountReceivableComponent implements OnInit {
           customClass: { container: 'swal-alert'},
         });
         this.loading.set(false); 
+        releaseWriteLoader();
       }
     });
   }

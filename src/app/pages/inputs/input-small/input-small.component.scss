@@ -6,15 +6,15 @@
 .purchase-header {
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: var(--radius-lg, 10px);
-  padding: 0.75rem;
+  padding: 0.65rem;
 }
 
 .purchase-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .purchase-heading .erp-panel-title { margin: 0; }
@@ -22,7 +22,7 @@
 .purchase-provider-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .purchase-provider-grid > *, .purchase-workspace > * { min-width: 0; }
@@ -39,8 +39,11 @@
 }
 .purchase-suggestions .list-group-item { font-size: 0.84rem; padding: 0.5rem 0.65rem; }
 
-.purchase-workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+.purchase-workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
 .purchase-workspace .card { border-radius: var(--radius-lg, 10px); }
+.purchase-workspace .erp-items-header { padding: .55rem .75rem; }
+.purchase-workspace > div, .purchase-header > * { min-width: 0; }
+.purchase-provider-grid .erp-field { gap: .2rem; margin: 0; }
 
 .purchase-icon-button {
   display: inline-flex;

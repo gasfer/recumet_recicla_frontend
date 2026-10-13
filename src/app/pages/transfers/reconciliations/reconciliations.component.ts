@@ -45,7 +45,7 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
     { label: 'Eliminada (auditoría)', value: 'ELIMINADA' },
   ];
   readonly differenceStatuses: Array<{ label: string; value: ReceptionDifferenceStatus | '' }> = [
-    { label: 'Pendientes', value: 'PENDIENTE' }, { label: 'Parciales', value: 'PARCIAL' },
+    { label: 'Requieren investigación', value: 'PENDIENTE' }, { label: 'Parciales', value: 'PARCIAL' },
     { label: 'Resueltas', value: 'RESUELTA' }, { label: 'No atribuibles', value: 'NO_ATRIBUIBLE' },
     { label: 'Todos los estados', value: '' },
   ];
@@ -133,8 +133,9 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
     if (!reason) return;
     this.loading.set(true);
     this.processingNoteId.set(note.id);
+    const releaseWriteLoader = this.validators.beginWriteLoading();
     this.reviewService.reverseReconciliation(note.id, reason).pipe(
-      finalize(() => this.processingNoteId.set(null)),
+      finalize(() => { this.processingNoteId.set(null); releaseWriteLoader(); }),
     ).subscribe({
       next: ({ msg }) => { void Swal.fire('Conciliación revertida', msg, 'success'); this.load(1); },
       error: (error) => { this.loading.set(false); this.showError(error, 'No se pudo revertir la conciliación.'); },
@@ -150,8 +151,9 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
     if (!reason) return;
     this.loading.set(true);
     this.processingNoteId.set(note.id);
+    const releaseWriteLoader = this.validators.beginWriteLoading();
     this.reviewService.deleteReconciliation(note.id, reason).pipe(
-      finalize(() => this.processingNoteId.set(null)),
+      finalize(() => { this.processingNoteId.set(null); releaseWriteLoader(); }),
     ).subscribe({
       next: ({ msg }) => { void Swal.fire('Conciliación eliminada', msg, 'success'); this.load(1); },
       error: (error) => { this.loading.set(false); this.showError(error, 'No se pudo eliminar la conciliación.'); },

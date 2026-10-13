@@ -34,6 +34,8 @@ export class ClassifiedComponent implements OnInit {
   loadingSearchProduct        = signal(false);
   loadingSearchProductClassified  = signal(false);
   loadingSucursales     = signal(true);
+  decimalLength         = signal(this.validatorsService.decimalLength());
+  decimal               = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   
   totalItems            = computed(() => this.classifiedService.detailSale().length);
   productSelect         = computed(() => this.classifiedService.productSelect());
@@ -60,10 +62,12 @@ export class ClassifiedComponent implements OnInit {
     this.loadingSearchProduct.set(true);
     this.txtSearchProduct.set(txtSearchProduct);
     this.suggestedProducts.set([]);
-    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'id','DESC',false,'',this.productContext)
+    this.productService.getAllAndSearch(1,1000,true,'pos',txtSearchProduct,true,this.formReport.get('id_sucursal')?.value,this.formReport.get('id_storage')?.value,'id','DESC',true,'',this.productContext)
         .subscribe({
           next: (resp) => {
-            this.suggestedProducts.set(resp.products.data);
+            this.suggestedProducts.set(
+              resp.products.data.filter(product => Number(product.total_stock ?? 0) > 0)
+            );
             this.loadingSearchProduct.set(false);
           },
           error: (e) => {

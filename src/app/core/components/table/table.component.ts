@@ -489,6 +489,21 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
     this.total = this.data?.total ?? 0;
     this.rows = this.data?.per_page ?? 0;
     this.stringSearch = this.cols.map(resp => resp.field) as string[];
+    if (this.data?.totals) {
+      for (const col of this.cols) {
+        const field = Array.isArray(col.field) ? col.field[0] : col.field;
+        if (field && this.data.totals[field] !== undefined) {
+          const value = field === 'total' ? this.data.totals.total_amount : field === 'kg_total' ? this.data.totals.kg_total : field === 'kg_purchase_price' ? this.data.totals.kg_purchase_price : this.data.totals[field];
+          col.footerValue = value === null ? '—' : this.pipeNumber.transform(value, this.decimal()) || '0';
+        }
+      }
+    }
+    if (this.data?.totals) {
+      for (const col of this.cols) {
+        const field = Array.isArray(col.field) ? col.field[0] : col.field;
+        if (field && this.data.totals[field] !== undefined) col.footerValue = this.pipeNumber.transform(this.data.totals[field], this.decimal()) || '0';
+      }
+    }
     if (this.searchTxt) {
       this.txtTermino.setValue(this.searchTxt);
     }

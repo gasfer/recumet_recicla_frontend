@@ -79,8 +79,8 @@
     </div>
   </div>
   <div *ngIf="isInconclusiveMode" class="alert reception-query-page__alert mb-3">
-    <div class="fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Boletas recibidas con conciliación pendiente</div>
-    <div class="small mt-1">Esta vista no usa el filtro mensual. Muestra todas las notas abiertas de la sucursal y almacén seleccionados. Trabaje cada ítem por separado y conserve su evidencia.</div>
+    <div class="fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Cola de trabajo: revisiones de recepción abiertas</div>
+    <div class="small mt-1">Resuelva cada faltante o excedente desde su nota de revisión y conserve la evidencia. Al cerrar el expediente y verificar Stock–Kardex, la recepción saldrá de esta lista; su historial seguirá disponible en Conciliaciones.</div>
   </div>
   <div *ngIf="isInconclusiveMode && !loading() && (transfers()?.data?.length || 0) === 0" class="reception-query-page__empty-state mb-3">
     <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
