@@ -27,6 +27,8 @@ export interface ClassifiedDetail {
 
 //** Form Search */
 export interface FormSearchClassified {
+    category_ids?: string;
+    product_ids?: string;
     status:        string;
     id_storage:    string;
     id_sucursal:   string;

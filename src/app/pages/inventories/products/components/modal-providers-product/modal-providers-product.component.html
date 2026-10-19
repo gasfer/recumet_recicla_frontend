@@ -4,7 +4,7 @@
     [dismissableMask]="true" styleClass="app-dialog--md">
     <form>
         <app-alert-notify [subTitle]="'Proveedores del producto: ' + product?.name" [required]="false" [subTitle2]="''"></app-alert-notify>
-        <div class="d-flex text-center justify-content-center align-content-center align-items-center"  *ngIf="this.loading()">
+        <div class="flex text-center justify-center align-content-center items-center"  *ngIf="this.loading()">
             <app-loading class="m-0 app-loading-width-250"></app-loading>
         </div>
         <app-table responsiveStrategy="stack"  [cols]="cols()" (customSort$)="customSort($event)"

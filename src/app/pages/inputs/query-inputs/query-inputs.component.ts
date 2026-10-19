@@ -13,6 +13,7 @@ import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { Provider } from '../interfaces/provider.interface';
 import { firstValueFrom } from 'rxjs';
+import { PROVIDER_ENTITY_TYPES } from 'src/app/core/constants/provider-commercial.constants';
 import { PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app/core/utils/purchase-edit-access';
 import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 @Component({
@@ -36,7 +37,7 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
     .purchase-management-card ::ng-deep .purchase-filter-field app-input-search { display:block; width:100%; min-width:0; }
     .purchase-management-card ::ng-deep .purchase-filter-field .p-dropdown,
     .purchase-management-card ::ng-deep .purchase-filter-field .p-multiselect,
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-inputtext { min-height:36px; font-size:.78rem; }
+    .purchase-management-card ::ng-deep .purchase-filter-field .p-inputtext { min-height:32px; height:32px; font-size:.78rem; }
     .purchase-management-card ::ng-deep .purchase-filter-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.5rem; padding-top:.65rem; border-top:1px solid #e2e8f0; }
     .purchase-management-card ::ng-deep .purchase-filter-field > label { overflow-wrap:anywhere; }
     .purchase-management-card ::ng-deep .purchase-filter-field .p-dropdown,
@@ -57,6 +58,22 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
   `]
 })
 export class QueryInputsComponent implements OnInit {
+  readonly exporting = signal(false);
+  readonly entityTypeOptions = PROVIDER_ENTITY_TYPES;
+  isCompanyProviderType(): boolean {
+    const id = this.formReport.get('id_type_provider')?.value;
+    return !!id && this.types().some(type => type.id === String(id) && type.code === 'A');
+  }
+  providerTypeChanged(): void {
+    if (!this.isCompanyProviderType()) this.formReport.patchValue({ entity_type: '' });
+    const typeId = this.formReport.get('id_type_provider')?.value;
+    if (typeId && String(this.providerSelect()?.type?.id ?? '') !== String(typeId)) {
+      this.clearSelectProvider();
+    }
+    this.page.set(1);
+    this.getAllAndSearchInputs(1, this.rows(), this.type(), this.query());
+  }
+  commercialUsers = signal<Array<{ id: number; full_names: string }>>([]);
   fb                = inject(FormBuilder);
   validatorsService = inject(ValidatorsService);
   inputsService     = inject(InputsService);
@@ -68,33 +85,39 @@ export class QueryInputsComponent implements OnInit {
   maxDate!: Date;
   buttonItems: MenuItem[] = [
     {
-      label: 'Reporte Compras',
+      label: 'Reporte compras',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { color: 'var(--color-success)' },
       command: () => { this.printExcelReport(); }
     },
     {
-      label: 'Reporte Compras Detallado',
-      icon: 'fas fa-file-pdf',
-      iconStyle: { 'color': '#DC4C64'},
+      label: 'Compras costo promedio',
+      icon: 'fa-solid fa-file-pdf',
+      iconStyle: { color: 'var(--color-danger)' },
       command: () => { this.printPdfDetailsCPPReport(); }
     }, {
-      label: 'Resumen por producto',
-      icon: 'fas fa-file-pdf',
-      iconStyle: { 'color': '#DC4C64'},
+      label: 'Compras totalizadas',
+      icon: 'fa-solid fa-file-pdf',
+      iconStyle: { color: 'var(--color-danger)' },
       command: () => { this.printPdfDetailsReport(); }
     },
     {
       label: 'Resumen producto',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { color: 'var(--color-success)' },
       command: () => { this.printExcelDetailsReport(); }
     },
+      {
+        label: 'Compras totalizadas detalle',
+        icon: 'fa-solid fa-file-pdf',
+        iconStyle: { color: 'var(--color-danger)' },
+        command: () => { this.printPdfReport(); }
+      },
   ];
   searchItems = signal<MenuItem[]>([
     {
       label: 'Todos', icon: 'fas fa-list',
-      iconStyle: { 'color': '#FF851B'},
+      iconStyle: { 'color': '#f59e0b'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
@@ -104,7 +127,7 @@ export class QueryInputsComponent implements OnInit {
     },
     {
       label: 'Al Contado', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA'},
+      iconStyle: { 'color': '#3b82f6'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = 'CONTADO';
@@ -114,7 +137,7 @@ export class QueryInputsComponent implements OnInit {
     },
     {
       label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': '#10b981'},
       command: () => {
         this.cols()[0].isLink = true;
         this.cols()[0].link = '/accounts/accounts-payable?c=${value}';
@@ -127,7 +150,7 @@ export class QueryInputsComponent implements OnInit {
     },
     {
       label: 'Anulados', icon: 'fa-solid fa-trash-can',
-      iconStyle: { 'color': '#DC4C64'},
+      iconStyle: { 'color': '#ef4444'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
@@ -148,6 +171,8 @@ export class QueryInputsComponent implements OnInit {
     status: ['ACTIVE'],
     referral_sources: [''],
     id_type_provider: [''],
+    id_commercial_user: [''],
+    entity_type: [''],
     old_customer: [''],
     with_pickup: [''],
   });
@@ -164,7 +189,7 @@ export class QueryInputsComponent implements OnInit {
       isDocument: true,
     },
     { field: 'date_voucher', header: 'FECHA CMP.' , style:'min-width:110px;max-width:110px;', tooltip: true, isDate: true},
-    { field: `provider.full_names`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
+    { field: `provider_label`, header: 'PROVEEDOR' , style:'min-width:150px;max-width:200px;', tooltip: true, isText:true  },
     { field: `comments`, header: 'OBSERVACIONES' , style:'min-width:100px;max-width:250px;', tooltip: true, isText: true  },
     { field: `total_quantity`, header: 'TOTAL KG' , style:'min-width:100px;max-width:100px;', tooltip: true, isTag: true,
       tagValue: (val:number)=>  this.pipeNumber.transform(val,this.decimal()),
@@ -225,10 +250,10 @@ export class QueryInputsComponent implements OnInit {
     with_pickup: '',
   });
   types_filtrado = signal([
-    {name: 'DIA', code: 'DAY'},
-    {name: 'MES', code: 'MONTH'},
-    {name: 'AÑO', code: 'YEAR'},
-    {name: 'RANGO', code: 'RANGE'},
+    {name: 'Día', code: 'DAY'},
+    {name: 'Mes', code: 'MONTH'},
+    {name: 'Año', code: 'YEAR'},
+    {name: 'Rango', code: 'RANGE'},
   ]);
   yes_no_type = signal([
     {name: 'SI', code: 'SI'},
@@ -239,7 +264,7 @@ export class QueryInputsComponent implements OnInit {
   activeStorageName = computed(() => (
     this.validatorsService.storages().find(storage => storage.id === this.validatorsService.id_storage())?.name || 'Sin almacén activo'
   ));
-  types = signal<{name:string, code:string}[]>([]);
+  types = signal<{name:string, code:string, id?: string}[]>([]);
   txtSearchProvider      = signal('');
   suggestedProvider      = signal<Provider[]>([]);
   loadingSearchProvider  = signal(false);
@@ -259,6 +284,7 @@ export class QueryInputsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.providersService.getManagementCatalogs().subscribe({ next: ({ catalogs }) => this.commercialUsers.set(catalogs.users), error: () => this.commercialUsers.set([]) });
     this.getAllAndSearchInputs(1,this.rows());
     this.getAllTypes();
   }
@@ -346,7 +372,7 @@ export class QueryInputsComponent implements OnInit {
     void this.router.navigateByUrl('/inputs/input-small');
   }
 
-  getAllAndSearchInputs(page: number, limit: number,type: string = '', query: string = '') {
+  getAllAndSearchInputs(page: number, limit: number,type: string = this.type(), query: string = this.query()) {
     const idSucursal = this.validatorsService.id_sucursal();
     const idStorage = this.validatorsService.id_storage();
     this.formReport.patchValue({ id_sucursal: idSucursal, id_storage: idStorage }, { emitEvent: false });
@@ -358,6 +384,7 @@ export class QueryInputsComponent implements OnInit {
       next: (resp) => {
         this.inputs.set(resp.inputs);
         this.inputs()!.data.forEach((input) => {
+          Object.assign(input, { provider_label: [input.provider?.type?.code, input.provider?.full_names].filter(Boolean).join(' - ') });
           input.options = input.status == 'ACTIVE'  ? [
             {
               label:'',icon:'fas fa-eye',
@@ -490,8 +517,9 @@ export class QueryInputsComponent implements OnInit {
   }
 
   formParamsByForm() {
+    if (!this.isCompanyProviderType()) this.formReport.patchValue({ entity_type: '' }, { emitEvent: false });
     this.paramsSearch.update((params)=> {
-      const { filterBy, type_registry, id_provider, dates, referral_sources, id_type_provider, old_customer, with_pickup} = this.formReport.value;
+      const { filterBy, type_registry, id_provider, dates, referral_sources, id_type_provider, id_commercial_user, old_customer, with_pickup} = this.formReport.value;
       const formatDate1 = filterBy == 'MONTH' ? 'MM' : filterBy == 'YEAR' ? 'YYYY' : 'DD-MM-YYYY';
       const formatDate2 = filterBy == 'MONTH' ? 'YYYY' : 'DD-MM-YYYY';
       return {
@@ -506,8 +534,11 @@ export class QueryInputsComponent implements OnInit {
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
         referral_sources: referral_sources ? referral_sources : '',
         id_type_provider: id_type_provider ? id_type_provider : '',
+        id_commercial_user: id_commercial_user ? String(id_commercial_user) : '',
+        entity_type: this.isCompanyProviderType() ? this.formReport.get('entity_type')?.value || '' : '',
         old_customer: old_customer ? old_customer : '',
         with_pickup: with_pickup ? with_pickup : '',
+        type: this.type(), query: this.query(),
       }
     });
   }
@@ -543,7 +574,7 @@ export class QueryInputsComponent implements OnInit {
 
   clearInputs() {
     this.formReport.patchValue({
-      filterBy: 'DAY',
+      filterBy: 'MONTH',
       dates: new Date(),
       type_registry: '',
       id_provider: '',
@@ -552,130 +583,61 @@ export class QueryInputsComponent implements OnInit {
       status: 'ACTIVE',
       referral_sources: '',
       id_type_provider: '',
+      id_commercial_user: '',
+      entity_type: '',
       old_customer: '',
       with_pickup: '',  
     });
+    this.providerSelect.set(undefined);
+    this.suggestedProvider.set([]);
+    this.txtSearchProvider.set('');
+    this.type.set(''); this.query.set('');
+    this.paramsSearch.update(params => ({ ...params, status: 'ACTIVE', type_pay: '' }));
+    this.getAllAndSearchInputs(1, this.rows());
   }
 
-  printPdfReport() {
+  printPdfReport() { void this.exportPurchaseReport('pdf'); }
+  printExcelReport() { void this.exportPurchaseReport('excel'); }
+  printPdfDetailsReport() { void this.exportPurchaseReport('summaryPdf'); }
+  printPdfDetailsCPPReport() { void this.exportPurchaseReport('averagePdf'); }
+  printExcelDetailsReport() { void this.exportPurchaseReport('summaryExcel'); }
+
+  private async exportPurchaseReport(kind: 'pdf' | 'excel' | 'summaryPdf' | 'averagePdf' | 'summaryExcel') {
+    if (this.exporting() || this.loading()) return;
     this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
+    if (this.formReport.invalid) return;
     this.formParamsByForm();
-
-    Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
-    this.pdfActions.prepareRequest(this.inputsService.getReportPdf(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
-      next: (data) => {
-        Swal.close();
-        this.pdfActions.show(data, 'reporte_compras.pdf', 'Reporte de compras');
-      },
-      error: () => {
-        Swal.fire('No se pudo generar el PDF', 'Revise los filtros e intente nuevamente.', 'error');
-      },
-    });
+    const params = { ...this.paramsSearch() };
+    const isPdf = kind === 'pdf' || kind === 'summaryPdf' || kind === 'averagePdf';
+    this.exporting.set(true);
+    try {
+      const request = kind === 'pdf' ? this.inputsService.getReportPdf(params, this.fieldSort(), this.order())
+        : kind === 'excel' ? this.inputsService.getReportExcel(params, this.fieldSort(), this.order())
+        : kind === 'summaryPdf' ? this.inputsService.getReportDetailsPdf(params)
+        : kind === 'averagePdf' ? this.inputsService.getReportDetailsCPPPdf(params)
+        : this.inputsService.getReportDetailsExcel(params);
+      const file: Blob = await firstValueFrom(this.pdfActions.prepareRequest(request, isPdf));
+      if (!(file instanceof Blob) || file.size === 0) throw new Error('El servidor devolvió un archivo vacío.');
+      const filename = kind === 'pdf' ? 'compras-totalizadas-detalle.pdf' : kind === 'excel' ? 'reporte-compras.xlsx'
+        : kind === 'summaryPdf' ? 'compras-totalizadas.pdf' : kind === 'averagePdf' ? 'compras-costo-promedio.pdf' : 'resumen-producto.xlsx';
+      if (isPdf) await this.pdfActions.show(file, filename, 'Reporte de compras');
+      else {
+        if (await file.slice(0, 2).text() !== 'PK') throw new Error('El servidor no devolvió un Excel válido.');
+        downloadBlobFile(file, filename);
+      }
+    } catch (error) {
+      this.exporting.set(false);
+      let message = 'No se pudo generar el reporte. Revise los filtros e intente nuevamente.';
+      const response = (error as any)?.error;
+      if (response instanceof Blob) {
+        try { const body = JSON.parse(await response.text()); message = body.errors?.[0]?.msg || body.msg || message; } catch { /* Keep the readable fallback for non-JSON responses. */ }
+      }
+      await Swal.fire('No se pudo generar el reporte', message, 'error');
+    } finally {
+      this.exporting.set(false);
+    }
   }
-
-  printExcelReport() {
-    this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
-    this.formParamsByForm();
-    Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
-      didOpen: () => {
-        Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.inputsService.getReportExcel(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
-            next: (data) => {
-              downloadBlobFile(data, 'reporte_compras_detallado.xlsx');
-              Swal.close();
-            },
-            error: (err) => {
-              Swal.close();
-            },
-          });
-        });
-      },
-    });
-  }
-
-
-  printPdfDetailsReport() {
-    this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
-    this.formParamsByForm();
-    Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
-      didOpen: () => {
-        Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.pdfActions.prepareRequest(this.inputsService.getReportDetailsPdf(this.paramsSearch())).subscribe({
-            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_compras_resumen_por_producto.pdf', 'Resumen de compras por producto'); },
-            error: (err) => {
-              Swal.close();
-            },
-          });
-        });
-      },
-    });
-  }
-
-   printPdfDetailsCPPReport() {
-    this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
-    this.formParamsByForm();
-    Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
-      didOpen: () => {
-        Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.pdfActions.prepareRequest(this.inputsService.getReportDetailsCPPPdf(this.paramsSearch())).subscribe({
-            next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_compras_costo_promedio.pdf', 'Detalle de costo promedio'); },
-            error: (err) => {
-              Swal.close();
-            },
-          });
-        });
-      },
-    });
-  }
-
-  printExcelDetailsReport() {
-    this.formReport.markAllAsTouched();
-    if(!this.formReport.valid) return;
-    this.formParamsByForm();
-    Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
-      didOpen: () => {
-        Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.inputsService.getReportDetailsExcel(this.paramsSearch()).subscribe({
-            next: (data) => {
-              this.loading.set(false);
-              downloadBlobFile(data, 'reporte_compras_costo_promedio.xlsx');
-              Swal.close();
-            },
-            error: (err) => {
-              Swal.close();
-            },
-          });
-        });
-      },
-    });
-  }
-
   getAllTypes() {
-    this.types.set([]);
     this.providersService.getAllTypesProvider().subscribe(resp => {
       const formattedType = resp.typesProvider.map(type => ({
         name: type.name,
@@ -683,13 +645,9 @@ export class QueryInputsComponent implements OnInit {
         code: type.code,
       })).sort((a, b) => a.name.localeCompare(b.name));
       formattedType.unshift(
-        {code:'ALL', name:'TODOS',id: ''}
+        {code:'ALL', name:'Todos',id: ''}
       )
       this.types.set(formattedType);
-      if(formattedType.length > 0) {
-        this.formReport.get('id_type_provider')?.setValue('');
-        this.getAllAndSearchInputs(1,this.rows());
-      }
     });
   }
 }

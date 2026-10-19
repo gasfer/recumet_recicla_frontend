@@ -4,7 +4,7 @@
     [dismissableMask]="true" styleClass="app-dialog--md">
     <form >
         <app-alert-notify [subTitle]="'Marca las sucursales a asignar'" [required]="false" [subTitle2]="''"></app-alert-notify>
-        <div class="d-flex text-center justify-content-center align-content-center align-items-center"  *ngIf="this.loading()">
+        <div class="flex text-center justify-center align-content-center items-center"  *ngIf="this.loading()">
             <app-loading class="m-0 app-loading-width-250"></app-loading>
         </div>
         <p-table *ngIf="!this.loading()"   [value]="sucursales()" styleClass="p-datatable-sm app-table-scroll" responsiveLayout="scroll">
@@ -31,7 +31,7 @@
                             }"
                         ></button>
                     </td>
-                    <td class="text-start app-u-white-space-normal-f8f979b app-u-min-width-70px-27295af app-u-max-width-70px-460bb70">{{ sucursal.name }}</td>
+                    <td class="text-left app-u-white-space-normal-f8f979b app-u-min-width-70px-27295af app-u-max-width-70px-460bb70">{{ sucursal.name }}</td>
                 </tr>
             </ng-template>
         </p-table>

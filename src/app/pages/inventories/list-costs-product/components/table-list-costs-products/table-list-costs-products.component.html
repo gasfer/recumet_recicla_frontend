@@ -10,13 +10,13 @@
         <div class="text-center">
             <p-dropdown [options]="searchFor" [formControl]="searchSelect" placeholder="Buscar por:" optionLabel="name"
                 optionValue="code" appendTo="body"></p-dropdown>
-            <span class="p-input-icon-right ms-2 mt-1">
+            <span class="p-input-icon-right ml-2 mt-1">
                 <i role="button" tabindex="0" aria-label="Limpiar búsqueda"
                     (click)="clearSearch()" (keydown.enter)="clearSearch()"
                     (keydown.space)="$event.preventDefault(); clearSearch()"
                     class="fa-solid fa-circle-xmark cursor-pointer"></i>
                 <input type="text" pInputText placeholder="Escriba para filtrar..."
-                    [formControl]="txtTermino" (keyup)="search()" class="text-uppercase"/>
+                    [formControl]="txtTermino" (keyup)="search()" class="uppercase"/>
             </span>
         </div>
     </ng-template>
@@ -144,17 +144,17 @@
 
             <td>
                 <span class="p-column-title"><b>{{ cols[6].header || 'Acciones' }}</b></span>
-                <div class="flex align-items-center justify-content-center gap-2">
+                <div class="flex items-center justify-center gap-2">
                     <button aria-label="Editar" *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="fas fa-pencil"
-                        (click)="onRowEditInit(rowData)" class="p-button-rounded p-button-warning p-button-sm  ms-2">
+                        (click)="onRowEditInit(rowData)" class="p-button-rounded p-button-warning p-button-sm ml-2">
                     </button>
                     <button aria-label="Guardar cambios" *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="fas fa-check"
                         (click)="onRowEditSave(rowData)"
-                        class="p-button-rounded p-button-success p-button-success ms-2">
+                        class="p-button-rounded p-button-success ml-2">
                     </button>
                     <button aria-label="Cancelar cambios" *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="fas fa-times"
                         (click)="onRowEditCancel(rowData, ri)"
-                        class="p-button-rounded p-button-danger p-button-danger ms-2">
+                        class="p-button-rounded p-button-danger ml-2">
                     </button>
                 </div>
             </td>

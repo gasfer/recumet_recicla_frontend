@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LAYOUT_WIDTH, SIDEBAR_TYPE, TOPBAR, LAYOUT_MODE } from '../layouts.model';
+import { Subscription } from 'rxjs';
+import { SidebarPreferencesService } from 'src/app/core/services/sidebar-preferences.service';
+import { ValidatorsService } from 'src/app/services/validators.service';
 import { EventService } from 'src/app/core/services/event.service';
 
 @Component({
@@ -8,7 +11,10 @@ import { EventService } from 'src/app/core/services/event.service';
   styles: [
   ]
 })
-export class RightsidebarComponent implements OnInit {
+export class RightsidebarComponent implements OnInit, OnDestroy {
+  private preferences = inject(SidebarPreferencesService);
+  private validators = inject(ValidatorsService);
+  private readonly sidebarSubscription = new Subscription();
   isVisible?: string;
   attribute?: string;
 
@@ -21,9 +27,14 @@ export class RightsidebarComponent implements OnInit {
 
   ngOnInit() {
     this.width = LAYOUT_WIDTH;
-    this.sidebartype = SIDEBAR_TYPE;
+    const preference = this.preferences.load(this.validators.user()?.id);
+    this.sidebartype = preference.collapsed ? 'icon' : preference.expandedType;
+    this.sidebarSubscription.add(this.eventService.subscribe('changeSidebartype', value => this.sidebartype = value));
+    this.sidebarSubscription.add(this.eventService.subscribe('sidebarModeChanged', value => this.sidebartype = value));
     this.topbar = TOPBAR;
-    this.mode = LAYOUT_MODE;
+    const savedMode = localStorage.getItem('recumet-theme');
+    this.mode = savedMode === 'dark' || savedMode === 'light' ? savedMode : LAYOUT_MODE;
+    this.sidebarSubscription.add(this.eventService.subscribe('changeMode', value => this.mode = value));
 
     /**
      * horizontal-vertical layput set
@@ -41,6 +52,8 @@ export class RightsidebarComponent implements OnInit {
   /**
    * Hide the sidebar
    */
+  ngOnDestroy(): void { this.sidebarSubscription?.unsubscribe(); }
+
   public hide() {
     document.body.classList.remove('right-bar-enabled');
   }

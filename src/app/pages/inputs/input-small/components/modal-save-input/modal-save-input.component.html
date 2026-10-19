@@ -3,7 +3,7 @@
   [(visible)]="inputsService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
   (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog purchase-save-dialog">
   <form [formGroup]="formInput" class="purchase-save-form">
-    <div class="p-2.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 text-xs flex items-center gap-2 mb-3">
+    <div class="p-2.5 rounded-lg border border-erp-border bg-erp-info-soft text-erp-info text-xs flex items-center gap-2 mb-3">
       <i class="fa-solid fa-circle-info"></i>
       <span>Los campos marcados con <b>*</b> son obligatorios.</span>
     </div>
@@ -30,11 +30,11 @@
         <div class="erp-field">
           <label class="erp-label required">Proveedor</label>
           <div class="erp-toggle-pill">
-            <i class="fa-solid fa-truck-moving text-muted"></i>
-            <span class="flex-grow-1 text-truncate font-bold text-xs">
+            <i class="fa-solid fa-truck-moving text-erp-text-muted"></i>
+            <span class="grow truncate font-bold text-xs">
               {{ providerSelect() ? (providerSelect()?.number_document + ' · ' + providerSelect()?.full_names) : 'SELECCIONE UN PROVEEDOR' }}
             </span>
-            <button *ngIf="providerSelect()" type="button" class="btn btn-sm btn-outline-danger py-0 px-1 border-0"
+            <button *ngIf="providerSelect()" type="button" class="erp-btn erp-btn-sm erp-btn-outline-danger py-0 px-1 border-0"
               (click)="inputsService.providerSelect.set(undefined)" pTooltip="Quitar Proveedor" tooltipPosition="top">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -94,7 +94,7 @@
         <div class="erp-field">
           <label class="erp-label">Nro. Pesaje</label>
           @if (formInput.get('type_registry')?.value != 'SIN FICHA') {
-            <input type="text" pInputText class="erp-input w-full text-uppercase"
+            <input type="text" pInputText class="erp-input w-full uppercase"
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="registry_number"
               placeholder="EJ. 0001"
               [class.ng-dirty]="validatorsService.inputValid('registry_number',formInput)"/>
@@ -120,8 +120,8 @@
         <div class="erp-field">
           <label class="erp-label">Subtotal / Sumas</label>
           <div class="erp-toggle-pill justify-between">
-            <span class="text-xs text-muted font-medium"><i class="fa-solid fa-calculator mr-1"></i>Sumas</span>
-            <span class="font-bold text-sm text-slate-800">{{ formInput.get('sumas')?.value | number:decimalFormat.digitsInfo }}</span>
+            <span class="text-xs text-erp-text-muted font-medium"><i class="fa-solid fa-calculator mr-1"></i>Sumas</span>
+            <span class="font-bold text-sm text-erp-text">{{ formInput.get('sumas')?.value | number:decimalFormat.digitsInfo }}</span>
           </div>
         </div>
 
@@ -143,8 +143,8 @@
         <div class="erp-field">
           <label class="erp-label required">Total a Pagar</label>
           <div class="erp-toggle-pill justify-between purchase-total">
-            <span class="text-xs text-emerald-800 font-bold"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>TOTAL</span>
-            <span class="font-extrabold text-base text-emerald-700">{{ formInput.get('total')?.value | number:decimalFormat.digitsInfo }} Bs</span>
+            <span class="text-xs text-erp-success font-bold"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>TOTAL</span>
+            <span class="font-extrabold text-base text-erp-success">{{ formInput.get('total')?.value | number:decimalFormat.digitsInfo }} Bs</span>
           </div>
         </div>
       </div>
@@ -204,7 +204,7 @@
 
         <div class="erp-field">
           <label class="erp-label">{{ formInput.get('type_payment')?.value == 'CHEQUE' ? 'Nro. Cheque' : 'Nro. Cuenta' }}</label>
-          <input type="text" pInputText class="erp-input w-full text-uppercase"
+          <input type="text" pInputText class="erp-input w-full uppercase"
             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_input" placeholder="EJ. 12345678"
             [class.ng-dirty]="validatorsService.inputValid('account_input',formInput)"/>
           <small *ngIf="validatorsService.inputValid('account_input',formInput)" class="erp-error-msg">
@@ -217,7 +217,7 @@
       <div *ngIf="formInput.get('type_payment')?.value == 'TRANSFERENCIA' || formInput.get('type_payment')?.value == 'QR'" class="erp-form-grid animated fadeInDown">
         <div class="erp-field">
           <label class="erp-label required">Nro. de Transferencia</label>
-          <input type="text" pInputText class="erp-input w-full text-uppercase"
+          <input type="text" pInputText class="erp-input w-full uppercase"
             formControlName="number_transaction" placeholder="EJ. 123456"
             [class.ng-dirty]="validatorsService.inputValid('number_transaction',formInput)"/>
           <small *ngIf="validatorsService.inputValid('number_transaction',formInput)" class="erp-error-msg">
@@ -228,12 +228,12 @@
         <div class="erp-field">
           <label class="erp-label">Comprobante de Pago (Opcional)</label>
           <div class="flex items-center gap-2 mt-1 purchase-attachment">
-            <input type="file" #fileInput (change)="onVoucherFileChange($event)" accept="image/*,.pdf" class="d-none"/>
+            <input type="file" #fileInput (change)="onVoucherFileChange($event)" accept="image/*,.pdf" class="hidden"/>
             <button type="button" pButton (click)="fileInput.click()" label="Subir Archivo" icon="fa-solid fa-upload" class="p-button-sm p-button-outlined"></button>
-            <span class="text-xs text-muted" *ngIf="!voucherFile">Sin archivo adjunto</span>
+            <span class="text-xs text-erp-text-muted" *ngIf="!voucherFile">Sin archivo adjunto</span>
             <div *ngIf="voucherFile" class="erp-badge erp-badge-success flex items-center gap-1">
               <span class="purchase-attachment-name">{{ voucherFile.name }}</span>
-              <i class="fa-solid fa-circle-xmark text-danger cursor-pointer ml-1" (click)="removeVoucherFile()" pTooltip="Eliminar"></i>
+              <i class="fa-solid fa-circle-xmark text-erp-danger cursor-pointer ml-1" (click)="removeVoucherFile()" pTooltip="Eliminar"></i>
             </div>
           </div>
         </div>
@@ -287,7 +287,7 @@
         <div class="erp-field">
           <label class="erp-label">Observaciones generales</label>
           <textarea pInputTextarea formControlName="comments" placeholder="Ingrese notas u observaciones..."
-            rows="3" class="w-full text-uppercase"
+            rows="3" class="w-full uppercase"
             [class.ng-dirty]="validatorsService.inputValid('comments',formInput)"></textarea>
           <small *ngIf="validatorsService.inputValid('comments',formInput)" class="erp-error-msg">
             {{ validatorsService.inputValidMessage("comments",formInput) }}
@@ -297,8 +297,8 @@
     </section>
 
     <!-- Auditoría en caso de edición -->
-    <div *ngIf="inputsService.isEdit && editAuthorizationRequired()" class="erp-section border-amber-300 bg-amber-50">
-      <div class="erp-section-title text-amber-800">
+    <div *ngIf="inputsService.isEdit && editAuthorizationRequired()" class="erp-section border-erp-border bg-erp-warning-soft">
+      <div class="erp-section-title text-erp-warning">
         <i class="fa-solid fa-shield-halved"></i> Autorización de Modificación
       </div>
       <div class="erp-form-grid">

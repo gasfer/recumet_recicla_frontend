@@ -1,3 +1,4 @@
+import { EventEmitter } from '@angular/core';
 import { SidebarComponent } from './sidebar.component';
 import { MENU } from './menu';
 import Swal from 'sweetalert2';
@@ -18,6 +19,25 @@ describe('SidebarComponent exclusive accordion', () => {
     component.filteredGroups = component.menuGroups;
     return component;
   };
+
+  it('expands the sidebar before opening a compact group', () => {
+    const component = createComponent();
+    component.isCondensed = true;
+    component.toggleRequested = new EventEmitter<void>();
+    const toggle = spyOn(component.toggleRequested, 'emit');
+    component.toggleGroup(component.menuGroups[0]);
+    expect(toggle).toHaveBeenCalled();
+    expect(component.menuGroups[0].isOpen).toBeTrue();
+  });
+
+  it('aggregates only real numeric badges', () => {
+    const component = createComponent();
+    const group = component.menuGroups[0];
+    group.items[0].badge = { text: '3' };
+    group.items[0].subItems![0].badge = { text: '2' };
+    group.items[1].badge = { text: 'new' };
+    expect(component.getGroupNotificationCount(group)).toBe(5);
+  });
 
   it('closes the previous group and allows closing the selected group', () => {
     const component = createComponent();
@@ -51,6 +71,21 @@ describe('SidebarComponent exclusive accordion', () => {
     component.menuGroups[1].isOpen = true;
     component.updateActiveStateFromUrl();
     expect(component.menuGroups.map(group => group.isOpen)).toEqual([true, false]);
+  });
+
+  it('marks the group containing the current route and chooses its active item icon', () => {
+    const component = createComponent();
+    const activePath = window.location.pathname;
+    const group = {
+      id: 3,
+      title: 'Current section',
+      badgeCount: 1,
+      isOpen: true,
+      items: [{ link: activePath, label: 'Current item', icon: 'fa-solid fa-box' }],
+    };
+
+    expect(component.hasActiveRoute(group)).toBeTrue();
+    expect(component.getGroupIcon(group)).toBe('fa-solid fa-box');
   });
 });
 

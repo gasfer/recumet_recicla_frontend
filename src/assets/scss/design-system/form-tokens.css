@@ -14,20 +14,24 @@
   --color-primary-hover-rgb: 0 140 89;
   --color-primary-hover: #008c59;  /* Verde RECUMET al pasar el cursor */
   --color-primary-light: #ecfdf5;  /* Emerald 50 */
+  --color-field-filled: #f3fbf7;
+  --color-field-filled-border: #a7dfc5;
 
   /* Superficies */
   --color-surface:       #ffffff;
-  --color-bg:            #F1F5F9;  /* Slate 100 */
-  --color-sidebar:       #0F172A;  /* Slate 950 */
-  --color-header-modal:  #0F172A;  /* Slate 900/950 */
+  --color-bg:            #F3F7FB;
+  --color-sidebar:       #080F1D;
+  --color-header-modal:  #00A96B;
+  --color-header-modal-text: #FFFFFF;
 
   /* Bordes */
   --color-border:        #E2E8F0;  /* Slate 200 */
-  --color-border-focus:  #059669;
+  --color-border-subtle: #F1F5F9;  /* Slate 100 — bordes muy sutiles */
+  --color-border-focus:  #008C59;
 
   /* Texto */
   --color-text:          #1E293B;  /* Slate 800 */
-  --color-text-muted:    #64748B;  /* Slate 500 */
+  --color-text-muted:    #475569;  /* Slate 600 — texto secundario paleta RECUMET */
   --color-text-inverse:  #ffffff;
 
   /* Estado */
@@ -69,20 +73,20 @@
   --shadow-lg:   0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
 
   /* Campo de formulario */
-  --field-height: 38px;
+  --field-height: 32px;
   --field-height-sm: 32px;
-  --erp-shell-sidebar: #08152f;
-  --erp-shell-sidebar-hover: #132440;
-  --erp-shell-sidebar-active: #00ad73;
+  --erp-shell-sidebar: #080f1d;
+  --erp-shell-sidebar-hover: #101a2d;
+  --erp-shell-sidebar-active: #00b87a;
   --erp-shell-canvas: #f3f7fb;
   --erp-shell-topbar-height: 52px;
   --erp-shell-sidebar-width: 226px;
   --erp-shell-sidebar-collapsed-width: 70px;
   --erp-font-metadata: 11px;
   --erp-font-label: 12px;
-  --erp-font-body: 13px;
-  --erp-font-section: 15px;
-  --erp-control-compact: 34px;
+  --erp-font-body: 12px;
+  --erp-font-section: 14px;
+  --erp-control-compact: 32px;
   --erp-surface-gap: 12px;
 }
 
@@ -151,11 +155,13 @@ body.vertical-collpsed #sidebar-menu > ul > li:hover > a .side-nav-symbol { marg
 .sidebar-status small { padding:2px 5px; border-radius:3px; background:#152541; color:#bac5d4; font-size:8px; }
 body #sidebar-menu { padding:5px 7px 12px!important; }
 body #sidebar-menu .menu-title { padding:12px 8px 4px!important; color:#75859e!important; font-size:9px!important; font-weight:800!important; letter-spacing:.045em; }
-body #sidebar-menu ul li a { min-height:34px; margin:1px 2px; padding:7px 9px!important; border-radius:7px; font-size:11px!important; }
+body #sidebar-menu ul li a { min-height:36px; margin:1px 2px; padding:7px 9px!important; border-radius:7px; font-size:11px!important; }
 body #sidebar-menu ul li a i { width:17px; margin-right:7px!important; font-size:13px!important; text-align:center; }
 body #sidebar-menu .side-nav-symbol { width:22px; margin-right:8px; color:#8fa8cc; font-size:20px; line-height:1; text-align:center; }
 body #sidebar-menu a:hover .side-nav-symbol,body #sidebar-menu a.active .side-nav-symbol { color:currentColor; }
-body #sidebar-menu ul li a.active { background:var(--erp-shell-sidebar-active)!important; color:#fff!important; box-shadow:0 4px 12px rgba(0,173,115,.18); }
+body #sidebar-menu ul li a.active { background:var(--erp-shell-sidebar-active)!important; color:#062319!important; box-shadow:0 2px 8px rgba(0,184,122,.18); }
+body #sidebar-menu ul li a:not(.active):hover { background:rgba(0,184,122,.12)!important; color:#00b87a!important; }
+body #sidebar-menu ul li a:not(.active):focus-visible { outline:2px solid #34d399; outline-offset:2px; }
 body #sidebar-menu ul li ul.sub-menu li a { min-height:29px; padding:6px 9px 6px 31px!important; font-size:10.5px!important; }
 body .page-content { background:var(--erp-shell-canvas); padding-top:calc(var(--erp-shell-topbar-height) + 14px); }
 
@@ -186,7 +192,7 @@ body .p-tag.p-tag-danger { border-color:#fecaca!important; background:#fef2f2!im
 
 .erp-card-header {
   background-color: var(--color-header-modal);
-  color: var(--color-text-inverse);
+  color: var(--color-header-modal-text);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   padding: var(--spacing-md) var(--spacing-lg);
   display: flex;
@@ -217,7 +223,7 @@ body .p-tag.p-tag-danger { border-color:#fecaca!important; background:#fef2f2!im
   color: var(--color-danger);
 }
 
-/* Input base — altura uniforme 38 px */
+/* Input base — altura uniforme controlada por --field-height */
 .erp-input,
 .erp-input.p-inputtext,
 .erp-input .p-inputtext,
@@ -244,6 +250,40 @@ body .p-tag.p-tag-danger { border-color:#fecaca!important; background:#fef2f2!im
   box-shadow: 0 0 0 2px rgba(5,150,105,0.15) !important;
   outline: none !important;
 }
+
+/* Estado informativo: campos con valor mantienen contraste y señalan éxito suavemente. */
+body :is(input[placeholder]:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']), textarea[placeholder], .p-inputtext[placeholder], .p-inputnumber-input[placeholder], .p-calendar .p-inputtext[placeholder]):is(.ng-valid.ng-dirty, .ng-valid.ng-touched):not(:placeholder-shown) {
+  background-color: var(--color-field-filled) !important;
+  border-color: var(--color-field-filled-border) !important;
+}
+body select:is(.ng-valid.ng-dirty, .ng-valid.ng-touched):has(option:checked:not([value=''])),
+body .p-dropdown:is(.ng-valid.ng-dirty, .ng-valid.ng-touched):has(.p-dropdown-label:not(.p-placeholder)),
+body .p-multiselect:is(.ng-valid.ng-dirty, .ng-valid.ng-touched):has(.p-multiselect-label:not(.p-placeholder)) {
+  background-color: var(--color-field-filled) !important;
+  border-color: var(--color-field-filled-border) !important;
+}
+body :is(input, select, textarea, .erp-input, .p-inputtext, .p-dropdown, .p-multiselect, .p-inputnumber-input, .p-calendar .p-inputtext):is(.ng-invalid.ng-dirty, .ng-invalid.ng-touched) {
+  background-color: var(--color-surface) !important;
+  border-color: var(--color-danger) !important;
+}
+
+body :is(.erp-items-header, .erp-card-header, .p-dialog .p-dialog-header, .modal-header) {
+  background-color: var(--color-header-modal) !important;
+  color: var(--color-header-modal-text) !important;
+}
+body :is(.erp-items-header, .erp-card-header, .p-dialog .p-dialog-header, .modal-header) :is(span, i, strong, h1, h2, h3, .p-dialog-title, .btn-close) {
+  color: inherit !important;
+}
+body :is(.p-datatable .p-datatable-thead > tr > th, table thead th, .erp-table-header th) {
+  background: var(--color-primary) !important;
+  color: var(--color-header-modal-text) !important;
+  border-color: var(--color-primary-hover) !important;
+  font-size: var(--erp-font-label, 12px) !important;
+  font-weight: 700 !important;
+  letter-spacing: .02em;
+  padding: .55rem .7rem !important;
+}
+body :is(.p-datatable .p-datatable-thead > tr > th, table thead th, .erp-table-header th) * { color: var(--color-header-modal-text) !important; }
 
 .erp-input.p-dropdown {
   display: flex !important;
@@ -316,8 +356,8 @@ p-autocomplete.erp-input .p-inputtext {
 
 /* Secciones agrupadas compactas de formulario */
 .erp-section {
-  background-color: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 0.75rem 1rem;
   margin-bottom: 0.65rem;
@@ -328,7 +368,7 @@ p-autocomplete.erp-input .p-inputtext {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748B;
+  color: var(--color-text-muted);
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -339,7 +379,7 @@ p-autocomplete.erp-input .p-inputtext {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #FFFFFF;
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 0.2rem 0.5rem;
@@ -352,70 +392,7 @@ p-autocomplete.erp-input .p-inputtext {
 .erp-col-2    { grid-column: span 2; }
 .erp-col-3    { grid-column: span 3; }
 
-/* ----------------------------------------------------------
-   5. BOTONES
-   ---------------------------------------------------------- */
-.erp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
-  height: var(--field-height);
-  padding: 0 var(--spacing-lg);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  font-family: var(--font-family-base);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-  text-decoration: none;
-  line-height: 1;
-}
-
-.erp-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-.erp-btn-primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-color: var(--color-primary);
-}
-.erp-btn-primary:hover {
-  background-color: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
-}
-
-.erp-btn-secondary {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-.erp-btn-secondary:hover {
-  background-color: var(--color-bg);
-  border-color: #cbd5e1;
-}
-
-.erp-btn-danger {
-  background-color: var(--color-danger);
-  color: var(--color-text-inverse);
-  border-color: var(--color-danger);
-}
-.erp-btn-danger:hover {
-  background-color: #dc2626;
-  border-color: #dc2626;
-}
-
-.erp-btn-ghost {
-  background-color: transparent;
-  color: var(--color-text);
-  border-color: transparent;
-}
-.erp-btn-ghost:hover {
-  background-color: var(--color-bg);
-}
+/* Los botones se definen exclusivamente en design-system/_primary-buttons.scss. */
 
 /* ----------------------------------------------------------
    6. BADGES
@@ -458,12 +435,12 @@ p-autocomplete.erp-input .p-inputtext {
 .erp-table-header th,
 .erp-table-header .p-column-header-content {
   background-color: var(--color-header-modal) !important;
-  color: var(--color-text-inverse) !important;
+  color: var(--color-header-modal-text) !important;
   font-size: var(--font-size-sm) !important;
   font-weight: var(--font-weight-semibold) !important;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  border-bottom: 2px solid #334155 !important;
+  border-bottom: 1px solid var(--color-primary-hover) !important;
   padding: var(--spacing-sm) var(--spacing-md) !important;
 }
 
@@ -486,44 +463,94 @@ p-autocomplete.erp-input .p-inputtext {
   white-space: nowrap;
 }
 
-/* Acciones de listas: icono semántico con fondo tenue, no botones sólidos. */
+/* Acciones de listas: botones sin fondo a 32px con iconos alegres y modernos */
 .erp-table-cell-action .p-button,
-.rc__actions .p-button {
-  width: 2rem !important;
-  height: 2rem !important;
-  min-width: 2rem !important;
+.rc__actions .p-button,
+.gc-card__actions .p-button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
   padding: 0 !important;
   border-width: 1px !important;
-  border-radius: 0.5rem !important;
+  border-radius: 8px !important;
   box-shadow: none !important;
+  background: transparent !important;
+  border-color: transparent !important;
 }
 
 .erp-table-cell-action .p-button.ms-1,
-.rc__actions .p-button.ms-1 {
+.rc__actions .p-button.ms-1,
+.gc-card__actions .p-button.ms-1 {
   margin-left: 0 !important;
 }
 
 .erp-table-cell-action .p-button .p-button-icon,
-.rc__actions .p-button .p-button-icon { color: inherit !important; }
+.rc__actions .p-button .p-button-icon,
+.gc-card__actions .p-button .p-button-icon {
+  font-size: 14px !important;
+}
 
-.erp-table-cell-action .p-button.p-button-success,
-.rc__actions .p-button.p-button-success { color:#059669 !important; background:#ecfdf5 !important; border-color:#a7f3d0 !important; }
-.erp-table-cell-action .p-button.p-button-success .p-button-icon,
-.rc__actions .p-button.p-button-success .p-button-icon { color:#059669 !important; }
-.erp-table-cell-action .p-button.p-button-info,
-.rc__actions .p-button.p-button-info { color:#2563eb !important; background:#eff6ff !important; border-color:#bfdbfe !important; }
-.erp-table-cell-action .p-button.p-button-info .p-button-icon,
-.rc__actions .p-button.p-button-info .p-button-icon { color:#2563eb !important; }
-.erp-table-cell-action .p-button.p-button-warning,
-.rc__actions .p-button.p-button-warning { color:#d97706 !important; background:#fffbeb !important; border-color:#fde68a !important; }
-.erp-table-cell-action .p-button.p-button-warning .p-button-icon,
-.rc__actions .p-button.p-button-warning .p-button-icon { color:#d97706 !important; }
-.erp-table-cell-action .p-button.p-button-danger,
-.rc__actions .p-button.p-button-danger { color:#dc2626 !important; background:#fef2f2 !important; border-color:#fecaca !important; }
-.erp-table-cell-action .p-button.p-button-danger .p-button-icon,
-.rc__actions .p-button.p-button-danger .p-button-icon { color:#dc2626 !important; }
-.erp-table-cell-action .p-button.p-button-secondary,
-.rc__actions .p-button.p-button-secondary { color:#475569 !important; background:#f8fafc !important; border-color:#cbd5e1 !important; }
+/* TabMenu global RECUMET: navegación a 36px, alegre y moderna */
+body .p-tabmenu {
+  border-bottom: 1px solid var(--color-border) !important;
+  background: transparent !important;
+}
+body .p-tabmenu .p-tabmenu-nav {
+  background: transparent !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 0 0.5rem !important;
+  margin: 0 !important;
+}
+body .p-tabmenu .p-tabmenuitem {
+  height: 36px !important;
+  margin: 0 !important;
+}
+body .p-tabmenu .p-tabmenuitem .p-menuitem-link {
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  padding: 0 0.85rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  background: transparent !important;
+  color: var(--color-text-muted) !important;
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  border-radius: 6px 6px 0 0 !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+}
+body .p-tabmenu .p-tabmenuitem .p-menuitem-link .p-menuitem-icon {
+  font-size: 13px !important;
+  margin-right: 0.35rem !important;
+}
+body .p-tabmenu .p-tabmenuitem:not(.p-highlight) .p-menuitem-link:hover {
+  background: var(--color-bg) !important;
+  color: var(--color-primary) !important;
+  border-bottom-color: var(--color-border) !important;
+}
+body .p-tabmenu .p-tabmenuitem.p-highlight .p-menuitem-link {
+  background: var(--color-success-light) !important;
+  color: var(--color-primary) !important;
+  border-bottom: 2px solid var(--color-primary) !important;
+  font-weight: 700 !important;
+}
+body[data-bs-theme='dark'] .p-tabmenu .p-tabmenuitem.p-highlight .p-menuitem-link {
+  background: rgba(52, 211, 153, 0.12) !important;
+  color: #34d399 !important;
+  border-bottom-color: #34d399 !important;
+}
+
+/* Los colores y estados de estas acciones se resuelven en la capa compartida. */
 
 /* Las tablas comparten el acabado suave de las secciones de formulario. */
 body .p-datatable.app-table-scroll {
@@ -776,13 +803,13 @@ body .p-datatable.app-table-scroll .app-table-action-column .erp-table-cell-acti
 
 /* Valor de solo lectura con idéntico aspecto a inputs */
 .erp-readonly-value {
-  background-color: #ffffff;
-  border: 1px solid #E2E8F0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 13px;
   font-weight: 500;
-  color: #1E293B;
+  color: var(--color-text);
   min-height: 36px;
   display: flex;
   align-items: center;

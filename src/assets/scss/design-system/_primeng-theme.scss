@@ -99,21 +99,21 @@ body .p-datepicker table td > span:hover {
 body .p-dialog {
   border-radius: 1rem !important;
   overflow: hidden !important;
-  border: 1px solid #1E293B !important;
-  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.3), 0 8px 10px -6px rgba(15, 23, 42, 0.25) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 body .p-dialog .p-dialog-header {
-  background-color: #0F172A !important; /* Header oscuro consistente */
-  color: #FFFFFF !important;
+  background-color: var(--color-header-modal) !important;
+  color: var(--color-header-modal-text) !important;
   border-top-left-radius: 1rem !important;
   border-top-right-radius: 1rem !important;
   padding: 1.15rem 1.5rem !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid var(--color-primary-hover) !important;
 }
 
 body .p-dialog .p-dialog-header .p-dialog-title {
-  color: #FFFFFF !important;
+  color: var(--color-header-modal-text) !important;
   font-family: var(--font-family-base) !important;
   font-weight: 700 !important;
   font-size: 1.15rem !important;
@@ -127,8 +127,8 @@ body .p-dialog .p-dialog-header .p-dialog-header-icons {
 }
 
 body .p-dialog .p-dialog-header .p-dialog-header-icon {
-  color: #FFFFFF !important;
-  background-color: rgba(5, 150, 105, 0.25) !important; /* Fondo emerald suave para el botón de cerrar */
+  color: var(--color-header-modal-text) !important;
+  background-color: rgb(18 53 43 / .12) !important;
   border-radius: 9999px !important;
   width: 2rem !important;
   height: 2rem !important;
@@ -139,8 +139,8 @@ body .p-dialog .p-dialog-header .p-dialog-header-icon {
 }
 
 body .p-dialog .p-dialog-header .p-dialog-header-icon:hover {
-  color: #FFFFFF !important;
-  background-color: #059669 !important; /* Emerald sólido en hover */
+  color: var(--color-header-modal-text) !important;
+  background-color: var(--color-primary-hover) !important;
   transform: scale(1.08);
 }
 
@@ -165,18 +165,18 @@ body .p-dialog .p-dialog-footer {
 
 /* Modal operativo compacto: cabecera, contenido desplazable y acciones persistentes */
 body .p-dialog.erp-operational-dialog { max-height:calc(100dvh - 24px)!important; border:1px solid #dbe4ed!important; border-radius:10px!important; box-shadow:0 18px 48px rgba(11,19,36,.18)!important; }
-body .p-dialog.erp-operational-dialog .p-dialog-header { min-height:44px; padding:.55rem .85rem!important; background:#0b1324!important; color:#fff!important; border-radius:9px 9px 0 0!important; }
-body .p-dialog.erp-operational-dialog .p-dialog-title { color:#fff!important; font-size:13px!important; font-weight:700!important; }
-body .p-dialog.erp-operational-dialog .p-dialog-header-icon { color:#cbd5e1!important; }
+body .p-dialog.erp-operational-dialog .p-dialog-header { min-height:44px; padding:.55rem .85rem!important; background:var(--color-header-modal)!important; color:var(--color-header-modal-text)!important; border-radius:9px 9px 0 0!important; }
+body .p-dialog.erp-operational-dialog .p-dialog-title { color:var(--color-header-modal-text)!important; font-size:13px!important; font-weight:700!important; }
+body .p-dialog.erp-operational-dialog .p-dialog-header-icon { color:var(--color-header-modal-text)!important; }
 body .p-dialog.erp-operational-dialog .p-dialog-content { padding:.75rem!important; overflow:auto; font-size:12px; }
 body .p-dialog.erp-operational-dialog .p-dialog-footer { position:sticky; bottom:0; z-index:2; min-height:42px; padding:.4rem .75rem!important; background:#f8fafc!important; border-radius:0 0 9px 9px!important; }
 body .p-dialog.erp-operational-dialog .erp-form-grid { gap:.5rem .65rem; }
 body .p-dialog.erp-operational-dialog .erp-label { font-size:11px; font-weight:650; }
 body .p-dialog.erp-operational-dialog .erp-input,
 body .p-dialog.erp-operational-dialog .p-inputtext,
-body .p-dialog.erp-operational-dialog .p-dropdown { min-height:34px!important; height:34px!important; font-size:11.5px!important; }
+body .p-dialog.erp-operational-dialog .p-dropdown { min-height:var(--field-height)!important; height:var(--field-height)!important; font-size:var(--erp-font-body)!important; }
 body .p-dialog.erp-operational-dialog section { padding:.6rem!important; margin-bottom:.5rem!important; border:1px solid #dbe4ed; border-radius:8px!important; }
-body .p-dialog.erp-operational-dialog .p-button { min-height:30px; padding:.35rem .65rem; font-size:11px; }
+body .p-dialog.erp-operational-dialog .p-button { min-height:var(--field-height); padding:.35rem .65rem; font-size:var(--erp-font-label); }
 
 body .p-datatable.app-table-scroll .p-datatable-thead>tr>th { padding:.55rem .65rem!important; font-size:10px!important; }
 body .p-datatable.app-table-scroll .p-datatable-tbody>tr>td { padding:.55rem .65rem!important; font-size:11.5px!important; }
@@ -188,151 +188,7 @@ body .p-datatable .p-tag { font-size:9px!important; padding:.18rem .48rem!import
   body .p-dialog.erp-operational-dialog .p-dialog-footer { flex-wrap:wrap; }
 }
 
-/* ----------------------------------------------------------
-   5. BOTONES PRIMENG Y DEL SISTEMA (Contraste garantizado)
-   ---------------------------------------------------------- */
-/* Botón PRIMARIO (sólido verde esmeralda) */
-body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info),
-.erp-btn-primary,
-.btn-primary {
-  background-color: var(--color-primary) !important; /* #059669 */
-  border: 1px solid var(--color-primary) !important;
-  color: #FFFFFF !important; /* Texto blanco asegurado */
-  font-family: var(--font-family-base) !important;
-  font-weight: 600 !important;
-  border-radius: var(--radius-md) !important;
-  transition: all 0.15s ease !important;
-}
-
-body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info) .p-button-label,
-body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info) .p-button-icon {
-  color: #FFFFFF !important;
-}
-
-body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info):enabled:hover,
-.erp-btn-primary:hover,
-.btn-primary:hover {
-  background-color: var(--color-primary-hover) !important; /* #047857 */
-  border-color: var(--color-primary-hover) !important;
-  color: #FFFFFF !important;
-}
-
-/* Botón OUTLINED (ej. Cancelar - Evitar fondo verde y asegurar contraste legible) */
-body .p-button.p-button-outlined {
-  background-color: #FFFFFF !important;
-  border: 1px solid #CBD5E1 !important;
-  color: #334155 !important; /* Slate 700 - Alto contraste */
-  font-family: var(--font-family-base) !important;
-  font-weight: 500 !important;
-  border-radius: var(--radius-md) !important;
-}
-
-body .p-button.p-button-outlined .p-button-label,
-body .p-button.p-button-outlined .p-button-icon {
-  color: #334155 !important;
-}
-
-body .p-button.p-button-outlined:enabled:hover {
-  background-color: #F1F5F9 !important;
-  border-color: #94A3B8 !important;
-  color: #0F172A !important;
-}
-
-body .p-button.p-button-outlined:enabled:hover .p-button-label,
-body .p-button.p-button-outlined:enabled:hover .p-button-icon {
-  color: #0F172A !important;
-}
-
-/* Botón SECUNDARIO */
-body .p-button.p-button-secondary:not(.p-button-outlined),
-.erp-btn-secondary,
-.btn-secondary {
-  background-color: #F1F5F9 !important;
-  border: 1px solid #CBD5E1 !important;
-  color: #1E293B !important;
-  font-family: var(--font-family-base) !important;
-  font-weight: 500 !important;
-  border-radius: var(--radius-md) !important;
-}
-
-body .p-button.p-button-secondary:not(.p-button-outlined) .p-button-label,
-body .p-button.p-button-secondary:not(.p-button-outlined) .p-button-icon,
-.erp-btn-secondary,
-.btn-secondary {
-  color: #1E293B !important;
-}
-
-body .p-button.p-button-secondary:not(.p-button-outlined):enabled:hover,
-.erp-btn-secondary:hover,
-.btn-secondary:hover {
-  background-color: #E2E8F0 !important;
-  border-color: #94A3B8 !important;
-  color: #0F172A !important;
-}
-
-/* Botón DANGER / ELIMINAR */
-body .p-button.p-button-danger,
-.erp-btn-danger,
-.btn-danger {
-  background-color: var(--color-danger) !important; /* #EF4444 */
-  border-color: var(--color-danger) !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
-}
-body .p-button.p-button-danger .p-button-label,
-body .p-button.p-button-danger .p-button-icon {
-  color: #FFFFFF !important;
-}
-body .p-button.p-button-danger:enabled:hover,
-.erp-btn-danger:hover,
-.btn-danger:hover {
-  background-color: #DC2626 !important;
-  border-color: #DC2626 !important;
-  color: #FFFFFF !important;
-}
-
-/* Botón SUCCESS */
-body .p-button.p-button-success,
-.btn-success {
-  background-color: var(--color-success) !important; /* #10B981 */
-  border-color: var(--color-success) !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
-}
-body .p-button.p-button-success .p-button-label,
-body .p-button.p-button-success .p-button-icon {
-  color: #FFFFFF !important;
-}
-body .p-button.p-button-success:enabled:hover {
-  background-color: #059669 !important;
-  color: #FFFFFF !important;
-}
-
-/* Botón WARNING */
-body .p-button.p-button-warning,
-.btn-warning {
-  background-color: var(--color-warning) !important; /* #F59E0B */
-  border-color: var(--color-warning) !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
-}
-body .p-button.p-button-warning .p-button-label,
-body .p-button.p-button-warning .p-button-icon {
-  color: #FFFFFF !important;
-}
-
-/* Botón INFO */
-body .p-button.p-button-info,
-.btn-info {
-  background-color: var(--color-info) !important; /* #2563EB */
-  border-color: var(--color-info) !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
-}
-body .p-button.p-button-info .p-button-label,
-body .p-button.p-button-info .p-button-icon {
-  color: #FFFFFF !important;
-}
+/* Los botones compartidos se estilizan una sola vez en _primary-buttons.scss. */
 
 /* ----------------------------------------------------------
    6. INPUTNUMBER
@@ -375,18 +231,18 @@ body .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
 body .p-datatable .p-datatable-thead > tr > th,
 body table thead th,
 body .erp-table-header th {
-  background-color: #0F172A !important; /* Oscuro idéntico al header del modal */
-  color: #FFFFFF !important;            /* Texto Blanco */
+  background-color: var(--color-primary) !important;
+  color: var(--color-header-modal-text) !important;
   font-size: var(--font-size-sm) !important;
   font-weight: 600 !important;
-  border-bottom: 2px solid #334155 !important;
+  border-bottom: 1px solid var(--color-primary-hover) !important;
   font-family: var(--font-family-base) !important;
   letter-spacing: 0.025em;
   padding: 0.75rem 1rem !important;
 }
 
 body .p-datatable .p-datatable-thead > tr > th * {
-  color: #FFFFFF !important;
+  color: var(--color-header-modal-text) !important;
 }
 
 body .p-datatable .p-sortable-column .p-sortable-column-icon,
@@ -431,7 +287,7 @@ i.fa-trash, i.fa-trash-can, i.fa-circle-xmark, i.fa-ban, i.fa-times {
 }
 
 i.text-success, .text-success i,
-i.fa-check, i.fa-circle-check, i.fa-truck-moving, i.fa-dollar-sign {
+i.fa-check, i.fa-circle-check {
   color: #10B981 !important;
 }
 
@@ -449,11 +305,23 @@ i.text-primary, .text-primary i {
   color: #059669 !important;
 }
 
-/* En botones sólidos, los iconos internos son blancos para asegurar contraste */
-body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary) i,
-body .p-button.p-button-danger i,
-body .p-button.p-button-success i,
-body .p-button.p-button-warning i,
-body .p-button.p-button-info i {
+/* Iconos dentro de addons de input-group: mantener color neutro/sutil */
+body .p-inputgroup .p-inputgroup-addon i,
+body .p-inputgroup .p-inputgroup-addon .p-button-icon,
+body .input-group-addon i {
+  color: var(--color-text-muted, #64748b) !important;
+}
+body[data-bs-theme='dark'] .p-inputgroup .p-inputgroup-addon i,
+body[data-bs-theme='dark'] .p-inputgroup .p-inputgroup-addon .p-button-icon,
+body[data-bs-theme='dark'] .input-group-addon i {
+  color: #94a3b8 !important;
+}
+
+/* En botones sólidos con texto, los iconos internos son blancos para asegurar contraste */
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.erp-table-cell-action *):not(.rc__actions *):not(.gc-card__actions *):not(.app-table-action-column *) i,
+body .p-button.p-button-danger:not(.erp-table-cell-action *):not(.rc__actions *):not(.gc-card__actions *):not(.app-table-action-column *) i,
+body .p-button.p-button-success:not(.erp-table-cell-action *):not(.rc__actions *):not(.gc-card__actions *):not(.app-table-action-column *) i,
+body .p-button.p-button-warning:not(.erp-table-cell-action *):not(.rc__actions *):not(.gc-card__actions *):not(.app-table-action-column *) i,
+body .p-button.p-button-info:not(.erp-table-cell-action *):not(.rc__actions *):not(.gc-card__actions *):not(.app-table-action-column *) i {
   color: #FFFFFF !important;
 }

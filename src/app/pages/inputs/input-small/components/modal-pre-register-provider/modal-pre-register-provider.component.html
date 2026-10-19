@@ -6,7 +6,7 @@
     <div class="erp-form-grid mb-3">
       <div class="erp-field erp-col-full">
         <label for="provider-name" class="erp-label required">Razón social o nombre</label>
-        <input id="provider-name" type="text" pInputText formControlName="full_names" class="erp-input text-uppercase"
+        <input id="provider-name" type="text" pInputText formControlName="full_names" class="erp-input uppercase"
           [class.ng-dirty]="form.controls.full_names.touched && form.controls.full_names.invalid" />
         <small *ngIf="form.controls.full_names.touched && form.controls.full_names.invalid" class="erp-error-msg">La razón social es obligatoria.</small>
       </div>
@@ -15,7 +15,7 @@
     <div class="erp-form-grid mb-3">
       <div class="erp-field">
         <label for="provider-document" class="erp-label">CI / NIT</label>
-        <input id="provider-document" type="text" pInputText formControlName="number_document" class="erp-input text-uppercase" />
+        <input id="provider-document" type="text" pInputText formControlName="number_document" class="erp-input uppercase" />
       </div>
       <div class="erp-field">
         <label for="provider-cellphone" class="erp-label">Celular</label>

@@ -1,53 +1,53 @@
 <p-dialog [header]="'Detalle Compra: '+ input()?.cod" [(visible)]="inputService.showModalDetailsInput" [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--lg erp-operational-dialog purchase-detail-dialog">
     <form>
-        <p-tag styleClass="m-2 ms-0 mb-1" value="COMPRA: {{input()?.cod}} " [rounded]="true"></p-tag>
+        <p-tag styleClass="m-2 ml-0 mb-1" value="COMPRA: {{input()?.cod}} " [rounded]="true"></p-tag>
         <div class="table-responsive">
             <table class="purchase-detail-table" tabindex="0" aria-label="Datos de la compra">
                 <tbody class="border-solid">
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA COMPRA</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">FECHA COMPRA</td>
                         <td width="30%">{{input()?.createdAt | date:'dd/MM/yyyy, HH:mm:ss'}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA DOC.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">FECHA DOC.</td>
                         <td width="30%">{{input()?.date_voucher | date:'dd/MM/yyyy, HH:mm:ss'}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TIPO DOC.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">TIPO DOC.</td>
                         <td width="30%">{{input()?.type_registry}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">NO. DOC.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">NO. DOC.</td>
                         <td width="30%">{{input()?.registry_number}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">PAGO. | CUENTA</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">PAGO. | CUENTA</td>
                         <td width="30%">{{input()?.type_payment}}{{input()?.bank ? ' | ' + input()?.bank?.name :
                             ''}}{{input()?.account_input ? ' | ' + input()?.account_input : ''}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TIPO PAGO.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">TIPO PAGO.</td>
                         <td width="30%">{{input()?.type}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">PROVEEDOR</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">PROVEEDOR</td>
                         <td width="30%">{{input()?.provider?.full_names}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">CARNET PROV.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">CARNET PROV.</td>
                         <td width="30%">{{input()?.provider?.number_document}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">BALANZA</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">BALANZA</td>
                         <td width="30%">{{input()?.scale?.name}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">USUARIO</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">USUARIO</td>
                         <td width="30%">{{input()?.user?.full_names}} - {{input()?.user?.number_document}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">COMENTARIOS</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">COMENTARIOS</td>
                         <td colspan="3" width="80%">{{input()?.comments}}</td>
                     </tr>
                     <tr *ngIf="input()?.type_payment === 'TRANSFERENCIA' || input()?.type_payment === 'QR'">
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">NRO. TRANS.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">NRO. TRANS.</td>
                         <td colspan="3" width="80%">{{input()?.number_transaction}}</td>
                     </tr>
                     <tr *ngIf="input()?.type_payment === 'TRANSFERENCIA' || input()?.type_payment === 'QR'">
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">COMPROBANTE</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">COMPROBANTE</td>
                         <td colspan="3" width="80%">
-                            <div *ngIf="input()?.payment_voucher" class="d-flex align-items-center gap-2">
+                            <div *ngIf="input()?.payment_voucher" class="flex items-center gap-2">
                                 <button
                                     pButton
                                     type="button"
@@ -62,7 +62,7 @@
                                     [id]="'file-upload-input-' + input()?.id"
 
                                     (change)="onFileSelected($event, input()?.id)"
-                                    accept="image/*,application/pdf" class="d-none">
+                                    accept="image/*,application/pdf" class="hidden">
                                 <button
                                     pButton
                                     type="button"
@@ -70,17 +70,17 @@
                                     pTooltip="Cambiar comprobante" tooltipPosition="bottom"
                                     (click)="triggerFileUpload(input()?.id)"
                                     pRipple icon="fa-solid fa-file-arrow-up"
-                                    class="p-button-rounded p-button-warning p-button-sm ms-1">
+                                    class="p-button-rounded p-button-warning p-button-sm ml-1">
                                 </button>
                             </div>
-                            <div *ngIf="!input()?.payment_voucher" class="d-flex align-items-center gap-2">
-                                <span class="text-muted me-2">Sin comprobante</span>
+                            <div *ngIf="!input()?.payment_voucher" class="flex items-center gap-2">
+                                <span class="text-erp-text-muted mr-2">Sin comprobante</span>
                                 <input
                                     type="file"
                                     [id]="'file-upload-input-' + input()?.id"
 
                                     (change)="onFileSelected($event, input()?.id)"
-                                    accept="image/*,application/pdf" class="d-none">
+                                    accept="image/*,application/pdf" class="hidden">
                                 <button
                                     pButton
                                     type="button"
@@ -96,7 +96,7 @@
                 </tbody>
             </table>
         </div>
-        <p-tag styleClass="m-2 ms-0 mb-1" severity="success" value="DETALLE DE COMPRA: {{input()?.cod}} "
+        <p-tag styleClass="m-2 ml-0 mb-1" severity="success" value="DETALLE DE COMPRA: {{input()?.cod}} "
             [rounded]="true"></p-tag>
         <div class="table-responsive">
             <table id="tbldetalle" class="purchase-detail-table purchase-detail-lines" tabindex="0" aria-label="Detalle de productos de la compra">
@@ -112,9 +112,9 @@
                     <tr *ngFor="let detail of input()?.detailsInput">
                         <td class="app-u-max-width-200px-a828909">
                             <h5 class="m-0 p-0">{{detail.product.name}}</h5>
-                            <p class="text-muted app-u-font-size-10px-0d5be05">{{detail.product.description}}<br
+                            <p class="text-erp-text-muted app-u-font-size-10px-0d5be05">{{detail.product.description}}<br
                                     *ngIf="detail.product.description"> <span
-                                    class="text-black">{{detail.product.cod}}</span></p>
+                                    class="text-erp-text">{{detail.product.cod}}</span></p>
                         </td>
                         <td>{{detail.quantity | number:decimal()}}</td>
                         <td>{{detail.cost | number:decimal()}}</td>
@@ -123,21 +123,21 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td class="text-end table-active fw-bold">TOTAL KG</td>
+                        <td class="text-right table-active font-bold">TOTAL KG</td>
                         <td>{{input()?.totalQuantity | number:decimal()}}</td>
-                        <td width="10%" class="table-active fw-bold">SUBTOTAL</td>
+                        <td width="10%" class="table-active font-bold">SUBTOTAL</td>
                         <td>{{input()?.sumas | number:decimal()}}</td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
-                        <td width="10%" class="purchase-total-label fw-bold">DESCUENTO</td>
+                        <td width="10%" class="purchase-total-label font-bold">DESCUENTO</td>
                         <td>{{input()?.discount | number:decimal()}}</td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
-                        <td width="10%" class="purchase-total-label fw-bold">TOTAL</td>
+                        <td width="10%" class="purchase-total-label font-bold">TOTAL</td>
                         <td class="purchase-total-value"> <p-tag
                                 value="{{input()?.total | number:decimal()}}" [rounded]="true" class="app-u-font-size-15px-de00808"></p-tag> </td>
                     </tr>

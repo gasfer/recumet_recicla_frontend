@@ -5,7 +5,7 @@
     <form [formGroup]="storageForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
-            <div class="field col-12">
+            <div class="erp-field erp-col-full">
                 <div class="field">
                     <label class="block mb-0">Nombre area / almacén:<span class="text-danger">*</span>
                     </label>
@@ -17,11 +17,11 @@
                     </small>
                 </div>
             </div>
-            <div class="row mt-1 ">
+            <div class="erp-form-grid cols-2">
                 <label class="block">Estado:<span class="text-danger">*</span></label>
             </div>
-            <div class="row mt-0">
-                <div class="col-3">
+            <div class="erp-form-grid cols-2">
+                <div class="erp-field">
                     <p-inputSwitch formControlName="status"></p-inputSwitch>
                 </div>
                 <div class="col">

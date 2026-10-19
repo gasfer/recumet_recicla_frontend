@@ -4,7 +4,7 @@ import { ColsTable, SearchFor } from 'src/app/core/components/interfaces/Options
 import { Provider, Providers } from '../interfaces/provider.interface';
 import { ProviderManagementQuery } from '../interfaces/provider-management.interface';
 import { ProvidersService } from '../services/providers.service';
-import { Subscription } from 'rxjs';
+import { Subscription, finalize } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ValidatorsService } from 'src/app/services/validators.service';
@@ -30,9 +30,14 @@ import {
   styleUrls: ['./providers.component.scss']
 })
 export class ProvidersComponent implements OnInit, OnDestroy {
+  readonly providerReportItems: MenuItem[] = [
+    { label: 'Exportar proveedores', icon: 'fa-solid fa-file-excel', command: () => this.exportProviderMasterReport() },
+    { label: 'Proveedores por producto', icon: 'fa-solid fa-boxes-stacked', command: () => this.exportProviderMasterReport('products') },
+  ];
   private managementQuery: ProviderManagementQuery = {};
   private managementReady = false;
   private listRequest?: Subscription;
+  private exportRequest?: Subscription;
   applyManagementFilters(query: ProviderManagementQuery) {
     this.managementQuery = query;
     this.managementReady = true;
@@ -336,6 +341,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     }
     this.save$.unsubscribe();
     this.listRequest?.unsubscribe();
+    this.exportRequest?.unsubscribe();
   }
 
 
@@ -681,29 +687,26 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   }
 
 
-  printPdfReport() {
+  exportProviderMasterReport(report: 'providers' | 'products' = 'providers') {
+    if (this.loading() || this.loadingReport()) return;
     this.loadingReport.set(true);
-    const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
-    Swal.fire({
-      title: 'Generando Excel!',
-      html: `Espere un momento`,
-      didOpen: () => {
-        Swal.showLoading();
-        new Promise((resolve, reject) => {
-          this.providersService.getReportExcel(this.status(),this.type(),this.query(),this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '').subscribe({
-            next: (data) => {
-              this.loadingReport.set(false);
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
-              Swal.close();
-            },
-            error: (err) => {
-              Swal.close();
-            },
-          });
-        });
+    const providerType = this.formReport.get('id_type_provider')?.value;
+    const filters = this.isProviderList() ? undefined : {
+      ...this.managementQuery,
+      ...(this.estadoRegistro() ? { estado_registro: this.estadoRegistro() } : {}),
+    };
+    this.exportRequest = this.providersService.getReportExcel(
+      this.status(), this.type(), this.query(), this.fieldSort(), this.order(), providerType?.id || '', filters, report,
+    ).pipe(finalize(() => this.loadingReport.set(false))).subscribe({
+      next: data => {
+        const fileURL = window.URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = fileURL;
+        link.download = report === 'products' ? 'recumet-proveedores-por-producto.xlsx' : 'recumet-reporte-maestro-proveedores.xlsx';
+        link.click();
+        setTimeout(() => window.URL.revokeObjectURL(fileURL), 1000);
       },
+      error: () => Swal.fire('Atención', 'No se pudo generar el Excel de proveedores.', 'error'),
     });
   }
 }
-

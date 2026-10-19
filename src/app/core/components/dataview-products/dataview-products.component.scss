@@ -3,12 +3,84 @@
    Compacto, Colores Sutiles, Tipografía Centralizada
    ===================================================== */
 
+:host {
+  display: block;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.product-catalog-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.product-catalog-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.product-catalog-scroll {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--color-primary) var(--color-surface-secondary);
+  scrollbar-width: thin;
+}
+
+.product-catalog-body > .row {
+  flex: 0 0 auto;
+}
+
+.product-catalog-body > p-paginator {
+  flex: 0 0 auto;
+}
+
+@media (min-width: 1200px) {
+  :host {
+    height: clamp(25rem, calc(100dvh - 18rem), 52rem);
+  }
+}
+
+@media (max-height: 700px) and (min-width: 1200px) {
+  :host {
+    height: clamp(19rem, calc(100dvh - 14rem), 36rem);
+  }
+}
+
+@media (max-width: 1199.98px) {
+  :host {
+    height: auto;
+    min-height: 0;
+  }
+
+  .product-catalog-card {
+    height: auto;
+    min-height: 34rem;
+  }
+
+  .product-catalog-scroll {
+    flex: 1 1 auto;
+    height: 0;
+    max-height: min(58dvh, 34rem);
+  }
+}
+
 .cardProduct {
   cursor: pointer;
   border-radius: 10px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
   display: flex;
@@ -18,10 +90,10 @@
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.08);
-    border-color: #cbd5e1;
+    border-color: var(--color-border-hover);
 
     .image-container {
-      background: #f1f5f9;
+      background: var(--color-surface-secondary);
     }
 
     .image-overlay {
@@ -37,7 +109,7 @@
   position: relative;
   width: 100%;
   padding-top: 60%;
-  background: #f8fafc;
+  background: var(--color-surface-secondary);
   overflow: hidden;
   transition: background 0.2s ease;
 
@@ -138,8 +210,8 @@
 
   &:hover {
     transform: scale(1.04);
-    background: #ffffff;
-    color: #059669;
+    background: var(--color-surface);
+    color: var(--color-primary-hover);
   }
 }
 
@@ -158,7 +230,7 @@
   margin: 0;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-text);
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -170,7 +242,7 @@
   cursor: pointer;
 
   &:hover {
-    color: #059669;
+    color: var(--color-primary-hover);
   }
 }
 
@@ -186,7 +258,7 @@
 .product-badges {
   margin-top: auto;
   padding-top: 6px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--color-border-subtle);
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
@@ -196,18 +268,18 @@
 .quantity-input-section {
   margin-top: 4px;
   padding-top: 6px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--color-border-subtle);
 
   .form-control-sm {
     height: 28px;
     font-size: 0.8rem;
     padding: 2px 6px;
     border-radius: 6px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border);
 
     &:focus {
-      border-color: #10b981;
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+      border-color: var(--color-primary-hover);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-hover) 15%, transparent);
     }
   }
 }
@@ -231,9 +303,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: var(--color-surface-secondary);
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   padding: 16px;
   min-height: 380px;
 
@@ -254,8 +326,8 @@
   flex-direction: column;
   gap: 12px;
   padding: 16px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
 }
 
@@ -264,7 +336,7 @@
   flex-direction: column;
   gap: 4px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--color-border-subtle);
 
   &:last-of-type {
     border-bottom: none;
@@ -275,7 +347,7 @@
 .modal-label {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #64748b;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
@@ -295,14 +367,14 @@
 .modal-product-name {
   font-size: 1rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--color-text);
   line-height: 1.35;
 }
 
 .modal-description {
   margin: 0;
   font-size: 0.84rem;
-  color: #475569;
+  color: var(--color-text-secondary);
   line-height: 1.5;
 }
 
@@ -319,34 +391,34 @@
   gap: 10px;
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-secondary);
 
   i {
     font-size: 1.1rem;
   }
 
   &.costo {
-    background: #ecfdf5;
-    border-color: #a7f3d0;
-    i, .modal-badge-value { color: #047857; }
+    background: var(--color-success-light);
+    border-color: var(--color-success);
+    i, .modal-badge-value { color: var(--color-success); }
   }
 
   &.precio {
-    background: #eff6ff;
-    border-color: #bfdbfe;
-    i, .modal-badge-value { color: #1d4ed8; }
+    background: var(--color-info-light);
+    border-color: var(--color-info);
+    i, .modal-badge-value { color: var(--color-info); }
   }
 
   &.stock {
-    background: #f0f9ff;
-    border-color: #bae6fd;
-    i, .modal-badge-value { color: #0369a1; }
+    background: var(--color-info-light);
+    border-color: var(--color-info);
+    i, .modal-badge-value { color: var(--color-info); }
 
     &.stock-empty {
-      background: #fef2f2;
-      border-color: #fecaca;
-      i, .modal-badge-value { color: #b91c1c; }
+      background: var(--color-danger-light);
+      border-color: var(--color-danger);
+      i, .modal-badge-value { color: var(--color-danger); }
     }
   }
 }
@@ -360,7 +432,7 @@
 .modal-badge-label {
   font-size: 0.68rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
 }
 

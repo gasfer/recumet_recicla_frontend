@@ -5,7 +5,7 @@
 <!--provider new modal-->
 <app-modal-provider></app-modal-provider>
 
-<div class="card bg-light m-0">
+<div class="card bg-erp-bg m-0">
     <div class="card-body shadow pt-2 pb-2">
         <p-messages *ngIf="inputsService.isEdit" severity="warn" class="animated fadeInDown">
             <ng-template pTemplate>
@@ -20,36 +20,36 @@
             </ng-template>
         </p-messages>
         <h4>{{inputsService.isEdit ? 'EDITAR COMPRA' : 'REGISTRA TUS COMPRAS'}}</h4>
-        <div class="row">
-            <div class="col-sm-6 col-12 mt-0">
+        <div class="flex flex-wrap erp-layout-row gap-y-3">
+            <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-0">
                 <app-input-search (onEnters)="suggestedProvider($event)" (onDebounce)="suggestedProvider($event)"
                     (onBtnNew)="newProvider()" [icon]="'fa-solid fa-truck-moving'" [btnNew]="this.validatorsService.withPermission('PROVEEDORES','create')"
                     [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un proveedor aquí....'">
                 </app-input-search>
-                <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
+                <div class="absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
                     <ul *ngIf="loadingSearchProvider()" class="list-group shadow">
                         <li class="list-group-item list-group-item-action">
-                            <span class='fw-bold'>Cargando....</span>
+                            <span class='font-bold'>Cargando....</span>
                         </li>
                     </ul>
                     <ul class="list-group shadow">
                         <li *ngFor="let provider of suggestedProviders()"
                             class="list-group-item list-group-item-action cursor-pointer"
                             (click)="selectProvider(provider)">
-                            <span class='fw-bold'>{{provider.full_names}}</span>
+                            <span class='font-bold'>{{provider.full_names}}</span>
                             <br>
-                            <span class="text-muted fw-normal align-content-end">NIT/CI:
+                            <span class="text-erp-text-muted font-normal align-content-end">NIT/CI:
                                 {{provider.number_document }}</span>
                         </li>
                     </ul>
                     <ul *ngIf="suggestedProviders().length == 0 && txtSearchProvider() && !loadingSearchProvider()" class="list-group shadow">
                         <li class="list-group-item list-group-item-action">
-                            <span class='fw-bold'> No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span>
+                            <span class='font-bold'> No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-5 col-12 mt-2 m-md-0">
+            <div class="min-[768px]:w-[41.66666666666667%] px-2 min-w-0 w-full w-[100%] mt-2 m-md-0">
                 <b>Proveedor:
                     <p-tag [rounded]="true" icon="fa-solid fa-truck-moving"
                         [severity]="providerSelect() ? 'info' : 'warning'"
@@ -61,8 +61,8 @@
                     </p-tag>
                 </b>
             </div>
-            <div class="col-sm-1 col-12">
-                <div class="d-flex justify-content-end">
+            <div class="min-[768px]:w-[8.333333333333332%] px-2 min-w-0 w-full w-[100%]">
+                <div class="flex justify-end">
                     <i class="cursor-pointer fa-solid fa-gear" pTooltip="Config. Modo de compra" tooltipPosition="left"
                         role="button" tabindex="0" aria-label="Configurar modo de compra"
                         (click)="inputsService.showModalConfigInput = true"
@@ -74,41 +74,41 @@
         </div>
     </div>
 </div>
-<div class="row mt-1">
-    <div class="col-sm-12 mb-2"
+<div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+    <div class="min-[768px]:w-[100%] px-2 min-w-0 w-full mb-2"
         [ngClass]="{'col-md-7': inputsService._inputConfig.viewCardProducts, 'col-md-12': !inputsService._inputConfig.viewCardProducts}">
         <div class="card">
             <div class="card-body shadow m-0 p-0">
-                <div class="row m-1 mt-0">
-                    <div class="col-12">
+                <div class="flex flex-wrap erp-layout-row gap-y-3 m-1 mt-0">
+                    <div class="w-[100%] px-2 min-w-0">
                         <p-messages severity="info">
                             <ng-template pTemplate>
                                 <b>ITEMS A COMPRAR <i class="fa-solid fa-cart-arrow-down"></i></b>
-                                <i class="fa-solid fa-tags ms-5 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
+                                <i class="fa-solid fa-tags ml-12 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
                                     value="{{totalItems()}}"></i>
                             </ng-template>
                         </p-messages>
                         <app-input-search *ngIf="!inputsService._inputConfig.viewCardProducts" (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
                             [icon]="'fa-solid fa-cart-plus'"
                             [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                        <div class="absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
                             <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
                                 <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'>Cargando....</span>
+                                    <span class='font-bold'>Cargando....</span>
                                 </li>
                             </ul>
                             <ul class="list-group shadow cursor-pointer">
                                 <li *ngFor="let product of suggestedProducts()"
                                     class="list-group-item list-group-item-action" (click)="addItemCar(product)">
-                                    <span class='fw-bold'>{{product.cod}} - {{ product.name}}</span>
+                                    <span class='font-bold'>{{product.cod}} - {{ product.name}}</span>
                                     <br>
-                                    <span class="text-muted fw-normal align-content-end">{{product.description }} -
+                                    <span class="text-erp-text-muted font-normal align-content-end">{{product.description }} -
                                         {{product.category.name}} / {{product.unit.siglas}}</span>
                                 </li>
                             </ul>
                             <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
                                 <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                                    <span class='font-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
                                 </li>
                             </ul>
                         </div>
@@ -119,7 +119,7 @@
         </div>
     </div>
 
-    <div *ngIf="inputsService._inputConfig.viewCardProducts" class="col-sm-12 col-md-5">
+    <div *ngIf="inputsService._inputConfig.viewCardProducts" class="min-[768px]:w-[100%] px-2 min-w-0 w-full min-[768px]:w-[41.66666666666667%]">
         <app-dataview-products
             [typeFrom]="'INPUT'"
             [isInput]="true"

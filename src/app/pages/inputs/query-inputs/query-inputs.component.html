@@ -1,18 +1,20 @@
+<app-loading *ngIf="exporting()" [fullscreen]="true" theme="auto" customClass="recumet-loader--export-overlay"
+  text="Generando reporte de compras…" [showLine]="false" [showText]="false"></app-loading>
 <form [formGroup]="formReport">
   <div class="card shadow-sm mb-3 icon-box purchase-management-card">
     <div class="card-body">
-      <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+      <div class="flex items-center justify-center gap-2 mb-2">
         <h3 class="purchase-management-title">Consulta de compras</h3>
       </div>
       <p-accordion [activeIndex]="1">
-        <p-accordionTab><ng-template pTemplate="header"><span class="d-flex align-items-center gap-2"><i class="fa-solid fa-filter text-emerald-700"></i>Filtros de compras</span></ng-template>
+        <p-accordionTab><ng-template pTemplate="header"><span class="flex items-center gap-2"><i class="fa-solid fa-filter text-erp-success"></i>Filtros de compras</span></ng-template>
           <div class="purchase-filter-grid">
             <div class="purchase-filter-field">
-              <label class="block mb-1">Tipo filtrado<span class="text-danger">*</span></label>
+              <label class="block mb-1">Tipo filtrado<span class="text-erp-danger">*</span></label>
               <p-dropdown [options]="types_filtrado()" formControlName="filterBy" optionLabel="name" optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()"></p-dropdown>
             </div>
             <div class="purchase-filter-field">
-              <label class="block mb-1">Fecha<span class="text-danger">*</span></label>
+              <label class="block mb-1">Fecha<span class="text-erp-danger">*</span></label>
               <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'" formControlName="dates" view="month" dateFormat="mm/yy" [readonlyInput]="true" inputId="monthpicker" placeholder="MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates', formReport)" [showIcon]="true"></p-calendar>
               <p-calendar *ngIf="formReport.get('filterBy')?.value == 'RANGE'" formControlName="dates" selectionMode="range" dateFormat="dd/mm/yy" [readonlyInput]="true" inputId="range" placeholder="DD/MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates', formReport)" [showIcon]="true"></p-calendar>
               <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" formControlName="dates" view="year" dateFormat="yy" inputId="yearpicker" [showIcon]="true" placeholder="YYYY" [class.ng-dirty]="validatorsService.inputValid('dates', formReport)"></p-calendar>
@@ -26,23 +28,25 @@
             <div class="purchase-filter-field purchase-filter-storage">
               <label class="block mb-1">Almacén activo</label>
               <p-tag severity="info" icon="fa-solid fa-warehouse" [value]="activeStorageName()"></p-tag>
-              <small class="text-muted">Se toma del almacén seleccionado en la cabecera.</small>
+              <small class="text-erp-text-muted">Se toma del almacén seleccionado en la cabecera.</small>
             </div>
+
             <div class="purchase-filter-field">
-              <label class="block mb-1">¿Cómo nos conociste?</label>
-              <p-dropdown [options]="referral_sources()" placeholder="Todas las referencias" optionLabel="name" optionValue="code" formControlName="referral_sources" [showClear]="true"></p-dropdown>
-            </div>
-            <div class="purchase-filter-field">
-              <label class="block mb-1">Tipo de proveedor</label>
-              <p-dropdown [options]="types()" placeholder="Todos los tipos" optionLabel="name" optionValue="id" formControlName="id_type_provider" [showClear]="true"></p-dropdown>
+              <label class="block mb-1">Tipo de proveedor / Calificación</label>
+              <p-dropdown [options]="types()" placeholder="Todos los tipos" optionLabel="name" optionValue="id" formControlName="id_type_provider" [showClear]="true" (onChange)="providerTypeChanged()"></p-dropdown>
+              <div *ngIf="isCompanyProviderType()" class="mt-2">
+                <label for="purchase-entity-type" class="block mb-1">Tipo de entidad</label>
+                <p-dropdown inputId="purchase-entity-type" [options]="entityTypeOptions" optionLabel="label" optionValue="value"
+                  formControlName="entity_type" [showClear]="true" placeholder="Todas las entidades" appendTo="body"></p-dropdown>
+              </div>
             </div>
             <div class="purchase-filter-field purchase-filter-provider">
               <label class="block mb-1">Buscar proveedor</label>
               <app-input-search (onEnters)="suggestedsProvider($event)" (onDebounce)="suggestedsProvider($event)" [icon]="'fa-solid fa-magnifying-glass-arrow-right'" [placeholder]="'Nombre, CI o NIT'"></app-input-search>
-              <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
-                <ul *ngIf="loadingSearchProvider()" class="list-group shadow"><li class="list-group-item"><span class="fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i>Cargando...</span></li></ul>
-                <ul class="list-group shadow cursor-pointer"><li *ngFor="let provider of suggestedProvider()" class="list-group-item list-group-item-action" (click)="selectProvider(provider)"><span class="fw-bold">{{provider.type?.code}} - {{ provider.full_names}} - {{ provider.number_document}}</span></li></ul>
-                <ul *ngIf="suggestedProvider().length == 0 && txtSearchProvider() && !loadingSearchProvider()" class="list-group shadow"><li class="list-group-item"><span class="fw-bold">No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span></li></ul>
+              <div class="absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                <ul *ngIf="loadingSearchProvider()" class="list-group shadow"><li class="list-group-item"><span class="font-bold"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Cargando...</span></li></ul>
+                <ul class="list-group shadow cursor-pointer"><li *ngFor="let provider of suggestedProvider()" class="list-group-item list-group-item-action" (click)="selectProvider(provider)"><span class="font-bold">{{provider.type?.code}} - {{ provider.full_names}} - {{ provider.number_document}}</span></li></ul>
+                <ul *ngIf="suggestedProvider().length == 0 && txtSearchProvider() && !loadingSearchProvider()" class="list-group shadow"><li class="list-group-item"><span class="font-bold">No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span></li></ul>
               </div>
             </div>
             <div class="purchase-filter-field purchase-filter-selected-provider">
@@ -52,6 +56,22 @@
                 <button *ngIf="providerSelect()" type="button" class="purchase-clear-provider" (click)="clearSelectProvider()" aria-label="Quitar proveedor" pTooltip="Quitar proveedor"><i class="fa-solid fa-xmark"></i></button>
               </div>
             </div>
+
+
+            <div class="purchase-filter-field">
+              <label for="purchase-commercial-user" class="block mb-1">Responsable comercial</label>
+              <p-dropdown inputId="purchase-commercial-user" [options]="commercialUsers()" optionLabel="full_names" optionValue="id"
+                formControlName="id_commercial_user" [showClear]="true" [filter]="true" filterBy="full_names"
+                placeholder="Todos los responsables" appendTo="body"></p-dropdown>
+            </div>
+          </div>
+          <details class="purchase-more-filters">
+            <summary><i class="fa-solid fa-sliders" aria-hidden="true"></i> Más filtros</summary>
+            <div class="purchase-filter-grid">
+            <div class="purchase-filter-field">
+              <label class="block mb-1">¿Cómo nos conociste?</label>
+              <p-dropdown [options]="referral_sources()" placeholder="Todas las referencias" optionLabel="name" optionValue="code" formControlName="referral_sources" [showClear]="true"></p-dropdown>
+            </div>
             <div class="purchase-filter-field">
               <label class="block mb-1">¿Cliente antiguo?</label>
               <p-dropdown [options]="yes_no_type()" placeholder="Todos" optionLabel="name" optionValue="code" formControlName="old_customer" [showClear]="true"></p-dropdown>
@@ -60,7 +80,8 @@
               <label class="block mb-1">¿Con recojo?</label>
               <p-dropdown [options]="yes_no_type()" placeholder="Todos" optionLabel="name" optionValue="code" formControlName="with_pickup" [showClear]="true"></p-dropdown>
             </div>
-          </div>
+            </div>
+          </details>
           <div class="purchase-filter-actions">
             <p-button
               (click)="
@@ -71,23 +92,19 @@
               icon="fa-solid fa-magnifying-glass"
               [loading]="loading()"
             ></p-button>
-            <p-splitButton
+            <button type="button" class="erp-btn erp-btn-primary ml-1"
               *ngIf="validatorsService.withPermission('COMPRAS', 'reports')"
-              icon="fas fa-print"
-              label="Compras totalizadas"
-              [model]="this.buttonItems"
-              [menuStyle]="{ width: '20em' }"
-              [size]="'small'"
-              [rounded]="true"
-              [severity]="'danger'"
-              (onClick)="!loading() ? printPdfReport() : null"
-              styleClass="ms-1"
-            >
-              <app-loading></app-loading>
-            </p-splitButton>
+              [disabled]="loading() || exporting()" (click)="purchaseReportMenu.toggle($event)"
+              aria-haspopup="menu" aria-controls="purchase-report-options">
+              <i class="fa-solid fa-print" aria-hidden="true"></i>
+              <span>Exportar Reporte</span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+            <p-menu #purchaseReportMenu id="purchase-report-options" [popup]="true"
+              [model]="buttonItems" styleClass="stock-export-menu purchase-report-menu" appendTo="body"></p-menu>
             <p-button
               (click)="clearInputs()"
-              styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
+              styleClass="p-button-rounded ml-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
               icon="fas fa-broom"
               label="Limpiar"
               [pTooltip]="'Limpiar Campos'"

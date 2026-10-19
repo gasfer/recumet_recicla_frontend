@@ -67,16 +67,11 @@ export class InputsService {
   }
 
   getAllAndSearchInputs(page: number, limit: number, params: FormSearchInputs, type: string = '', query?: string, field_sort: string = 'id', order: string = 'DESC',): Observable<GetAllInputs> {
-    let url = '';
-    if (type === '') {
-      url = `${base_url}/input?page=${page}&limit=${limit}&field_sort=${field_sort}&order=${order}`;
-    } else {
-      url = `${base_url}/input?page=${page}&limit=${limit}&type=${type}&query=${query}&field_sort=${field_sort}&order=${order}`;
-    }
-    return this.http.get<GetAllInputs>(url, {
+    return this.http.get<GetAllInputs>(`${base_url}/input`, {
       params: new HttpParams({
         fromObject: {
-          ...params
+          ...params, page, limit, field_sort, order,
+          type: query?.trim() ? type : '', query: query?.trim() || '',
         }
       })
     });

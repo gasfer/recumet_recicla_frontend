@@ -11,7 +11,7 @@
                 <label class="erp-label required">Nombre</label>
                 <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="name" placeholder="EJ. PROMOCIÓN..."
-                    class="erp-input text-uppercase"
+                    class="erp-input uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('name',priceForm)"/>
                 <small *ngIf="validatorsService.inputValid('name',priceForm)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("name",priceForm) }}

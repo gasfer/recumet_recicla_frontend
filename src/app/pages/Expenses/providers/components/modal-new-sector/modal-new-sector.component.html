@@ -4,14 +4,14 @@
     [dismissableMask]="true" styleClass="app-dialog--sm">
     <form [formGroup]="sectorForm">
         <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="field">
-                    <label class="block mb-0">Nombre<span class="text-danger">*</span>
+        <div class="p-fluid erp-form-grid">
+            <div class="erp-field w-[100%] px-2 min-w-0">
+                <div class="erp-field">
+                    <label class="block mb-0">Nombre<span class="text-erp-danger">*</span>
                     </label>
                     <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                         formControlName="name" placeholder="EJ. NORTE"
-                        [class.ng-dirty]="validatorsService.inputValid('name',sectorForm)" class="text-uppercase"/>
+                        [class.ng-dirty]="validatorsService.inputValid('name',sectorForm)" class="uppercase"/>
                     <small *ngIf="validatorsService.inputValid('name',sectorForm)" class="p-error block">
                         {{ validatorsService.inputValidMessage("name",sectorForm) }}
                     </small>

@@ -1,17 +1,20 @@
+<app-loading *ngIf="loadingReport()" [fullscreen]="true" theme="auto"
+  customClass="recumet-loader--export-overlay" [showLine]="false" [showText]="false"
+  text="Generando reporte maestro de proveedores…"></app-loading>
 <div class="mb-4">
   <!-- Top Breadcrumb & Actions Bar -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-erp-border">
     <div>
-      <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+      <div class="flex items-center gap-2 text-xs font-semibold text-erp-text-muted uppercase tracking-wider mb-1">
         <span>Comercial</span>
-        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+        <i class="fa-solid fa-chevron-right text-[10px] text-erp-text-muted"></i>
         <span>Compras</span>
-        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-        <span class="text-emerald-700 font-bold">Proveedores</span>
+        <i class="fa-solid fa-chevron-right text-[10px] text-erp-text-muted"></i>
+        <span class="text-erp-success font-bold">Proveedores</span>
       </div>
-      <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+      <h1 class="text-2xl font-bold text-erp-text tracking-tight flex items-center gap-2">
         {{ isProviderList() ? 'Lista de Proveedores' : 'Gestión de Proveedores' }}
-        <span *ngIf="providers()?.total" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+        <span *ngIf="providers()?.total" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-erp-bg text-erp-text border border-erp-border">
           {{ providers()?.total }} registros
         </span>
       </h1>
@@ -19,19 +22,18 @@
 
     <!-- Action Buttons -->
     <div class="flex flex-wrap items-center gap-2">
-      <button *ngIf="validatorsService.withPermission('PROVEEDORES','reports')"
-        type="button"
-        (click)="!loading() ? printPdfReport() : null"
-        [disabled]="loadingReport()"
-        class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm transition-all">
-        <i class="fa-solid fa-file-excel text-emerald-600"></i>
-        <span>Exportar Excel</span>
-      </button>
+      <p-splitButton *ngIf="validatorsService.withPermission('PROVEEDORES','reports')"
+        (onClick)="exportProviderMasterReport()" [model]="providerReportItems"
+        [disabled]="loading() || loadingReport()"
+        [label]="loadingReport() ? 'Generando Excel…' : 'Exportar Excel'"
+        icon="fa-solid fa-file-excel" severity="success" appendTo="body"
+        styleClass="provider-report-menu" [menuButtonProps]="{ ariaLabel: 'Seleccionar reporte Excel' }">
+      </p-splitButton>
 
 <button *ngIf="canProviderAction('create')"
         type="button"
         (click)="showModal()"
-        class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 shadow-sm transition-all">
+        class="erp-btn erp-btn-primary">
         <i class="fa-solid fa-plus"></i>
         <span>Nuevo Proveedor</span>
       </button>
@@ -42,31 +44,31 @@
   <div class="provider-status-bar flex flex-wrap items-center justify-between gap-2">
     <div class="provider-status-tabs" role="group" aria-label="Estado de proveedores">
       <button type="button" class="tab-btn tab-btn--active" [attr.aria-pressed]="activeTab() === 'ACTIVOS'" [class.active]="activeTab() === 'ACTIVOS'" (click)="setTab('ACTIVOS')">
-        <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+        <i class="fa-solid fa-circle-check text-erp-success text-xs"></i>
         <span>Activos</span>
       </button>
       <button type="button" class="tab-btn tab-btn--inactive" [attr.aria-pressed]="activeTab() === 'INACTIVOS'" [class.active]="activeTab() === 'INACTIVOS'" (click)="setTab('INACTIVOS')">
-        <i class="fa-solid fa-circle-xmark text-rose-500 text-xs"></i>
+        <i class="fa-solid fa-circle-xmark text-erp-danger text-xs"></i>
         <span>Inactivos</span>
       </button>
       <button type="button" class="tab-btn tab-btn--pending" [attr.aria-pressed]="activeTab() === 'PENDIENTES'" [class.active]="activeTab() === 'PENDIENTES'" (click)="setTab('PENDIENTES')">
-        <i class="fa-solid fa-clock text-amber-500 text-xs"></i>
+        <i class="fa-solid fa-clock text-erp-warning text-xs"></i>
         <span>Pendientes Validación</span>
       </button>
     </div>
 
-    <div class="flex items-center gap-2 text-xs text-slate-500">
-      <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+    <div class="flex items-center gap-2 text-xs text-erp-text-muted">
+      <span class="inline-block w-2 h-2 rounded-full bg-erp-success-soft animate-pulse"></span>
       <span class="font-medium">Directorio Operativo Sincronizado</span>
     </div>
   </div>
 </div>
 
   <!-- Basic Filter Toolbar for Provider List -->
-  <div *ngIf="isProviderList()" [formGroup]="formReport" class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm my-3 flex flex-wrap items-center justify-between gap-3">
+  <div *ngIf="isProviderList()" [formGroup]="formReport" class="bg-erp-surface p-3 rounded-lg border border-erp-border shadow-sm my-3 flex flex-wrap items-center justify-between gap-3">
     <div class="flex items-center gap-2">
-      <label class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-        <i class="fa-solid fa-filter text-emerald-700"></i> Tipo Proveedor:
+      <label class="text-xs font-bold text-erp-text uppercase tracking-wider flex items-center gap-1.5">
+        <i class="fa-solid fa-filter text-erp-success"></i> Tipo Proveedor:
       </label>
       <p-dropdown [options]="types()" placeholder="Selecciona un tipo"
         optionLabel="name" appendTo="body" formControlName="id_type_provider"
@@ -90,27 +92,27 @@
     <!-- Right / Full Column: Providers Table Results & Sorting Toolbar -->
     <main class="provider-results flex flex-col gap-2" [class.w-full]="isProviderList()">
     <!-- Table Sub-Header Toolbar -->
-    <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-2">
+    <div class="bg-erp-surface p-3 rounded-lg border border-erp-border shadow-sm flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2">
-        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Resultados</span>
-        <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium border border-slate-200">
+        <span class="text-xs font-bold text-erp-text uppercase tracking-wider">Resultados</span>
+        <span class="text-xs px-2 py-0.5 rounded bg-erp-bg text-erp-text font-medium border border-erp-border">
           {{ providers()?.data?.length || 0 }} de {{ providers()?.total || 0 }}
         </span>
       </div>
 
       <!-- Quick Sorting options -->
-      <div class="flex items-center gap-1.5 text-xs text-slate-600">
-        <span class="font-medium text-slate-500">Ordenar por:</span>
+      <div class="flex items-center gap-1.5 text-xs text-erp-text">
+        <span class="font-medium text-erp-text-muted">Ordenar por:</span>
         <button type="button" (click)="onQuickSort('amount')"
-          class="px-2 py-1 rounded hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all font-medium">
+          class="px-2 py-1 rounded hover:bg-slate-100 border border-erp-border text-erp-text transition-all font-medium">
           Mayor Compra
         </button>
         <button type="button" (click)="onQuickSort('balance')"
-          class="px-2 py-1 rounded hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all font-medium">
+          class="px-2 py-1 rounded hover:bg-slate-100 border border-erp-border text-erp-text transition-all font-medium">
           Saldo Pendiente
         </button>
         <button type="button" (click)="onQuickSort('last')"
-          class="px-2 py-1 rounded hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all font-medium">
+          class="px-2 py-1 rounded hover:bg-slate-100 border border-erp-border text-erp-text transition-all font-medium">
           Última Entrada
         </button>
       </div>
@@ -132,27 +134,27 @@
 <p-dialog [header]="'Historial de cuentas · ' + (selectedProvider()?.full_names || '')"
   [visible]="accountsVisible()" (visibleChange)="accountsVisible.set($event)" [modal]="true"
   [draggable]="false" [resizable]="false" styleClass="app-dialog--xl erp-operational-dialog">
-  <div *ngIf="accountsLoading()" class="p-4 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando movimientos reales...</div>
+  <div *ngIf="accountsLoading()" class="p-4 text-center text-erp-text-muted"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando movimientos reales...</div>
   <ng-container *ngIf="providerAccounts() as history">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-      <div class="bg-blue-50 border border-blue-100 rounded-lg p-2"><small class="block text-blue-700">Cuentas</small><b>{{ history.totals.total_accounts || 0 }}</b></div>
-      <div class="bg-slate-50 border border-slate-200 rounded-lg p-2"><small class="block text-slate-600">Total</small><b>Bs. {{ history.totals.total_account || 0 | number:'1.2-2' }}</b></div>
-      <div class="bg-emerald-50 border border-emerald-100 rounded-lg p-2"><small class="block text-emerald-700">Pagado</small><b>Bs. {{ history.totals.total_abonados || 0 | number:'1.2-2' }}</b></div>
-      <div class="bg-amber-50 border border-amber-100 rounded-lg p-2"><small class="block text-amber-700">Pendiente</small><b>Bs. {{ history.totals.total_restante || 0 | number:'1.2-2' }}</b></div>
+      <div class="bg-erp-info-soft border border-erp-border rounded-lg p-2"><small class="block text-erp-info">Cuentas</small><b>{{ history.totals.total_accounts || 0 }}</b></div>
+      <div class="bg-erp-bg border border-erp-border rounded-lg p-2"><small class="block text-erp-text">Total</small><b>Bs. {{ history.totals.total_account || 0 | number:'1.2-2' }}</b></div>
+      <div class="bg-erp-success-soft border border-erp-border rounded-lg p-2"><small class="block text-erp-success">Pagado</small><b>Bs. {{ history.totals.total_abonados || 0 | number:'1.2-2' }}</b></div>
+      <div class="bg-erp-warning-soft border border-erp-border rounded-lg p-2"><small class="block text-erp-warning">Pendiente</small><b>Bs. {{ history.totals.total_restante || 0 | number:'1.2-2' }}</b></div>
     </div>
-    <div class="overflow-auto border border-slate-200 rounded-lg">
+    <div class="overflow-auto border border-erp-border rounded-lg">
       <table class="w-full text-xs border-collapse">
-        <thead class="bg-slate-900 text-white"><tr><th class="p-2 text-left">Boleta</th><th class="p-2 text-left">Fecha compra</th><th class="p-2 text-left">Tipo</th><th class="p-2 text-left">Estado</th><th class="p-2 text-right">Total</th><th class="p-2 text-right">Pagado</th><th class="p-2 text-right">Saldo</th><th class="p-2 text-left">Historial de pagos</th></tr></thead>
+        <thead class="bg-erp-header text-white"><tr><th class="p-2 text-left">Boleta</th><th class="p-2 text-left">Fecha compra</th><th class="p-2 text-left">Tipo</th><th class="p-2 text-left">Estado</th><th class="p-2 text-right">Total</th><th class="p-2 text-right">Pagado</th><th class="p-2 text-right">Saldo</th><th class="p-2 text-left">Historial de pagos</th></tr></thead>
         <tbody>
-          <tr *ngFor="let account of history.data" class="border-b border-slate-100 align-top">
+          <tr *ngFor="let account of history.data" class="border-b border-erp-border align-top">
             <td class="p-2 font-semibold">{{ account.input.registry_number || account.input.cod || account.cod }}</td>
             <td class="p-2">{{ account.input.date_voucher | date:'dd/MM/yyyy' }}</td>
-            <td class="p-2"><span class="px-2 py-1 rounded-full bg-blue-50 text-blue-700">{{ account.input.type_registry || 'COMPRA' }}</span></td>
+            <td class="p-2"><span class="px-2 py-1 rounded-full bg-erp-info-soft text-erp-info">{{ account.input.type_registry || 'COMPRA' }}</span></td>
             <td class="p-2"><span class="px-2 py-1 rounded-full" [ngClass]="account.status_account === 'PAGADO' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">{{ account.status_account }}</span></td>
-            <td class="p-2 text-right">{{ account.total | number:'1.2-2' }}</td><td class="p-2 text-right text-emerald-700">{{ account.monto_abonado | number:'1.2-2' }}</td><td class="p-2 text-right text-amber-700">{{ account.monto_restante | number:'1.2-2' }}</td>
-            <td class="p-2"><div *ngFor="let payment of activePayments(account)" class="mb-1 px-2 py-1 bg-emerald-50 border border-emerald-100 rounded"><b>{{ payment.date_abono | date:'dd/MM/yyyy' }}</b> · Bs. {{ payment.monto_abono | number:'1.2-2' }} · {{ payment.type_payment || 'Pago' }}<small *ngIf="payment.number_transaction" class="block text-slate-500">Nº {{ payment.number_transaction }}</small></div><span *ngIf="!activePayments(account).length" class="text-slate-400">Sin pagos</span></td>
+            <td class="p-2 text-right">{{ account.total | number:'1.2-2' }}</td><td class="p-2 text-right text-erp-success">{{ account.monto_abonado | number:'1.2-2' }}</td><td class="p-2 text-right text-erp-warning">{{ account.monto_restante | number:'1.2-2' }}</td>
+            <td class="p-2"><div *ngFor="let payment of activePayments(account)" class="mb-1 px-2 py-1 bg-erp-success-soft border border-erp-border rounded"><b>{{ payment.date_abono | date:'dd/MM/yyyy' }}</b> · Bs. {{ payment.monto_abono | number:'1.2-2' }} · {{ payment.type_payment || 'Pago' }}<small *ngIf="payment.number_transaction" class="block text-erp-text-muted">Nº {{ payment.number_transaction }}</small></div><span *ngIf="!activePayments(account).length" class="text-erp-text-muted">Sin pagos</span></td>
           </tr>
-          <tr *ngIf="!history.data.length"><td colspan="8" class="p-4 text-center text-slate-500">No existen cuentas para este proveedor en la sucursal y almacén seleccionados.</td></tr>
+          <tr *ngIf="!history.data.length"><td colspan="8" class="p-4 text-center text-erp-text-muted">No existen cuentas para este proveedor en la sucursal y almacén seleccionados.</td></tr>
         </tbody>
       </table>
     </div>
@@ -172,7 +174,7 @@
   [dismissableMask]="true"
   styleClass="app-dialog--xl erp-operational-dialog">
 
-  <div *ngIf="providerInfoLoading()" class="p-4 text-center text-slate-500">
+  <div *ngIf="providerInfoLoading()" class="p-4 text-center text-erp-text-muted">
     <i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando ficha completa...
   </div>
 
@@ -180,12 +182,12 @@
     <!-- Header banner con resumen ejecutivo -->
     <div class="p-3 rounded-lg bg-[#0b1324] text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-emerald-600/30 border border-emerald-400 flex items-center justify-center text-emerald-300 text-lg">
+        <div class="w-10 h-10 rounded-full bg-erp-success-soft/30 border border-erp-border flex items-center justify-center text-erp-success text-lg">
           <i class="fa-solid fa-truck-moving"></i>
         </div>
         <div>
           <h4 class="font-bold text-sm text-white mb-0 uppercase tracking-wide">{{ p.full_names }}</h4>
-          <span class="text-xs text-slate-300">
+          <span class="text-xs text-erp-text-muted">
             {{ p.type?.name || 'Proveedor' }} · <b>NIT/CI:</b> {{ p.number_document || 'Sin documento' }}
           </span>
         </div>
@@ -198,20 +200,20 @@
     </div>
 
     <!-- Navegación de Pestañas -->
-    <div class="flex gap-2 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
-      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+    <div class="flex gap-2 bg-erp-bg p-1.5 rounded-lg border border-erp-border">
+      <button type="button" class="erp-btn erp-btn-sm flex-1 font-semibold text-xs"
         [class.btn-success]="providerInfoTab() === 'company'"
         [class.btn-light]="providerInfoTab() !== 'company'"
         (click)="providerInfoTab.set('company')">
         <i class="fa-solid fa-building mr-1"></i> 1. Ficha del Proveedor
       </button>
-      <button *ngIf="infoSites().length > 1" type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+      <button *ngIf="infoSites().length > 1" type="button" class="erp-btn erp-btn-sm flex-1 font-semibold text-xs"
         [class.btn-success]="providerInfoTab() === 'branches'"
         [class.btn-light]="providerInfoTab() !== 'branches'"
         (click)="providerInfoTab.set('branches')">
         <i class="fa-solid fa-code-branch mr-1"></i> 2. Sucursales ({{ infoSites().length }})
       </button>
-      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+      <button type="button" class="erp-btn erp-btn-sm flex-1 font-semibold text-xs"
         [class.btn-success]="providerInfoTab() === 'summary'"
         [class.btn-light]="providerInfoTab() !== 'summary'"
         (click)="providerInfoTab.set('summary')">
@@ -223,187 +225,187 @@
     <div *ngIf="providerInfoTab() === 'company'" class="space-y-3">
       
       <!-- SECCIÓN 1: Identificación Legal & Tipo de Proveedor -->
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
-        <div class="text-xs font-bold text-slate-700 uppercase mb-2 flex items-center gap-1.5">
-          <i class="fa-solid fa-id-card text-slate-500"></i> 1. Identificación Legal & Tipo de Proveedor
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-bg/70">
+        <div class="text-xs font-bold text-erp-text uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-id-card text-erp-text-muted"></i> 1. Identificación Legal & Tipo de Proveedor
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-          <div class="bg-white p-2 rounded border border-slate-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Tipo de proveedor</span>
-            <span class="font-bold text-emerald-800">{{ p.type?.name || 'General' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Tipo de proveedor</span>
+            <span class="font-bold text-erp-success">{{ p.type?.name || 'General' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-slate-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Razón Social / Nombre</span>
-            <span class="font-bold text-slate-900 uppercase">{{ p.full_names }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Razón Social / Nombre</span>
+            <span class="font-bold text-erp-text uppercase">{{ p.full_names }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-slate-200">
-            <span class="text-slate-500 block text-[11px] font-bold">NIT / CI</span>
-            <span class="font-semibold text-slate-800">{{ p.number_document || 'Sin documento' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">NIT / CI</span>
+            <span class="font-semibold text-erp-text">{{ p.number_document || 'Sin documento' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-slate-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Nombre comercial</span>
-            <span class="font-semibold text-slate-800">{{ selectedCompanyProfile()?.commercial_name || p.commercial_name || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Nombre comercial</span>
+            <span class="font-semibold text-erp-text">{{ selectedCompanyProfile()?.commercial_name || p.commercial_name || '—' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-slate-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Tipo de entidad</span>
-            <span class="font-semibold text-slate-800">{{ getEntityTypeLabel(selectedCompanyProfile()?.entity_type || p.entity_type) }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Tipo de entidad</span>
+            <span class="font-semibold text-erp-text">{{ getEntityTypeLabel(selectedCompanyProfile()?.entity_type || p.entity_type) }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-slate-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Teléfono empresa</span>
-            <span class="font-semibold text-slate-800">{{ selectedCompanyProfile()?.corporate_phone || p.companyContacts || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Teléfono empresa</span>
+            <span class="font-semibold text-erp-text">{{ selectedCompanyProfile()?.corporate_phone || p.companyContacts || '—' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-slate-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Celular corporativo</span>
-            <span class="font-semibold text-slate-800">{{ selectedCompanyProfile()?.corporate_cellphone || p.cellphone || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Celular corporativo</span>
+            <span class="font-semibold text-erp-text">{{ selectedCompanyProfile()?.corporate_cellphone || p.cellphone || '—' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-slate-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Correo electrónico</span>
-            <span class="font-semibold text-slate-800">{{ selectedCompanyProfile()?.corporate_email || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Correo electrónico</span>
+            <span class="font-semibold text-erp-text">{{ selectedCompanyProfile()?.corporate_email || '—' }}</span>
           </div>
         </div>
       </section>
 
       <!-- SECCIÓN 2: Ubicación Geográfica & Sector -->
-      <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40">
-        <div class="text-xs font-bold text-emerald-800 uppercase mb-2 flex items-center gap-1.5">
-          <i class="fa-solid fa-map-location-dot text-emerald-600"></i> 2. Ubicación Geográfica & Sector
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-success-soft/40">
+        <div class="text-xs font-bold text-erp-success uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-map-location-dot text-erp-success"></i> 2. Ubicación Geográfica & Sector
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs mb-2">
-          <div class="bg-white p-2 rounded border border-emerald-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Departamento</span>
-            <span class="font-bold text-emerald-900">{{ p.department || (p.branches && p.branches[0].department) || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Departamento</span>
+            <span class="font-bold text-erp-success">{{ p.department || (p.branches && p.branches[0].department) || '—' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-emerald-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Zona / Barrio</span>
-            <span class="font-semibold text-slate-800 uppercase">{{ p.zone || (p.branches && p.branches[0].zone) || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Zona / Barrio</span>
+            <span class="font-semibold text-erp-text uppercase">{{ p.zone || (p.branches && p.branches[0].zone) || '—' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-emerald-200 sm:col-span-2">
-            <span class="text-slate-500 block text-[11px] font-bold">Dirección exacta</span>
-            <span class="font-semibold text-slate-800 uppercase">{{ p.direction || (p.branches && p.branches[0].address) || 'Sin dirección registrada' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border sm:col-span-2">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Dirección exacta</span>
+            <span class="font-semibold text-erp-text uppercase">{{ p.direction || (p.branches && p.branches[0].address) || 'Sin dirección registrada' }}</span>
           </div>
         </div>
-        <div *ngIf="p.latitude || (p.branches && p.branches[0].latitude)" class="bg-white p-2.5 rounded border border-emerald-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div *ngIf="p.latitude || (p.branches && p.branches[0].latitude)" class="bg-erp-surface p-2.5 rounded border border-erp-border flex flex-wrap items-center justify-between gap-2 text-xs">
           <div class="flex items-center gap-2">
-            <i class="fa-solid fa-location-dot text-emerald-600 text-lg"></i>
+            <i class="fa-solid fa-location-dot text-erp-success text-lg"></i>
             <div>
-              <b class="text-slate-800">Coordenadas fijadas:</b>
-              <span class="text-slate-600 ml-1">{{ p.latitude || p.branches?.[0]?.latitude }}, {{ p.longitude || p.branches?.[0]?.longitude }}</span>
-              <small *ngIf="p.geolocation_text || p.branches?.[0]?.geolocation_text" class="block text-slate-500">Ref: {{ p.geolocation_text || p.branches?.[0]?.geolocation_text }}</small>
+              <b class="text-erp-text">Coordenadas fijadas:</b>
+              <span class="text-erp-text ml-1">{{ p.latitude || p.branches?.[0]?.latitude }}, {{ p.longitude || p.branches?.[0]?.longitude }}</span>
+              <small *ngIf="p.geolocation_text || p.branches?.[0]?.geolocation_text" class="block text-erp-text-muted">Ref: {{ p.geolocation_text || p.branches?.[0]?.geolocation_text }}</small>
             </div>
           </div>
-          <a *ngIf="p.google_maps_url || p.branches?.[0]?.google_maps_url" [href]="p.google_maps_url || p.branches?.[0]?.google_maps_url" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-outline-success">
+          <a *ngIf="p.google_maps_url || p.branches?.[0]?.google_maps_url" [href]="p.google_maps_url || p.branches?.[0]?.google_maps_url" target="_blank" rel="noopener noreferrer" class="erp-btn btn-xs erp-btn-outline-primary">
             <i class="fa-brands fa-google mr-1"></i> Abrir en Google Maps
           </a>
         </div>
       </section>
 
       <!-- SECCIÓN 3: Contacto Comercial -->
-      <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40">
-        <div class="text-xs font-bold text-blue-900 uppercase mb-2 flex items-center gap-1.5">
-          <i class="fa-solid fa-user-tie text-blue-600"></i> 3. Contacto Comercial
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-info-soft/40">
+        <div class="text-xs font-bold text-erp-info uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-user-tie text-erp-info"></i> 3. Contacto Comercial
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-          <div class="bg-white p-2 rounded border border-blue-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Persona de contacto</span>
-            <span class="font-bold text-slate-900 uppercase">{{ p.name_contact || 'Sin contacto registrado' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Persona de contacto</span>
+            <span class="font-bold text-erp-text uppercase">{{ p.name_contact || 'Sin contacto registrado' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-blue-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Celular de contacto</span>
-            <span class="font-bold text-blue-800">{{ p.cellphone_contact || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Celular de contacto</span>
+            <span class="font-bold text-erp-info">{{ p.cellphone_contact || '—' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-blue-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Área / Cargo</span>
-            <span class="font-semibold text-slate-800 uppercase">{{ p.workAreaOrPositionOrUnit || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Área / Cargo</span>
+            <span class="font-semibold text-erp-text uppercase">{{ p.workAreaOrPositionOrUnit || '—' }}</span>
           </div>
-          <div class="bg-white p-2 rounded border border-blue-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Contactos empresa</span>
-            <span class="font-semibold text-slate-800">{{ p.companyContacts || '—' }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Contactos empresa</span>
+            <span class="font-semibold text-erp-text">{{ p.companyContacts || '—' }}</span>
           </div>
         </div>
         <!-- Contactos repetibles adicionales si existen -->
-        <div *ngIf="p.contacts && p.contacts.length > 0" class="mt-2 pt-2 border-t border-blue-200/60">
-          <small class="font-bold text-blue-900 uppercase block mb-1 text-[11px]">Directorio de contactos vinculados</small>
+        <div *ngIf="p.contacts && p.contacts.length > 0" class="mt-2 pt-2 border-t border-erp-border">
+          <small class="font-bold text-erp-info uppercase block mb-1 text-[11px]">Directorio de contactos vinculados</small>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-            <div *ngFor="let c of p.contacts" class="bg-white p-2 rounded border border-blue-100 flex items-center justify-between">
+            <div *ngFor="let c of p.contacts" class="bg-erp-surface p-2 rounded border border-erp-border flex items-center justify-between">
               <div>
-                <b class="text-slate-800 uppercase">{{ c.full_name }}</b>
-                <small class="block text-slate-500">{{ c.position_area }} · Cel: {{ c.cellphone }}</small>
+                <b class="text-erp-text uppercase">{{ c.full_name }}</b>
+                <small class="block text-erp-text-muted">{{ c.position_area }} · Cel: {{ c.cellphone }}</small>
               </div>
-              <span *ngIf="c.is_main_contact" class="badge bg-blue-100 text-blue-800 text-[10px] font-bold">Principal</span>
+              <span *ngIf="c.is_main_contact" class="badge bg-erp-info-soft text-erp-info text-[10px] font-bold">Principal</span>
             </div>
           </div>
         </div>
       </section>
 
       <!-- SECCIÓN 4: MODALIDAD DE OPERACION Y MATERIAL -->
-      <section class="p-3 rounded-lg border border-amber-200 bg-amber-50/40">
-        <div class="text-xs font-bold text-amber-900 uppercase mb-2 flex items-center gap-1.5">
-          <i class="fa-solid fa-boxes-stacked text-amber-600"></i> 4. MODALIDAD DE OPERACION Y MATERIAL
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-warning-soft/40">
+        <div class="text-xs font-bold text-erp-warning uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-boxes-stacked text-erp-warning"></i> 4. MODALIDAD DE OPERACION Y MATERIAL
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs mb-2">
-          <div class="bg-white p-2 rounded border border-amber-200 flex items-center justify-between">
-            <span class="text-slate-500 font-bold text-[11px]">Modalidad de entrega:</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border flex items-center justify-between">
+            <span class="text-erp-text-muted font-bold text-[11px]">Modalidad de entrega:</span>
             <p-tag [value]="p.mayorista ? 'MAYORISTA' : 'MINORISTA'" [severity]="p.mayorista ? 'info' : 'success'" [rounded]="true"></p-tag>
           </div>
-          <div class="bg-white p-2 rounded border border-amber-200 flex items-center justify-between">
-            <span class="text-slate-500 font-bold text-[11px]">Estado cuenta:</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border flex items-center justify-between">
+            <span class="text-erp-text-muted font-bold text-[11px]">Estado cuenta:</span>
             <p-tag [value]="p.status ? 'ACTIVO' : 'INACTIVO'" [severity]="p.status ? 'success' : 'danger'" [rounded]="true"></p-tag>
           </div>
-          <div class="bg-white p-2 rounded border border-amber-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Modalidad de atención</span>
-            <span class="font-semibold text-slate-800">{{ getServiceModeLabel(p.service_mode) }}</span>
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Modalidad de atención</span>
+            <span class="font-semibold text-erp-text">{{ getServiceModeLabel(p.service_mode) }}</span>
           </div>
         </div>
 
         <!-- Materiales y Categorías registrados -->
-        <div class="bg-white p-2.5 rounded border border-amber-200 mb-2 text-xs">
-          <b class="text-amber-900 block mb-1.5 font-bold uppercase text-[11px]">Materiales y Productos Entregados</b>
+        <div class="bg-erp-surface p-2.5 rounded border border-erp-border mb-2 text-xs">
+          <b class="text-erp-warning block mb-1.5 font-bold uppercase text-[11px]">Materiales y Productos Entregados</b>
           <div class="flex flex-wrap gap-1.5">
             <ng-container *ngIf="p.materials && p.materials.length > 0; else noSpecificMaterials">
-              <span *ngFor="let m of p.materials" class="badge bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full text-xs font-semibold">
-                <i class="fa-solid fa-recycle mr-1 text-amber-700"></i>
+              <span *ngFor="let m of p.materials" class="badge bg-erp-warning-soft text-erp-warning border border-erp-border px-2.5 py-1 rounded-full text-xs font-semibold">
+                <i class="fa-solid fa-recycle mr-1 text-erp-warning"></i>
                 {{ m.product?.name || m.category?.name || 'Material' }}
               </span>
             </ng-container>
             <ng-template #noSpecificMaterials>
-              <span *ngIf="p.category?.name" class="badge bg-amber-100 text-amber-900 px-2 py-1 rounded">
+              <span *ngIf="p.category?.name" class="badge bg-erp-warning-soft text-erp-warning px-2 py-1 rounded">
                 {{ p.category?.name }}
               </span>
-              <span *ngIf="!p.category?.name" class="text-slate-500">Sin materiales específicos registrados</span>
+              <span *ngIf="!p.category?.name" class="text-erp-text-muted">Sin materiales específicos registrados</span>
             </ng-template>
           </div>
         </div>
 
         <!-- Frecuencia Inteligente -->
-        <div class="p-2.5 rounded-lg bg-emerald-50/80 border border-emerald-200">
+        <div class="p-2.5 rounded-lg bg-erp-success-soft/80 border border-erp-border">
           <div class="flex items-center justify-between mb-1.5">
-            <span class="badge bg-emerald-700 text-white font-bold text-xs px-2 py-0.5 rounded">
+            <span class="badge bg-erp-success-soft text-white font-bold text-xs px-2 py-0.5 rounded">
               🤖 Frecuencia Inteligente Histórica
             </span>
-            <span class="text-xs font-extrabold text-emerald-900">
-              Frecuencia: <span class="uppercase text-emerald-700 underline">{{ getFrequencyLabel(infoFrequencyAnalysis()?.frequency || p.frequency) }}</span>
+            <span class="text-xs font-extrabold text-erp-success">
+              Frecuencia: <span class="uppercase text-erp-success underline">{{ getFrequencyLabel(infoFrequencyAnalysis()?.frequency || p.frequency) }}</span>
             </span>
           </div>
           <div *ngIf="infoFrequencyAnalysis() as freq" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            <div class="bg-white p-2 rounded border border-emerald-200">
-              <span class="text-slate-500 block text-[10px] uppercase font-bold">Promedio:</span>
-              <b class="text-slate-800">{{ freq.average_days ? (freq.average_days + ' días') : 'Sin promedio' }}</b>
+            <div class="bg-erp-surface p-2 rounded border border-erp-border">
+              <span class="text-erp-text-muted block text-[10px] uppercase font-bold">Promedio:</span>
+              <b class="text-erp-text">{{ freq.average_days ? (freq.average_days + ' días') : 'Sin promedio' }}</b>
             </div>
-            <div class="bg-white p-2 rounded border border-emerald-200">
-              <span class="text-slate-500 block text-[10px] uppercase font-bold">Entregas analizadas:</span>
-              <b class="text-slate-800">{{ freq.total_deliveries || 0 }}</b>
+            <div class="bg-erp-surface p-2 rounded border border-erp-border">
+              <span class="text-erp-text-muted block text-[10px] uppercase font-bold">Entregas analizadas:</span>
+              <b class="text-erp-text">{{ freq.total_deliveries || 0 }}</b>
             </div>
-            <div class="bg-white p-2 rounded border border-emerald-200">
-              <span class="text-slate-500 block text-[10px] uppercase font-bold">Última entrega:</span>
-              <b class="text-slate-800">{{ freq.last_delivery_date ? (freq.last_delivery_date | date:'dd/MM/yyyy') : '—' }}</b>
+            <div class="bg-erp-surface p-2 rounded border border-erp-border">
+              <span class="text-erp-text-muted block text-[10px] uppercase font-bold">Última entrega:</span>
+              <b class="text-erp-text">{{ freq.last_delivery_date ? (freq.last_delivery_date | date:'dd/MM/yyyy') : '—' }}</b>
             </div>
-            <div class="bg-white p-2 rounded border border-emerald-200">
-              <span class="text-slate-500 block text-[10px] uppercase font-bold">Próximo contacto:</span>
-              <b class="text-emerald-700 font-extrabold">{{ freq.next_estimated_date ? (freq.next_estimated_date | date:'dd/MM/yyyy') : '—' }}</b>
+            <div class="bg-erp-surface p-2 rounded border border-erp-border">
+              <span class="text-erp-text-muted block text-[10px] uppercase font-bold">Próximo contacto:</span>
+              <b class="text-erp-success font-extrabold">{{ freq.next_estimated_date ? (freq.next_estimated_date | date:'dd/MM/yyyy') : '—' }}</b>
             </div>
           </div>
-          <div *ngIf="!infoFrequencyAnalysis()" class="text-xs text-slate-500">
+          <div *ngIf="!infoFrequencyAnalysis()" class="text-xs text-erp-text-muted">
             Frecuencia actual registrada: <b>{{ getFrequencyLabel(p.frequency) }}</b> (Modo: {{ p.frequency_mode || 'automatic' }})
           </div>
         </div>
@@ -415,56 +417,56 @@
           <i class="fa-solid fa-handshake text-violet-600"></i> 5. Gestión Comercial
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-          <div class="bg-white p-2 rounded border border-violet-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Responsable comercial</span>
+          <div class="bg-erp-surface p-2 rounded border border-violet-200">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Responsable comercial</span>
             <span class="font-bold text-violet-900">
               {{ getCommercialUserName(selectedCompanyProfile()?.id_commercial_user || p.id_commercial_user) }}
             </span>
           </div>
-          <div class="bg-white p-2 rounded border border-violet-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Canal de origen</span>
-            <span class="font-semibold text-slate-800">
+          <div class="bg-erp-surface p-2 rounded border border-violet-200">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Canal de origen</span>
+            <span class="font-semibold text-erp-text">
               {{ getOriginChannelLabel(selectedCompanyProfile()?.origin_channel || p.origin_channel) }}
             </span>
           </div>
-          <div class="bg-white p-2 rounded border border-violet-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Estado de relación</span>
-            <span class="font-semibold text-slate-800">
+          <div class="bg-erp-surface p-2 rounded border border-violet-200">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Estado de relación</span>
+            <span class="font-semibold text-erp-text">
               {{ getRelationshipStatusLabel(selectedCompanyProfile()?.relationship_status || p.relationship_status) }}
             </span>
           </div>
-          <div class="bg-white p-2 rounded border border-violet-200">
-            <span class="text-slate-500 block text-[11px] font-bold">Condición de negociación</span>
-            <span class="font-semibold text-slate-800">
+          <div class="bg-erp-surface p-2 rounded border border-violet-200">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Condición de negociación</span>
+            <span class="font-semibold text-erp-text">
               {{ selectedCompanyProfile()?.negotiation_condition || p.negotiation_condition || 'Estándar' }}
             </span>
           </div>
-          <div *ngIf="selectedCompanyProfile()?.commercial_observations || p.commercial_observations" class="bg-white p-2 rounded border border-violet-200 md:col-span-4">
-            <span class="text-slate-500 block text-[11px] font-bold">Observaciones comerciales</span>
-            <p class="mb-0 text-slate-700">{{ selectedCompanyProfile()?.commercial_observations || p.commercial_observations }}</p>
+          <div *ngIf="selectedCompanyProfile()?.commercial_observations || p.commercial_observations" class="bg-erp-surface p-2 rounded border border-violet-200 md:col-span-4">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Observaciones comerciales</span>
+            <p class="mb-0 text-erp-text">{{ selectedCompanyProfile()?.commercial_observations || p.commercial_observations }}</p>
           </div>
         </div>
       </section>
 
       <!-- SECCIÓN 6: Requerimientos Documentales -->
-      <section class="p-3 rounded-lg border border-rose-100 bg-rose-50/30">
-        <div class="text-xs font-bold text-rose-900 uppercase mb-2 flex items-center gap-1.5">
-          <i class="fa-solid fa-file-shield text-rose-600"></i> 6. Requerimientos Documentales
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-danger-soft/30">
+        <div class="text-xs font-bold text-erp-danger uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-file-shield text-erp-danger"></i> 6. Requerimientos Documentales
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div class="bg-white p-2.5 rounded border border-rose-200 flex items-center justify-between">
+          <div class="bg-erp-surface p-2.5 rounded border border-erp-border flex items-center justify-between">
             <div>
-              <b class="text-slate-800 block">¿Requiere certificado?</b>
-              <small class="text-slate-500">Documento de certificación ambiental / legal</small>
+              <b class="text-erp-text block">¿Requiere certificado?</b>
+              <small class="text-erp-text-muted">Documento de certificación ambiental / legal</small>
             </div>
             <p-tag [value]="(selectedCompanyProfile()?.requires_certificate || p.requires_certificate) ? 'SÍ' : 'NO'"
                    [severity]="(selectedCompanyProfile()?.requires_certificate || p.requires_certificate) ? 'success' : 'secondary'"
                    [rounded]="true"></p-tag>
           </div>
-          <div class="bg-white p-2.5 rounded border border-rose-200 flex items-center justify-between">
+          <div class="bg-erp-surface p-2.5 rounded border border-erp-border flex items-center justify-between">
             <div>
-              <b class="text-slate-800 block">¿Requiere informe de trazabilidad?</b>
-              <small class="text-slate-500">Informe de pesajes y destino final</small>
+              <b class="text-erp-text block">¿Requiere informe de trazabilidad?</b>
+              <small class="text-erp-text-muted">Informe de pesajes y destino final</small>
             </div>
             <p-tag [value]="(selectedCompanyProfile()?.requires_traceability_report || p.requires_traceability_report) ? 'SÍ' : 'NO'"
                    [severity]="(selectedCompanyProfile()?.requires_traceability_report || p.requires_traceability_report) ? 'success' : 'secondary'"
@@ -479,31 +481,31 @@
           <i class="fa-solid fa-building-columns text-cyan-600"></i> 7. Información Bancaria
         </div>
         <div *ngIf="p.bankAccounts && p.bankAccounts.length > 0; else noBanks" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div *ngFor="let b of p.bankAccounts" class="bg-white p-2.5 rounded border border-cyan-200">
+          <div *ngFor="let b of p.bankAccounts" class="bg-erp-surface p-2.5 rounded border border-cyan-200">
             <div class="flex items-center justify-between mb-1">
               <b class="text-cyan-900">{{ b.bank?.name || 'Banco' }}</b>
-              <span *ngIf="b.is_main" class="badge bg-emerald-100 text-emerald-800 text-[10px] font-bold">Principal</span>
+              <span *ngIf="b.is_main" class="badge bg-erp-success-soft text-erp-success text-[10px] font-bold">Principal</span>
             </div>
-            <div class="text-slate-700">
+            <div class="text-erp-text">
               <span>Titular: <b>{{ b.account_holder || '—' }}</b></span><br>
               <span>N.º Cuenta: <b>{{ b.account_number }}</b> ({{ b.currency || 'BOB' }})</span><br>
-              <small class="text-slate-500">Tipo: {{ b.account_type || 'CAJA_AHORRO' }}</small>
+              <small class="text-erp-text-muted">Tipo: {{ b.account_type || 'CAJA_AHORRO' }}</small>
             </div>
           </div>
         </div>
         <ng-template #noBanks>
-          <div class="bg-white p-3 rounded border border-cyan-100 text-center text-xs text-slate-500">
+          <div class="bg-erp-surface p-3 rounded border border-cyan-100 text-center text-xs text-erp-text-muted">
             Sin cuentas bancarias registradas para este proveedor.
           </div>
         </ng-template>
       </section>
 
       <!-- SECCIÓN 8: Observaciones Generales -->
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
-        <div class="text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-note-sticky text-slate-500"></i> 8. Observaciones Generales
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-bg/70">
+        <div class="text-xs font-bold text-erp-text uppercase mb-1.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-note-sticky text-erp-text-muted"></i> 8. Observaciones Generales
         </div>
-        <p class="text-xs mb-0 text-slate-800 bg-white p-2 rounded border border-slate-200">
+        <p class="text-xs mb-0 text-erp-text bg-erp-surface p-2 rounded border border-erp-border">
           {{ selectedCompanyProfile()?.general_observations || p.general_observations || 'Sin observaciones generales registradas.' }}
         </p>
       </section>
@@ -514,22 +516,22 @@
       <div class="text-xs font-bold text-violet-800 uppercase mb-2"><i class="fa-solid fa-building-columns mr-2"></i>Grupo Empresarial & Sedes</div>
       <div class="flex flex-wrap gap-2 mb-3">
         <button type="button" *ngFor="let site of infoSites()" (click)="selectInfoSite(site)"
-          class="px-2 py-1 bg-white border border-violet-200 rounded text-xs"
+          class="px-2 py-1 bg-erp-surface border border-violet-200 rounded text-xs"
           [class.border-emerald-500]="selectedInfoSiteId()===site.id" [class.bg-emerald-50]="selectedInfoSiteId()===site.id">
           <i class="fa-solid" [ngClass]="site.site_role==='HEADQUARTERS' ? 'fa-building text-emerald-600' : 'fa-code-branch text-violet-600'"></i>
           {{ site.full_names }} · {{ site.site_role==='HEADQUARTERS' ? 'Casa Matriz' : 'Sucursal' }}
         </button>
       </div>
       <div *ngIf="selectedInfoSite() as site" class="grid md:grid-cols-2 gap-2 text-xs">
-        <div class="bg-white border border-emerald-100 rounded p-3">
-          <b class="text-emerald-800"><i class="fa-solid fa-map-location-dot mr-1"></i> Ubicación</b>
+        <div class="bg-erp-surface border border-erp-border rounded p-3">
+          <b class="text-erp-success"><i class="fa-solid fa-map-location-dot mr-1"></i> Ubicación</b>
           <p class="mt-2 mb-1">{{ site.location.department }} · {{ site.location.zone || 'Sin zona' }}</p>
           <p class="mb-1">{{ site.location.address }}</p>
-          <p class="text-slate-500">{{ site.location.latitude ?? '—' }}, {{ site.location.longitude ?? '—' }}</p>
+          <p class="text-erp-text-muted">{{ site.location.latitude ?? '—' }}, {{ site.location.longitude ?? '—' }}</p>
         </div>
-        <div class="bg-white border border-blue-100 rounded p-3">
-          <b class="text-blue-800"><i class="fa-solid fa-address-book mr-1"></i> Contactos</b>
-          <div *ngFor="let contact of site.contacts" class="mt-1 border-b border-slate-100 pb-1">
+        <div class="bg-erp-surface border border-erp-border rounded p-3">
+          <b class="text-erp-info"><i class="fa-solid fa-address-book mr-1"></i> Contactos</b>
+          <div *ngFor="let contact of site.contacts" class="mt-1 border-b border-erp-border pb-1">
             <strong>{{ contact.full_name }}</strong> · {{ contact.position_area }} · {{ contact.cellphone }}
           </div>
         </div>
@@ -539,47 +541,47 @@
     <!-- PESTAÑA 3: HISTORIAL DE COMPRAS -->
     <div *ngIf="providerInfoTab() === 'summary'" class="space-y-3">
       <!-- KPIs Resumen de Compras -->
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50">
-        <div class="text-xs font-bold text-slate-800 uppercase mb-2 flex items-center justify-between">
-          <span><i class="fa-solid fa-receipt text-emerald-600 mr-1"></i> Movimientos Reales de Compra</span>
-          <button type="button" class="btn btn-xs btn-outline-secondary" (click)="loadInfoPurchases(p.id)">
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-bg">
+        <div class="text-xs font-bold text-erp-text uppercase mb-2 flex items-center justify-between">
+          <span><i class="fa-solid fa-receipt text-erp-success mr-1"></i> Movimientos Reales de Compra</span>
+          <button type="button" class="erp-btn btn-xs erp-btn-secondary" (click)="loadInfoPurchases(p.id)">
             <i class="fa-solid fa-rotate mr-1" [class.fa-spin]="infoPurchasesLoading()"></i> Actualizar
           </button>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-          <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center shadow-sm">
-            <span class="text-[11px] text-slate-500 font-bold block uppercase">Total Compras</span>
-            <b class="text-slate-800 text-base">{{ infoTotalPurchasesCount() || p.total_inputs || 0 }} reg.</b>
+          <div class="bg-erp-surface p-2.5 rounded-lg border border-erp-border text-center shadow-sm">
+            <span class="text-[11px] text-erp-text-muted font-bold block uppercase">Total Compras</span>
+            <b class="text-erp-text text-base">{{ infoTotalPurchasesCount() || p.total_inputs || 0 }} reg.</b>
           </div>
-          <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center shadow-sm">
-            <span class="text-[11px] text-slate-500 font-bold block uppercase">Total Monto</span>
-            <b class="text-emerald-700 text-base">Bs. {{ (infoTotalPurchasesAmount() || 0) | number:'1.2-2' }}</b>
+          <div class="bg-erp-surface p-2.5 rounded-lg border border-erp-border text-center shadow-sm">
+            <span class="text-[11px] text-erp-text-muted font-bold block uppercase">Total Monto</span>
+            <b class="text-erp-success text-base">Bs. {{ (infoTotalPurchasesAmount() || 0) | number:'1.2-2' }}</b>
           </div>
-          <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center shadow-sm">
-            <span class="text-[11px] text-slate-500 font-bold block uppercase">Saldo Pendiente</span>
-            <b class="text-amber-700 text-base">Bs. {{ (p.saldo_cuentas_por_pagar || 0) | number:'1.2-2' }}</b>
+          <div class="bg-erp-surface p-2.5 rounded-lg border border-erp-border text-center shadow-sm">
+            <span class="text-[11px] text-erp-text-muted font-bold block uppercase">Saldo Pendiente</span>
+            <b class="text-erp-warning text-base">Bs. {{ (p.saldo_cuentas_por_pagar || 0) | number:'1.2-2' }}</b>
           </div>
-          <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center shadow-sm">
-            <span class="text-[11px] text-slate-500 font-bold block uppercase">Última Compra</span>
-            <span class="text-slate-700 font-semibold text-xs">{{ (infoLastPurchaseDate() || p.date_last_input | date:'dd/MM/yyyy') || 'Sin fecha' }}</span>
+          <div class="bg-erp-surface p-2.5 rounded-lg border border-erp-border text-center shadow-sm">
+            <span class="text-[11px] text-erp-text-muted font-bold block uppercase">Última Compra</span>
+            <span class="text-erp-text font-semibold text-xs">{{ (infoLastPurchaseDate() || p.date_last_input | date:'dd/MM/yyyy') || 'Sin fecha' }}</span>
           </div>
         </div>
       </section>
 
       <!-- Tabla de Compras Reales -->
-      <section class="p-3 rounded-lg border border-slate-200 bg-white">
-        <div *ngIf="infoPurchasesLoading()" class="p-4 text-center text-xs text-slate-500">
-          <i class="fa-solid fa-spinner fa-spin mr-1 text-emerald-600"></i> Cargando compras...
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-surface">
+        <div *ngIf="infoPurchasesLoading()" class="p-4 text-center text-xs text-erp-text-muted">
+          <i class="fa-solid fa-spinner fa-spin mr-1 text-erp-success"></i> Cargando compras...
         </div>
 
-        <div *ngIf="!infoPurchasesLoading() && infoPurchases().length === 0" class="p-4 text-center text-xs text-slate-500 border border-dashed rounded">
-          <i class="fa-solid fa-receipt text-slate-400 text-2xl mb-1 block"></i>
+        <div *ngIf="!infoPurchasesLoading() && infoPurchases().length === 0" class="p-4 text-center text-xs text-erp-text-muted border border-dashed rounded">
+          <i class="fa-solid fa-receipt text-erp-text-muted text-2xl mb-1 block"></i>
           No se registran compras recientes para este proveedor en la sucursal actual.
         </div>
 
-        <div *ngIf="!infoPurchasesLoading() && infoPurchases().length > 0" class="overflow-x-auto rounded border border-slate-200">
+        <div *ngIf="!infoPurchasesLoading() && infoPurchases().length > 0" class="overflow-x-auto rounded border border-erp-border">
           <table class="w-full text-xs text-left">
-            <thead class="bg-slate-800 text-white uppercase text-[11px]">
+            <thead class="bg-erp-header text-white uppercase text-[11px]">
               <tr>
                 <th class="p-2">Fecha</th>
                 <th class="p-2">N.º Boleta</th>
@@ -592,7 +594,7 @@
               <tr *ngFor="let item of infoPurchases()" class="hover:bg-slate-50">
                 <td class="p-2">{{ (item.date_voucher || item.createdAt) | date:'dd/MM/yyyy' }}</td>
                 <td class="p-2 font-bold">{{ item.cod || item.registry_number || ('#' + item.id) }}</td>
-                <td class="p-2 text-right font-bold text-emerald-700">Bs {{ item.total | number:'1.2-2' }}</td>
+                <td class="p-2 text-right font-bold text-erp-success">Bs {{ item.total | number:'1.2-2' }}</td>
                 <td class="p-2">{{ item.user.full_names || '—' }}</td>
                 <td class="p-2 text-center">
                   <p-tag [value]="item.status === 'ACTIVE' ? 'ACTIVO' : item.status"

@@ -2,28 +2,28 @@
     [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--sm erp-operational-dialog purchase-config-dialog">
     <app-alert-notify [subTitle]="'Configurar los aspectos del módulo de compras.'" [subTitle2]="'Por favor, tenga en cuenta que los casilleros de verificación se consideran como afirmativos.'" [required]="false"></app-alert-notify>
-    <div [formGroup]="formConfig" class="purchase-config-options rounded-lg border border-slate-200 bg-slate-50/70">
-        <div class="field-checkbox d-flex align-items-center gap-2 py-1">
+    <div [formGroup]="formConfig" class="purchase-config-options rounded-lg border border-erp-border bg-erp-bg/70">
+        <div class="field-checkbox flex items-center gap-2 py-1">
             <p-checkbox [binary]="true"  formControlName="searchForCode"  inputId="codigoB"></p-checkbox>
             <label class="cursor-pointer m-0" for="codigoB">Buscador por lector Cod. Barra</label>
         </div>
-        <div class="field-checkbox d-flex align-items-center gap-2 py-1">
+        <div class="field-checkbox flex items-center gap-2 py-1">
           <p-checkbox [binary]="true"  formControlName="clearInputAfterProductSearch"  inputId="clearI"></p-checkbox>
           <label class="cursor-pointer m-0" for="clearI">Limpiar buscador al agregar productos (Buscador 1)</label>
         </div>
-        <div class="field-checkbox d-flex align-items-center gap-2 py-1">
+        <div class="field-checkbox flex items-center gap-2 py-1">
             <p-checkbox [binary]="true" formControlName="viewCardProducts" inputId="ListaP"></p-checkbox>
             <label class="cursor-pointer m-0" for="ListaP">Ver tarjeta de productos</label>
         </div>
-        <div class="field-checkbox d-flex align-items-center gap-2 py-1">
+        <div class="field-checkbox flex items-center gap-2 py-1">
             <p-checkbox [binary]="true" formControlName="printSale" inputId="ImprimirF"></p-checkbox>
             <label class="cursor-pointer m-0" for="ImprimirF">Imprimir al finalizar compra</label>
         </div>
-        <div class="field-checkbox d-flex align-items-center gap-2 py-1">
+        <div class="field-checkbox flex items-center gap-2 py-1">
             <p-checkbox [binary]="true" formControlName="printRoll" inputId="ImprimirR"></p-checkbox>
             <label class="cursor-pointer m-0" for="ImprimirR">Impresión en rollo (Ticket)</label>
         </div>
-        <div class="field-checkbox d-flex align-items-center gap-2 py-1">
+        <div class="field-checkbox flex items-center gap-2 py-1">
             <p-checkbox [binary]="true" formControlName="printHalfPage" inputId="ImprimirM"></p-checkbox>
             <label class="cursor-pointer m-0" for="ImprimirM">Impresión por media página (A5)</label>
         </div>

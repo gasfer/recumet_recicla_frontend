@@ -1,4 +1,4 @@
-<div class="card erp-card-container border-0 shadow-sm">
+<div class="card erp-card-container border-0 shadow-sm product-catalog-card">
     <div class="erp-items-header">
         <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-boxes-stacked text-emerald-400"></i>
@@ -7,7 +7,7 @@
         <span class="erp-counter-chip">{{ products().length }} de {{ total }}</span>
     </div>
 
-    <div class="card-body p-2">
+    <div class="card-body p-2 product-catalog-body">
 
         <!-- BUSCADOR -->
         <div class="search-container mb-2" [formGroup]="formSearch">
@@ -64,7 +64,7 @@
         </div>
 
         <!-- LISTADO DE PRODUCTOS -->
-        <p-scrollPanel *ngIf="!loading()" class="app-u-width-100-0466783 app-u-height-450px-25e06cd">
+        <div *ngIf="!loading()" class="product-catalog-scroll" role="region" aria-label="Lista de productos" tabindex="0">
             <div class="container-fluid px-1 mt-1">
                 <div class="row g-2">
 
@@ -204,7 +204,7 @@
 
                 </div>
             </div>
-        </p-scrollPanel>
+        </div>
 
         <!-- PAGINADOR -->
         <p-paginator
@@ -215,7 +215,7 @@
             currentPageReportTemplate="{{ from }} al {{ to }} de {{total}}"
             [totalRecords]="total"
             (onPageChange)="paginate($event)"
-            styleClass="p-paginator-sm border-0 border-t border-slate-100 mt-1">
+            styleClass="product-catalog-paginator">
         </p-paginator>
 
     </div>

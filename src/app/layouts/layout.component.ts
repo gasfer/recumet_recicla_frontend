@@ -6,6 +6,7 @@ import { EventService } from '../core/services/event.service';
 import { ActivationEnd, Router } from '@angular/router';
 import { Subscription, filter, map } from 'rxjs';
 import { ValidatorsService } from '../services/validators.service';
+import { ExpandedSidebarType, SidebarPreferencesService } from '../core/services/sidebar-preferences.service';
 import { SessionManagementService } from '../core/services/session-management.service';
 
 @Component({
@@ -24,6 +25,9 @@ export class LayoutComponent implements OnInit, OnDestroy{
   eventService = inject(EventService);
   validatorsService = inject(ValidatorsService);
   sessionManagementService = inject(SessionManagementService);
+  private sidebarPreferences = inject(SidebarPreferencesService);
+  private expandedSidebarType: ExpandedSidebarType = 'dark';
+  private readonly layoutSubscriptions = new Subscription();
   public tituloSubs$! : Subscription;
   public breadcrumbs:any = [];
 
@@ -38,30 +42,36 @@ export class LayoutComponent implements OnInit, OnDestroy{
   }
   ngOnDestroy(): void {
     this.tituloSubs$.unsubscribe();
+    this.layoutSubscriptions.unsubscribe();
     this.sessionManagementService.stopMonitoring();
   }
 
   ngOnInit(): void {
+    const savedMode = localStorage.getItem('recumet-theme');
+    if (savedMode === 'light' || savedMode === 'dark') this.mode.set(savedMode);
+    const preference = this.sidebarPreferences.load(this.validatorsService.user()?.id);
+    this.expandedSidebarType = preference.expandedType;
+    this.sidebartype.set(preference.collapsed ? 'icon' : preference.expandedType);
     this.sessionManagementService.startMonitoring();
     this.LayoutWidth(this.layoutwidth());
     this.changeSidebar(this.sidebartype());
     this.changeMode(this.mode());
 
-    this.eventService.subscribe('changeLayout', (layout) => {
+    this.layoutSubscriptions.add(this.eventService.subscribe('changeLayout', (layout) => {
       this.layoutType.set(layout);
-    });
-    this.eventService.subscribe('changeWidth', (width) => {
+    }));
+    this.layoutSubscriptions.add(this.eventService.subscribe('changeWidth', (width) => {
       this.layoutwidth.set(width);
       this.LayoutWidth(this.layoutwidth());
-    });
-    this.eventService.subscribe('changeSidebartype', (layout) => {
+    }));
+    this.layoutSubscriptions.add(this.eventService.subscribe('changeSidebartype', (layout) => {
       this.sidebartype.set(layout);
       this.changeSidebar(this.sidebartype());
-    });
-    this.eventService.subscribe('changeMode', (mode) => {
+    }));
+    this.layoutSubscriptions.add(this.eventService.subscribe('changeMode', (mode) => {
       this.mode.set(mode);
       this.changeMode(this.mode());
-    });
+    }));
   }
 
   getArgumentosRuta() {
@@ -74,7 +84,10 @@ export class LayoutComponent implements OnInit, OnDestroy{
   }
 
   changeMode(value:string) {    
-    switch (value) {
+    const theme = value === 'dark' ? 'dark' : 'light';
+    this.mode.set(theme);
+    localStorage.setItem('recumet-theme', theme);
+    switch (theme) {
       case "light":
         document.body.setAttribute('data-bs-theme', 'light');
         break;
@@ -85,6 +98,13 @@ export class LayoutComponent implements OnInit, OnDestroy{
         document.body.setAttribute('data-bs-theme', 'light');
         break;
     }
+  }
+
+  onSidebarCondensedChange(collapsed: boolean): void {
+    this.sidebartype.set(collapsed ? 'icon' : this.expandedSidebarType);
+    document.body.classList.toggle('vertical-collpsed', collapsed && window.innerWidth >= 768);
+    this.sidebarPreferences.save({ collapsed, expandedType: this.expandedSidebarType }, this.validatorsService.user()?.id);
+    this.eventService.broadcast('sidebarModeChanged', this.sidebartype());
   }
 
   changeSidebar(value:string) {
@@ -142,6 +162,9 @@ export class LayoutComponent implements OnInit, OnDestroy{
         document.body.setAttribute('data-sidebar', 'dark');
         break;
     }
+    if (['light', 'dark', 'compact', 'colored'].includes(value)) this.expandedSidebarType = value as ExpandedSidebarType;
+    this.sidebarPreferences.save({ collapsed: value === 'icon', expandedType: this.expandedSidebarType }, this.validatorsService.user()?.id);
+    if (window.innerWidth < 768) document.body.classList.remove('vertical-collpsed');
   }
 
   LayoutWidth(width: string) {
@@ -166,6 +189,7 @@ export class LayoutComponent implements OnInit, OnDestroy{
         document.body.setAttribute("data-layout-size", "fluid");
         break;
     }
+    document.body.classList.toggle('vertical-collpsed', this.sidebartype() === 'icon' && window.innerWidth >= 768);
   }
 
   /**

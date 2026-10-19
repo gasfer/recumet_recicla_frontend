@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, EventEmitter, HostListener, Inject, Input, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Inject, Input, OnDestroy, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -13,13 +13,14 @@ import Swal from 'sweetalert2';
 
 import { NotificationsService } from 'src/app/services/notifications.service';
 import { TransferReviewService } from 'src/app/services/transfer-review.service';
+import { EventService } from 'src/app/core/services/event.service';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss']
 })
-export class TopbarComponent implements OnInit{
+export class TopbarComponent implements OnInit, OnDestroy{
   @ViewChild('globalSearch') globalSearch?: ElementRef<HTMLInputElement>;
   element:any;
   cookieValue:any;
@@ -33,11 +34,13 @@ export class TopbarComponent implements OnInit{
   }
   userDropdownOpen = signal(false);
   notificationsDropdownOpen = signal(false);
+  themeMode = signal<'light' | 'dark'>('light');
 
   constructor(@Inject(DOCUMENT) private document: any, private router: Router,
               public languageService: LanguageService,
               public translate: TranslateService,
-              public authService: AuthService) {
+              public authService: AuthService,
+              private eventService: EventService) {
   }
 
   listLang = [
@@ -51,6 +54,8 @@ export class TopbarComponent implements OnInit{
   @Output() mobileMenuButtonClicked = new EventEmitter();
   @Input() mobileMenuOpen = false;
   @Input() desktopSidebarHidden = false;
+  @Input() sidebarCondensed = false;
+  @Input() isMobileViewport = false;
   @Input() mobileMenuControls = 'app-sidebar';
   cities: any[] | undefined;
   selectedCity: any | undefined;
@@ -65,10 +70,15 @@ export class TopbarComponent implements OnInit{
   });
   sucursales  = signal<Sucursal[]>([]);
   isReloadSub$!: Subscription;
+  private themeSubscription?: Subscription;
 
   ngOnInit() {
     this.openMobileMenu = false;
     this.element = document.documentElement;
+    this.themeMode.set(this.document.body.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light');
+    this.themeSubscription = this.eventService.subscribe('changeMode', (mode: 'light' | 'dark') => {
+      this.themeMode.set(mode === 'dark' ? 'dark' : 'light');
+    });
     this.cookieValue = localStorage.getItem('lang'); 
     const val = this.listLang.filter(x => x.lang === this.cookieValue);
     this.countryName = val.map(element => element.text);
@@ -82,6 +92,17 @@ export class TopbarComponent implements OnInit{
     this.isReloadSub$ = this.validatorsService.reload_sucursal_storages$.subscribe(resp => {
       this.getAllSucursales();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.themeSubscription?.unsubscribe();
+    this.isReloadSub$?.unsubscribe();
+  }
+
+  toggleTheme(): void {
+    const nextTheme = this.themeMode() === 'dark' ? 'light' : 'dark';
+    this.themeMode.set(nextTheme);
+    this.eventService.broadcast('changeMode', nextTheme);
   }
 
   toggleUserDropdown(event?: Event): void {

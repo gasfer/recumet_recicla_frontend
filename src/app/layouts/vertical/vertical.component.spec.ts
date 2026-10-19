@@ -23,7 +23,7 @@ describe('VerticalComponent responsive shell', () => {
       providers: [
         { provide: Router, useValue: { events: routerEvents.asObservable() } },
         { provide: EventService, useValue: {} },
-        { provide: ValidatorsService, useValue: {} },
+        { provide: ValidatorsService, useValue: { id_sucursal: () => null, reload: () => false } },
         { provide: TransferReviewService, useValue: { checkCurrentContext: () => of([]) } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -72,16 +72,56 @@ describe('VerticalComponent responsive shell', () => {
     expect(document.body.classList.contains('app-sidebar-open')).toBeFalse();
   });
 
-  it('hides the complete sidebar only in desktop mode', () => {
+  it('collapses and expands the desktop sidebar without hiding it', () => {
     viewportWidth = 1366;
     component.onViewportResize();
 
     component.onToggleMobileMenu();
 
-    expect(component.isDesktopSidebarHidden).toBeTrue();
-    expect(document.body.classList.contains('app-sidebar-hidden')).toBeTrue();
-    expect(document.body.classList.contains('vertical-collpsed')).toBeFalse();
+    expect(component.isDesktopSidebarHidden).toBeFalse();
+    expect(component.isCondensed).toBeTrue();
+    expect(document.body.classList.contains('app-sidebar-hidden')).toBeFalse();
+    expect(document.body.classList.contains('vertical-collpsed')).toBeTrue();
+    component.onToggleMobileMenu();
+    expect(component.isCondensed).toBeFalse();
     expect(document.body.classList.contains('sidebar-enable')).toBeFalse();
+  });
+
+  it('passes compact mode to the sidebar only while on desktop', () => {
+    viewportWidth = 1366;
+    component.isCondensed = true;
+    component.isMobileViewport = false;
+    fixture.detectChanges();
+
+    const sidebar = fixture.nativeElement.querySelector('app-sidebar') as HTMLElement & { isCondensed?: boolean };
+    expect(sidebar.isCondensed).toBeTrue();
+
+    component.isMobileViewport = true;
+    fixture.detectChanges();
+    expect(sidebar.isCondensed).toBeFalse();
+  });
+
+  it('restores compact desktop mode after visiting a mobile viewport', () => {
+    component.isCondensed = true;
+    viewportWidth = 1366;
+    component.onViewportResize();
+    expect(document.body.classList.contains('vertical-collpsed')).toBeTrue();
+    viewportWidth = 390;
+    component.onViewportResize();
+    component.onToggleMobileMenu();
+    viewportWidth = 1024;
+    component.onViewportResize();
+    expect(document.body.classList.contains('vertical-collpsed')).toBeTrue();
+    expect(document.body.classList.contains('app-sidebar-open')).toBeFalse();
+  });
+
+  it('allows compact navigation on a tablet', () => {
+    viewportWidth = 768;
+    component.onViewportResize();
+    component.onToggleMobileMenu();
+    expect(component.isMobileViewport).toBeFalse();
+    expect(component.isCondensed).toBeTrue();
+    expect(component.isMobileSidebarOpen).toBeFalse();
   });
 
   it('cleans mobile state when resizing to desktop', () => {

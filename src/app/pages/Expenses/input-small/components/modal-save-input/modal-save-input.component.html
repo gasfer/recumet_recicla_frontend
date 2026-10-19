@@ -26,11 +26,11 @@
         <div class="erp-field">
           <label class="erp-label required">Proveedor</label>
           <div class="erp-toggle-pill">
-            <i class="fa-solid fa-truck-moving text-muted"></i>
-            <span class="flex-grow-1 text-truncate font-bold text-xs">
+            <i class="fa-solid fa-truck-moving text-erp-text-muted"></i>
+            <span class="grow truncate font-bold text-xs">
               {{ providerSelect() ? (providerSelect()?.number_document + ' · ' + providerSelect()?.full_names) : 'SELECCIONE UN PROVEEDOR' }}
             </span>
-            <button *ngIf="providerSelect()" type="button" class="btn btn-sm btn-outline-danger py-0 px-1 border-0"
+            <button *ngIf="providerSelect()" type="button" class="erp-btn erp-btn-sm erp-btn-outline-danger py-0 px-1 border-0"
               (click)="inputsService.providerSelect.set(undefined)" pTooltip="Quitar Proveedor" tooltipPosition="top">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -90,7 +90,7 @@
         <div class="erp-field">
           <label class="erp-label">Nro. Pesaje</label>
           @if (formInput.get('type_registry')?.value != 'SIN FICHA') {
-            <input type="text" pInputText class="erp-input w-full text-uppercase"
+            <input type="text" pInputText class="erp-input w-full uppercase"
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="registry_number"
               placeholder="EJ. 0001"
               [class.ng-dirty]="validatorsService.inputValid('registry_number',formInput)"/>
@@ -116,8 +116,8 @@
         <div class="erp-field">
           <label class="erp-label">Subtotal / Sumas</label>
           <div class="erp-toggle-pill justify-between">
-            <span class="text-xs text-muted font-medium"><i class="fa-solid fa-calculator mr-1"></i>Sumas</span>
-            <span class="font-bold text-sm text-slate-800">{{ formInput.get('sumas')?.value | number:decimalFormat.digitsInfo }}</span>
+            <span class="text-xs text-erp-text-muted font-medium"><i class="fa-solid fa-calculator mr-1"></i>Sumas</span>
+            <span class="font-bold text-sm text-erp-text">{{ formInput.get('sumas')?.value | number:decimalFormat.digitsInfo }}</span>
           </div>
         </div>
 
@@ -139,8 +139,8 @@
         <div class="erp-field">
           <label class="erp-label required">Total a Pagar</label>
           <div class="erp-toggle-pill justify-between" style="border-color: #059669; background-color: #ecfdf5;">
-            <span class="text-xs text-emerald-800 font-bold"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>TOTAL</span>
-            <span class="font-extrabold text-base text-emerald-700">{{ formInput.get('total')?.value | number:decimalFormat.digitsInfo }} Bs</span>
+            <span class="text-xs text-erp-success font-bold"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>TOTAL</span>
+            <span class="font-extrabold text-base text-erp-success">{{ formInput.get('total')?.value | number:decimalFormat.digitsInfo }} Bs</span>
           </div>
         </div>
       </div>
@@ -200,7 +200,7 @@
 
         <div class="erp-field">
           <label class="erp-label">{{ formInput.get('type_payment')?.value == 'CHEQUE' ? 'Nro. Cheque' : 'Nro. Cuenta' }}</label>
-          <input type="text" pInputText class="erp-input w-full text-uppercase"
+          <input type="text" pInputText class="erp-input w-full uppercase"
             [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_input" placeholder="EJ. 12345678"
             [class.ng-dirty]="validatorsService.inputValid('account_input',formInput)"/>
           <small *ngIf="validatorsService.inputValid('account_input',formInput)" class="erp-error-msg">
@@ -257,7 +257,7 @@
         <div class="erp-field">
           <label class="erp-label">Observaciones generales</label>
           <textarea pInputTextarea formControlName="comments" placeholder="Ingrese notas u observaciones..."
-            rows="3" class="w-full text-uppercase" style="resize: none;"
+            rows="3" class="w-full uppercase" style="resize: none;"
             [class.ng-dirty]="validatorsService.inputValid('comments',formInput)"></textarea>
           <small *ngIf="validatorsService.inputValid('comments',formInput)" class="erp-error-msg">
             {{ validatorsService.inputValidMessage("comments",formInput) }}
@@ -267,8 +267,8 @@
     </section>
 
     <!-- Auditoría en caso de edición -->
-    <div *ngIf="inputsService.isEdit && editAuthorizationRequired()" class="erp-section border-amber-300 bg-amber-50">
-      <div class="erp-section-title text-amber-800">
+    <div *ngIf="inputsService.isEdit && editAuthorizationRequired()" class="erp-section border-erp-border bg-erp-warning-soft">
+      <div class="erp-section-title text-erp-warning">
         <i class="fa-solid fa-shield-halved"></i> Autorización de Modificación
       </div>
       <div class="erp-form-grid">

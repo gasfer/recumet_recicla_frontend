@@ -3,6 +3,7 @@
     <app-topbar
       [mobileMenuOpen]="isMobileSidebarOpen"
       [desktopSidebarHidden]="isDesktopSidebarHidden"
+      [sidebarCondensed]="isCondensed" [isMobileViewport]="isMobileViewport"
       [mobileMenuControls]="sidebarId"
       (settingsButtonClicked)="onSettingsButtonClicked()"
       (mobileMenuButtonClicked)="onToggleMobileMenu()">
@@ -10,7 +11,8 @@
 
     <app-sidebar
       [id]="sidebarId"
-      [isCondensed]="false"
+      [isCondensed]="isCondensed && !isMobileViewport"
+      [isMobileViewport]="isMobileViewport" (toggleRequested)="onToggleMobileMenu()"
       [attr.aria-hidden]="isMobileViewport && !isMobileSidebarOpen ? 'true' : null"
       [attr.inert]="isMobileViewport && !isMobileSidebarOpen ? '' : null"
       [cdkTrapFocus]="isMobileViewport && isMobileSidebarOpen"

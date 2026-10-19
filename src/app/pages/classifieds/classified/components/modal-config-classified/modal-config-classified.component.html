@@ -2,7 +2,7 @@
     [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--sm erp-operational-dialog">
     <app-alert-notify [subTitle]="'Configurar los aspectos del módulo de clasificados.'" [subTitle2]="'Por favor, tenga en cuenta que los casilleros de verificación se consideran como afirmativos.'" [required]="false"></app-alert-notify>
-    <div [formGroup]="formConfig" class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
+    <div [formGroup]="formConfig" class="p-3 rounded-lg border border-erp-border bg-erp-bg/70">
         <div class="field-checkbox">
             <p-checkbox class="m-1" [binary]="true"  formControlName="searchForCode"  inputId="codigoB"></p-checkbox>
             <label class="cursor-pointer m-1" for="codigoB">Buscador por lector Cod. Barra</label>

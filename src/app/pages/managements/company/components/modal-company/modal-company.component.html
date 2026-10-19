@@ -5,7 +5,7 @@
     <form [formGroup]="companyForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
-            <div class="field col-12">
+            <div class="erp-field erp-col-full">
                 <div class="field">
                     <label class="block mb-0">Nombre Compañía<span class="text-danger">*</span>
                     </label>
@@ -16,13 +16,13 @@
                         {{ validatorsService.inputValidMessage("name",companyForm) }}
                     </small>
                 </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
+                <div class="erp-form-grid cols-2">
+                    <div class="erp-field">
                         <label class="block mb-0">Decimales operativos<span class="text-danger">*</span></label>
                         <p-inputNumber formControlName="decimals" [min]="0" [max]="4" [useGrouping]="false" [showButtons]="true"></p-inputNumber>
                         <small class="text-muted">Vista previa: {{ decimalFormat.format(1234.5678) }}</small>
                     </div>
-                    <div class="col-sm-6 col-12">
+                    <div class="erp-field">
                         <label class="block mb-0">Nit<span class="text-danger">*</span>
                         </label>
                         <input
@@ -37,7 +37,7 @@
                             {{ validatorsService.inputValidMessage("nit",companyForm) }}
                         </small>
                     </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                    <div class="erp-field">
                         <label class="block mb-0">Razón social<span class="text-danger">*</span>
                         </label>
                         <input type="text" pInputText
@@ -48,8 +48,8 @@
                         </small>
                     </div>
                 </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
+                <div class="erp-form-grid cols-2">
+                    <div class="erp-field">
                         <label class="block mb-0">Actividad<span class="text-danger">*</span>
                         </label>
                         <input
@@ -64,7 +64,7 @@
                             {{ validatorsService.inputValidMessage("activity",companyForm) }}
                         </small>
                     </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                    <div class="erp-field">
                         <label class="block mb-0">Correo<span class="text-danger">*</span>
                         </label>
                         <input type="text" pInputText
@@ -75,8 +75,8 @@
                         </small>
                     </div>
                 </div>
-                <div class="row mt-1">
-                    <div class="col-sm-12 col-12">
+                <div class="erp-form-grid cols-2">
+                    <div class="erp-field erp-col-full">
                         <label class="block mb-0">Teléfono / Celular<span class="text-danger">*</span>
                         </label>
                         <input
@@ -90,7 +90,7 @@
                             {{ 'Celular invalido' }}
                         </small>
                     </div>
-                    <!-- <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                    <!-- <div class="erp-field">
                         <label class="block mb-0">Logo<span class="text-danger">*</span>
                         </label>
 

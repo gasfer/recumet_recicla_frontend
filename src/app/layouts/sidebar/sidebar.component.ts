@@ -2,9 +2,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
+  Output,
   HostListener,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -15,6 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ValidatorsService } from '../../services/validators.service';
 import Swal from 'sweetalert2';
 import { MENU } from './menu';
+import { Subscription } from 'rxjs';
 
 export interface MenuGroup {
   directItem?: MenuItem;
@@ -28,422 +32,17 @@ export interface MenuGroup {
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styles: [
-    `
-      :host {
-        display: block;
-      }
-
-      /* Contenedor principal del Sidebar */
-      :host ::ng-deep .vertical-menu {
-        display: flex !important;
-        flex-direction: column !important;
-        height: 100dvh !important;
-        background: #070e1b !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.28);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        overflow: hidden;
-      }
-
-      :host ::ng-deep .vertical-menu > ngx-simplebar,
-      :host ::ng-deep .vertical-menu .simplebar-content-wrapper,
-      :host ::ng-deep .vertical-menu .simplebar-content {
-        background: #070e1b !important;
-      }
-
-      /* Cabecera Brand Compacta */
-      .sidebar-brand-wrapper {
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 14px 14px 12px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        background: #050a14;
-      }
-
-      .brand-badge-box {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        background: #0d192f;
-        border: 1px solid rgba(16, 185, 129, 0.25);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      }
-
-      .brand-badge-img {
-        width: 26px;
-        height: 26px;
-        object-fit: contain;
-      }
-
-      .brand-text-col {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-      }
-
-      .brand-title-row {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .brand-name {
-        color: #ffffff;
-        font-size: 0.95rem;
-        font-weight: 800;
-        letter-spacing: 0.04em;
-        line-height: 1.1;
-      }
-
-      /* Buscador de Módulos */
-      .sidebar-search-container {
-        flex-shrink: 0;
-        padding: 10px 12px 6px;
-      }
-
-      .search-box-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        background: #0e172a;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 8px;
-        padding: 6px 10px;
-        transition: border-color 0.2s, background-color 0.2s;
-      }
-
-      .search-box-wrapper:focus-within {
-        border-color: #10b981;
-        background: #132039;
-        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
-      }
-
-      .search-icon {
-        color: #64748b;
-        font-size: 0.8rem;
-        margin-right: 8px;
-      }
-
-      .search-input-field {
-        background: transparent;
-        border: none;
-        outline: none;
-        color: #e2e8f0;
-        font-size: 0.78rem;
-        width: 100%;
-      }
-
-      .search-input-field::placeholder {
-        color: #64748b;
-      }
-
-      .search-shortcut-kbd {
-        background: #1e293b;
-        color: #94a3b8;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 0.62rem;
-        font-family: inherit;
-        padding: 2px 5px;
-        border-radius: 4px;
-        white-space: nowrap;
-      }
-
-      /* Scroll central con SimpleBar */
-      .sidebar-scroll {
-        flex: 1 1 auto;
-        min-height: 0;
-        height: auto !important;
-        overflow: hidden;
-      }
-
-      :host ::ng-deep .sidebar-scroll .simplebar-wrapper,
-      :host ::ng-deep .sidebar-scroll .simplebar-mask,
-      :host ::ng-deep .sidebar-scroll .simplebar-content-wrapper {
-        height: 100% !important;
-        max-height: 100% !important;
-      }
-
-      /* Contenedor de Grupos */
-      .sidebar-groups-wrapper {
-        padding: 10px 10px 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      /* Tarjeta de Grupo / Cabecera Accordion */
-      .group-accordion-card {
-        flex-shrink: 0;
-        border-radius: 10px;
-        background: #0e172b;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        overflow: hidden;
-        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      .group-accordion-card.is-open {
-        border-color: rgba(16, 185, 129, 0.35);
-        background: #0b1426;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-      }
-
-      .group-header-button {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 9px 12px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        outline: none;
-        color: #94a3b8;
-        transition: background-color 0.18s, color 0.18s;
-      }
-
-      .group-header-button:hover {
-        background: rgba(255, 255, 255, 0.03);
-        color: #ffffff;
-      }
-
-      .group-accordion-card.is-open .group-header-button {
-        color: #ffffff;
-        background: rgba(16, 185, 129, 0.06);
-      }
-
-      .group-header-left {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .group-indicator-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #10b981;
-        box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
-      }
-
-      .group-title-text {
-        font-size: 0.74rem;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-      }
-
-      .group-header-right {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .group-count-badge {
-        background: #070e1b;
-        color: #64748b;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        font-size: 0.68rem;
-        font-weight: 700;
-        padding: 1px 6px;
-        border-radius: 999px;
-      }
-
-      .group-chevron-icon {
-        font-size: 0.68rem;
-        color: #64748b;
-        transition: transform 0.22s ease, color 0.18s ease;
-      }
-
-      .group-chevron-icon.is-rotated {
-        transform: rotate(90deg);
-        color: #10b981;
-      }
-
-      /* Contenido desplegable del grupo */
-      .group-items-collapse {
-        padding: 6px 6px 8px;
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-      }
-
-      .nav-items-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-      }
-
-      /* Item Nivel 1 */
-      .nav-link-item-1 {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 10px;
-        border-radius: 8px;
-        font-size: 0.79rem;
-        color: #cbd5e1;
-        text-decoration: none;
-        border: 1px solid transparent;
-        transition: all 0.18s ease;
-        cursor: pointer;
-      }
-
-      .nav-link-item-1:hover {
-        background: rgba(16, 185, 129, 0.08);
-        border-color: rgba(16, 185, 129, 0.22);
-        color: #ffffff;
-      }
-
-      /* Icono Nivel 1: cambia a verde principal en hover */
-      .nav-item-icon {
-        font-size: 0.88rem;
-        color: #8197b4;
-        width: 16px;
-        text-align: center;
-        transition: color 0.18s ease, transform 0.18s ease;
-      }
-
-      .nav-link-item-1:hover .nav-item-icon {
-        color: #10b981 !important;
-        transform: scale(1.1);
-      }
-
-      /* Item Nivel 1 Activo */
-      .nav-link-item-1.active {
-        background: linear-gradient(90deg, #059669 0%, #10b981 100%) !important;
-        border-color: #34d399 !important;
-        color: #ffffff !important;
-        font-weight: 700;
-        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.32);
-      }
-
-      .nav-link-item-1.active .nav-item-icon {
-        color: #ffffff !important;
-      }
-
-      .nav-item-label {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .sub-toggle-chevron {
-        font-size: 0.65rem;
-        color: #64748b;
-        transition: transform 0.2s ease;
-      }
-
-      .sub-toggle-chevron.is-open {
-        transform: rotate(180deg);
-        color: #10b981;
-      }
-
-      /* Submenú Nivel 2 (Menu 2) */
-      .nav-sub-wrapper {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .nav-sub-list-2 {
-        list-style: none;
-        margin: 4px 0 6px 14px;
-        padding: 4px 0 4px 10px;
-        border-left: 2px solid rgba(16, 185, 129, 0.22);
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-
-      .nav-link-item-2 {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 8px;
-        border-radius: 6px;
-        font-size: 0.74rem;
-        color: #94a3b8;
-        text-decoration: none;
-        transition: all 0.16s ease;
-      }
-
-      .sub-bullet-symbol {
-        color: #64748b;
-        font-size: 0.85rem;
-        line-height: 1;
-        transition: color 0.16s ease, transform 0.16s ease;
-      }
-
-      .nav-link-item-2:hover {
-        background: rgba(255, 255, 255, 0.04);
-        color: #ffffff;
-      }
-
-      .nav-link-item-2:hover .sub-bullet-symbol {
-        color: #10b981;
-        transform: translateX(2px);
-      }
-
-      .nav-link-item-2.active {
-        color: #10b981 !important;
-        font-weight: 700;
-        background: rgba(16, 185, 129, 0.12);
-      }
-
-      .nav-link-item-2.active .sub-bullet-symbol {
-        color: #10b981 !important;
-      }
-
-      /* Footer del Sidebar */
-      .sidebar-footer-status {
-        flex-shrink: 0;
-        margin-top: auto;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 14px;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-        background: #050a14;
-        color: #94a3b8;
-        font-size: 0.72rem;
-      }
-
-      .footer-sync-row {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-      }
-
-      .sync-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #10b981;
-        box-shadow: 0 0 6px #10b981;
-      }
-
-      .version-tag-pill {
-        background: #0e172a;
-        color: #64748b;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        font-size: 0.65rem;
-        padding: 2px 6px;
-        border-radius: 4px;
-      }
-    `,
-  ],
+  styleUrls: ['./sidebar.component.scss'],
 })
-export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
-  @ViewChild('componentRef') scrollRef: any;
+export class SidebarComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+  private readonly navigationSubscription: Subscription;
+  private scrollTimer?: ReturnType<typeof setTimeout>;
+  @ViewChild('componentRef') scrollRef?: ElementRef<HTMLElement>;
   @ViewChild('searchInput') searchInput?: ElementRef<HTMLInputElement>;
   @Input() isCondensed = false;
+  @Input() isMobileViewport = false;
+  @Output() toggleRequested = new EventEmitter<void>();
+
 
   menu: any;
   data: any;
@@ -461,7 +60,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
     public translate: TranslateService,
     public validatorsService: ValidatorsService,
   ) {
-    router.events.forEach((event) => {
+    this.navigationSubscription = router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateActiveStateFromUrl();
         this._scrollElement();
@@ -487,7 +86,12 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnChanges() {
-    this.buildMenuGroups();
+    this._scrollElement();
+  }
+
+  ngOnDestroy(): void {
+    this.navigationSubscription.unsubscribe();
+    if (this.scrollTimer) clearTimeout(this.scrollTimer);
   }
 
   onSearchChange(event: Event): void {
@@ -571,7 +175,11 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
     return subItem.id || subItem.link || subItem.label;
   }
 
-  toggleGroup(group: MenuGroup): void {
+  toggleGroup(group: MenuGroup, event?: Event): void {
+    if (this.isCondensed) {
+      this.toggleRequested.emit();
+      group.isOpen = false;
+    }
     const shouldOpen = !group.isOpen;
     for (const candidate of new Set([...this.menuGroups, ...this.filteredGroups])) {
       candidate.isOpen = shouldOpen && candidate.id === group.id;
@@ -600,6 +208,37 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
     if (!item.subItems || item.subItems.length === 0) return false;
     const currentPath = window.location.pathname;
     return item.subItems.some((sub) => sub.link && currentPath.includes(sub.link));
+  }
+
+  hasActiveRoute(group: MenuGroup): boolean {
+    const currentPath = window.location.pathname;
+    return group.items.some((item) =>
+      (!!item.link && currentPath.includes(item.link)) ||
+      (item.subItems ?? []).some((subItem) => !!subItem.link && currentPath.includes(subItem.link))
+    );
+  }
+
+  getCompactLabel(group: MenuGroup): string {
+    const labels: Record<string, string> = { Dashboard: 'Inicio', 'Administración de caja': 'Caja', Administración: 'Admin.' };
+    return labels[group.title] ?? group.title;
+  }
+
+  getGroupNotificationCount(group: MenuGroup): number {
+    return group.items.flatMap(item => [item, ...(item.subItems ?? [])])
+      .reduce((count, item) => {
+        const value = Number(item.badge?.text);
+        return count + (Number.isFinite(value) && value > 0 ? value : 0);
+      }, 0);
+  }
+
+  getGroupIcon(group: MenuGroup): string {
+    const currentPath = window.location.pathname;
+    const activeItem = group.items.find((item) =>
+      (!!item.link && currentPath.includes(item.link)) ||
+      (item.subItems ?? []).some((subItem) => !!subItem.link && currentPath.includes(subItem.link))
+    );
+    const item = activeItem ?? group.items[0];
+    return item ? this.getItemIcon(item) : 'fa-solid fa-folder';
   }
 
   getItemIcon(item: MenuItem): string {
@@ -717,18 +356,19 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   _scrollElement() {
-    setTimeout(() => {
+    if (this.scrollTimer) clearTimeout(this.scrollTimer);
+    this.scrollTimer = setTimeout(() => {
       const activeEl = document.querySelector(
         '.vertical-menu .nav-link-item-1.active, .vertical-menu .nav-link-item-2.active',
       ) as HTMLElement;
-      if (activeEl && this.scrollRef?.SimpleBar) {
-        const currentPosition = activeEl.offsetTop;
-        if (currentPosition > 400) {
-          this.scrollRef.SimpleBar.getScrollElement().scrollTop = Math.max(
-            0,
-            currentPosition - 80,
-          );
-        }
+      const scrollElement = this.scrollRef?.nativeElement as HTMLElement | undefined;
+      if (!activeEl || !scrollElement) return;
+      const activeBounds = activeEl.getBoundingClientRect();
+      const scrollBounds = scrollElement.getBoundingClientRect();
+      if (activeBounds.bottom > scrollBounds.bottom) {
+        scrollElement.scrollTop += activeBounds.bottom - scrollBounds.bottom + 16;
+      } else if (activeBounds.top < scrollBounds.top) {
+        scrollElement.scrollTop -= scrollBounds.top - activeBounds.top + 16;
       }
     }, 300);
   }

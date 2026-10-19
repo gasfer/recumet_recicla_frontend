@@ -14,7 +14,7 @@ import { MenuItem } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { CategoriesService } from '../services/categories.service';
 import { ProductsService } from '../services/products.service';
-import { forkJoin, finalize, Observable, Subscription } from 'rxjs';
+import { forkJoin, finalize, Observable, Subscription, from, of, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProvidersService } from '../../inputs/services/providers.service';
 import { Provider, TypesProvider } from '../../inputs/interfaces/provider.interface';
@@ -68,33 +68,33 @@ export class TotalStockRecumetComponent implements OnInit {
 
   buttonItems: MenuItem[] = [
     {
-      label: 'Resumen de stock (PDF)',
+      label: 'Resumen de stock',
       icon: 'fa-regular fa-file-pdf',
-      iconStyle: { color: '#E11D48' },
+      iconStyle: { color: 'var(--color-danger)' },
       command: () => {
         this.printPdfReport();
       },
     },
     {
-      label: 'Listado de stock (Excel)',
+      label: 'Listado de stock',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { color: '#14A44D' },
+      iconStyle: { color: 'var(--color-success)' },
       command: () => {
         this.printExcelReport();
       },
     },
     {
-      label: 'Consolidado de inventario (Excel)',
+      label: 'Consolidado de inventario',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { color: '#038B21' },
+      iconStyle: { color: 'var(--color-success)' },
       command: () => {
         this.downloadConsolidatedExcelReport();
       },
     },
     {
-      label: 'Reporte compras x sucursal',
+      label: 'Compras por sucursal',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { color: '#00A96B' },
+      iconStyle: { color: 'var(--color-success)' },
       command: () => this.downloadConsolidatedExcelReport(true),
     },
   ];
@@ -446,16 +446,36 @@ export class TotalStockRecumetComponent implements OnInit {
 
   private exportBlob(request: Observable<Blob>, filename?: string): void {
     this.exporting.set(true);
-    this.pdfActions.prepareRequest(request.pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.exporting.set(false))), !filename).subscribe({
-      next: data => {
-        if (!filename) {
-          this.pdfActions.show(data, 'reporte_stock_total.pdf', 'Reporte de stock total');
-          return;
-        }
-        this.pdfActions.download(data, filename);
-      },
+    this.pdfActions.prepareRequest(request, !filename).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(data => {
+        if (!filename) return from(this.pdfActions.show(data, 'reporte_stock_total.pdf', 'Reporte de stock total'));
+        this.downloadExcel(data, filename);
+        return of(undefined);
+      }),
+      finalize(() => this.exporting.set(false)),
+    ).subscribe({
       error: () => Swal.fire('Error al generar reporte', 'No se pudo generar el reporte. Intente nuevamente.', 'error'),
     });
+  }
+
+  private downloadExcel(file: Blob, filename: string): void {
+    if (!(file instanceof Blob) || file.size === 0) {
+      void Swal.fire('Excel vacío', 'El servidor no devolvió contenido para el reporte. Revise los filtros e intente nuevamente.', 'warning');
+      return;
+    }
+
+    const excel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      ? file
+      : new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(excel);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   printPdfReport(): void {

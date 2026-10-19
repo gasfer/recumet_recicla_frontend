@@ -1,6 +1,6 @@
 <div class="p-3" *ngIf="inputsService.detailShopping().length === 0">
     <div class="erp-soft-alert-empty">
-        <i class="fa-solid fa-cart-flatbed text-muted fs-2 mb-2 d-block"></i>
+        <i class="fa-solid fa-cart-flatbed text-erp-text-muted text-3xl mb-2 block"></i>
         <h5>Sin productos seleccionados</h5>
         <p>Agrega productos desde el catálogo o utiliza el buscador superior</p>
     </div>
@@ -20,9 +20,9 @@
     <ng-template pTemplate="body" let-product>
         <tr>
             <td class="app-u-min-width-120px-651945a app-u-max-width-200px-a828909">
-                <span class="fw-bold text-slate-800 d-block">{{product.name}}</span>
-                <span class="badge-subtle-code me-1">{{product.cod}}</span>
-                <small class="text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
+                <span class="font-bold text-erp-text block">{{product.name}}</span>
+                <span class="badge-subtle-code mr-1">{{product.cod}}</span>
+                <small class="text-erp-text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
             </td>
             <td class="text-center">
                 <p-inputNumber
@@ -60,13 +60,13 @@
                     (onInput)="updateCostProduct($event, product)" class="erp-input purchase-number">
                 </p-inputNumber>
             </td>
-            <td class="app-u-min-width-110px-365391b app-u-max-width-150px-7eba571 fw-bold text-slate-800">
+            <td class="app-u-min-width-110px-365391b app-u-max-width-150px-7eba571 font-bold text-erp-text">
                 {{ product.import | number:decimalFormat.digitsInfo}}
             </td>
             <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
                 <button type="button" aria-label="Eliminar"
                     (click)="deleteProductForDetailShopping(product.id)"
-                    class="btn btn-sm btn-outline-danger rounded-circle p-1 purchase-remove"
+                    class="erp-btn erp-btn-sm erp-btn-outline-danger rounded-full p-1 purchase-remove"
                     pTooltip="Quitar de la lista" tooltipPosition="top">
                     <i class="fa-regular fa-trash-can"></i>
                 </button>
@@ -74,16 +74,16 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
-        <tr class="bg-slate-900 text-white">
-            <th colspan="3" class="text-end text-white py-2">
-                <span class="fs-6 fw-bold">TOTAL COMPRA:</span>
+        <tr class="bg-erp-header text-white">
+            <th colspan="3" class="text-right text-white py-2">
+                <span class="text-base font-bold">TOTAL COMPRA:</span>
             </th>
-            <th colspan="2" class="text-start text-emerald-400 py-2">
-                <span class="fs-5 fw-bold">{{ totalSummary() | number:decimalFormat.digitsInfo }}</span>
+            <th colspan="2" class="text-left text-erp-success py-2">
+                <span class="text-lg font-bold">{{ totalSummary() | number:decimalFormat.digitsInfo }}</span>
             </th>
         </tr>
         <tr>
-            <td colspan="5" class="text-end bg-white py-2">
+            <td colspan="5" class="text-right bg-erp-surface py-2">
                 <div class="purchase-actions">
                 <p-button
                     (click)="clearDetailShopping()"

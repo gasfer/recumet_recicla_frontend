@@ -4,33 +4,33 @@
     [dismissableMask]="true" styleClass="app-dialog--md">
     <form [formGroup]="clientForm">
         <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Nombre completo<span class="text-danger">*</span>
+        <div class="p-fluid erp-form-grid">
+            <div class="erp-field w-[100%] px-2 min-w-0">
+                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
+                        <label class="block mb-0">Nombre completo<span class="text-erp-danger">*</span>
                         </label>
                         <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="full_names" placeholder="EJ. RONALD..."
-                            [class.ng-dirty]="validatorsService.inputValid('full_names',clientForm)" class="text-uppercase"/>
+                            [class.ng-dirty]="validatorsService.inputValid('full_names',clientForm)" class="uppercase"/>
                         <small *ngIf="validatorsService.inputValid('full_names',clientForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("full_names",clientForm) }}
                         </small>
                     </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Numero documento (NIT/CI)<span class="text-danger">*</span></label>
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
+                        <label class="block mb-0">Numero documento (NIT/CI)<span class="text-erp-danger">*</span></label>
                         <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="number_document" placeholder="EJ. ..."
-                            [class.ng-dirty]="validatorsService.inputValid('number_document',clientForm)" class="text-uppercase"/>
+                            [class.ng-dirty]="validatorsService.inputValid('number_document',clientForm)" class="uppercase"/>
                         <small *ngIf="validatorsService.inputValid('number_document',clientForm)" class="p-error block">
                             {{ validatorsService.inputValidMessage("number_document",clientForm)  }}
                         </small>
                     </div>
                 </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                       <div class="field">
-                            <label class="block mb-0">tipo<span class="text-danger">*</span>
+                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
+                       <div class="erp-field">
+                            <label class="block mb-0">tipo<span class="text-erp-danger">*</span>
                             </label>
                             <p-dropdown [options]="types()"
                                 placeholder="Selecciona un tipo"
@@ -45,7 +45,7 @@
                             </small>
                        </div>
                     </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
                         <label class="block mb-0">Celular</label>
                         <input
                             type="number"
@@ -60,16 +60,16 @@
                         </small>
                     </div>
                 </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <div class="row mt-1 ">
-                            <label class="block">Estado:<span class="text-danger">*</span></label>
+                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
+                        <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                            <label class="block">Estado:<span class="text-erp-danger">*</span></label>
                         </div>
-                        <div class="row mt-0">
-                            <div class="col-3">
+                        <div class="flex flex-wrap erp-layout-row gap-y-3 mt-0">
+                            <div class="md:w-[25%] px-2 min-w-0 w-full">
                                 <p-inputSwitch formControlName="status"></p-inputSwitch>
                             </div>
-                            <div class="col">
+                            <div class="w-full md:flex-1 px-2 min-w-0">
                                 <p-tag  [rounded]="true"
                                         [icon]="clientForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
                                         [styleClass]="clientForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
@@ -78,7 +78,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
                         <label class="block mb-0">Negocio</label>
                         <textarea pInputTextarea
                             type="text"
@@ -87,7 +87,7 @@
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="business_name"
                             placeholder="EJ. ......"
-                            class="mt-1 text-uppercase"
+                            class="mt-1 uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('business_name',clientForm)"
                         ></textarea>
                         <small *ngIf="validatorsService.inputValid('business_name',clientForm)" class="p-error block">

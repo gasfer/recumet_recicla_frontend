@@ -1,7 +1,7 @@
 <p-dialog [header]="'Vista de precios: '" [(visible)]="productsService.showModalPrices" [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--md">
-    <div class="justify-content-between d-flex">
-        <h4 class="text-muted">{{product?.cod}} - {{product?.name}}</h4>
+    <div class="justify-between flex">
+        <h4 class="text-erp-text-muted">{{product?.cod}} - {{product?.name}}</h4>
         <p-button icon="fa-solid fa-circle-plus" (click)="productsService.showModalNewPrice = true" pTooltip="Añadir Nuevo" tooltipPosition="left"
             styleClass="p-button-primary p-button-rounded mb-1" label="Añadir"></p-button>
     </div>

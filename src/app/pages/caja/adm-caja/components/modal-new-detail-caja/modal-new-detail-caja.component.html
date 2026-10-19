@@ -21,7 +21,7 @@
                 <div class="form-grid">
 
                     <!-- 1. FECHA -->
-                    <div class="field field-col-4">
+                    <div class="erp-field field-col-4">
                         <label>
                             <i class="fa-solid fa-calendar-days"></i> Fecha
                             <span class="req">*</span>
@@ -40,7 +40,7 @@
                     </div>
 
              <!-- 2. RESPONSABLE -->
-<div class="field field-col-4">
+<div class="erp-field field-col-4">
     <label>
         <i class="fa-solid fa-user-tie"></i> Responsable
         <span class="req">*</span>
@@ -57,7 +57,7 @@
         styleClass="w-full"
         [class.ng-dirty]="validatorsService.inputValid('responsable', form)">
         <ng-template pTemplate="item" let-item>
-            <div class="flex align-items-center gap-2">
+            <div class="flex items-center gap-2">
                 <span class="avatar-ini">{{ item.label?.charAt(0) }}</span>
                 <span>{{ item.label }}</span>
             </div>
@@ -69,7 +69,7 @@
 </div>
 
                     <!-- 3. MONTO -->
-                    <div class="field field-col-4">
+                    <div class="erp-field field-col-4">
                         <label>
                             <i class="fa-solid fa-dollar-sign"></i> Monto
                             <span class="req">*</span>
@@ -97,7 +97,7 @@
                     </div>
 
                     <!-- 4. TIPO REGISTRO  →  controla Clasificación -->
-                    <div class="field field-col-4">
+                    <div class="erp-field field-col-4">
                         <label>
                             <i class="fa-solid fa-layer-group"></i> Tipo registro
                             <span class="req">*</span>
@@ -116,7 +116,7 @@
                     </div>
 
                     <!-- 5. CLASIFICACIÓN  →  depende de Tipo Registro, controla Tipo Uso -->
-                    <div class="field field-col-4">
+                    <div class="erp-field field-col-4">
                         <label>
                             <i class="fa-solid fa-tags"></i> Clasificación gasto
                             <span class="req">*</span>
@@ -134,7 +134,7 @@
                             (onChange)="onClasificacionChange($event)"
                             [class.ng-dirty]="validatorsService.inputValid('clasificacionGasto', form)">
                             <ng-template pTemplate="item" let-item>
-                                <div class="flex align-items-center gap-2">
+                                <div class="flex items-center gap-2">
                                     <i class="fa-solid fa-circle app-u-color-136dec-5afdd06 app-u-width-10px-5e26c93"></i>
                                     <span>{{ item.label }}</span>
                                 </div>
@@ -146,7 +146,7 @@
                     </div>
 
                     <!-- 6. TIPO USO  →  depende de Clasificación = LUBRICANTES -->
-                    <div class="field field-col-4" *ngIf="esLubricante">
+                    <div class="erp-field field-col-4" *ngIf="esLubricante">
                         <label>
                             <i class="fa-solid fa-oil-can"></i> Tipo de uso
                             <span class="req">*</span>
@@ -166,7 +166,7 @@
                     </div>
 
                     <!-- 6b. ÁREA SOLICITANTE  →  INSUMOS_CONSUMIBLES -->
-                    <div class="field field-col-4" *ngIf="esInsumosConsumibles">
+                    <div class="erp-field field-col-4" *ngIf="esInsumosConsumibles">
                         <label>
                             <i class="fa-solid fa-industry"></i> Área solicitante
                             <span class="req">*</span>
@@ -181,7 +181,7 @@
                             styleClass="w-full"
                             [class.ng-dirty]="validatorsService.inputValid('areaSolicitante', form)">
                             <ng-template pTemplate="item" let-item>
-                                <div class="flex align-items-center gap-2">
+                                <div class="flex items-center gap-2">
                                     <i class="fa-solid fa-circle-dot app-u-color-136dec-5afdd06 app-u-font-size-10px-0d5be05"></i>
                                     <span>{{ item.label }}</span>
                                 </div>
@@ -193,7 +193,7 @@
                     </div>
 
                     <!-- 6c. SOLO VEHÍCULO  →  REPUESTOS_VEHICULOS -->
-                    <div class="field field-col-4" *ngIf="soloVehiculo">
+                    <div class="erp-field field-col-4" *ngIf="soloVehiculo">
                         <label>
                             <i class="fa-solid fa-car"></i> Vehículo
                             <span class="req">*</span>
@@ -210,7 +210,7 @@
                             styleClass="w-full"
                             [class.ng-dirty]="validatorsService.inputValid('vehiculo', form)">
                             <ng-template pTemplate="item" let-item>
-                                <div class="flex align-items-center gap-2">
+                                <div class="flex items-center gap-2">
                                     <i class="fa-solid {{item.icono}} app-u-color-136dec-5afdd06 app-u-width-16px-7375d50"></i>
                                     <span>{{ item.nombre }}</span>
                                 </div>
@@ -222,7 +222,7 @@
                     </div>
 
                     <!-- 6d. SOLO MAQUINARIA  →  REPUESTOS_MAQUINARIA -->
-                    <div class="field field-col-4" *ngIf="soloMaquinaria">
+                    <div class="erp-field field-col-4" *ngIf="soloMaquinaria">
                         <label>
                             <i class="fa-solid fa-gears"></i> Maquinaria
                             <span class="req">*</span>
@@ -239,7 +239,7 @@
                             styleClass="w-full"
                             [class.ng-dirty]="validatorsService.inputValid('maquinaria', form)">
                             <ng-template pTemplate="item" let-item>
-                                <div class="flex align-items-center gap-2">
+                                <div class="flex items-center gap-2">
                                     <i class="fa-solid fa-gears app-u-color-136dec-5afdd06 app-u-width-16px-7375d50"></i>
                                     <span>{{ item.nombre }}</span>
                                 </div>
@@ -251,7 +251,7 @@
                     </div>
 
                     <!-- 6e. EQUIPO UNIFICADO  →  MANT_PREVENTIVO | MANT_CORRECTIVO -->
-                    <div class="field field-col-4" *ngIf="esMantenimiento">
+                    <div class="erp-field field-col-4" *ngIf="esMantenimiento">
                         <label>
                             <i class="fa-solid fa-screwdriver-wrench"></i> Equipo / Vehículo
                             <span class="req">*</span>
@@ -274,13 +274,13 @@
                                     {{ item.nombre }}
                                 </div>
                                 <!-- Vehículo -->
-                                <div *ngIf="item.tipo === 'VEHICULO'" class="flex align-items-center gap-2">
+                                <div *ngIf="item.tipo === 'VEHICULO'" class="flex items-center gap-2">
                                     <i class="fa-solid {{item.icono}} app-u-color-136dec-5afdd06 app-u-width-16px-7375d50"></i>
                                     <span>{{ item.nombre }}</span>
                                     <span class="badge-tipo badge-vehiculo">Vehículo</span>
                                 </div>
                                 <!-- Maquinaria -->
-                                <div *ngIf="item.tipo === 'MAQUINARIA'" class="flex align-items-center gap-2">
+                                <div *ngIf="item.tipo === 'MAQUINARIA'" class="flex items-center gap-2">
                                     <i class="fa-solid fa-gears app-u-color-e07d10-f44df86 app-u-width-16px-7375d50"></i>
                                     <span>{{ item.nombre }}</span>
                                     <span class="badge-tipo badge-maquinaria">Maquinaria</span>
@@ -293,7 +293,7 @@
                     </div>
 
                     <!-- 7. TIPO DE PAGO  →  controla Cuenta Bancaria -->
-                    <div class="field field-col-4">
+                    <div class="erp-field field-col-4">
                         <label>
                             <i class="fa-solid fa-credit-card"></i> Tipo de pago
                             <span class="req">*</span>
@@ -312,7 +312,7 @@
                     </div>
 
                     <!-- 8. CUENTA BANCARIA  →  depende de Tipo Pago = CUENTA_BANCARIA -->
-                    <div class="field field-col-4" *ngIf="esCuentaBancaria">
+                    <div class="erp-field field-col-4" *ngIf="esCuentaBancaria">
                         <label>
                             <i class="fa-solid fa-building-columns"></i> Cuenta bancaria
                             <span class="req">*</span>
@@ -345,7 +345,7 @@
                 <div class="form-grid">
 
                     <!-- NOMBRE PROVEEDOR -->
-                    <div class="field field-col-6">
+                    <div class="erp-field field-col-6">
                         <label>
                             <i class="fa-solid fa-store"></i> Nombre proveedor
                         </label>
@@ -357,14 +357,14 @@
 
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             [class.ng-dirty]="validatorsService.inputValid('proveedorNombre', form)"
-                            class="input-full text-uppercase" />
+                            class="input-full uppercase" />
                         <small *ngIf="validatorsService.inputValid('proveedorNombre', form)" class="p-error">
                             {{ validatorsService.inputValidMessage('proveedorNombre', form) }}
                         </small>
                     </div>
 
                     <!-- NIT -->
-                    <div class="field field-col-3">
+                    <div class="erp-field field-col-3">
                         <label>
                             <i class="fa-solid fa-id-card"></i> NIT / CI
                         </label>
@@ -382,7 +382,7 @@
                     </div>
 
                     <!-- TIPO COMPROBANTE -->
-                    <div class="field field-col-3">
+                    <div class="erp-field field-col-3">
                         <label>
                             <i class="fa-solid fa-receipt"></i> Tipo comprobante
                             <span class="req">*</span>
@@ -413,7 +413,7 @@
                 <div class="form-grid">
 
                     <!-- NÚMERO COMPROBANTE -->
-                    <div class="field field-col-4">
+                    <div class="erp-field field-col-4">
                         <label>
                             <i class="fa-solid fa-hashtag"></i> Número comprobante
                         </label>
@@ -430,7 +430,7 @@
                     </div>
 
                     <!-- FECHA COMPROBANTE -->
-                    <div class="field field-col-4">
+                    <div class="erp-field field-col-4">
                         <label>
                             <i class="fa-solid fa-calendar-check"></i> Fecha comprobante
                         </label>
@@ -447,7 +447,7 @@
                     </div>
 
                     <!-- ADJUNTAR -->
-                    <div class="field field-col-4">
+                    <div class="erp-field field-col-4">
                         <label>
                             <i class="fa-solid fa-upload"></i> Adjuntar comprobante
                         </label>
@@ -480,7 +480,7 @@
                 <div class="form-grid">
 
                     <!-- CONCEPTO -->
-                    <div class="field field-col-12">
+                    <div class="erp-field field-col-12">
                         <label>
                             <i class="fa-solid fa-lightbulb"></i> Concepto gasto
                             <span class="req">*</span>
@@ -493,14 +493,14 @@
 
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             [class.ng-dirty]="validatorsService.inputValid('conceptoGasto', form)"
-                            class="input-full text-uppercase" />
+                            class="input-full uppercase" />
                         <small *ngIf="validatorsService.inputValid('conceptoGasto', form)" class="p-error">
                             {{ validatorsService.inputValidMessage('conceptoGasto', form) }}
                         </small>
                     </div>
 
                     <!-- DESCRIPCIÓN -->
-                    <div class="field field-col-12">
+                    <div class="erp-field field-col-12">
                         <label>
                             <i class="fa-solid fa-align-left"></i> Descripción detallada
                             <span class="req">*</span>
@@ -512,7 +512,7 @@
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="description"
                             placeholder="PROPORCIONE INFORMACIÓN ADICIONAL SOBRE ESTE GASTO..."
-                            class="input-full text-uppercase app-u-resize-vertical-9d0af0f"
+                            class="input-full uppercase app-u-resize-vertical-9d0af0f"
                             [class.ng-dirty]="validatorsService.inputValid('description', form)">
                         </textarea>
                         <small *ngIf="validatorsService.inputValid('description', form)" class="p-error">

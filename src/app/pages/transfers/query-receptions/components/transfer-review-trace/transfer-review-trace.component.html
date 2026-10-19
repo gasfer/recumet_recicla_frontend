@@ -71,14 +71,14 @@
                   </td>
                   <td class="text-center">
                     <ng-container *ngIf="historicalItem.difference_type === 'FALTANTE'; else historicalRetained">
-                      <strong class="text-danger">Faltante: {{ historicalItem.difference_expected | number:decimalFormat.diagnosticDigitsInfo }}</strong>
-                      <small class="d-block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small>
+                      <strong class="text-erp-danger">Faltante: {{ historicalItem.difference_expected | number:decimalFormat.diagnosticDigitsInfo }}</strong>
+                      <small class="block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small>
                     </ng-container>
                     <ng-template #historicalRetained>{{ detail.quantity_held | number:decimalFormat.digitsInfo }} / {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</ng-template>
                   </td>
                   <td class="text-center"><span [class.text-danger]="detail.inventory_integrity !== 'INTEGRA'">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</span></td>
                   <td class="text-center">
-                    <button *ngIf="historicalItem.allowed_action && !reviewService.historyOnly() && validatorsService.withPermission('TRANSFER_REVIEW','update'); else historicalReadOnlyStatus" type="button" class="btn btn-review-primary historical-action" [disabled]="historicalSaving()" (click)="beginHistoricalCompletion(historicalItem)">
+                    <button *ngIf="historicalItem.allowed_action && !reviewService.historyOnly() && validatorsService.withPermission('TRANSFER_REVIEW','update'); else historicalReadOnlyStatus" type="button" class="erp-btn btn-review-primary historical-action" [disabled]="historicalSaving()" (click)="beginHistoricalCompletion(historicalItem)">
                       {{ historicalItem.allowed_action.label }}
                     </button>
                     <ng-template #historicalReadOnlyStatus>
@@ -93,7 +93,7 @@
                 </td></tr>
               </ng-container>
               <tr *ngIf="!historicalItemForProduct(trace.historical_difference_reconciliation, detail.product.id)">
-                <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td><td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:decimalFormat.digitsInfo) }}</td><td class="text-center">{{ detail.quantity_normal_received | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ detail.quantity_blocked_difference | number:decimalFormat.diagnosticDigitsInfo }}</td><td class="text-center"><ng-container *ngIf="detail.is_shortage; else standardRetained"><strong class="text-danger">Faltante: {{ detail.quantity_shortage_pending | number:decimalFormat.diagnosticDigitsInfo }}</strong><small class="d-block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small></ng-container><ng-template #standardRetained>{{ detail.quantity_held | number:decimalFormat.digitsInfo }} / {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</ng-template></td><td class="text-center">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : 'Contabilizado' }}</td><td>{{ detail.observation || '—' }}</td>
+                <td><strong>{{ detail.product.cod }}</strong> · {{ detail.product.name }}</td><td class="text-center">{{ (detail.quantity_sent ?? detail.quantity) | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : ((detail.quantity_physical_received ?? detail.quantity_received) | number:decimalFormat.digitsInfo) }}</td><td class="text-center">{{ detail.quantity_normal_received | number:decimalFormat.digitsInfo }}</td><td class="text-center">{{ detail.quantity_blocked_difference | number:decimalFormat.diagnosticDigitsInfo }}</td><td class="text-center"><ng-container *ngIf="detail.is_shortage; else standardRetained"><strong class="text-erp-danger">Faltante: {{ detail.quantity_shortage_pending | number:decimalFormat.diagnosticDigitsInfo }}</strong><small class="block">Físico disponible: {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</small></ng-container><ng-template #standardRetained>{{ detail.quantity_held | number:decimalFormat.digitsInfo }} / {{ detail.quantity_available | number:decimalFormat.digitsInfo }}</ng-template></td><td class="text-center">{{ detail.inventory_integrity === 'INTEGRA' ? 'Íntegra' : 'Pendiente' }}</td><td class="text-center">{{ trace.status === 'PENDING' ? 'Pendiente' : 'Contabilizado' }}</td><td>{{ detail.observation || '—' }}</td>
               </tr>
             </ng-container>
           </tbody>
@@ -109,7 +109,7 @@
                         <h5>{{ item.allowed_action?.label }}</h5>
                         <p>La boleta y sus pesos históricos no se modificarán.</p>
                       </div>
-                      <button type="button" class="btn btn-review-secondary" [disabled]="historicalSaving()" (click)="cancelHistoricalCompletion()">Cancelar</button>
+                      <button type="button" class="erp-btn btn-review-secondary" [disabled]="historicalSaving()" (click)="cancelHistoricalCompletion()">Cancelar</button>
                     </div>
                     <div class="historical-completion-form">
                       <label *ngIf="item.allowed_action?.requires_merma_product">
@@ -157,7 +157,7 @@
                     <div class="historical-completion-panel__actions">
                       <button
                         type="button"
-                        class="btn btn-review-confirm"
+                        class="erp-btn btn-review-confirm"
                         [disabled]="historicalSaving() || historicalPreviewLoading() || !historicalPreview()"
                         (click)="confirmHistoricalCompletion()">
                         <i class="fa-solid" [class.fa-spinner]="historicalSaving()" [class.fa-spin]="historicalSaving()" [class.fa-check]="!historicalSaving()" aria-hidden="true"></i>
@@ -237,7 +237,7 @@
         <button
           *ngIf="assignmentNoteId() !== note.id && validatorsService.withPermission('TRANSFER_REVIEW','create')"
           type="button"
-          class="btn btn-review-secondary"
+          class="erp-btn btn-review-secondary"
           (click)="beginAssignment(note)">
           <i class="fa-solid fa-user-tag" aria-hidden="true"></i>
           {{ note.assignedUser ? 'Cambiar responsable' : 'Derivar tarea' }}
@@ -270,8 +270,8 @@
           </label>
           <div *ngIf="assignmentError()" class="field-error" role="alert">{{ assignmentError() }}</div>
           <div class="review-assignment-form__actions">
-            <button type="button" class="btn btn-review-secondary" [disabled]="assignmentSaving()" (click)="cancelAssignment()">Cancelar</button>
-            <button type="button" class="btn btn-review-confirm" [disabled]="assignmentSaving()" (click)="assignReview(note)">
+            <button type="button" class="erp-btn btn-review-secondary" [disabled]="assignmentSaving()" (click)="cancelAssignment()">Cancelar</button>
+            <button type="button" class="erp-btn btn-review-confirm" [disabled]="assignmentSaving()" (click)="assignReview(note)">
               <i class="fa-solid" [class.fa-spinner]="assignmentSaving()" [class.fa-spin]="assignmentSaving()" [class.fa-user-check]="!assignmentSaving()" aria-hidden="true"></i>
               {{ assignmentSaving() ? 'Registrando...' : 'Derivar y registrar' }}
             </button>
@@ -288,7 +288,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngIf="!reviewService.historyOnly() && selectedDetailIds().length"><td colspan="8"><button type="button" class="btn btn-review-primary" [disabled]="previewLoading()" (click)="beginBulkReconciliation(note)">Conciliar seleccionados ({{ selectedDetailIds().length }})</button><small *ngIf="previewLoading()"> Validando detalles seleccionados…</small><small *ngIf="bulkPreview() && !bulkPreview()!.ready" class="field-error">La selección contiene diferencias que requieren corrección antes de confirmar.</small></td></tr>
+            <tr *ngIf="!reviewService.historyOnly() && selectedDetailIds().length"><td colspan="8"><button type="button" class="erp-btn btn-review-primary" [disabled]="previewLoading()" (click)="beginBulkReconciliation(note)">Conciliar seleccionados ({{ selectedDetailIds().length }})</button><small *ngIf="previewLoading()"> Validando detalles seleccionados…</small><small *ngIf="bulkPreview() && !bulkPreview()!.ready" class="field-error">La selección contiene diferencias que requieren corrección antes de confirmar.</small></td></tr>
             <ng-container *ngFor="let detail of note.details">
               <tr
                 [class.review-detail--pending]="detail.reconciliation_status !== 'COMPLETADO'"
@@ -309,7 +309,7 @@
                   <button
                     *ngIf="!reviewService.historyOnly() && detail.reconciliation_status !== 'COMPLETADO' && validatorsService.withPermission('TRANSFER_REVIEW','update')"
                     type="button"
-                    class="btn btn-review-primary"
+                    class="erp-btn btn-review-primary"
                     [disabled]="saving()"
                     (click)="selectDocumentaryClose(note, detail)">
                     <i class="fa-solid fa-file-circle-check" aria-hidden="true"></i>
@@ -491,17 +491,17 @@
                       <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
                       <div>
                         <strong>No se puede conciliar todavía</strong><span>{{ formError() }}</span>
-                        <button *ngIf="automaticPreview()?.status !== 'READY'" type="button" class="btn btn-link review-refresh-action" (click)="selectDocumentaryClose(note, detail)">
+                        <button *ngIf="automaticPreview()?.status !== 'READY'" type="button" class="erp-btn btn-link review-refresh-action" (click)="selectDocumentaryClose(note, detail)">
                           <i class="fa-solid fa-rotate" aria-hidden="true"></i> Actualizar estado
                         </button>
                       </div>
                     </div>
 
                     <div class="documentary-close-panel__actions">
-                      <button type="button" class="btn btn-review-secondary" [disabled]="saving()" (click)="cancelDocumentaryClose()">
+                      <button type="button" class="erp-btn btn-review-secondary" [disabled]="saving()" (click)="cancelDocumentaryClose()">
                         Cancelar
                       </button>
-                      <button type="button" class="btn btn-review-confirm"
+                      <button type="button" class="erp-btn btn-review-confirm"
                         [disabled]="saving() || previewLoading() || automaticPreview()?.status !== 'READY'"
                         (click)="confirmDocumentaryClose(note)">
                         <i class="fa-solid" [class.fa-spinner]="saving()" [class.fa-spin]="saving()" [class.fa-circle-check]="!saving()" aria-hidden="true"></i>

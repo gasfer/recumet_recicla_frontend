@@ -8,25 +8,25 @@
 <div class="erp-header-panel purchase-header mb-3">
     <!-- AVISO MODO EDICIÓN SUTIL -->
     <div *ngIf="inputsService.isEdit" class="erp-edit-mode-banner animated fadeInDown">
-        <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-pen-to-square text-amber-600 fs-5"></i>
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-erp-warning text-lg"></i>
             <div>
-                <span class="fw-bold fs-6 text-amber-900 text-uppercase d-block">PROCESO DE EDICIÓN DE COMPRA: {{inputsService.dataInputForEdit()?.cod}}</span>
-                <small class="text-amber-700">¡Atención! La edición alterará los saldos y stocks del sistema. Proceda con precaución.</small>
+                <span class="font-bold text-base text-erp-warning uppercase block">PROCESO DE EDICIÓN DE COMPRA: {{inputsService.dataInputForEdit()?.cod}}</span>
+                <small class="text-erp-warning">¡Atención! La edición alterará los saldos y stocks del sistema. Proceda con precaución.</small>
             </div>
         </div>
-        <span class="badge bg-amber-500 text-white fw-bold px-2 py-1 rounded-pill">MODO EDICIÓN</span>
+        <span class="badge bg-erp-warning-soft text-white font-bold px-2 py-1 rounded-full">MODO EDICIÓN</span>
     </div>
 
     <div class="purchase-heading">
     <div class="erp-panel-title">
-        <i class="fa-solid fa-cart-shopping text-emerald-600"></i>
+        <i class="fa-solid fa-cart-shopping text-erp-success"></i>
         <span>{{inputsService.isEdit ? 'MODIFICAR COMPRA' : 'REGISTRO DE COMPRAS'}}</span>
     </div>
-    <button type="button" class="btn btn-light border rounded-circle purchase-icon-button"
+    <button type="button" class="erp-btn erp-btn-secondary border rounded-full purchase-icon-button"
         aria-label="Configurar compras" pTooltip="Configurar compras" tooltipPosition="left"
         (click)="inputsService.showModalConfigInput = true">
-        <i class="fa-solid fa-gear text-slate-500"></i>
+        <i class="fa-solid fa-gear text-erp-text-muted"></i>
     </button>
     </div>
 
@@ -41,21 +41,21 @@
             <div class="purchase-suggestions">
                 <ul *ngIf="loadingSearchProvider()" class="list-group shadow">
                     <li class="list-group-item list-group-item-action">
-                        <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
+                        <span class='font-bold text-erp-text-muted'><i class="fa-solid fa-spinner fa-spin mr-1"></i> Cargando...</span>
                     </li>
                 </ul>
                 <ul class="list-group shadow">
                     <li *ngFor="let provider of suggestedProviders()"
                         class="list-group-item list-group-item-action cursor-pointer"
                         (click)="selectProvider(provider)">
-                        <span class='fw-bold text-slate-800'>{{provider.full_names}}</span>
+                        <span class='font-bold text-erp-text'>{{provider.full_names}}</span>
                         <br>
-                        <span class="text-muted small">NIT/CI: {{provider.number_document }}</span>
+                        <span class="text-erp-text-muted small">NIT/CI: {{provider.number_document }}</span>
                     </li>
                 </ul>
                 <ul *ngIf="suggestedProviders().length == 0 && txtSearchProvider() && !loadingSearchProvider()" class="list-group shadow">
-                    <li class="list-group-item list-group-item-action text-danger">
-                        <span class='fw-bold'> No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span>
+                    <li class="list-group-item list-group-item-action text-erp-danger">
+                        <span class='font-bold'> No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span>
                     </li>
                 </ul>
             </div>
@@ -82,33 +82,33 @@
     <div>
         <div class="card erp-card-container border-0 shadow-sm">
             <div class="erp-items-header">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="fa-solid fa-cart-arrow-down text-emerald-400"></i>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-cart-arrow-down text-erp-success"></i>
                     <span>DETALLE DE ITEMS A COMPRAR</span>
                 </div>
                 <span class="erp-counter-chip">{{totalItems()}} items</span>
             </div>
-            <div class="p-2 border-bottom purchase-search" *ngIf="!inputsService._inputConfig.viewCardProducts">
+            <div class="p-2 border-b purchase-search" *ngIf="!inputsService._inputConfig.viewCardProducts">
                 <app-input-search (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
                     [icon]="'fa-solid fa-cart-plus'"
                     [placeholder]="'Busque un producto aquí....'"></app-input-search>
                 <div class="purchase-suggestions">
                     <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
                         <li class="list-group-item list-group-item-action">
-                            <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
+                            <span class='font-bold text-erp-text-muted'><i class="fa-solid fa-spinner fa-spin mr-1"></i> Cargando...</span>
                         </li>
                     </ul>
                     <ul class="list-group shadow cursor-pointer">
                         <li *ngFor="let product of suggestedProducts()"
                             class="list-group-item list-group-item-action" (click)="addItemCar(product)">
-                            <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
+                            <span class='font-bold text-erp-text'>{{product.cod}} - {{ product.name}}</span>
                             <br>
-                            <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                            <span class="text-erp-text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
                         </li>
                     </ul>
                     <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
-                        <li class="list-group-item list-group-item-action text-danger">
-                            <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
+                        <li class="list-group-item list-group-item-action text-erp-danger">
+                            <span class='font-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
                         </li>
                     </ul>
                 </div>

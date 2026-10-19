@@ -1,48 +1,48 @@
 <!-- ── HEADER CARD ── -->
-<div class="card bg-light m-0">
+<div class="card bg-erp-bg m-0">
   <div class="card-body shadow pt-2 pb-2">
-    <h4><i class="fa-solid fa-scale-balanced me-2"></i>BALANZA MANUAL</h4>
-    <p class="text-muted mb-0">Registro de pesaje manual de productos</p>
+    <h4><i class="fa-solid fa-scale-balanced mr-2"></i>BALANZA MANUAL</h4>
+    <p class="text-erp-text-muted mb-0">Registro de pesaje manual de productos</p>
   </div>
 </div>
 
 <!-- ── STATS ── -->
-<div class="row mt-2 mb-1 g-2">
-  <div class="col-6 col-sm-4">
+<div class="flex flex-wrap erp-layout-row mt-2 mb-1 gap-y-2">
+  <div class="md:w-[50%] px-2 min-w-0 w-full min-[768px]:w-[33.33333333333333%]">
     <div class="card shadow-sm text-center py-2">
-      <i class="fa-solid fa-clipboard-list fa-lg text-primary mb-1"></i>
-      <div class="fw-bold fs-5">{{ totalRegistros() }}</div>
-      <small class="text-muted">Registros Activos</small>
+      <i class="fa-solid fa-clipboard-list fa-lg text-erp-success mb-1"></i>
+      <div class="font-bold text-lg">{{ totalRegistros() }}</div>
+      <small class="text-erp-text-muted">Registros Activos</small>
     </div>
   </div>
-  <div class="col-6 col-sm-4">
+  <div class="md:w-[50%] px-2 min-w-0 w-full min-[768px]:w-[33.33333333333333%]">
     <div class="card shadow-sm text-center py-2">
-      <i class="fa-solid fa-weight-hanging fa-lg text-info mb-1"></i>
-      <div class="fw-bold fs-5">{{ totalKg() | number:'1.2-2' }} kg</div>
-      <small class="text-muted">Peso Total</small>
+      <i class="fa-solid fa-weight-hanging fa-lg text-erp-info mb-1"></i>
+      <div class="font-bold text-lg">{{ totalKg() | number:'1.2-2' }} kg</div>
+      <small class="text-erp-text-muted">Peso Total</small>
     </div>
   </div>
-  <div class="col-6 col-sm-4">
+  <div class="md:w-[50%] px-2 min-w-0 w-full min-[768px]:w-[33.33333333333333%]">
     <div class="card shadow-sm text-center py-2">
-      <i class="fa-solid fa-money-bill-wave fa-lg text-success mb-1"></i>
-      <div class="fw-bold fs-5">Bs. {{ totalVenta() | number:'1.2-2' }}</div>
-      <small class="text-muted">Total Ventas</small>
+      <i class="fa-solid fa-money-bill-wave fa-lg text-erp-success mb-1"></i>
+      <div class="font-bold text-lg">Bs. {{ totalVenta() | number:'1.2-2' }}</div>
+      <small class="text-erp-text-muted">Total Ventas</small>
     </div>
   </div>
 </div>
 
 <!-- ── MAIN CARD ── -->
-<div class="row mt-1">
-  <div class="col-12">
+<div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+  <div class="w-[100%] px-2 min-w-0">
     <div class="card">
       <div class="card-body shadow m-0 p-0">
 
-        <div class="row m-1 mt-0">
-          <div class="col-12">
+        <div class="flex flex-wrap erp-layout-row gap-y-3 m-1 mt-0">
+          <div class="w-[100%] px-2 min-w-0">
             <p-messages severity="info">
               <ng-template pTemplate>
                 <b>PESAJES MANUALES &nbsp;<i class="fa-solid fa-scale-balanced"></i></b>
-                <i class="fa-solid fa-clipboard-list ms-5 p-text-secondary app-u-font-size-1-2rem-101860a"
+                <i class="fa-solid fa-clipboard-list ml-12 p-text-secondary app-u-font-size-1-2rem-101860a"
                    pBadge
                    value="{{ totalRegistros() }}"></i>
               </ng-template>
@@ -50,8 +50,8 @@
           </div>
         </div>
 
-        <div class="d-flex justify-content-end px-2 pb-2">
-          <button pButton icon="pi pi-plus" label="Nuevo Pesaje"
+        <div class="flex justify-end px-2 pb-2">
+          <button pButton icon="fa-solid fa-plus" label="Nuevo Pesaje"
                   class="p-button-sm" (click)="openNew()"></button>
         </div>
 
@@ -70,11 +70,11 @@
               <th>Fecha</th>
               <th>Cliente</th>
               <th>Producto</th>
-              <th class="text-end">Peso</th>
+              <th class="text-right">Peso</th>
               <th>Unidad</th>
-              <th class="text-end">Peso (kg)</th>
-              <th class="text-end">Precio</th>
-              <th class="text-end">Total Bs.</th>
+              <th class="text-right">Peso (kg)</th>
+              <th class="text-right">Precio</th>
+              <th class="text-right">Total Bs.</th>
               <th>Operador</th>
               <th class="text-center">Estado</th>
               <th class="text-center">Acciones</th>
@@ -83,28 +83,28 @@
 
           <ng-template pTemplate="body" let-p>
             <tr [ngClass]="{'opacity-50 text-decoration-line-through': p.estado === 'ANULADO'}">
-              <td><span class="badge bg-secondary font-monospace">{{ p.nroTicket }}</span></td>
+              <td><span class="badge bg-erp-bg font-mono">{{ p.nroTicket }}</span></td>
               <td>{{ p.fecha | date:'dd/MM/yyyy' }}</td>
               <td>{{ p.cliente }}</td>
               <td>{{ p.producto }}</td>
-              <td class="text-end">{{ p.peso | number:'1.2-2' }}</td>
-              <td><span class="badge bg-light text-dark border">{{ p.unidad }}</span></td>
-              <td class="text-end">{{ p.pesoKg | number:'1.3-3' }}</td>
-              <td class="text-end">{{ p.precio | number:'1.2-2' }}</td>
-              <td class="text-end"><b>{{ p.total | number:'1.2-2' }}</b></td>
+              <td class="text-right">{{ p.peso | number:'1.2-2' }}</td>
+              <td><span class="badge bg-erp-bg text-erp-text border">{{ p.unidad }}</span></td>
+              <td class="text-right">{{ p.pesoKg | number:'1.3-3' }}</td>
+              <td class="text-right">{{ p.precio | number:'1.2-2' }}</td>
+              <td class="text-right"><b>{{ p.total | number:'1.2-2' }}</b></td>
               <td>{{ p.operador }}</td>
               <td class="text-center">
                 <p-tag [value]="p.estado"
                        [severity]="p.estado === 'ACTIVO' ? 'success' : 'danger'"></p-tag>
               </td>
               <td class="text-center">
-                <button pButton icon="pi pi-pencil"
+                <button pButton icon="fa-solid fa-pen-to-square"
                         aria-label="Editar pesaje manual"
                         class="p-button-rounded p-button-text p-button-sm"
                         pTooltip="Editar" tooltipPosition="top"
                         (click)="openEdit(p)"
                         [disabled]="p.estado === 'ANULADO'"></button>
-                <button pButton icon="pi pi-ban"
+                <button pButton icon="fa-solid fa-ban"
                         aria-label="Anular pesaje manual"
                         class="p-button-rounded p-button-text p-button-danger p-button-sm"
                         pTooltip="Anular" tooltipPosition="top"
@@ -137,91 +137,91 @@
   appendTo="body" styleClass="app-dialog--md">
 
   <form [formGroup]="form">
-    <div class="row g-2 mt-0">
+    <div class="flex flex-wrap erp-layout-row gap-y-2 mt-0">
 
-      <div class="col-12 col-sm-6">
-        <label class="form-label fw-semibold mb-0">Nro. Ticket *</label>
-        <input pInputText formControlName="nroTicket" class="w-100" />
-        <small *ngIf="isInvalid('nroTicket')" class="p-error d-block">Requerido</small>
+      <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+        <label class="form-label font-semibold mb-0">Nro. Ticket *</label>
+        <input pInputText formControlName="nroTicket" class="w-full" />
+        <small *ngIf="isInvalid('nroTicket')" class="p-error block">Requerido</small>
       </div>
 
-      <div class="col-12 col-sm-6">
-        <label class="form-label fw-semibold mb-0">Fecha *</label>
+      <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+        <label class="form-label font-semibold mb-0">Fecha *</label>
         <p-calendar formControlName="fecha" dateFormat="dd/mm/yy"
                     [showIcon]="true" appendTo="body"
-                    styleClass="w-100"></p-calendar>
+                    styleClass="w-full"></p-calendar>
       </div>
 
-      <div class="col-12 col-sm-6">
-        <label class="form-label fw-semibold mb-0">Cliente *</label>
-        <input pInputText formControlName="cliente" class="w-100"
+      <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+        <label class="form-label font-semibold mb-0">Cliente *</label>
+        <input pInputText formControlName="cliente" class="w-full"
                placeholder="Nombre del cliente" />
-        <small *ngIf="isInvalid('cliente')" class="p-error d-block">Requerido</small>
+        <small *ngIf="isInvalid('cliente')" class="p-error block">Requerido</small>
       </div>
 
-      <div class="col-12 col-sm-6">
-        <label class="form-label fw-semibold mb-0">Operador *</label>
-        <input pInputText formControlName="operador" class="w-100"
+      <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+        <label class="form-label font-semibold mb-0">Operador *</label>
+        <input pInputText formControlName="operador" class="w-full"
                placeholder="Nombre del operador" />
-        <small *ngIf="isInvalid('operador')" class="p-error d-block">Requerido</small>
+        <small *ngIf="isInvalid('operador')" class="p-error block">Requerido</small>
       </div>
 
-      <div class="col-12 col-sm-6">
-        <label class="form-label fw-semibold mb-0">Producto *</label>
+      <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+        <label class="form-label font-semibold mb-0">Producto *</label>
         <p-dropdown formControlName="producto" [options]="productos"
                     placeholder="Seleccione" appendTo="body"
-                    styleClass="w-100"></p-dropdown>
-        <small *ngIf="isInvalid('producto')" class="p-error d-block">Requerido</small>
+                    styleClass="w-full"></p-dropdown>
+        <small *ngIf="isInvalid('producto')" class="p-error block">Requerido</small>
       </div>
 
-      <div class="col-12 col-sm-6">
-        <label class="form-label fw-semibold mb-0">Unidad *</label>
+      <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+        <label class="form-label font-semibold mb-0">Unidad *</label>
         <p-dropdown formControlName="unidad" [options]="unidades"
                     placeholder="Seleccione" appendTo="body"
-                    styleClass="w-100"></p-dropdown>
+                    styleClass="w-full"></p-dropdown>
       </div>
 
-      <div class="col-12"><hr class="my-1" /></div>
+      <div class="w-[100%] px-2 min-w-0"><hr class="my-1" /></div>
 
-      <div class="col-12 col-sm-6">
-        <label class="form-label fw-semibold mb-0">Peso *</label>
+      <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+        <label class="form-label font-semibold mb-0">Peso *</label>
         <p-inputNumber formControlName="peso" [min]="0"
                        [minFractionDigits]="2" [maxFractionDigits]="3"
-                       [useGrouping]="true" styleClass="w-100"></p-inputNumber>
-        <small *ngIf="isInvalid('peso')" class="p-error d-block">Debe ser mayor a 0</small>
+                       [useGrouping]="true" styleClass="w-full"></p-inputNumber>
+        <small *ngIf="isInvalid('peso')" class="p-error block">Debe ser mayor a 0</small>
       </div>
 
-      <div class="col-12 col-sm-6">
-        <label class="form-label fw-semibold mb-0">Precio Unitario (Bs.) *</label>
+      <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+        <label class="form-label font-semibold mb-0">Precio Unitario (Bs.) *</label>
         <p-inputNumber formControlName="precio" [min]="0"
                        [minFractionDigits]="2" prefix="Bs. "
-                       [useGrouping]="true" styleClass="w-100"></p-inputNumber>
+                       [useGrouping]="true" styleClass="w-full"></p-inputNumber>
       </div>
 
-      <div class="col-12">
-        <div class="alert alert-success d-flex justify-content-between align-items-center py-2 mb-0">
-          <span class="fw-semibold">Total a Cobrar</span>
-          <span class="fw-bold fs-5">Bs. {{ totalCalculado | number:'1.2-2' }}</span>
+      <div class="w-[100%] px-2 min-w-0">
+        <div class="alert alert-success flex justify-between items-center py-2 mb-0">
+          <span class="font-semibold">Total a Cobrar</span>
+          <span class="font-bold text-lg">Bs. {{ totalCalculado | number:'1.2-2' }}</span>
         </div>
       </div>
 
-      <div class="col-12">
-        <label class="form-label fw-semibold mb-0">Observación</label>
+      <div class="w-[100%] px-2 min-w-0">
+        <label class="form-label font-semibold mb-0">Observación</label>
         <textarea pInputTextarea formControlName="observacion"
                   rows="2" placeholder="Notas..."
-                  class="w-100"></textarea>
+                  class="w-full"></textarea>
       </div>
 
     </div>
   </form>
 
   <ng-template pTemplate="footer">
-    <button pButton label="Cancelar" icon="pi pi-times"
+    <button pButton label="Cancelar" icon="fa-solid fa-xmark"
             class="p-button-text" (click)="closeDialog()"></button>
     <button pButton
             [attr.aria-label]="isEditing() ? 'Actualizar' : 'Registrar'"
             [label]="isEditing() ? 'Actualizar' : 'Registrar'"
-            icon="pi pi-check" (click)="save()"></button>
+            icon="fa-solid fa-check" (click)="save()"></button>
   </ng-template>
 </p-dialog>
 

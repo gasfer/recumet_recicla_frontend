@@ -32,7 +32,7 @@ async function readOverflowSnapshot(page: Page): Promise<OverflowSnapshot> {
         .filter((element) => {
           const rect = element.getBoundingClientRect();
           const localScroll = Boolean(element.closest('.app-table-scroll'));
-          const closedMobileDrawer = root.clientWidth <= 992
+          const closedMobileDrawer = root.clientWidth < 768
             && !document.body.classList.contains('app-sidebar-open')
             && Boolean(element.closest('.vertical-menu'));
           return !localScroll

@@ -167,7 +167,7 @@ button {
 /* Patrón compacto reutilizable para formularios, modales y listas. */
 .app-compact-form {
     --compact-gap: .5rem;
-    --compact-control-height: 2.25rem;
+    --compact-control-height: 2rem;
     --compact-label-size: .8rem;
     --compact-meta-size: .73rem;
 }
@@ -399,5 +399,9 @@ button {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import './assets/scss/design-system/operational-theme';
+
+@import './assets/scss/design-system/collapsible-sidebar';
 
 @import './assets/scss/design-system/primary-buttons';

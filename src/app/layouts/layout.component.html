@@ -1,5 +1,5 @@
 <!-- vertical layout -->
-<app-vertical *ngIf="isVerticalLayoutRequested()" [breadcrumbs]="breadcrumbs"></app-vertical>
+<app-vertical *ngIf="isVerticalLayoutRequested()" [breadcrumbs]="breadcrumbs" [isCondensed]="sidebartype() === 'icon'" (condensedChange)="onSidebarCondensedChange($event)"></app-vertical>
 <app-loading *ngIf="validatorsService.loadingPage()" [fullscreen]="true" text="Cargando sistema..."></app-loading>
 <app-loading *ngIf="validatorsService.loadingWrite()" [fullscreen]="true" size="sm" theme="light" [showLine]="false" customClass="recumet-loader--write-overlay"></app-loading>
 

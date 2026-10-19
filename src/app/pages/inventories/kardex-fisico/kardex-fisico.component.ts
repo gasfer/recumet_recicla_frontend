@@ -94,12 +94,16 @@ export class KardexFisicoComponent {
 
   buttonItems: MenuItem[] = [
     {
-      label: 'Excel',
+      label: 'Resumen de movimientos',
+      icon: 'fa-regular fa-file-pdf',
+      iconStyle: { color: 'var(--color-danger)' },
+      command: () => this.printPdfReport(),
+    },
+    {
+      label: 'Listado de movimientos',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { color: '#14A44D' },
-      command: () => {
-        this.printExcelReport();
-      },
+      iconStyle: { color: 'var(--color-success)' },
+      command: () => this.printExcelReport(),
     },
   ];
 
@@ -706,30 +710,32 @@ const request$ = this.activeView() === this.ALL_HISTORY
     this.formReport.markAllAsTouched();
     if (!this.formReport.valid) return;
     this.formParamsByForm();
+    const report$ = this.activeView() === this.ALL_HISTORY
+      ? this.kardexService.getReportExcel(this.paramsSearch(), this.fieldSort(), this.order())
+      : this.kardexService.getReportExcelFisico(
+        this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order(),
+      );
+
     Swal.fire({
-      title: 'Generando Reporte!',
-      html: `Con los parámetros seleccionados`,
+      title: 'Generando reporte Excel',
+      text: 'Preparando el archivo con los filtros seleccionados…',
+      allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
-        new Promise((resolve, reject) => {
-          const report$ = this.activeView() === this.ALL_HISTORY
-            ? this.kardexService.getReportPdf(this.paramsSearch(), this.fieldSort(), this.order())
-            : this.kardexService.getReportPdfFisico(
-              this.paramsSearch(),
-              this.type(),
-              this.query(),
-              this.fieldSort(),
-              this.order(),
-            );
-          this.pdfActions.prepareRequest(report$).subscribe({
-              next: (data) => {
-                this.pdfActions.show(data, 'reporte_kardex_fisico.pdf', 'Reporte de kardex físico');
-                Swal.close();
-              },
-              error: (err) => {
-                Swal.close();
-              },
-            });
+        report$.subscribe({
+          next: (blob: Blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'reporte_kardex_fisico.xlsx';
+            link.click();
+            URL.revokeObjectURL(url);
+            Swal.close();
+          },
+          error: () => {
+            Swal.close();
+            Swal.fire('Atención', 'No se pudo generar el reporte Excel.', 'error');
+          },
         });
       },
     });

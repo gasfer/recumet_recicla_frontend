@@ -49,12 +49,12 @@
       [globalFilterFields]="stringSearch">
 
     <ng-template *ngIf="includeSearch" pTemplate="caption">
-      <div class="text-center">
+      <div class="table-caption-container">
         <ng-content select="[extra-filters]"></ng-content>
         <p-dropdown [options]="searchFor" [formControl]="searchSelect"
             placeholder="Buscar por:" optionLabel="name" optionValue="code"
             appendTo="body"></p-dropdown>
-        <span class="p-input-icon-right ms-2 mt-1">
+        <span class="p-input-icon-right">
           <i role="button" tabindex="0" aria-label="Limpiar búsqueda"
               (click)="clearSearch()" (keydown.enter)="clearSearch()"
               (keydown.space)="$event.preventDefault(); clearSearch()"
@@ -311,12 +311,12 @@
       [globalFilterFields]="stringSearch" responsiveLayout="scroll">
 
     <ng-template *ngIf="includeSearch" pTemplate="caption">
-      <div class="text-center">
+      <div class="table-caption-container">
         <ng-content select="[extra-filters]"></ng-content>
         <p-dropdown [options]="searchFor" [formControl]="searchSelect"
             placeholder="Buscar por:" optionLabel="name" optionValue="code"
             appendTo="body"></p-dropdown>
-        <span class="p-input-icon-right ms-2 mt-1">
+        <span class="p-input-icon-right">
           <i role="button" tabindex="0" aria-label="Limpiar búsqueda"
               (click)="clearSearch()" (keydown.enter)="clearSearch()"
               (keydown.space)="$event.preventDefault(); clearSearch()"

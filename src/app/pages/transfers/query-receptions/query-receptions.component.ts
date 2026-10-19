@@ -44,10 +44,10 @@ export class QueryReceptionsComponent implements OnInit {
   id_transfer     = signal(0);
 
   types_filtrado  = signal([
-    {name: 'DIA', code: 'DAY'},
-    {name: 'MES', code: 'MONTH'},
-    {name: 'AÑO', code: 'YEAR'},
-    {name: 'RANGO', code: 'RANGE'},
+    {name: 'Día', code: 'DAY'},
+    {name: 'Mes', code: 'MONTH'},
+    {name: 'Año', code: 'YEAR'},
+    {name: 'Rango', code: 'RANGE'},
   ]);
   cols  = signal<ColsTable[]>([]);
   searchFor   = signal<SearchFor[]>([
@@ -59,8 +59,8 @@ export class QueryReceptionsComponent implements OnInit {
 
   searchItems = signal<MenuItem[]>([
     {
-      label: 'Recepciones Pendientes', icon: 'fa-solid fa-clock-rotate-left',
-      iconStyle: { 'color': '#14A44D'},
+      label: 'Recepciones pendientes', icon: 'fa-solid fa-clock-rotate-left',
+      iconStyle: { 'color': 'var(--color-success)'},
       command: () => {
         this.activeSearchItem.set(this.searchItems()[0]);
         this.paramsSearch.update(params => ({ ...params, status: 'PENDING', inconclusive: undefined }));
@@ -68,8 +68,8 @@ export class QueryReceptionsComponent implements OnInit {
       }
     },
     {
-      label: 'Recepciones Aprobadas', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA'},
+      label: 'Recepciones aprobadas', icon: 'fa-solid fa-circle-check',
+      iconStyle: { 'color': 'var(--color-info)'},
       command: () => {
         this.activeSearchItem.set(this.searchItems()[1]);
         this.paramsSearch.update(params => ({ ...params, status: 'RECEIVED', inconclusive: undefined }));
@@ -77,8 +77,8 @@ export class QueryReceptionsComponent implements OnInit {
       }
     },
     {
-      label: 'Recepciones Inconclusas', icon: 'fa-solid fa-triangle-exclamation',
-      iconStyle: { 'color': '#dc2626'},
+      label: 'Recepciones inconclusas', icon: 'fa-solid fa-triangle-exclamation',
+      iconStyle: { 'color': 'var(--color-warning)'},
       command: () => {
         this.activeSearchItem.set(this.searchItems()[2]);
         this.paramsSearch.update(params => ({ ...params, status: 'RECEIVED', inconclusive: true }));
@@ -100,10 +100,11 @@ export class QueryReceptionsComponent implements OnInit {
     date2: moment().format('YYYY'),
   });
   buttonItems: MenuItem[] = [
+    { label: 'Reporte recepciones (PDF)', icon: 'fa-solid fa-file-pdf', command: () => this.printPdfReport() },
     {
-      label: 'Excel',
+      label: 'Reporte recepciones (Excel)',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-success)'},
       command: () => { this.printExcelReport(); }
     },
   ];
@@ -400,32 +401,32 @@ export class QueryReceptionsComponent implements OnInit {
     this.getAllAndSearchTransfers(1,this.rows(),this.type(),this.query());
   }
   setColsStatusPending() {
-    this.cols.set([{ field: 'cod', header: 'CÓDIGO' , style:'min-width:100px;max-width:100px;', tooltip: true},
-      { field: 'date_send', header: 'FECHA ENVIÓ' , style:'min-width:110px;max-width:150px;', tooltip: true, isDate: true},
-      { field: 'user_send.full_names', header: 'USUARIO ENVIÓ' , style:'min-width:110px;max-width:110px;', tooltip: true, isText:true},
-      { field: 'total', header: 'MONTO' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
+    this.cols.set([{ field: 'cod', header: 'Código' , style:'min-width:100px;max-width:100px;', tooltip: true},
+      { field: 'date_send', header: 'Fecha de envío' , style:'min-width:110px;max-width:150px;', tooltip: true, isDate: true},
+      { field: 'user_send.full_names', header: 'Usuario de envío' , style:'min-width:110px;max-width:110px;', tooltip: true, isText:true},
+      { field: 'total', header: 'Monto Bs' , style:'min-width:100px;max-width:100px;text-align: center;', tooltip: true, isTag: true,
         tagValue: (val:number)=> this.decimalFormat.format(val),
         tagColor: (val:number)=> 'primary',
         tagIcon: (val:number)=>  ''
       },
-      { field: `sucursal_send.name`, header: 'SUCURSAL ORIGEN' , style:'min-width:150px;max-width:200px;', tooltip: true, isSucursalBadge: true },
-      { field: 'observations_send', header: 'OBSERVACIÓN ENVIÓ' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
-      { field: 'options', header: 'OPCIONES', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }
+      { field: `sucursal_send.name`, header: 'Sucursal de origen' , style:'min-width:150px;max-width:200px;', tooltip: true, isSucursalBadge: true },
+      { field: 'observations_send', header: 'Observación de envío' , style:'min-width:100px;max-width:150px;', tooltip: true, isText: true},
+      { field: 'options', header: 'Opciones', style:'min-width:120px;max-width:120px', isButton:true, activeSortable: false }
     ]);
   }
   setColsStatusReceived() {
-    this.cols.set([{ field: 'cod', header: 'TRASLADO' , style:'min-width:100px;max-width:105px;', tooltip: true},
-      { field: 'reception_dates', header: 'ENVÍO / RECEPCIÓN' , style:'min-width:155px;max-width:170px;', tooltip: true, isInfoStack: true, activeSortable: false},
-      { field: 'transferred_weight', header: 'PESO TRASLADADO' , style:'min-width:120px;max-width:135px;', tooltip: true, isInfoStack: true, activeSortable: false},
-      { field: 'origin_destination', header: 'ORIGEN → DESTINO' , style:'min-width:185px;max-width:220px;', tooltip: true, isInfoStack: true, activeSortable: false},
-      { field: 'reception_observations', header: 'OBSERVACIONES' , style:'min-width:165px;max-width:195px;', tooltip: true, isInfoStack: true, activeSortable: false},
-      { field: 'reconciliation_status', header: 'CONCILIACIÓN', style:'min-width:110px;max-width:130px;', isTag: true,
+    this.cols.set([{ field: 'cod', header: 'Traslado' , style:'min-width:100px;max-width:105px;', tooltip: true},
+      { field: 'reception_dates', header: 'Envío / Recepción' , style:'min-width:155px;max-width:170px;', tooltip: true, isInfoStack: true, activeSortable: false},
+      { field: 'transferred_weight', header: 'Peso trasladado' , style:'min-width:120px;max-width:135px;', tooltip: true, isInfoStack: true, activeSortable: false},
+      { field: 'origin_destination', header: 'Origen → Destino' , style:'min-width:185px;max-width:220px;', tooltip: true, isInfoStack: true, activeSortable: false},
+      { field: 'reception_observations', header: 'Observaciones' , style:'min-width:165px;max-width:195px;', tooltip: true, isInfoStack: true, activeSortable: false},
+      { field: 'reconciliation_status', header: 'Conciliación', style:'min-width:110px;max-width:130px;', isTag: true,
         tagValue: (status:string) => status === 'EN_REVISION' ? 'EN REVISIÓN' : status,
         tagColor: (status:string) => status === 'EN_REVISION' ? 'danger' : status === 'PARCIAL' ? 'warning' : 'success',
         tagIcon: () => ''
       },
-      ...(this.isInconclusiveMode ? [{ field: 'review_note_cards', header: 'NTR Y DIFERENCIAS', style:'min-width:265px;max-width:330px;', isReviewNotes: true, activeSortable: false }] : [{ field: 'pending_review_items', header: 'PENDIENTES', style:'min-width:90px;max-width:100px;text-align:center;', tooltip: true}]),
-      { field: 'options', header: 'OPCIONES', style:'min-width:180px;max-width:180px', isButton:true, activeSortable: false }
+      ...(this.isInconclusiveMode ? [{ field: 'review_note_cards', header: 'NTR y diferencias', style:'min-width:265px;max-width:330px;', isReviewNotes: true, activeSortable: false }] : [{ field: 'pending_review_items', header: 'Pendientes', style:'min-width:90px;max-width:100px;text-align:center;', tooltip: true}]),
+      { field: 'options', header: 'Opciones', style:'min-width:180px;max-width:180px', isButton:true, activeSortable: false }
     ]);
   }
 

@@ -1,26 +1,26 @@
 <form [formGroup]="formReport">
     <div class="card shadow mb-4 icon-box ">
         <div class="card-body">
-            <div class="row text-center">
+            <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
                 <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DETALLE KARDEX -</b> "{{productSelect()?.name ?? 'SELECCIONE UN PRODUCTO'}}"</h3>
             </div>
             <p-accordion [activeIndex]="1">
                 <p-accordionTab header="Filtros">
-                    <div class="p-fluid grid">
-                        <div class="field col-12">
+                    <div class="p-fluid erp-form-grid">
+                        <div class="erp-field w-[100%] px-2 min-w-0">
                            <!-- FILTROS EXISTENTES -->
-                            <div class="row mt-1">
-                                <div class="col-12 col-sm-6">
-                                    <div class="row">
-                                        <div class="col-12 col-sm-6">
-                                            <label class="block mb-1">Tipo Filtrado<span class="text-danger">*</span></label>
+                            <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                                    <div class="flex flex-wrap erp-layout-row gap-y-3">
+                                        <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                                            <label class="block mb-1">Tipo Filtrado<span class="text-erp-danger">*</span></label>
                                             <p-dropdown [options]="types_filtrado()" formControlName="filterBy"
                                                 optionLabel="name" optionValue="code" appendTo="body"
                                                 (onChange)="onChangeTypesFilter()">
                                             </p-dropdown>
                                         </div>
-                                        <div class="col-12 col-sm-6">
-                                            <label class="block mb-1">Fecha<span class="text-danger">*</span></label>
+                                        <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                                            <label class="block mb-1">Fecha<span class="text-erp-danger">*</span></label>
                                             <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'"
                                                 formControlName="dates" view="month" dateFormat="mm/yy" [readonlyInput]="true"
                                                 inputId="monthpicker" placeholder="MM/YYYY"
@@ -50,9 +50,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="row">
-                                        <div class="col-12 col-sm-6">
+                                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                                    <div class="flex flex-wrap erp-layout-row gap-y-3">
+                                        <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                                             <label class="block mb-0">Area / Almacén</label>
                                             <p-dropdown [options]="validatorsService.storages()"
                                               placeholder="Selecciona un almacén"
@@ -72,11 +72,11 @@
                             </div>
 
                             <!-- 🆕 FILA PARA DROPDOWN DE PRODUCTOS -->
-                            <div class="row mt-3">
-                                <div class="col-12 col-md-8">
-                                    <div class="row">
-                                        <div class="col-12 col-md-8">
-                                            <label class="block mb-1">Producto <span class="text-danger">*</span></label>
+                            <div class="flex flex-wrap erp-layout-row gap-y-3 mt-3">
+                                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[66.66666666666666%] w-full">
+                                    <div class="flex flex-wrap erp-layout-row gap-y-3">
+                                        <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[66.66666666666666%] w-full">
+                                            <label class="block mb-1">Producto <span class="text-erp-danger">*</span></label>
                                             <p-dropdown
                                                 [options]="dropdownProducts()"
                                                 [(ngModel)]="productSelectValue"
@@ -99,22 +99,22 @@
                                                 [panelStyle]="{'max-height': '500px', 'min-width': '450px'}" class="app-u-width-100-0466783">
 
                                                 <ng-template pTemplate="selectedItem">
-                                                    <div *ngIf="productSelect()" class="flex align-items-center gap-2">
+                                                    <div *ngIf="productSelect()" class="flex items-center gap-2">
                                                         <div>
-                                                            <span class="fw-bold">{{productSelect()?.cod}} - {{productSelect()?.name}}</span>
+                                                            <span class="font-bold">{{productSelect()?.cod}} - {{productSelect()?.name}}</span>
                                                         </div>
                                                     </div>
                                                     <div *ngIf="!productSelect()">
-                                                        <span class="text-muted">Seleccione un producto...</span>
+                                                        <span class="text-erp-text-muted">Seleccione un producto...</span>
                                                     </div>
                                                 </ng-template>
 
                                                 <ng-template let-product pTemplate="item">
-                                                    <div class="flex align-items-center gap-2">
+                                                    <div class="flex items-center gap-2">
                                                         <div>
-                                                            <span class="fw-bold">{{product.cod}} - {{ product.name}}</span>
+                                                            <span class="font-bold">{{product.cod}} - {{ product.name}}</span>
                                                             <br>
-                                                            <span class="text-muted fw-normal">{{product.description }} -
+                                                            <span class="text-erp-text-muted font-normal">{{product.description }} -
                                                                 {{product.category.name}} / {{product.unit.siglas}}</span>
                                                         </div>
                                                     </div>
@@ -134,7 +134,7 @@
                                             </p-dropdown>
                                         </div>
 
-                                        <div class="col-12 col-md-4 mt-2">
+                                        <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[33.33333333333333%] w-full mt-2">
                                             <b>Producto Seleccionado:</b>
                                             <br>
                                             <p-tag [rounded]="true" icon="fa-solid fa-tag"
@@ -159,7 +159,7 @@
 
                         </div>
                     </div>
-                    <div class="text-end">
+                    <div class="text-right">
                         <p-button (click)="!loading() ? getAllAndSearchKardex(1,this.rows()) : null"
                             styleClass="p-button-rounded p-button-sm"
                             label="Buscar"
@@ -175,10 +175,10 @@
                             [rounded]="true"
                             [severity]="'danger'"
                             (onClick)="!loading() ? this.printPdfReport() : null"
-                            styleClass="ms-1">
+                            styleClass="ml-1">
                         </p-splitButton>
                         <p-button (click)="clearInputs()"
-                            styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
+                            styleClass="p-button-rounded ml-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
                             icon="fas fa-broom"
                             label="Limpiar"
                             [pTooltip]="'Limpiar Campos'"

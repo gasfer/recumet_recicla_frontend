@@ -13,36 +13,36 @@
 
     <!-- AVISO MODO EDICIÓN CON COLOR BAJITO SUTIL -->
     <div *ngIf="providersService.isEdit" class="mb-3 animated fadeInDown">
-      <div class="p-3 rounded-lg border border-amber-300 bg-amber-50 flex items-center justify-between">
+      <div class="p-3 rounded-lg border border-erp-border bg-erp-warning-soft flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-pen-to-square text-amber-600 text-lg"></i>
+          <i class="fa-solid fa-pen-to-square text-erp-warning text-lg"></i>
           <div>
-            <span class="font-bold text-xs text-amber-900 uppercase">Proceso de Edición de Proveedor</span>
-            <small class="block text-xs text-amber-700">
+            <span class="font-bold text-xs text-erp-warning uppercase">Proceso de Edición de Proveedor</span>
+            <small class="block text-xs text-erp-warning">
               Modificando ficha de: <b>{{ providerForm.get('full_names')?.value }}</b>
               <span *ngIf="providerForm.get('number_document')?.value"> · NIT/CI: {{ providerForm.get('number_document')?.value }}</span>
             </small>
           </div>
         </div>
-        <span class="badge bg-amber-500 text-white font-bold text-xs px-2.5 py-1 rounded-full">MODO EDICIÓN</span>
+        <span class="badge bg-erp-warning-soft text-white font-bold text-xs px-2.5 py-1 rounded-full">MODO EDICIÓN</span>
       </div>
     </div>
 
     <!-- Pestañas Corporativas (Solo si es Tipo A) -->
-    <div *ngIf="isTypeA()" class="flex gap-2 mb-3 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
-      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+    <div *ngIf="isTypeA()" class="flex gap-2 mb-3 bg-erp-bg p-1.5 rounded-lg border border-erp-border">
+      <button type="button" class="erp-btn erp-btn-sm flex-1 font-semibold text-xs"
         [class.btn-success]="activeTab()==='company'"
         [class.btn-light]="activeTab()!=='company'"
         (click)="setActiveTab('company')">
         <i class="fa-solid fa-building mr-1"></i> 1. Empresa Matriz
       </button>
-      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+      <button type="button" class="erp-btn erp-btn-sm flex-1 font-semibold text-xs"
         [class.btn-success]="activeTab()==='branches'"
         [class.btn-light]="activeTab()!=='branches'"
         (click)="setActiveTab('branches')">
         <i class="fa-solid fa-code-branch mr-1"></i> 2. Sucursales ({{ companyBranchCount() }})
       </button>
-      <button type="button" class="btn btn-sm flex-1 font-semibold text-xs"
+      <button type="button" class="erp-btn erp-btn-sm flex-1 font-semibold text-xs"
         [class.btn-success]="activeTab()==='summary'"
         [class.btn-light]="activeTab()!=='summary'"
         (click)="setActiveTab('summary')">
@@ -54,9 +54,9 @@
     <div *ngIf="!isTypeA() || activeTab()==='company'" class="space-y-3">
 
       <!-- SECCIÓN 1: TIPO E IDENTIFICACIÓN FISCAL (Fondo suave pizarra/slate) -->
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
-        <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-id-card text-slate-500"></i> 1. Identificación Legal & Tipo de Proveedor
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-bg/70">
+        <div class="text-xs font-bold text-erp-text uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-id-card text-erp-text-muted"></i> 1. Identificación Legal & Tipo de Proveedor
         </div>
 
         <!-- Tipo proveedor -->
@@ -85,7 +85,7 @@
             <label class="erp-label required">{{formP.full_names.label}}</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
               formControlName="full_names" placeholder="EJ. PROVEEDOR ..."
-              class="erp-input text-uppercase w-full"
+              class="erp-input uppercase w-full"
               [class.ng-dirty]="validatorsService.inputValid('full_names',providerForm)"/>
             <small *ngIf="validatorsService.inputValid('full_names',providerForm)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("full_names",providerForm) }}
@@ -95,7 +95,7 @@
             <label class="erp-label">{{formP.number_document.label}}</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
               formControlName="number_document" placeholder="EJ. ..."
-              class="erp-input text-uppercase w-full"
+              class="erp-input uppercase w-full"
               [class.ng-dirty]="validatorsService.inputValid('number_document',providerForm)"/>
             <small *ngIf="validatorsService.inputValid('number_document',providerForm)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("number_document",providerForm) }}
@@ -105,9 +105,9 @@
       </section>
 
       <!-- SECCIÓN 2: UBICACIÓN & SECTOR (Fondo suave esmeralda) -->
-      <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40">
-        <div class="text-xs font-bold text-emerald-800 uppercase mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-map-location-dot text-emerald-600"></i> 2. Sector & Ubicación Geográfica
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-success-soft/40">
+        <div class="text-xs font-bold text-erp-success uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-map-location-dot text-erp-success"></i> 2. Sector & Ubicación Geográfica
         </div>
 
         <div class="erp-form-grid mb-2">
@@ -160,7 +160,7 @@
               formControlName="direction"
               rows="2"
               placeholder="EJ. AV. BLANCO GALINDO KM 7..."
-              class="erp-input text-uppercase w-full"
+              class="erp-input uppercase w-full"
               [class.ng-dirty]="validatorsService.inputValid('direction',providerForm)">
             </textarea>
             <small *ngIf="validatorsService.inputValid('direction',providerForm)" class="erp-error-msg">
@@ -171,9 +171,9 @@
       </section>
 
       <!-- SECCIÓN 3: CONTACTO & CATEGORÍA (Fondo suave azul) -->
-      <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40">
-        <div class="text-xs font-bold text-blue-900 uppercase mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-user-tie text-blue-600"></i> 3. Contacto Comercial & Material
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-info-soft/40">
+        <div class="text-xs font-bold text-erp-info uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-user-tie text-erp-info"></i> 3. Contacto Comercial & Material
         </div>
 
         <!-- Nombre contacto + Celular contacto -->
@@ -182,7 +182,7 @@
             <label class="erp-label">{{formP.name_contact.label}}</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
               formControlName="name_contact" placeholder="EJ. JUAN PÉREZ"
-              class="erp-input text-uppercase w-full"
+              class="erp-input uppercase w-full"
               [class.ng-dirty]="validatorsService.inputValid('name_contact',providerForm)"/>
             <small *ngIf="validatorsService.inputValid('name_contact',providerForm)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("name_contact",providerForm) }}
@@ -225,7 +225,7 @@
             <label class="erp-label">{{formP.workAreaOrPositionOrUnit.label}}</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
               formControlName="workAreaOrPositionOrUnit" placeholder="EJ. GERENCIA / VENTAS"
-              class="erp-input text-uppercase w-full"
+              class="erp-input uppercase w-full"
               [class.ng-dirty]="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)"/>
             <small *ngIf="validatorsService.inputValid('workAreaOrPositionOrUnit',providerForm)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("workAreaOrPositionOrUnit",providerForm) }}
@@ -257,7 +257,7 @@
             <label class="erp-label">{{formP.companyContacts.label}}</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
               formControlName="companyContacts" placeholder="EJ. TELF FIJO / EMAIL SECUNDARIO"
-              class="erp-input text-uppercase w-full"
+              class="erp-input uppercase w-full"
               [class.ng-dirty]="validatorsService.inputValid('companyContacts',providerForm)"/>
             <small *ngIf="validatorsService.inputValid('companyContacts',providerForm)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("companyContacts",providerForm) }}
@@ -267,9 +267,9 @@
       </section>
 
       <!-- SECCIÓN 4: MODALIDAD & ESTADO (Fondo suave ámbar) -->
-      <section class="p-3 rounded-lg border border-amber-100 bg-amber-50/30">
-        <div class="text-xs font-bold text-amber-900 uppercase mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-sliders text-amber-600"></i> 4. Modalidad de Operación & Estado
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-warning-soft/30">
+        <div class="text-xs font-bold text-erp-warning uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-sliders text-erp-warning"></i> 4. Modalidad de Operación & Estado
         </div>
 
         <div class="erp-form-grid">
@@ -304,9 +304,9 @@
 
     <!-- â•â• PESTAÑA: SUCURSALES (TIPO A) â•â• -->
     <div *ngIf="isTypeA() && activeTab()==='branches'" class="animated fadeIn">
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
-        <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-code-branch text-emerald-600"></i> Gestión de Sucursales Vinculadas
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-bg/70">
+        <div class="text-xs font-bold text-erp-text uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-code-branch text-erp-success"></i> Gestión de Sucursales Vinculadas
         </div>
         <div class="erp-form-grid mb-3">
           <div class="erp-field">
@@ -320,18 +320,18 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <aside class="bg-white p-2.5 rounded-lg border border-slate-200">
-            <b class="text-xs text-slate-800 uppercase block mb-2 font-bold">Sedes Vinculadas</b>
+          <aside class="bg-erp-surface p-2.5 rounded-lg border border-erp-border">
+            <b class="text-xs text-erp-text uppercase block mb-2 font-bold">Sedes Vinculadas</b>
             <button type="button" *ngFor="let branch of allCompanyBranches(); let i=index"
-              class="w-full border rounded-lg p-2 mb-1.5 flex items-center justify-between text-left text-xs bg-white transition-all"
+              class="w-full border rounded-lg p-2 mb-1.5 flex items-center justify-between text-left text-xs bg-erp-surface transition-all"
               [class.border-emerald-500]="selectedBranchId()===branch.id"
               [class.bg-emerald-50]="selectedBranchId()===branch.id"
               (click)="selectedBranchId.set(branch.id)">
               <div class="flex items-center gap-1.5 overflow-hidden">
-                <span class="badge bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded text-xs">0{{i+1}}</span>
-                <span class="font-semibold text-slate-800 text-truncate">{{ branch.full_names }}</span>
+                <span class="badge bg-erp-success-soft text-erp-success font-bold px-1.5 py-0.5 rounded text-xs">0{{i+1}}</span>
+                <span class="font-semibold text-erp-text truncate">{{ branch.full_names }}</span>
               </div>
-              <span class="text-emerald-600 font-bold">●</span>
+              <span class="text-erp-success font-bold">●</span>
             </button>
           </aside>
 
@@ -377,35 +377,35 @@
 
     <!-- â•â• PESTAÑA: CONSOLIDADO (TIPO A) â•â• -->
     <div *ngIf="isTypeA() && activeTab()==='summary'" class="animated fadeIn">
-      <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
-        <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-chart-pie text-emerald-600"></i> Consolidado Corporativo: {{ providerForm.get('full_names')?.value }}
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-bg/70">
+        <div class="text-xs font-bold text-erp-text uppercase mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-pie text-erp-success"></i> Consolidado Corporativo: {{ providerForm.get('full_names')?.value }}
         </div>
         <div class="grid grid-cols-4 gap-2 mb-3">
-          <div class="p-2.5 bg-white border rounded-lg text-center">
-            <small class="text-slate-500 font-semibold text-xs block">TOTAL COMPRADO</small>
-            <b class="text-emerald-700 text-lg block my-0.5">—</b>
-            <span class="text-xs text-slate-400">Sin compras</span>
+          <div class="p-2.5 bg-erp-surface border rounded-lg text-center">
+            <small class="text-erp-text-muted font-semibold text-xs block">TOTAL COMPRADO</small>
+            <b class="text-erp-success text-lg block my-0.5">—</b>
+            <span class="text-xs text-erp-text-muted">Sin compras</span>
           </div>
-          <div class="p-2.5 bg-white border rounded-lg text-center">
-            <small class="text-slate-500 font-semibold text-xs block">SALDO PENDIENTE</small>
-            <b class="text-amber-700 text-lg block my-0.5">—</b>
-            <span class="text-xs text-slate-400">Al día</span>
+          <div class="p-2.5 bg-erp-surface border rounded-lg text-center">
+            <small class="text-erp-text-muted font-semibold text-xs block">SALDO PENDIENTE</small>
+            <b class="text-erp-warning text-lg block my-0.5">—</b>
+            <span class="text-xs text-erp-text-muted">Al día</span>
           </div>
-          <div class="p-2.5 bg-white border rounded-lg text-center">
-            <small class="text-slate-500 font-semibold text-xs block">TICKETS</small>
-            <b class="text-slate-700 text-lg block my-0.5">—</b>
-            <span class="text-xs text-slate-400">0 registros</span>
+          <div class="p-2.5 bg-erp-surface border rounded-lg text-center">
+            <small class="text-erp-text-muted font-semibold text-xs block">TICKETS</small>
+            <b class="text-erp-text text-lg block my-0.5">—</b>
+            <span class="text-xs text-erp-text-muted">0 registros</span>
           </div>
-          <div class="p-2.5 bg-white border rounded-lg text-center">
-            <small class="text-slate-500 font-semibold text-xs block">SEDES ACTIVAS</small>
-            <b class="text-emerald-600 text-lg block my-0.5">{{ companyBranchCount() }}</b>
-            <span class="text-xs text-slate-400">Registradas</span>
+          <div class="p-2.5 bg-erp-surface border rounded-lg text-center">
+            <small class="text-erp-text-muted font-semibold text-xs block">SEDES ACTIVAS</small>
+            <b class="text-erp-success text-lg block my-0.5">{{ companyBranchCount() }}</b>
+            <span class="text-xs text-erp-text-muted">Registradas</span>
           </div>
         </div>
 
-        <table class="w-full text-xs border rounded-lg overflow-hidden bg-white app-table-scroll" tabindex="0" aria-label="Resumen consolidado de sucursales">
-          <thead class="bg-slate-800 text-white">
+        <table class="w-full text-xs border rounded-lg overflow-hidden bg-erp-surface app-table-scroll" tabindex="0" aria-label="Resumen consolidado de sucursales">
+          <thead class="bg-erp-header text-white">
             <tr>
               <th class="p-2 text-left">Sucursal</th>
               <th class="p-2 text-left">Dirección / Sector</th>
@@ -414,8 +414,8 @@
           </thead>
           <tbody>
             <tr *ngFor="let branch of allCompanyBranches()" class="border-b">
-              <td class="p-2 font-semibold text-slate-800">● {{ branch.full_names }}</td>
-              <td class="p-2 text-slate-600">{{ branch.direction || 'Sin información' }}</td>
+              <td class="p-2 font-semibold text-erp-text">● {{ branch.full_names }}</td>
+              <td class="p-2 text-erp-text">{{ branch.direction || 'Sin información' }}</td>
               <td class="p-2 text-center">
                 <p-tag [value]="branch.status ? 'Activa' : 'Inactiva'" [severity]="branch.status ? 'success' : 'secondary'"></p-tag>
               </td>

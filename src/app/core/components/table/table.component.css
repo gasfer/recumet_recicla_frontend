@@ -54,10 +54,12 @@
 }
 
 .p-datatable thead th{
-  background:var(--bg-primary);
+  background:var(--color-primary, #00a96b);
   color:white;
   font-weight:600;
-  font-size:13px;
+  font-size:11px;
+  padding:6px 10px;
+  height:34px;
 }
 
 .p-datatable tbody tr{
@@ -65,11 +67,27 @@
 }
 
 .p-datatable tbody tr:hover{
-  background:#f3f6ff;
+  background:var(--color-success-light, #ecfdf5);
 }
 
 .p-datatable td{
-  padding:12px 14px;
+  padding:5px 8px;
+  font-size:12px;
+  vertical-align:middle;
+}
+
+.table-caption-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.table-caption-container .p-dropdown,
+.table-caption-container .p-inputtext {
+  height: 32px !important;
+  min-height: 32px !important;
 }
 
 /* imagen tabla */

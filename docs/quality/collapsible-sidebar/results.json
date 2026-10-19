@@ -1,0 +1,201 @@
+{
+  "scope": "Real Angular Layout/Vertical/Sidebar in an isolated harness, stub topbar/services; no production authentication or API flows",
+  "results": [
+    {
+      "theme": "light",
+      "width": 320,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1920,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1920,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "height": 600,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1920,
+      "height": 568,
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1920,
+      "height": 600,
+      "passed": true
+    }
+  ],
+  "persistence": true,
+  "navigation": true,
+  "limitedPermissions": true,
+  "errors": []
+}

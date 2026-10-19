@@ -2,9 +2,9 @@
     <div class="navbar-header">
       <div class="topbar-navigation">
         <button type="button" class="btn btn-sm px-3 font-size-16 header-item" id="vertical-menu-btn"
-          [attr.aria-expanded]="mobileMenuOpen"
+          [attr.aria-expanded]="isMobileViewport ? mobileMenuOpen : !sidebarCondensed"
           [attr.aria-controls]="mobileMenuControls"
-          [attr.aria-label]="mobileMenuOpen || !desktopSidebarHidden ? 'Ocultar menú de navegación' : 'Mostrar menú de navegación'"
+          [attr.aria-label]="isMobileViewport ? (mobileMenuOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación') : (sidebarCondensed ? 'Expandir menú lateral' : 'Contraer menú lateral')"
           (click)="toggleMobileMenu($event)">
           <i class="fa fa-fw fa-bars"></i>
         </button>
@@ -138,6 +138,15 @@
         </div>
 
         <!-- USUARIO / MI PERFIL -->
+        <div class="dropdown d-inline-block ms-1">
+          <button type="button" class="btn header-item noti-icon theme-toggle"
+                  [attr.aria-label]="themeMode() === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'"
+                  [attr.title]="themeMode() === 'dark' ? 'Tema claro' : 'Tema oscuro'"
+                  [attr.aria-pressed]="themeMode() === 'dark'"
+                  (click)="toggleTheme()">
+            <i class="bx" [ngClass]="themeMode() === 'dark' ? 'bx-sun' : 'bx-moon'" aria-hidden="true"></i>
+          </button>
+        </div>
         <div class="dropdown d-inline-block position-relative" [class.show]="userDropdownOpen()">
           <button aria-label="Abrir menú de usuario"
                   type="button"

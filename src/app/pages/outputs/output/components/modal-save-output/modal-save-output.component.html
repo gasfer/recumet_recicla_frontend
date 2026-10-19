@@ -27,11 +27,11 @@
           <div class="erp-field">
             <label class="erp-label required">Cliente</label>
             <div class="erp-toggle-pill">
-              <i class="fa-solid fa-truck-moving text-muted"></i>
-              <span class="flex-grow-1 text-truncate font-bold text-xs">
+              <i class="fa-solid fa-truck-moving text-erp-text-muted"></i>
+              <span class="grow truncate font-bold text-xs">
                 {{ clientSelect() ? (clientSelect()?.number_document + ' · ' + clientSelect()?.full_names) : 'SELECCIONE UN CLIENTE' }}
               </span>
-              <button *ngIf="clientSelect()" type="button" class="btn btn-sm btn-outline-danger py-0 px-1 border-0"
+              <button *ngIf="clientSelect()" type="button" class="erp-btn erp-btn-sm erp-btn-outline-danger py-0 px-1 border-0"
                 (click)="outputService.clientSelect.set(undefined)" pTooltip="Quitar cliente" tooltipPosition="top">
                 <i class="fa-solid fa-xmark"></i>
               </button>
@@ -46,7 +46,7 @@
             <div class="flex gap-2">
               <p-dropdown [options]="types_output()" placeholder="Selecciona una opción" optionLabel="name"
                 optionValue="name" appendTo="body" (onChange)="selectTypeOutput()" formControlName="voucher"
-                class="erp-input flex-grow-1"
+                class="erp-input grow"
                 [class.ng-dirty]="validatorsService.inputValid('output_data.voucher',formOutput)"></p-dropdown>
               
               <!-- Camión abierto si aplica -->
@@ -97,10 +97,10 @@
           <div class="erp-field">
             <label class="erp-label">
               Nro.
-              <span *ngIf="formOutput.get('output_data.type_registry')?.value != 'SIN FICHA'" class="text-danger">*</span>
+              <span *ngIf="formOutput.get('output_data.type_registry')?.value != 'SIN FICHA'" class="text-erp-danger">*</span>
             </label>
             <input *ngIf="formOutput.get('output_data.type_registry')?.value != 'SIN FICHA'" type="text" pInputText formControlName="number_registry"
-              placeholder="EJ. 0001" [pKeyFilter]="validatorsService.expRegValidInput" class="erp-input w-full text-uppercase"
+              placeholder="EJ. 0001" [pKeyFilter]="validatorsService.expRegValidInput" class="erp-input w-full uppercase"
               [class.ng-dirty]="validatorsService.inputValid('output_data.number_registry', formOutput)"/>
             <input *ngIf="formOutput.get('output_data.type_registry')?.value == 'SIN FICHA'" type="text" pInputText class="erp-input w-full" [disabled]="true" placeholder="Automático" />
             <small *ngIf="formOutput.get('output_data.number_registry')?.enabled && validatorsService.inputValid('output_data.number_registry', formOutput)" class="erp-error-msg">
@@ -121,8 +121,8 @@
           <div class="erp-field">
             <label class="erp-label">Subtotal / Sumas</label>
             <div class="erp-toggle-pill justify-between">
-              <span class="text-xs text-muted font-medium"><i class="fa-solid fa-calculator mr-1"></i>Sumas</span>
-              <span class="font-bold text-sm text-slate-800">{{ formOutput.get('output_data.sub_total')?.value | number:decimalFormat.digitsInfo }}</span>
+              <span class="text-xs text-erp-text-muted font-medium"><i class="fa-solid fa-calculator mr-1"></i>Sumas</span>
+              <span class="font-bold text-sm text-erp-text">{{ formOutput.get('output_data.sub_total')?.value | number:decimalFormat.digitsInfo }}</span>
             </div>
           </div>
 
@@ -144,8 +144,8 @@
           <div class="erp-field">
             <label class="erp-label required">Total a Cobrar</label>
             <div class="erp-toggle-pill justify-between" style="border-color: #059669; background-color: #ecfdf5;">
-              <span class="text-xs text-emerald-800 font-bold"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>TOTAL</span>
-              <span class="font-extrabold text-base text-emerald-700">{{ formOutput.get('output_data.total')?.value | number:decimalFormat.digitsInfo }} Bs</span>
+              <span class="text-xs text-erp-success font-bold"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>TOTAL</span>
+              <span class="font-extrabold text-base text-erp-success">{{ formOutput.get('output_data.total')?.value | number:decimalFormat.digitsInfo }} Bs</span>
             </div>
           </div>
         </div>
@@ -217,7 +217,7 @@
 
           <div class="erp-field">
             <label class="erp-label">{{ formOutput.get('output_data.type_payment')?.value == 'CHEQUE' ? 'Nro. Cheque' : 'Nro. Cuenta' }}</label>
-            <input type="text" pInputText class="erp-input w-full text-uppercase"
+            <input type="text" pInputText class="erp-input w-full uppercase"
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="account_output" placeholder="EJ. 12345678"
               [class.ng-dirty]="validatorsService.inputValid('output_data.account_output',formOutput)"/>
             <small *ngIf="validatorsService.inputValid('output_data.account_output',formOutput)" class="erp-error-msg">
@@ -234,7 +234,7 @@
         </div>
         <div class="erp-field">
           <textarea pInputTextarea formControlName="comments" placeholder="Ingrese notas u observaciones..."
-            rows="2" class="w-full text-uppercase" style="resize: none;"
+            rows="2" class="w-full uppercase" style="resize: none;"
             [class.ng-dirty]="validatorsService.inputValid('output_data.comments',formOutput)"></textarea>
           <small *ngIf="validatorsService.inputValid('output_data.comments',formOutput)" class="erp-error-msg">
             {{ validatorsService.inputValidMessage("output_data.comments",formOutput) }}
@@ -315,7 +315,7 @@
           <div class="erp-field">
             <label class="erp-label">Nº Factura</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_factura"
-              placeholder="EJ. 0001" class="erp-input w-full text-uppercase"
+              placeholder="EJ. 0001" class="erp-input w-full uppercase"
               [class.ng-dirty]="validatorsService.inputValid('output_big.number_factura',formOutput)"/>
             <small *ngIf="validatorsService.inputValid('output_big.number_factura',formOutput)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("output_big.number_factura",formOutput) }}
@@ -324,7 +324,7 @@
           <div class="erp-field">
             <label class="erp-label">Nº Precinto</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_precinto"
-              placeholder="EJ. S/N" class="erp-input w-full text-uppercase"
+              placeholder="EJ. S/N" class="erp-input w-full uppercase"
               [class.ng-dirty]="validatorsService.inputValid('output_big.number_precinto',formOutput)"/>
             <small *ngIf="validatorsService.inputValid('output_big.number_precinto',formOutput)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("output_big.number_precinto",formOutput) }}
@@ -344,7 +344,7 @@
             <div class="erp-field">
               <label class="erp-label">Nro. Contenedor</label>
               <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_contenedor"
-                placeholder="EJ. S/N" class="erp-input w-full text-uppercase"
+                placeholder="EJ. S/N" class="erp-input w-full uppercase"
                 [class.ng-dirty]="validatorsService.inputValid('output_big.number_contenedor',formOutput)"/>
               <small *ngIf="validatorsService.inputValid('output_big.number_contenedor',formOutput)" class="erp-error-msg">
                 {{ validatorsService.inputValidMessage("output_big.number_contenedor",formOutput) }}
@@ -355,7 +355,7 @@
           <div *ngIf="formOutput.get('output_data.open_truck')!.value" class="erp-field erp-col-2">
             <label class="erp-label">Póliza de Seguro</label>
             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput" formControlName="poliza_seguro"
-              placeholder="EJ." class="erp-input w-full text-uppercase"
+              placeholder="EJ." class="erp-input w-full uppercase"
               [class.ng-dirty]="validatorsService.inputValid('output_big.poliza_seguro',formOutput)"/>
             <small *ngIf="validatorsService.inputValid('output_big.poliza_seguro',formOutput)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("output_big.poliza_seguro",formOutput) }}

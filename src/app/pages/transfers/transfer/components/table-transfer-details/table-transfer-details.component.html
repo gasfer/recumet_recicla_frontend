@@ -1,6 +1,6 @@
 <div class="p-3" *ngIf="transfersService.detailTransfer().length === 0">
     <div class="erp-soft-alert-empty">
-        <i class="fa-solid fa-truck-moving text-muted fs-2 mb-2 d-block"></i>
+        <i class="fa-solid fa-truck-moving text-erp-text-muted text-3xl mb-2 block"></i>
         <h5>Sin productos para transferir</h5>
         <p>Agrega productos con stock disponible desde el catálogo o buscador superior</p>
     </div>
@@ -18,9 +18,9 @@
     <ng-template pTemplate="body" let-product>
         <tr>
             <td class="app-u-min-width-120px-651945a app-u-max-width-300px-aef3df2">
-                <span class="fw-bold text-slate-800 d-block">{{product.name}}</span>
-                <span class="badge-subtle-code me-1">{{product.cod}}</span>
-                <small class="text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
+                <span class="font-bold text-erp-text block">{{product.name}}</span>
+                <span class="badge-subtle-code mr-1">{{product.cod}}</span>
+                <small class="text-erp-text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
                 <div class="mt-0.5">
                     <span class="badge-subtle-stock">Stock actual: {{ product.total_stock }}</span>
                 </div>
@@ -46,7 +46,7 @@
             <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
                 <button type="button" aria-label="Eliminar"
                     (click)="deleteProductForDetailSale(product.id)"
-                    class="btn btn-sm btn-outline-danger rounded-circle p-1"
+                    class="erp-btn erp-btn-sm erp-btn-outline-danger rounded-full p-1"
                     pTooltip="Quitar de la lista" tooltipPosition="top"
                     style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">
                     <i class="fa-regular fa-trash-can"></i>
@@ -55,17 +55,17 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
-        <tr class="bg-slate-900 text-white">
-            <th colspan="1" class="text-end text-white py-2">
-                <span class="fs-6 fw-bold">TOTAL CANTIDAD A TRANSFERIR:</span>
+        <tr class="bg-erp-header text-white">
+            <th colspan="1" class="text-right text-white py-2">
+                <span class="text-base font-bold">TOTAL CANTIDAD A TRANSFERIR:</span>
             </th>
-            <th colspan="1" class="text-center text-emerald-400 py-2">
-                <span class="fs-5 fw-bold">{{ totalSummary() | number:decimalFormat.digitsInfo }}</span>
+            <th colspan="1" class="text-center text-erp-success py-2">
+                <span class="text-lg font-bold">{{ totalSummary() | number:decimalFormat.digitsInfo }}</span>
             </th>
             <th colspan="1"></th>
         </tr>
         <tr>
-            <td colspan="2" class="text-end bg-white py-2">
+            <td colspan="2" class="text-right bg-erp-surface py-2">
                 <p-button
                     (click)="clearDetailSale()"
                     icon="fa-solid fa-ban"
@@ -73,7 +73,7 @@
                     styleClass="p-button-outlined p-button-sm p-button-danger p-button-rounded">
                 </p-button>
             </td>
-            <td colspan="1" class="text-center bg-white py-2">
+            <td colspan="1" class="text-center bg-erp-surface py-2">
                 <p-button
                     styleClass="p-button-sm p-button-rounded p-button-success"
                     label="Registrar Traslado"

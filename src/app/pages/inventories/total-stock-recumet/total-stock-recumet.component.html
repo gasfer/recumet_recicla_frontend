@@ -1,23 +1,24 @@
 <app-loading *ngIf="loading() || exporting() || loadingCategories() || loadingProducts() || loadingProviders() || loadingProviderTypes()"
-  [fullscreen]="true" [text]="exporting() ? 'Generando reporte...' : 'Cargando stock RECUMET...'">
+  [fullscreen]="true" [customClass]="exporting() ? 'recumet-loader--export-overlay' : ''"
+  [text]="exporting() ? 'Generando reporte...' : 'Cargando stock RECUMET...'">
 </app-loading>
 <form [formGroup]="formReport">
-  <div class="card shadow mb-4 icon-box ">
+  <div class="card shadow mb-4 icon-box stock-total-filter-card">
     <div class="card-body">
-      <div class="row text-center">
+      <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
         <h3 class="app-u-color-bg-2665c-99da769"><b>{{ title() }}</b></h3>
       </div>
-      <p-accordion [activeIndex]="0">
+      <p-accordion [activeIndex]="0" styleClass="stock-filter-accordion">
         <p-accordionTab header="Filtros">
           <div class="p-fluid stock-filters">
-            <div class="row">
+            <div class="flex flex-wrap erp-layout-row gap-y-3">
               <!-- Sucursales Multiselect -->
-              <div class="col-12 col-md-3">
-                <label class="block mb-1">Sucursales<span class="text-danger">*</span></label>
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
+                <label class="block mb-1">Sucursales<span class="text-erp-danger">*</span></label>
                 <p-multiSelect [options]="dropdownSucursales()" formControlName="id_sucursal"
                   (onChange)="onSucursalesChange()" optionLabel="name" optionValue="id"
                   placeholder="Selecciona sucursales" appendTo="body" [filter]="true"
-                  filterBy="name" [showClear]="true" display="chip" class="app-u-width-100-0466783">
+                  filterBy="name" [showClear]="true" display="chip" [maxSelectedLabels]="1000" class="app-u-width-100-0466783">
                 </p-multiSelect>
                 <small *ngIf="validatorsService.inputValid('id_sucursal',formReport)" class="p-error block">
                   {{ validatorsService.inputValidMessage("id_sucursal",formReport) }}
@@ -25,25 +26,25 @@
               </div>
 
               <!-- Área / Almacén -->
-              <div class="col-12 col-md-3">
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                 <label class="block mb-1">Área / Almacén</label>
                 <p-multiSelect [options]="filteredStorages()" formControlName="id_storage" optionLabel="name"
                   optionValue="id" placeholder="Selecciona almacenes" appendTo="body"
-                  [filter]="true" filterBy="name" [showClear]="true" display="chip" class="app-u-width-100-0466783">
+                  [filter]="true" filterBy="name" [showClear]="true" display="chip" [maxSelectedLabels]="1000" class="app-u-width-100-0466783">
                 </p-multiSelect>
               </div>
 
               <!-- Tipo Filtrado -->
-              <div class="col-12 col-md-3">
-                <label class="block mb-1">Tipo Filtrado<span class="text-danger">*</span></label>
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
+                <label class="block mb-1">Tipo Filtrado<span class="text-erp-danger">*</span></label>
                 <p-dropdown #dropdownFilterBy [options]="types_filtrado()" formControlName="filterBy" optionLabel="name"
                   optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()">
                 </p-dropdown>
               </div>
 
               <!-- Fecha -->
-              <div class="col-12 col-md-3">
-                <label class="block mb-1">Fecha<span class="text-danger">*</span></label>
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
+                <label class="block mb-1">Fecha<span class="text-erp-danger">*</span></label>
 
                 <p-calendar #calendarDates *ngIf="formReport.get('filterBy')?.value == 'MONTH'" formControlName="dates"
                   view="month" dateFormat="mm/yy" placeholder="MM/YYYY" [showIcon]="true">
@@ -67,41 +68,41 @@
               </div>
             </div>
 
-            <div class="row mt-3">
+            <div class="flex flex-wrap erp-layout-row gap-y-3 mt-3">
               <!-- Categorías Multiselect -->
-              <div class="col-12 col-md-3">
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                 <label class="block mb-1">Categorías</label>
                 <p-multiSelect [options]="dropdownCategories()" [(ngModel)]="selectedCategoryValues"
                   [ngModelOptions]="{standalone: true}" (onChange)="onCategoryChange($event.value)" optionLabel="name"
                   optionValue="id" placeholder="Seleccione categorías..." appendTo="body"
-                  [filter]="true" filterBy="name" [loading]="loadingCategories()" [showClear]="true" display="chip" class="app-u-width-100-0466783">
+                  [filter]="true" filterBy="name" [loading]="loadingCategories()" [showClear]="true" display="chip" [maxSelectedLabels]="1000" class="app-u-width-100-0466783">
                 </p-multiSelect>
               </div>
 
               <!-- Productos Multiselect -->
-              <div class="col-12 col-md-3">
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                 <label class="block mb-1">Productos</label>
                 <p-multiSelect [options]="dropdownProducts()" [(ngModel)]="selectedProductValues"
                   [ngModelOptions]="{standalone: true}" (onChange)="onProductChange($event.value)" optionLabel="name"
                   optionValue="id" placeholder="Seleccione productos..." appendTo="body"
-                  [filter]="true" filterBy="name,cod" [loading]="loadingProducts()" [showClear]="true" display="chip" class="app-u-width-100-0466783">
+                  [filter]="true" filterBy="name,cod" [loading]="loadingProducts()" [showClear]="true" display="chip" [maxSelectedLabels]="1000" class="app-u-width-100-0466783">
                   <ng-template let-product pTemplate="item">
-                    <div class="flex align-items-center gap-2">
-                      <span class="text-muted app-u-font-size-0-85em-a4178a4">{{ product.cod }}</span>
+                    <div class="flex items-center gap-2">
+                      <span class="text-erp-text-muted app-u-font-size-0-85em-a4178a4">{{ product.cod }}</span>
                       <span class="mx-1">|</span>
-                      <span class="fw-bold">{{ product.name }}</span>
+                      <span class="font-bold">{{ product.name }}</span>
                     </div>
                   </ng-template>
                 </p-multiSelect>
               </div>
 
-              <div class="col-12 col-md-3">
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                 <label class="erp-label" for="providerType">Tipo de proveedor</label>
                 <p-dropdown inputId="providerType" [options]="providerTypes()" formControlName="id_type_provider"
                   optionLabel="name" optionValue="id" placeholder="Todos los tipos" [showClear]="true"
                   appendTo="body" (onChange)="loadProviders()"></p-dropdown>
               </div>
-              <div class="col-12 col-md-3">
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                 <label class="erp-label" for="provider">Nombre del proveedor</label>
                 <p-dropdown inputId="provider" [options]="providers()" formControlName="id_provider"
                   optionLabel="full_names" optionValue="id" placeholder="Todos los proveedores" [filter]="true"
@@ -110,17 +111,17 @@
                     <span>{{ provider.type?.code }} · {{ provider.full_names }} · {{ provider.number_document }}</span>
                   </ng-template>
                 </p-dropdown>
-                <small class="text-muted" *ngIf="formReport.get('id_provider')?.value || formReport.get('id_type_provider')?.value">
+                <small class="text-erp-text-muted" *ngIf="formReport.get('id_provider')?.value || formReport.get('id_type_provider')?.value">
                   Stock total de los productos comprados al proveedor en cada sucursal.
                 </small>
               </div>
             </div>
-            <div class="row mt-2">
+            <div class="flex flex-wrap erp-layout-row gap-y-3 mt-2">
               <!-- Filtrar Saldos -->
-              <div class="col-12 col-md-3">
+              <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                 <label class="block mb-1">Filtrar Saldos</label>
 
-                <div class="d-flex align-items-center gap-3 mt-2">
+                <div class="flex items-center gap-3 mt-2">
                   <p-inputSwitch #inputSwitchSaldo formControlName="showZeroSaldo">
                   </p-inputSwitch>
 
@@ -136,20 +137,23 @@
             </div>
           </div>
 
-          <div class="text-end mt-3">
+          <div class="flex flex-wrap justify-end items-center gap-2 mt-3">
             <p-button (click)="!loading() ? getAllAndSearchKardex(1,this.rows()) : null"
               styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
               [loading]="loading()" [disabled]="exporting()">
             </p-button>
 
-            <p-splitButton *ngIf="validatorsService.withPermission('KARDEX','reports')" icon="fas fa-file-export"
-              label="Exportar reportes" [model]="this.buttonItems" [menuStyle]="{'min-width':'18em'}" [size]="'small'"
-              [disabled]="loading() || exporting()" [rounded]="true" [severity]="'danger'" (onClick)="!loading() ? this.printPdfReport() : null"
-              styleClass="ms-1">
-            </p-splitButton>
+            <ng-container *ngIf="validatorsService.withPermission('KARDEX','reports')">
+              <p-button icon="fa-solid fa-file-export" label="Exportar algún reporte"
+                [disabled]="loading() || exporting()" [severity]="'success'" styleClass="stock-export-trigger"
+                (onClick)="exportReportMenu.toggle($event)">
+              </p-button>
+              <p-menu #exportReportMenu [popup]="true" [model]="buttonItems"
+                styleClass="stock-export-menu" [appendTo]="'body'"></p-menu>
+            </ng-container>
 
             <p-button (click)="clearInputs()"
-              styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
+              styleClass="p-button-rounded p-button-success p-button-sm" icon="fas fa-broom"
               label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
             </p-button>
           </div>
@@ -169,53 +173,53 @@
   <div class="table-responsive">
     <table class="table m-0 align-middle app-table-scroll app-u-font-size-0-95rem-b28f1d0 app-u-border-collapse-collapse-454826f" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
       <thead>
-        <tr class="app-u-background-d2e2f7-ca12813 app-u-border-bottom-2px-solid-bfe2fd-5fedafc app-u-color-0f3d99-2dbab4b fw-bold app-u-font-size-0-85rem-1e8f47b text-uppercase">
-          <th class="py-3 text-start ps-4 fw-bold app-u-width-30-c66ff2c">SUCURSAL</th>
-          <th class="py-3 text-end pe-5 fw-bold">Total (MP)</th>
-          <th class="py-3 text-end pe-5 fw-bold">Total (PT)</th>
-          <th class="py-3 pe-4 text-end fw-bold app-u-width-250px-ea7fb9f">Total General</th>
+        <tr class="app-u-background-d2e2f7-ca12813 app-u-border-bottom-2px-solid-bfe2fd-5fedafc app-u-color-0f3d99-2dbab4b font-bold app-u-font-size-0-85rem-1e8f47b uppercase">
+          <th class="py-3 text-left pl-6 font-bold app-u-width-30-c66ff2c">SUCURSAL</th>
+          <th class="py-3 text-right pr-12 font-bold">Total (MP)</th>
+          <th class="py-3 text-right pr-12 font-bold">Total (PT)</th>
+          <th class="py-3 pr-6 text-right font-bold app-u-width-250px-ea7fb9f">Total General</th>
         </tr>
       </thead>
       <tbody>
         <!-- Branches Loop -->
-        <tr *ngFor="let st of getSucursalesList(); let idx = index" class="border-bottom app-u-border-color-e2e8f0-important-22301dd app-u-background-ffffff-60b34d4"
+        <tr *ngFor="let st of getSucursalesList(); let idx = index" class="border-b app-u-border-color-e2e8f0-important-22301dd app-u-background-ffffff-60b34d4"
          >
-          <td class="py-3 text-start ps-4 font-weight-bold text-dark fw-bold app-u-color-1e293b-49796b3 app-u-font-size-0-95rem-b28f1d0"
+          <td class="py-3 text-left pl-6 font-weight-bold text-erp-text font-bold app-u-color-1e293b-49796b3 app-u-font-size-0-95rem-b28f1d0"
            >
-            <i class="fa-solid fa-building text-primary me-2 app-u-color-0f3d99-important-cb0dbbd"
+            <i class="fa-solid fa-building text-erp-success mr-2 app-u-color-0f3d99-important-cb0dbbd"
               *ngIf="st.name.toUpperCase().includes('MATRIZ')"></i>
-            <i class="fa-solid fa-store text-secondary me-2" *ngIf="!st.name.toUpperCase().includes('MATRIZ')"></i>
+            <i class="fa-solid fa-store text-secondary mr-2" *ngIf="!st.name.toUpperCase().includes('MATRIZ')"></i>
             {{ st.name | uppercase }}
           </td>
-          <td class="py-3 text-end pe-5 text-secondary app-u-font-size-0-95rem-b28f1d0 app-u-color-64748b-064028e">
+          <td class="py-3 text-right pr-12 text-secondary app-u-font-size-0-95rem-b28f1d0 app-u-color-64748b-064028e">
             {{ pipeNumber.transform(st.quantity_saldo_mp, decimal()) }}
           </td>
-          <td class="py-3 text-end pe-5 text-secondary app-u-font-size-0-95rem-b28f1d0 app-u-color-64748b-064028e">
+          <td class="py-3 text-right pr-12 text-secondary app-u-font-size-0-95rem-b28f1d0 app-u-color-64748b-064028e">
             {{ pipeNumber.transform(st.quantity_saldo_pt, decimal()) }}
           </td>
-          <td class="py-3 pe-4 text-end font-weight-bold text-dark fw-bold app-u-color-1e293b-49796b3 app-u-font-size-1-05rem-96b6702"
+          <td class="py-3 pr-6 text-right font-weight-bold text-erp-text font-bold app-u-color-1e293b-49796b3 app-u-font-size-1-05rem-96b6702"
            >
             {{ pipeNumber.transform(st.quantity_saldo, decimal()) }}
           </td>
         </tr>
 
         <tr class="app-u-background-f4f6fc-f2cd29d">
-          <td class="py-3 text-start ps-4 font-weight-bold app-u-font-weight-800-2b95321 app-u-color-0f3d99-2dbab4b app-u-font-size-1-05rem-96b6702"
+          <td class="py-3 text-left pl-6 font-weight-bold app-u-font-weight-800-2b95321 app-u-color-0f3d99-2dbab4b app-u-font-size-1-05rem-96b6702"
            >
-            <i class="fa-solid fa-building-columns text-primary me-2 app-u-color-0f3d99-important-cb0dbbd"></i>
+            <i class="fa-solid fa-building-columns text-erp-success mr-2 app-u-color-0f3d99-important-cb0dbbd"></i>
             CONSOLIDADO GENERAL
           </td>
-          <td class="py-3 text-end pe-5">
+          <td class="py-3 text-right pr-12">
             <div class="font-weight-bold app-u-font-size-1-15rem-26ac869 app-u-font-weight-800-2b95321 app-u-color-0f3d99-2dbab4b">
               {{ pipeNumber.transform(kardexes()?.totals?.quantity_saldo_mp, decimal()) }}
             </div>
           </td>
-          <td class="py-3 text-end pe-5">
+          <td class="py-3 text-right pr-12">
             <div class="font-weight-bold app-u-font-size-1-15rem-26ac869 app-u-font-weight-800-2b95321 app-u-color-0f3d99-2dbab4b">
               {{ pipeNumber.transform(kardexes()?.totals?.quantity_saldo_pt, decimal()) }}
             </div>
           </td>
-          <td class="py-3 pe-4 text-end text-white app-u-background-038b21-important-3ee09bf app-u-font-weight-800-2b95321 app-u-font-size-1-35rem-9097287 app-u-width-250px-ea7fb9f app-u-border-none-important-dfd1bee"
+          <td class="py-3 pr-6 text-right text-white app-u-background-038b21-important-3ee09bf app-u-font-weight-800-2b95321 app-u-font-size-1-35rem-9097287 app-u-width-250px-ea7fb9f app-u-border-none-important-dfd1bee"
            >
             {{ pipeNumber.transform(kardexes()?.totals?.quantity_saldo, decimal()) }}
           </td>

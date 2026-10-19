@@ -1,85 +1,38 @@
-<div [formGroup]="formReport" class="reception-query-page">
-    <div class="card shadow mb-4 icon-box ">
-      <div class="card-body">
-        <div class="row text-center">
-          <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE RECEPCIONES</b></h3>
-        </div>
-        <p-accordion [activeIndex]="1">
-          <p-accordionTab header="Filtros">
-            <div class="p-fluid grid mb-2">
-              <div class="field col-12">
-                <div class="row mt-1">
-                  <div class="col-12 col-sm-6">
-                    <div class="row">
-                      <div class="col-12 col-sm-6">
-                        <label class="block mb-1">Tipo Filtrado<span class="text-danger">*</span></label>
-                        <p-dropdown [options]="types_filtrado()" formControlName="filterBy" optionLabel="name"
-                          optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()">
-                        </p-dropdown>
-                      </div>
-                      <div class="col-12 col-sm-6">
-                        <label class="block mb-1">Fecha<span class="text-danger">*</span>
-                        </label>
-                        <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'" formControlName="dates" view="month"
-                          dateFormat="mm/yy" [readonlyInput]="true" inputId="monthpicker" placeholder="MM/YYYY"
-                          [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true">
-                        </p-calendar>
-                        <p-calendar *ngIf="formReport.get('filterBy')?.value == 'RANGE'" formControlName="dates"
-                          selectionMode="range" dateFormat="dd/mm/yy" [readonlyInput]="true" inputId="range"
-                          placeholder="DD/MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"
-                          [showIcon]="true">
-                        </p-calendar>
-                        <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" formControlName="dates" view="year"
-                          dateFormat="yy" inputId="yearpicker" [showIcon]="true" placeholder="YYYY"
-                          [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
-                        </p-calendar>
-                        <p-calendar *ngIf="formReport.get('filterBy')?.value == 'DAY'" formControlName="dates" inputId="basic"
-                          dateFormat="dd/mm/yy" [showIcon]="true" placeholder="DD/MM/YYYY"
-                          [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
-                        </p-calendar>
-                        <small *ngIf="validatorsService.inputValid('dates',formReport)" class="p-error block">
-                          {{ validatorsService.inputValidMessage("dates",formReport) }}
-                        </small>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12 col-sm-6">
-                    <div class="row">
-                      <div class="col-12 col-sm-6">
-                        <label class="block mb-1">Sucursal origen</label>
-                        <p-dropdown [options]="sucursales()" optionLabel="name" optionValue="id" [showClear]="true"
-                          [virtualScrollItemSize]="38" [lazy]="true" formControlName="id_sucursal_send"
-                          placeholder="SELECCIONA SUCURSAL"></p-dropdown>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+<div [formGroup]="formReport" class="reception-query-page erp-operational-list min-w-0">
+  <section class="erp-section rounded-xl border mb-4 overflow-hidden">
+    <div class="p-4">
+      <h3 class="text-erp-text text-lg font-bold mb-3">Consulta de recepciones</h3>
+      <p-accordion [activeIndex]="1">
+        <p-accordionTab>
+          <ng-template pTemplate="header"><span class="flex items-center gap-2"><i class="fa-solid fa-filter" aria-hidden="true"></i> Filtros de recepciones</span></ng-template>
+          <div class="erp-form-grid cols-3 gap-4">
+            <div class="erp-field"><label class="erp-label required" for="reception-period">Período</label>
+              <p-dropdown inputId="reception-period" class="erp-input" [options]="types_filtrado()" formControlName="filterBy" optionLabel="name" optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()"></p-dropdown>
             </div>
-            <div class="text-end">
-              <p-button (click)="!loading() ? this.getAllAndSearchTransfers(1,rows()) : null"
-                styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
-                [loading]="loading()"></p-button>
-              <p-splitButton *ngIf="this.validatorsService.withPermission('RECEPCIONES','reports')" icon="fas fa-print" label="Imprimir" [model]="this.buttonItems" [menuStyle]="{'width':'10em'}"
-                [size]="'small'"
-                [rounded]="true"
-                [severity]="'danger'"
-                (onClick)="!loading() ? printPdfReport() : null" styleClass="ms-1">
-              </p-splitButton>
-              <p-button (click)="clearTransfers()"
-                styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
-                label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
-              </p-button>
+            <div class="erp-field"><label class="erp-label required" [attr.for]="'reception-date-' + formReport.get('filterBy')?.value">Fecha</label>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value === 'MONTH'" class="erp-input" formControlName="dates" view="month"  dateFormat="mm/yy" inputId="reception-date-MONTH" [showIcon]="true" [readonlyInput]="true" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"></p-calendar>
+<p-calendar *ngIf="formReport.get('filterBy')?.value === 'YEAR'" class="erp-input" formControlName="dates" view="year"  dateFormat="yy" inputId="reception-date-YEAR" [showIcon]="true" [readonlyInput]="true" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"></p-calendar>
+<p-calendar *ngIf="formReport.get('filterBy')?.value === 'DAY'" class="erp-input" formControlName="dates"   dateFormat="dd/mm/yy" inputId="reception-date-DAY" [showIcon]="true" [readonlyInput]="true" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"></p-calendar>
+<p-calendar *ngIf="formReport.get('filterBy')?.value === 'RANGE'" class="erp-input" formControlName="dates"  selectionMode="range" dateFormat="dd/mm/yy" inputId="reception-date-RANGE" [showIcon]="true" [readonlyInput]="true" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"></p-calendar>
+              <small *ngIf="validatorsService.inputValid('dates',formReport)" class="text-erp-danger">{{ validatorsService.inputValidMessage('dates',formReport) }}</small>
             </div>
-          </p-accordionTab>
-        </p-accordion>
-      </div>
-      <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
-        [activeItem]="activeSearchItem()"></p-tabMenu>
+            <div class="erp-field"><label class="erp-label" for="reception-origin">Sucursal de origen</label>
+              <p-dropdown inputId="reception-origin" class="erp-input" [options]="sucursales()" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true" filterBy="name" formControlName="id_sucursal_send" appendTo="body" placeholder="Todas las sucursales"></p-dropdown>
+            </div>
+          </div>
+          <div class="erp-filter-actions">
+            <button type="button" class="erp-btn erp-btn-primary" [disabled]="loading()" (click)="getAllAndSearchTransfers(1,rows())"><i class="fa-solid" [ngClass]="loading() ? 'fa-spinner fa-spin' : 'fa-magnifying-glass'" aria-hidden="true"></i> Buscar</button>
+            <button type="button" class="erp-btn erp-btn-primary" *ngIf="validatorsService.withPermission('RECEPCIONES','reports')" [disabled]="loading()" (click)="receptionReports.toggle($event)" aria-haspopup="menu" aria-controls="reception-reports"><i class="fa-solid fa-file-export" aria-hidden="true"></i> Exportar reporte <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+            <p-menu #receptionReports id="reception-reports" [popup]="true" [model]="buttonItems" appendTo="body" styleClass="stock-export-menu purchase-report-menu"></p-menu>
+            <button type="button" class="erp-btn erp-btn-secondary" [disabled]="loading()" (click)="clearTransfers()"><i class="fa-solid fa-broom" aria-hidden="true"></i> Limpiar</button>
+          </div>
+        </p-accordionTab>
+      </p-accordion>
     </div>
-  </div>
+    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="activeSearchItem()"></p-tabMenu>
+  </section>
   <div *ngIf="isInconclusiveMode" class="alert reception-query-page__alert mb-3">
-    <div class="fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Cola de trabajo: revisiones de recepción abiertas</div>
+    <div class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Cola de trabajo: revisiones de recepción abiertas</div>
     <div class="small mt-1">Resuelva cada faltante o excedente desde su nota de revisión y conserve la evidencia. Al cerrar el expediente y verificar Stock–Kardex, la recepción saldrá de esta lista; su historial seguirá disponible en Conciliaciones.</div>
   </div>
   <div *ngIf="isInconclusiveMode && !loading() && (transfers()?.data?.length || 0) === 0" class="reception-query-page__empty-state mb-3">
@@ -92,3 +45,5 @@
   <app-modal-view-details-transfer></app-modal-view-details-transfer>
   <app-modal-approved-transfer [id_transfer]="id_transfer()" (save$)="this.getAllAndSearchTransfers(1,this.rows())"></app-modal-approved-transfer>
   <app-transfer-review-trace (reviewChanged)="refreshInconclusiveReviews()"></app-transfer-review-trace>
+
+</div>

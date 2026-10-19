@@ -11,7 +11,7 @@
                 <label class="erp-label required">Nombre</label>
                 <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="name" placeholder="EJ. UNIDAD"
-                    class="erp-input text-uppercase"
+                    class="erp-input uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('name',unitForm)"/>
                 <small *ngIf="validatorsService.inputValid('name',unitForm)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("name",unitForm) }}
@@ -25,7 +25,7 @@
                 <label class="erp-label required">Siglas</label>
                 <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="siglas" placeholder="EJ. UND"
-                    class="erp-input text-uppercase"
+                    class="erp-input uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('siglas',unitForm)"/>
                 <small *ngIf="validatorsService.inputValid('siglas',unitForm)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("siglas",unitForm) }}

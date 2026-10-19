@@ -1,19 +1,19 @@
 <form [formGroup]="formReport">
   <div class="card shadow mb-4 icon-box">
     <div class="card-body">
-      <div class="row text-center">
+      <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
         <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE COMPRAS</b></h3>
       </div>
       <p-accordion [activeIndex]="1">
         <p-accordionTab header="Filtros">
-          <div class="p-fluid grid mb-2">
-            <div class="field col-12">
-              <div class="row mt-1">
-                <div class="col-12 col-sm-6">
-                  <div class="row">
-                    <div class="col-12 col-sm-6">
+          <div class="p-fluid erp-form-grid mb-2">
+            <div class="erp-field w-[100%] px-2 min-w-0">
+              <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                  <div class="flex flex-wrap erp-layout-row gap-y-3">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                       <label class="block mb-1"
-                        >Tipo Filtrado<span class="text-danger">*</span></label
+                        >Tipo Filtrado<span class="text-erp-danger">*</span></label
                       >
                       <p-dropdown
                         [options]="types_filtrado()"
@@ -25,9 +25,9 @@
                       >
                       </p-dropdown>
                     </div>
-                    <div class="col-12 col-sm-6">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                       <label class="block mb-1"
-                        >Fecha<span class="text-danger">*</span>
+                        >Fecha<span class="text-erp-danger">*</span>
                       </label>
                       <p-calendar
                         *ngIf="formReport.get('filterBy')?.value == 'MONTH'"
@@ -98,9 +98,9 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-12 col-sm-6">
-                  <div class="row">
-                    <div class="col-12 col-sm-6">
+                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                  <div class="flex flex-wrap erp-layout-row gap-y-3">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                       <label class="block mb-1">Tipo Registro</label>
                       <p-dropdown
                         [options]="types_registry()"
@@ -118,7 +118,7 @@
                         "
                       ></p-dropdown>
                     </div>
-                    <div class="col-12 col-sm-6">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                       <label class="block mb-0">Area / Almacén</label>
                       <p-dropdown
                         [options]="validatorsService.storages()"
@@ -152,9 +152,9 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-12">
-                  <div class="row">
-                    <div class="col-12 col-sm-3">
+                <div class="w-[100%] px-2 min-w-0">
+                  <div class="flex flex-wrap erp-layout-row gap-y-3">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                       <label class="block mb-0">¿Cómo nos conociste?</label>
                       <p-dropdown
                         [options]="referral_sources()"
@@ -166,7 +166,7 @@
                       ></p-dropdown>
                     </div>
 
-                    <div class="col-12 col-sm-3">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                       <label class="block mb-1">Tipo proveedor</label>
                       <p-dropdown
                         [options]="types()"
@@ -177,32 +177,32 @@
                       ></p-dropdown>
                     </div>
 
-                    <div class="col-12 col-sm-3">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                       <label class="block mb-1">Proveedor</label>
                         <app-input-search  (onEnters)="suggestedsProvider($event)" (onDebounce)="suggestedsProvider($event)"
                             [icon]="'fa-solid fa-magnifying-glass-arrow-right'"
                             [placeholder]="'Busque un proveedor aquí....'"></app-input-search>
-                        <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                        <div class="absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
                             <ul *ngIf="loadingSearchProvider()" class="list-group shadow">
                                 <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'>Cargando....</span>
+                                    <span class='font-bold'>Cargando....</span>
                                 </li>
                             </ul>
                             <ul class="list-group shadow cursor-pointer">
                                 <li *ngFor="let provider of suggestedProvider()"
                                     class="list-group-item list-group-item-action" (click)="selectProvider(provider)">
-                                    <span class='fw-bold'>{{provider.type?.code}} - {{ provider.full_names}} - {{ provider.number_document}}</span>
+                                    <span class='font-bold'>{{provider.type?.code}} - {{ provider.full_names}} - {{ provider.number_document}}</span>
                                 </li>
                             </ul>
                             <ul *ngIf="suggestedProvider().length == 0 && txtSearchProvider() && !loadingSearchProvider()" class="list-group shadow">
                                 <li class="list-group-item list-group-item-action">
-                                    <span class='fw-bold'> No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span>
+                                    <span class='font-bold'> No se encontró el proveedor: "{{txtSearchProvider() | uppercase}}"</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-3">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[25%] w-full">
                       <label class="block mb-1">Proveedor Seleccionado:</label>
                       <div class="mt-1">
                         <p-tag
@@ -228,8 +228,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-12 col-sm-2">
+                  <div class="flex flex-wrap erp-layout-row gap-y-3">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[16.666666666666664%] w-full">
                       <label class="block mb-0">¿Cliente antiguo?</label>
                       <p-dropdown
                         [options]="yes_no_type()"
@@ -240,7 +240,7 @@
                         [showClear]="true"
                       ></p-dropdown>
                     </div>
-                    <div class="col-12 col-sm-2">
+                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[16.666666666666664%] w-full">
                       <label class="block mb-0">¿Con recojo?</label>
                       <p-dropdown
                         [options]="yes_no_type()"
@@ -256,7 +256,7 @@
               </div>
             </div>
           </div>
-          <div class="text-end">
+          <div class="text-right">
             <p-button
               (click)="
                 !loading() ? this.getAllAndSearchInputs(1, rows()) : null
@@ -276,13 +276,13 @@
               [rounded]="true"
               [severity]="'danger'"
               (onClick)="!loading() ? printPdfReport() : null"
-              styleClass="ms-1"
+              styleClass="ml-1"
             >
               <app-loading></app-loading>
             </p-splitButton>
             <p-button
               (click)="clearInputs()"
-              styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
+              styleClass="p-button-rounded ml-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
               icon="fas fa-broom"
               label="Limpiar"
               [pTooltip]="'Limpiar Campos'"

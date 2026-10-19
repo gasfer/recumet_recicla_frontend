@@ -1,25 +1,25 @@
 <form [formGroup]="formReport">
     <div class="card shadow mb-4 icon-box ">
         <div class="card-body">
-            <div class="row text-center">
+            <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
                 <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE CAJA</b></h3>
             </div>
             <p-accordion [activeIndex]="1">
                 <p-accordionTab header="Filtros">
-                    <div class="p-fluid grid mb-2">
-                        <div class="field col-12">
-                            <div class="row mt-1">
-                                <div class="col-12 col-sm-6">
-                                    <div class="row">
-                                        <div class="col-12 col-sm-6">
-                                            <label class="block mb-1">Tipo Filtrado<span class="text-danger">*</span></label>
+                    <div class="p-fluid erp-form-grid mb-2">
+                        <div class="erp-field w-[100%] px-2 min-w-0">
+                            <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                                    <div class="flex flex-wrap erp-layout-row gap-y-3">
+                                        <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                                            <label class="block mb-1">Tipo Filtrado<span class="text-erp-danger">*</span></label>
                                             <p-dropdown [options]="types_filtrado()" formControlName="filterBy"
                                                 optionLabel="name" optionValue="code" appendTo="body"
                                                 (onChange)="onChangeTypesFilter()">
                                             </p-dropdown>
                                         </div>
-                                        <div class="col-12 col-sm-6">
-                                            <label class="block mb-1">Fecha<span class="text-danger">*</span></label>
+                                        <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                                            <label class="block mb-1">Fecha<span class="text-erp-danger">*</span></label>
                                             <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'"
                                                 formControlName="dates" view="month" dateFormat="mm/yy" [readonlyInput]="true"
                                                 inputId="monthpicker" placeholder="MM/YYYY"
@@ -49,9 +49,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngIf="authService.getUser.role == 'ADMINISTRADOR'" class="col-12 col-sm-6">
-                                    <div class="row">
-                                        <div class="col-12 col-sm-6">
+                                <div *ngIf="authService.getUser.role == 'ADMINISTRADOR'" class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
+                                    <div class="flex flex-wrap erp-layout-row gap-y-3">
+                                        <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                                             <label class="block mb-1">Usuarios</label>
                                             <p-dropdown [options]="users()" [showClear]="true" formControlName="id_user"
                                                 optionLabel="name" optionValue="code" appendTo="body" [filter]="true"
@@ -64,11 +64,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-end">
+                    <div class="text-right">
                         <p-button (click)="!loading() ? getAllAndSearchCajasSmall(1,this.rows()) : null" styleClass="p-button-rounded p-button-sm" label="Buscar"
                             icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
                         <p-button (click)="clearInputs()"
-                            styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
+                            styleClass="p-button-rounded ml-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm" icon="fas fa-broom"
                             label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
                         </p-button>
                     </div>

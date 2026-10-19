@@ -1,150 +1,44 @@
 <form [formGroup]="formReport">
-    <div class="card shadow mb-4 icon-box ">
-      <div class="card-body">
-        <div class="row text-center">
-          <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE CLASIFICADOS</b></h3>
+  <section class="erp-section rounded-xl border mb-4 overflow-hidden">
+    <div class="p-4">
+      <h3 class="text-erp-text text-lg font-bold mb-3">Consulta de clasificados</h3>
+      <div class="erp-card-header rounded-t-lg px-4 py-3 flex items-center gap-2"><i class="fa-solid fa-filter" aria-hidden="true"></i><span>Filtros de clasificados</span></div>
+      <p *ngIf="catalogError()" role="alert" class="text-erp-danger px-4 pt-3">{{ catalogError() }}</p>
+      <div class="erp-form-grid erp-filter-grid">
+        <div class="erp-field"><label class="erp-label required" for="classified-period">Período</label>
+          <p-dropdown inputId="classified-period" class="erp-input" [options]="types_filtrado()" formControlName="filterBy" optionLabel="name" optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()"></p-dropdown>
         </div>
-        <p-accordion [activeIndex]="1">
-          <p-accordionTab header="Filtros">
-            <div class="p-fluid grid mb-2">
-              <div class="field col-12">
-                <div class="row mt-1">
-                  <div class="col-12 col-sm-6">
-                    <div class="row">
-                      <div class="col-12 col-sm-6">
-                        <label class="block mb-1">Tipo Filtrado<span class="text-danger">*</span></label>
-                        <p-dropdown [options]="types_filtrado()" formControlName="filterBy" optionLabel="name"
-                          optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()">
-                        </p-dropdown>
-                      </div>
-                      <div class="col-12 col-sm-6">
-                        <label class="block mb-1">Fecha<span class="text-danger">*</span>
-                        </label>
-                        <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'" formControlName="dates"
-                            view="month" dateFormat="mm/yy" [readonlyInput]="true" inputId="monthpicker" placeholder="MM/YYYY"
-                            [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true">
-                        </p-calendar>
-                        <p-calendar *ngIf="formReport.get('filterBy')?.value == 'RANGE'" formControlName="dates"
-                            selectionMode="range" dateFormat="dd/mm/yy" [readonlyInput]="true" inputId="range" placeholder="DD/MM/YYYY"
-                            [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true">
-                        </p-calendar>
-                        <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" formControlName="dates"
-                            view="year" dateFormat="yy" inputId="yearpicker" [showIcon]="true" placeholder="YYYY"
-                            [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
-                        </p-calendar>
-                        <p-calendar *ngIf="formReport.get('filterBy')?.value == 'DAY'" formControlName="dates"
-                          inputId="basic" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="DD/MM/YYYY"
-                          [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
-                        </p-calendar>
-                        <small *ngIf="validatorsService.inputValid('dates',formReport)" class="p-error block">
-                          {{ validatorsService.inputValidMessage("dates",formReport) }}
-                        </small>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12 col-sm-6">
-                    <div class="row">
-                      <div class="row">
-                        <div class="col-12 col-sm-6">
-                          <label class="block mb-0">Area / Almacén</label>
-                            <p-dropdown [options]="validatorsService.storages()"
-                              placeholder="Selecciona un almacén"
-                              optionLabel="name"
-                              optionValue="id"
-                              [showClear]="true"
-                              appendTo="body" [filter]="true" filterBy="name"
-                              [virtualScrollItemSize]="38" [lazy]="true"
-                              formControlName="id_storage"
-                              [class.ng-dirty]="validatorsService.inputValid('id_storage',formReport)"
-                            ></p-dropdown>
-                            <small *ngIf="validatorsService.inputValid('id_storage',formReport)" class="p-error block">
-                                {{ validatorsService.inputValidMessage("id_storage",formReport) }}
-                            </small>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                          <label class="block mb-1">Tipo Registro</label>
-                          <p-dropdown [options]="types_registry()"
-                                      [showClear]="true"
-                                      placeholder="Selecciona una opción"
-                                      optionLabel="name"
-                                      optionValue="code"
-                                      appendTo="body"
-                                      formControlName="type_registry"
-                                      [class.ng-dirty]="validatorsService.inputValid('type_registry',formReport)"
-                          ></p-dropdown>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12 col-sm-6">
-                    <div class="row mt-1">
-                      <div class="col-12 col-sm-6">
-                          <label class="block mb-1">Producto</label>
-                          <app-input-search  (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
-                              [icon]="'fa-solid fa-magnifying-glass-arrow-right'"
-                              [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                          <div class="position-absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
-                              <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
-                                  <li class="list-group-item list-group-item-action">
-                                      <span class='fw-bold'>Cargando....</span>
-                                  </li>
-                              </ul>
-                              <ul class="list-group shadow cursor-pointer">
-                                  <li *ngFor="let product of suggestedProducts()"
-                                      class="list-group-item list-group-item-action" (click)="selectProduct(product)">
-                                      <span class='fw-bold'>{{product.cod}} - {{ product.name}}</span>
-                                      <br>
-                                      <span class="text-muted fw-normal align-content-end">{{product.description }} -
-                                          {{product.category.name}} / {{product.unit.siglas}}</span>
-                                  </li>
-                              </ul>
-                              <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
-                                  <li class="list-group-item list-group-item-action">
-                                      <span class='fw-bold'> No se encontró el producto: "{{txtSearchProduct() | uppercase}}"</span>
-                                  </li>
-                              </ul>
-                          </div>
-                      </div>
-                      <div class="col-12 col-sm-6 mt-2">
-                          <b>Producto Seleccionado:
-                              <br>
-                              <p-tag [rounded]="true" icon="fa-solid fa-tag"
-                                  [severity]="productSelect() ? 'info' : 'warning'"
-                                  [value]="productSelect() ? 'COD: ' + productSelect()?.cod+' / ' + productSelect()?.name : 'COD: 0 / SELECCIONE UN PRODUCTO'">
-                                  <p-badge *ngIf="productSelect()" class="cursor-pointer" severity="danger"
-                                      (click)="clearSelectProduct()" [value]="'X'" styleClass="mr-2"
-                                      pTooltip="Quitar Producto" tooltipPosition="top">
-                                  </p-badge>
-                                  &nbsp;
-                              </p-tag>
-                          </b>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="text-end">
-              <p-button (click)="!loading() ? this.getAllAndSearchClassifieds(1,rows()) : null" styleClass="p-button-rounded p-button-sm" label="Buscar"
-                icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
-              <p-splitButton *ngIf="this.validatorsService.withPermission('CLASIFICADOS','reports')," icon="fas fa-print" label="Imprimir" [model]="this.buttonItems"
-                [menuStyle]="{'width':'10em'}"
-                [size]="'small'"
-                [rounded]="true"
-                [severity]="'danger'"
-                (onClick)="!loading() ? printPdfReport() : null" styleClass="ms-1">
-              </p-splitButton>
-              <p-button (click)="clearInputs()" styleClass="p-button-rounded ms-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
-                icon="fas fa-broom" label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
-              </p-button>
-            </div>
-          </p-accordionTab>
-        </p-accordion>
+        <div class="erp-field"><label class="erp-label required" [attr.for]="'classified-date-' + formReport.get('filterBy')?.value">Fecha</label>
+          <p-calendar *ngIf="formReport.get('filterBy')?.value === 'MONTH'" class="erp-input" formControlName="dates" view="month"  dateFormat="mm/yy" [showIcon]="true" [readonlyInput]="true" inputId="classified-date-MONTH"></p-calendar>
+<p-calendar *ngIf="formReport.get('filterBy')?.value === 'YEAR'" class="erp-input" formControlName="dates" view="year"  dateFormat="yy" [showIcon]="true" [readonlyInput]="true" inputId="classified-date-YEAR"></p-calendar>
+<p-calendar *ngIf="formReport.get('filterBy')?.value === 'DAY'" class="erp-input" formControlName="dates"   dateFormat="dd/mm/yy" [showIcon]="true" [readonlyInput]="true" inputId="classified-date-DAY"></p-calendar>
+<p-calendar *ngIf="formReport.get('filterBy')?.value === 'RANGE'" class="erp-input" formControlName="dates"  selectionMode="range" dateFormat="dd/mm/yy" [showIcon]="true" [readonlyInput]="true" inputId="classified-date-RANGE"></p-calendar>
+          <small *ngIf="validatorsService.inputValid('dates', formReport)" class="text-erp-danger">{{ validatorsService.inputValidMessage('dates', formReport) }}</small>
+        </div>
+        <div class="erp-field"><label class="erp-label" for="classified-storage">Área / Almacén</label>
+          <p-dropdown inputId="classified-storage" class="erp-input" [options]="validatorsService.storages()" formControlName="id_storage" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true" placeholder="Todos los almacenes" appendTo="body"></p-dropdown>
+        </div>
+        <div class="erp-field"><label class="erp-label" for="classified-registry">Tipo de registro</label>
+          <p-dropdown inputId="classified-registry" class="erp-input" [options]="types_registry()" formControlName="type_registry" optionLabel="name" optionValue="code" [showClear]="true" placeholder="Todos los registros" appendTo="body"></p-dropdown>
+        </div>
+        <div class="erp-field"><label class="erp-label" for="classified-categories">Categorías</label>
+          <p-multiSelect inputId="classified-categories" styleClass="erp-input w-full" [options]="categories()" formControlName="category_ids" optionLabel="name" optionValue="id" [filter]="true" [showClear]="true" display="chip" placeholder="Todas las categorías" appendTo="body" [maxSelectedLabels]="2" selectedItemsLabel="{0} categorías seleccionadas"></p-multiSelect>
+        </div>
+        <div class="erp-field"><label class="erp-label" for="classified-products">Productos de origen</label>
+          <p-multiSelect inputId="classified-products" styleClass="erp-input w-full" [options]="products()" formControlName="product_ids" optionLabel="label" optionValue="id" [filter]="true" [showClear]="true" display="chip" placeholder="Todos los productos" appendTo="body" [virtualScroll]="true" [virtualScrollItemSize]="38" [maxSelectedLabels]="2" selectedItemsLabel="{0} productos seleccionados"></p-multiSelect>
+        </div>
       </div>
+      <div class="flex flex-wrap justify-end gap-2 pt-3 border-t border-erp-border">
+        <button type="button" class="erp-btn erp-btn-primary flex-1 sm:flex-none" [disabled]="loading()" (click)="getAllAndSearchClassifieds(1, rows())"><i class="fa-solid" [ngClass]="loading() ? 'fa-spinner fa-spin' : 'fa-magnifying-glass'" aria-hidden="true"></i> Buscar</button>
+        <button type="button" *ngIf="validatorsService.withPermission('CLASIFICADOS','reports')" class="erp-btn erp-btn-primary flex-1 sm:flex-none" [disabled]="loading()" (click)="classifiedReportMenu.toggle($event)" aria-haspopup="menu" aria-controls="classified-reports"><i class="fa-solid fa-file-export" aria-hidden="true"></i> Exportar reporte <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        <p-menu #classifiedReportMenu id="classified-reports" [popup]="true" [model]="buttonItems" appendTo="body" styleClass="stock-export-menu purchase-report-menu"></p-menu>
+        <button type="button" class="erp-btn erp-btn-secondary flex-1 sm:flex-none" [disabled]="loading()" (click)="clearInputs()"><i class="fa-solid fa-broom" aria-hidden="true"></i> Limpiar</button>
+      </div>
+    </div>
       <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
         [activeItem]="searchItems()[0]"></p-tabMenu>
-    </div>
-  </form>
+  </section>
+</form>
   <app-table responsiveStrategy="scroll"  [cols]="cols()" (customSort$)="customSort($event)"
     [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
     [data]="classifieds()" [loading]="loading()">

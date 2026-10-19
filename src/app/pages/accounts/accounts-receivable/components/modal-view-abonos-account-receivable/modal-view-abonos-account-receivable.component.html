@@ -1,37 +1,37 @@
 <p-dialog [header]="'Detalle cuenta por cobrar: '+ accountReceivable()?.cod" [(visible)]="accountsReceivableService.showModalDetailsAccountReceivable" [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--md">
     <form>
-        <p-tag styleClass="m-2 ms-0 mb-1" value="CUENTA: {{accountReceivable()?.cod}} " [rounded]="true"></p-tag>
+        <p-tag styleClass="m-2 ml-0 mb-1" value="CUENTA: {{accountReceivable()?.cod}} " [rounded]="true"></p-tag>
         <div class="table-responsive">
             <table class="table table-xxs table-sm app-table-scroll" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
                 <tbody class="border-solid">
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">FECHA</td>
                         <td width="30%">{{accountReceivable()?.date_credit | date:'dd/MM/yyyy, HH:mm:ss'}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">DESCRIPCION.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">DESCRIPCION.</td>
                         <td width="30%">{{accountReceivable()?.description}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">TIPO DOC.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">TIPO DOC.</td>
                         <td width="30%">{{accountReceivable()?.output?.type_registry}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">NO. DOC.</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">NO. DOC.</td>
                         <td width="30%">{{accountReceivable()?.output?.number_registry}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">CLIENTE</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">CLIENTE</td>
                         <td width="30%">{{accountReceivable()?.client?.full_names}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">ESTADO CREDITO</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">ESTADO CREDITO</td>
                         <td width="30%">{{'CREDITO' + ' ' +accountReceivable()?.status_account}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">MONTO CREDITO</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">MONTO CREDITO</td>
                         <td colspan="3" width="80%">{{accountReceivable()?.total  | number:decimal()}}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="justify-content-between d-flex">
-            <p-tag styleClass="m-2 ms-0 mb-1" severity="success" value="LISTADO DE ABONOS" [rounded]="true"></p-tag>
+        <div class="justify-between flex">
+            <p-tag styleClass="m-2 ml-0 mb-1" severity="success" value="LISTADO DE ABONOS" [rounded]="true"></p-tag>
             <p-button *ngIf="accountReceivable()?.status_account == 'PENDIENTE'" icon="fa-solid fa-circle-plus" (click)="accountsReceivableService.showModalNewAbono = true" pTooltip="Nuevo abono" tooltipPosition="left"
                 styleClass="p-button-primary p-button-rounded mb-1" label="Nuevo abono"></p-button>
         </div>
@@ -73,18 +73,18 @@
                                 pTooltip ="Anular abono" tooltipPosition="bottom"
                                 (click)="deleteAbono(abono.id,abono.monto_abono)"
                                 pRipple icon="fa-solid fa-trash-can"
-                                class="p-button-rounded p-button-danger p-button-sm ms-1">
+                                class="p-button-rounded p-button-danger p-button-sm ml-1">
                             </button>
                         </td>
                     </tr>
 				</tbody>
 				<tfoot>
                     <tr>
-                        <td width="10%" class="table-active fw-bold">TOTAL ABONADO</td>
+                        <td width="10%" class="table-active font-bold">TOTAL ABONADO</td>
 						<td id="subtotal">{{accountReceivable()?.monto_abonado| number:decimal()}}</td>
 					</tr>
                     <tr>
-                        <td width="10%" class="table-active fw-bold">RESTANTE</td>
+                        <td width="10%" class="table-active font-bold">RESTANTE</td>
                         <td id="subtotal">{{accountReceivable()?.monto_restante| number:decimal()}}</td>
 					</tr>
 				</tfoot>

@@ -51,6 +51,8 @@
       </div>
     </div>
 
+    <div *ngIf="text" class="recumet-loader-label">{{ text }}</div>
+
     <!-- Dynamic Horizontal Progress Bar & Percentage Display -->
     <div *ngIf="showLine" class="recumet-progress-container" data-purpose="horizontal-loader">
       <div class="recumet-progress-track">

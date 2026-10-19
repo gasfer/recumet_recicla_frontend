@@ -11,7 +11,7 @@
                 <input type="text" pInputText
                     [pKeyFilter]="validatorsService.expRegValidInput" formControlName="name"
                     placeholder="EJ. METALES FERROSOS"
-                    class="erp-input text-uppercase"
+                    class="erp-input uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('name',categoryForm)"/>
                 <small *ngIf="validatorsService.inputValid('name',categoryForm)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("name",categoryForm) }}
@@ -25,7 +25,7 @@
                 <label class="erp-label required">Descripción</label>
                 <textarea pInputTextarea
                     [pKeyFilter]="validatorsService.expRegValidInput" formControlName="description"
-                    placeholder="EJ. ......" class="text-uppercase"
+                    placeholder="EJ. ......" class="uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('description',categoryForm)"></textarea>
                 <small *ngIf="validatorsService.inputValid('description',categoryForm)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("description",categoryForm) }}

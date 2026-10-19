@@ -266,9 +266,18 @@ getAllAndSearch(
   }
 
 
-  getReportExcel(status:boolean, type: string = '', query?: string, field_sort:string = 'id',order:string = 'DESC',id_type_provider:string = '') {
-      const url = `${base_url}/provider/excel?field_sort=${field_sort}&order=${order}&type=${type}&query=${query}&status=${status}&id_type_provider=${id_type_provider}`;
+  getReportExcel(status:boolean, type: string = '', query?: string, field_sort:string = 'id',order:string = 'DESC',id_type_provider:string = '', managementQuery?: ProviderManagementQuery, report: 'providers' | 'products' = 'providers') {
+      let params = new HttpParams();
+      const filters = managementQuery === undefined
+        ? { status, type, query: query || '', field_sort, order, id_type_provider }
+        : { ...managementQuery, management: true, status, ...(query ? { type, query } : {}), field_sort, order };
+      for (const [key, value] of Object.entries(filters)) {
+        if (value !== undefined && value !== null && value !== '') params = params.set(key, String(value));
+      }
+      const url = `${base_url}/provider/excel`;
+      params = params.set('report', report);
       return this.http.get(url,{
+                params,
                 responseType: 'blob',
               });
     }

@@ -1,6 +1,6 @@
 <div class="p-3" *ngIf="classifiedService.detailSale().length === 0">
     <div class="erp-soft-alert-empty">
-        <i class="fa-solid fa-boxes-packing text-muted fs-2 mb-2 d-block"></i>
+        <i class="fa-solid fa-boxes-packing text-erp-text-muted text-3xl mb-2 block"></i>
         <h5>Sin productos clasificados</h5>
         <p>Selecciona los productos resultantes desde el catálogo o buscador superior</p>
     </div>
@@ -18,9 +18,9 @@
     <ng-template pTemplate="body" let-product>
         <tr>
             <td class="classified-product">
-                <span class="fw-bold text-slate-800 d-block">{{product.name}}</span>
-                <span class="badge-subtle-code me-1">{{product.cod}}</span>
-                <small class="text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
+                <span class="font-bold text-erp-text block">{{product.name}}</span>
+                <span class="badge-subtle-code mr-1">{{product.cod}}</span>
+                <small class="text-erp-text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
             </td>
             <td class="text-center">
                 <p-inputNumber
@@ -43,7 +43,7 @@
             <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
                 <button type="button" aria-label="Eliminar"
                     (click)="deleteProductForDetailShopping(product.id)"
-                    class="btn btn-sm btn-outline-danger rounded-circle p-1 classified-remove"
+                    class="erp-btn erp-btn-sm erp-btn-outline-danger rounded-full p-1 classified-remove"
                     pTooltip="Quitar de la lista" tooltipPosition="top">
                     <i class="fa-regular fa-trash-can"></i>
                 </button>
@@ -51,16 +51,16 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
-        <tr class="bg-slate-900 text-white">
-            <th colspan="2" class="text-end text-white py-2">
-                <span class="fs-6 fw-bold">CANTIDAD TOTAL CLASIFICADA:</span>
+        <tr class="bg-erp-header text-white">
+            <th colspan="2" class="text-right text-white py-2">
+                <span class="text-base font-bold">CANTIDAD TOTAL CLASIFICADA:</span>
             </th>
-            <th colspan="1" class="text-start text-emerald-400 py-2">
-                <span class="fs-5 fw-bold">{{ totalQuantityItems() | number:decimalFormat.digitsInfo }}</span>
+            <th colspan="1" class="text-left text-erp-success py-2">
+                <span class="text-lg font-bold">{{ totalQuantityItems() | number:decimalFormat.digitsInfo }}</span>
             </th>
         </tr>
         <tr>
-            <td colspan="3" class="bg-white py-2">
+            <td colspan="3" class="bg-erp-surface py-2">
                 <div class="classified-actions">
                 <p-button
                     (click)="clearDetailShopping()"

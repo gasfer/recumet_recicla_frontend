@@ -11,7 +11,7 @@
                 <label class="erp-label required">Nombre</label>
                 <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="name" placeholder="EJ. BALANZA ETC."
-                    class="erp-input text-uppercase"
+                    class="erp-input uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('name',scaleForm)"/>
                 <small *ngIf="validatorsService.inputValid('name',scaleForm)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("name",scaleForm) }}
@@ -25,7 +25,7 @@
                 <label class="erp-label">Celular</label>
                 <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="cellphone" placeholder="EJ. 7974..."
-                    class="erp-input text-uppercase"
+                    class="erp-input uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('cellphone',scaleForm)"/>
                 <small *ngIf="validatorsService.inputValid('cellphone',scaleForm)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("cellphone",scaleForm) }}
@@ -41,7 +41,7 @@
                     [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="address"
                     placeholder="EJ. ......"
-                    class="text-uppercase"
+                    class="uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('address',scaleForm)"
                 ></textarea>
                 <small *ngIf="validatorsService.inputValid('address',scaleForm)" class="erp-error-msg">

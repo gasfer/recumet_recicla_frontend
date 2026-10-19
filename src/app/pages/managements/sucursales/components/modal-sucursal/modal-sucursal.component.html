@@ -5,7 +5,7 @@
     <form [formGroup]="sucursalForm">
         <app-alert-notify></app-alert-notify>
         <div class="p-fluid grid">
-            <div class="field col-12">
+            <div class="erp-field erp-col-full">
                 <div class="field">
                     <label class="block mb-0">Nombre Sucursal<span class="text-danger">*</span>
                     </label>
@@ -16,8 +16,8 @@
                         {{ validatorsService.inputValidMessage("name",sucursalForm) }}
                     </small>
                 </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
+                <div class="erp-form-grid cols-2">
+                    <div class="erp-field">
                         <label class="block mb-0">Celular<span class="text-danger">*</span>
                         </label>
                         <input
@@ -32,7 +32,7 @@
                             {{ validatorsService.inputValidMessage("cellphone",sucursalForm) }}
                         </small>
                     </div>
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                    <div class="erp-field">
                         <label class="block mb-0">Correo</label>
                         <input type="text" pInputText
                             formControlName="email"
@@ -60,11 +60,11 @@
                     {{ validatorsService.inputValidMessage("address",sucursalForm) }}
                 </small>
             </div>
-            <div class="row mt-1 ">
+            <div class="erp-form-grid cols-2">
                 <label class="block">Estado:<span class="text-danger">*</span></label>
             </div>
-            <div class="row mt-0">
-                <div class="col-3">
+            <div class="erp-form-grid cols-2">
+                <div class="erp-field">
                     <p-inputSwitch formControlName="status"></p-inputSwitch>
                 </div>
                 <div class="col">

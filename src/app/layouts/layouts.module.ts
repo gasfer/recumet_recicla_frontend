@@ -15,6 +15,7 @@ import { LanguageService } from '../core/services/language.service';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DropdownModule } from 'primeng/dropdown';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TooltipModule } from 'primeng/tooltip';
 import { A11yModule } from '@angular/cdk/a11y';
 import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
@@ -42,6 +43,7 @@ import { CoreModule } from '../core/core.module';
     SimplebarAngularModule,
     DropdownModule,
     A11yModule,
+    TooltipModule,
     DialogModule,
     TagModule,
     CoreModule

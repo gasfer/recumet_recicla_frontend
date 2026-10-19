@@ -1,40 +1,40 @@
 <p-dialog [header]="'Detalle Traslado: '+ transfer()?.cod" [(visible)]="transfersService.showModalDetailsTransfer" [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--lg transfer-details-dialog">
     <form class="transfer-details">
-        <p-tag styleClass="m-2 ms-0 mb-1" value="TRASLADO: {{transfer()?.cod}} " [rounded]="true"></p-tag>
+        <p-tag styleClass="m-2 ml-0 mb-1" value="TRASLADO: {{transfer()?.cod}} " [rounded]="true"></p-tag>
         <div class="table-responsive">
             <table class="table table-sm transfer-details__summary" tabindex="0" aria-label="Resumen del traslado">
                 <tbody class="border-solid">
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">SUCURSAL ORIGEN</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">SUCURSAL ORIGEN</td>
                         <td width="30%">{{transfer()?.sucursal_send?.name}}</td>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">SUCURSAL DESTINO</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">SUCURSAL DESTINO</td>
                         <td width="30%">{{transfer()?.sucursal_received?.name}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA ENVIÓ</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">FECHA ENVIÓ</td>
                         <td width="30%">{{transfer()?.date_send| date:'dd/MM/yyyy, HH:mm:ss'}}</td>
-                        <td *ngIf="transfer()?.status == 'RECEIVED'" width="20%" class="text-black text-left fw-bold bg-secondary-subtle">FECHA RECEPCIÓN</td>
+                        <td *ngIf="transfer()?.status == 'RECEIVED'" width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">FECHA RECEPCIÓN</td>
                         <td *ngIf="transfer()?.status == 'RECEIVED'" width="30%">{{transfer()?.date_received| date:'dd/MM/yyyy, HH:mm:ss'}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">USUARIO ENVIÓ</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">USUARIO ENVIÓ</td>
                         <td width="30%">{{transfer()?.user_send?.full_names}}</td>
-                        <td *ngIf="transfer()?.status == 'RECEIVED'" width="20%" class="text-black text-left fw-bold bg-secondary-subtle">USUARIO RECEPCIÓN</td>
+                        <td *ngIf="transfer()?.status == 'RECEIVED'" width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">USUARIO RECEPCIÓN</td>
                         <td *ngIf="transfer()?.status == 'RECEIVED'" width="30%">{{transfer()?.user_received?.full_names}}</td>
                     </tr>
                     <tr>
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">OBS. ENVIÓ</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">OBS. ENVIÓ</td>
                         <td colspan="3" width="80%">{{transfer()?.observations_send}}</td>
                     </tr>
                     <tr *ngIf="transfer()?.status == 'RECEIVED'">
-                        <td width="20%" class="text-black text-left fw-bold bg-secondary-subtle">OBS. RECEPCIÓN</td>
+                        <td width="20%" class="text-erp-text text-left font-bold bg-secondary-subtle">OBS. RECEPCIÓN</td>
                         <td colspan="3" width="80%">{{transfer()?.observations_received }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <p-tag styleClass="m-2 ms-0 mb-1" severity="success" value="DETALLE DE TRASLADO: {{transfer()?.cod}} " [rounded]="true"></p-tag>
+        <p-tag styleClass="m-2 ml-0 mb-1" severity="success" value="DETALLE DE TRASLADO: {{transfer()?.cod}} " [rounded]="true"></p-tag>
         <div class="table-responsive">
 			<table id="tbldetalle" class="table table-striped table-hover table-sm transfer-details__items" tabindex="0" aria-label="Detalle de productos trasladados">
 				<thead>
@@ -49,20 +49,20 @@
                     <tr *ngFor="let detail of transfer()?.detailsTransfers" >
                         <td >
                             <strong>{{detail.product.name}}</strong>
-                            <p class="text-muted m-0">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-black">{{detail.product.cod}}</span></p>
+                            <p class="text-erp-text-muted m-0">{{detail.product.description}}<br *ngIf="detail.product.description"> <span class="text-erp-text">{{detail.product.cod}}</span></p>
                         </td>
                         <td>{{detail.quantity  | number:decimalFormat.digitsInfo }}</td>
                         <td *ngIf="transfer()?.status === 'RECEIVED'">
                             {{ (detail.quantity_received !== null && detail.quantity_received !== undefined ? detail.quantity_received : detail.quantity) | number:decimalFormat.digitsInfo }}
                         </td>
                         <td *ngIf="transfer()?.status === 'RECEIVED'">
-                            <span class="text-dark">{{ detail.observation || '-' }}</span>
+                            <span class="text-erp-text">{{ detail.observation || '-' }}</span>
                         </td>
                     </tr>
 				</tbody>
 				<tfoot>
 					<tr>
-						<td  class="table-active fw-bold">TOTAL</td>
+						<td  class="table-active font-bold">TOTAL</td>
                         <td id="total">
                             <p-tag [severity]="'warning'"  value="{{totalQuantityItems() | number:decimalFormat.digitsInfo}}" [rounded]="true" class="app-u-font-size-15px-de00808"></p-tag>
                         </td>

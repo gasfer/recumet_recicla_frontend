@@ -1,6 +1,7 @@
 /* ── Contenedor fila de tarjetas ── */
 .print-format-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 8px;
 }
@@ -42,7 +43,7 @@
 
 .print-card.active .print-card__icon {
   background: var(--primary-color);
-  color: #fff;
+  color: var(--color-text-inverse);
 }
 
 /* ── Textos ── */

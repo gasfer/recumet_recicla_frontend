@@ -23,7 +23,7 @@ test.describe('responsive authenticated shell', () => {
     await expect(selectedBranch).toBeVisible();
     await expect(selectedStorage).toBeVisible();
 
-    if (viewport.width <= 992) {
+    if (viewport.width < 768) {
       await menuButton.click();
       await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
       await expect(page.locator('.app-sidebar-backdrop')).toHaveClass(/is-visible/);
@@ -66,7 +66,7 @@ test.describe('responsive authenticated shell', () => {
         || focusStyle.boxShadow !== 'none',
     ).toBe(true);
 
-    if (viewport.width <= 992) {
+    if (viewport.width < 768) {
       await page.keyboard.press('Enter');
       await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
       const sidebar = page.locator('#app-sidebar');

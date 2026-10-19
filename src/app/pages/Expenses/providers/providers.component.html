@@ -5,16 +5,16 @@
         <h3 class="app-u-color-bg-2665c-99da769 text-center app-u-flex-1-97445a8 app-u-margin-right-auto-471df91">
           <b>CONSULTA DE PROVEEDORES</b>
         </h3>
-        <div *ngIf="validatorsService.withPermission('PROVEEDORES','create')" class="ms-1">
+        <div *ngIf="validatorsService.withPermission('PROVEEDORES','create')" class="ml-1">
           <p-button icon="fa-solid fa-circle-plus" (click)="showModal()" pTooltip="Añadir Nuevo" tooltipPosition="left"
             [rounded]="true" label="Añadir"></p-button>
         </div>
       </div>
       <p-accordion [activeIndex]="1">
         <p-accordionTab header="Filtros">
-            <div class="field col-12">
-              <div class=" row mt-1">
-                <div class="p-fluid col-12 col-sm-6">
+            <div class="erp-field w-[100%] px-2 min-w-0">
+              <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                <div class="p-fluid w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                     <label class="block mb-1">Tipo proveedor</label>
                     <p-dropdown [options]="types()" placeholder="Selecciona una opción"
                       optionLabel="name" appendTo="body" formControlName="id_type_provider"
@@ -22,8 +22,8 @@
                       (onChange)="!loading() ? this.getAllAndSearchProviders(1,rows(),true) : null"
                       [class.ng-dirty]="validatorsService.inputValid('id_type_provider',formReport)"></p-dropdown>
                 </div>
-                <div class="col-12 col-sm-6 mt-3">
-                  <div class="text-end">
+                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full mt-3">
+                  <div class="text-right">
                     <p-button  *ngIf="validatorsService.withPermission('COMPRAS','reports')" (click)="!loading() ? this.printPdfReport() : null"
                     styleClass="p-button-rounded p-button-success p-button-sm" label="Exportar excel"
                       icon="fas fa-file-excel" [loading]="loadingReport()"></p-button>
@@ -64,14 +64,14 @@
 
   <div *ngIf="selectedProvider() as p" class="space-y-3">
     <!-- Header banner con resumen ejecutivo -->
-    <div class="p-3 rounded-lg bg-slate-800 text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
+    <div class="p-3 rounded-lg bg-erp-header text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-emerald-600/30 border border-emerald-400 flex items-center justify-center text-emerald-300 text-lg">
+        <div class="w-10 h-10 rounded-full bg-erp-success-soft/30 border border-erp-border flex items-center justify-center text-erp-success text-lg">
           <i class="fa-solid fa-truck-moving"></i>
         </div>
         <div>
           <h4 class="font-bold text-sm text-white mb-0 uppercase tracking-wide">{{ p.full_names }}</h4>
-          <span class="text-xs text-slate-300">{{ p.type?.name || 'Proveedor estándar' }} · NIT/CI: {{ p.number_document || 'Sin documento' }}</span>
+          <span class="text-xs text-erp-text-muted">{{ p.type?.name || 'Proveedor estándar' }} · NIT/CI: {{ p.number_document || 'Sin documento' }}</span>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -82,16 +82,16 @@
     </div>
 
     <!-- SECCIÓN 1: TIPO E IDENTIFICACIÓN FISCAL (Fondo suave pizarra/slate) -->
-    <section class="p-3 rounded-lg border border-slate-200 bg-slate-50/70">
-      <div class="text-xs font-bold text-slate-700 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-id-card text-slate-500"></i> 1. Identificación Legal & Tipo de Proveedor
+    <section class="p-3 rounded-lg border border-erp-border bg-erp-bg/70">
+      <div class="text-xs font-bold text-erp-text uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-id-card text-erp-text-muted"></i> 1. Identificación Legal & Tipo de Proveedor
       </div>
 
       <div class="erp-form-grid mb-2">
         <div class="erp-field erp-col-full">
           <label class="erp-label">Tipo de proveedor</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-tag text-emerald-600 mr-2"></i> {{ p.type?.name || 'Proveedor general' }}
+          <div class="erp-readonly-value font-semibold text-erp-text">
+            <i class="fa-solid fa-tag text-erp-success mr-2"></i> {{ p.type?.name || 'Proveedor general' }}
           </div>
         </div>
       </div>
@@ -99,13 +99,13 @@
       <div class="erp-form-grid">
         <div class="erp-field">
           <label class="erp-label">Razón social o nombre completo</label>
-          <div class="erp-readonly-value font-semibold text-slate-900 uppercase">
+          <div class="erp-readonly-value font-semibold text-erp-text uppercase">
             {{ p.full_names }}
           </div>
         </div>
         <div class="erp-field">
           <label class="erp-label">NIT / CI / Documento fiscal</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
+          <div class="erp-readonly-value font-semibold text-erp-text">
             {{ p.number_document || 'Sin documento registrado' }}
           </div>
         </div>
@@ -113,22 +113,22 @@
     </section>
 
     <!-- SECCIÓN 2: UBICACIÓN & SECTOR (Fondo suave esmeralda) -->
-    <section class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/40">
-      <div class="text-xs font-bold text-emerald-800 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-map-location-dot text-emerald-600"></i> 2. Sector & Ubicación Geográfica
+    <section class="p-3 rounded-lg border border-erp-border bg-erp-success-soft/40">
+      <div class="text-xs font-bold text-erp-success uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-map-location-dot text-erp-success"></i> 2. Sector & Ubicación Geográfica
       </div>
 
       <div class="erp-form-grid mb-2">
         <div class="erp-field">
           <label class="erp-label">Sector / Zona</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-location-dot text-emerald-600 mr-2"></i> {{ p.sector.name || 'Sin sector asignado' }}
+          <div class="erp-readonly-value font-semibold text-erp-text">
+            <i class="fa-solid fa-location-dot text-erp-success mr-2"></i> {{ p.sector.name || 'Sin sector asignado' }}
           </div>
         </div>
         <div class="erp-field">
           <label class="erp-label">Celular principal</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-phone text-emerald-600 mr-2"></i> {{ p.cellphone || 'Sin número registrado' }}
+          <div class="erp-readonly-value font-semibold text-erp-text">
+            <i class="fa-solid fa-phone text-erp-success mr-2"></i> {{ p.cellphone || 'Sin número registrado' }}
           </div>
         </div>
       </div>
@@ -136,7 +136,7 @@
       <div class="erp-form-grid">
         <div class="erp-field erp-col-full">
           <label class="erp-label">Dirección exacta</label>
-          <div class="erp-readonly-value text-slate-800 uppercase">
+          <div class="erp-readonly-value text-erp-text uppercase">
             {{ p.direction || 'Sin dirección registrada' }}
           </div>
         </div>
@@ -144,21 +144,21 @@
     </section>
 
     <!-- SECCIÓN 3: CONTACTO & CATEGORÍA (Fondo suave azul) -->
-    <section class="p-3 rounded-lg border border-blue-100 bg-blue-50/40">
-      <div class="text-xs font-bold text-blue-900 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-user-tie text-blue-600"></i> 3. Contacto Comercial & Material
+    <section class="p-3 rounded-lg border border-erp-border bg-erp-info-soft/40">
+      <div class="text-xs font-bold text-erp-info uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-user-tie text-erp-info"></i> 3. Contacto Comercial & Material
       </div>
 
       <div class="erp-form-grid mb-2">
         <div class="erp-field">
           <label class="erp-label">Persona de contacto</label>
-          <div class="erp-readonly-value font-semibold text-slate-800 uppercase">
+          <div class="erp-readonly-value font-semibold text-erp-text uppercase">
             {{ p.name_contact || 'Sin contacto registrado' }}
           </div>
         </div>
         <div class="erp-field">
           <label class="erp-label">Celular de contacto</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
+          <div class="erp-readonly-value font-semibold text-erp-text">
             {{ p.cellphone_contact || 'Sin número registrado' }}
           </div>
         </div>
@@ -167,13 +167,13 @@
       <div class="erp-form-grid mb-2">
         <div class="erp-field">
           <label class="erp-label">Categoría (material principal)</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-box-open text-blue-600 mr-2"></i> {{ p.category.name || 'General' }}
+          <div class="erp-readonly-value font-semibold text-erp-text">
+            <i class="fa-solid fa-box-open text-erp-info mr-2"></i> {{ p.category.name || 'General' }}
           </div>
         </div>
         <div class="erp-field">
           <label class="erp-label">Área / Cargo / Unidad</label>
-          <div class="erp-readonly-value text-slate-800 uppercase">
+          <div class="erp-readonly-value text-erp-text uppercase">
             {{ p.workAreaOrPositionOrUnit || 'No especificado' }}
           </div>
         </div>
@@ -182,13 +182,13 @@
       <div class="erp-form-grid">
         <div class="erp-field">
           <label class="erp-label">Frecuencia de entrega</label>
-          <div class="erp-readonly-value font-semibold text-slate-800">
-            <i class="fa-solid fa-calendar-days text-blue-600 mr-2"></i> {{ p.frequency || 'MENSUAL' }}
+          <div class="erp-readonly-value font-semibold text-erp-text">
+            <i class="fa-solid fa-calendar-days text-erp-info mr-2"></i> {{ p.frequency || 'MENSUAL' }}
           </div>
         </div>
         <div class="erp-field">
           <label class="erp-label">Contactos adicionales</label>
-          <div class="erp-readonly-value text-slate-700">
+          <div class="erp-readonly-value text-erp-text">
             {{ p.companyContacts || 'Ninguno' }}
           </div>
         </div>
@@ -196,9 +196,9 @@
     </section>
 
     <!-- SECCIÓN 4: MODALIDAD & ESTADO (Fondo suave ámbar) -->
-    <section class="p-3 rounded-lg border border-amber-100 bg-amber-50/30">
-      <div class="text-xs font-bold text-amber-900 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-sliders text-amber-600"></i> 4. Modalidad de Operación & Estado
+    <section class="p-3 rounded-lg border border-erp-border bg-erp-warning-soft/30">
+      <div class="text-xs font-bold text-erp-warning uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-sliders text-erp-warning"></i> 4. Modalidad de Operación & Estado
       </div>
 
       <div class="erp-form-grid">
@@ -226,26 +226,26 @@
     </section>
 
     <!-- SECCIÓN 5: RESUMEN DE OPERACIONES (Fondo suave pizarra) -->
-    <section class="p-3 rounded-lg border border-slate-200 bg-slate-50">
-      <div class="text-xs font-bold text-slate-800 uppercase mb-2.5 flex items-center gap-1.5">
-        <i class="fa-solid fa-chart-line text-slate-600"></i> 5. Resumen de Movimientos & Saldos
+    <section class="p-3 rounded-lg border border-erp-border bg-erp-bg">
+      <div class="text-xs font-bold text-erp-text uppercase mb-2.5 flex items-center gap-1.5">
+        <i class="fa-solid fa-chart-line text-erp-text"></i> 5. Resumen de Movimientos & Saldos
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
-          <span class="text-xs text-slate-500 block">Total Compras</span>
-          <b class="text-slate-800 text-sm">{{ p.total_inputs }} reg.</b>
+        <div class="bg-erp-surface p-2.5 rounded-lg border border-erp-border text-center">
+          <span class="text-xs text-erp-text-muted block">Total Compras</span>
+          <b class="text-erp-text text-sm">{{ p.total_inputs }} reg.</b>
         </div>
-        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
-          <span class="text-xs text-slate-500 block">Total Kilogramos</span>
-          <b class="text-slate-800 text-sm">{{ p.total_products }} kg</b>
+        <div class="bg-erp-surface p-2.5 rounded-lg border border-erp-border text-center">
+          <span class="text-xs text-erp-text-muted block">Total Kilogramos</span>
+          <b class="text-erp-text text-sm">{{ p.total_products }} kg</b>
         </div>
-        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
-          <span class="text-xs text-slate-500 block">Saldo Pendiente</span>
-          <b class="text-amber-700 text-sm">Bs. {{ (p.saldo_cuentas_por_pagar || 0) | number:'1.2-2' }}</b>
+        <div class="bg-erp-surface p-2.5 rounded-lg border border-erp-border text-center">
+          <span class="text-xs text-erp-text-muted block">Saldo Pendiente</span>
+          <b class="text-erp-warning text-sm">Bs. {{ (p.saldo_cuentas_por_pagar || 0) | number:'1.2-2' }}</b>
         </div>
-        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-center">
-          <span class="text-xs text-slate-500 block">Última Compra</span>
-          <span class="text-slate-700 font-semibold text-xs">{{ (p.date_last_input | date:'dd/MM/yyyy') || 'Sin fecha' }}</span>
+        <div class="bg-erp-surface p-2.5 rounded-lg border border-erp-border text-center">
+          <span class="text-xs text-erp-text-muted block">Última Compra</span>
+          <span class="text-erp-text font-semibold text-xs">{{ (p.date_last_input | date:'dd/MM/yyyy') || 'Sin fecha' }}</span>
         </div>
       </div>
     </section>

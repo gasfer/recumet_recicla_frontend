@@ -1,37 +1,404 @@
-$green-actions: '.btn-primary, .btn-success, .erp-btn-primary, .btn-scale, button.bg-primary, button.bg-success, a.bg-primary, a.bg-success, button.bg-emerald-500, button.bg-emerald-600, button.bg-emerald-700, button.bg-emerald-800, button.bg-green-500, button.bg-green-600, button.bg-green-700, a.bg-emerald-500, a.bg-emerald-600, a.bg-emerald-700, a.bg-emerald-800, a.bg-green-500, a.bg-green-600, a.bg-green-700';
+$primary-actions: '.btn-primary, .btn-success, .erp-btn-primary, .erp-btn-success, .btn-scale, button.bg-erp-success-soft, button.bg-erp-success, button.bg-erp-primary, a.bg-erp-success, a.bg-erp-primary, button.bg-primary, button.bg-success, a.bg-primary, a.bg-success, button.bg-emerald-500, button.bg-emerald-600, button.bg-emerald-700, button.bg-emerald-800, button.bg-green-500, button.bg-green-600, button.bg-green-700, a.bg-emerald-500, a.bg-emerald-600, a.bg-emerald-700, a.bg-emerald-800, a.bg-green-500, a.bg-green-600, a.bg-green-700';
+$secondary-actions: '.btn-secondary, .btn-light, .erp-btn-secondary, .erp-btn-ghost, .p-button-secondary';
 
-body :is(#{$green-actions}),
-body .p-button.p-button-success:not(.p-button-outlined):not(.p-button-text) {
-  background-color: var(--color-primary) !important;
-  border-color: var(--color-primary) !important;
-  color: #ffffff !important;
+$table-action-selectors: '.erp-table-cell-action, .rc__actions, .gc-card__actions, .app-table-action-column';
+
+/* Botones estándar de la aplicación: altura unificada a 32px */
+body :is(.erp-btn, .btn, .p-button):not(.btn-link):not(.header-item):not(#vertical-menu-btn):not(.noti-icon):not(#page-header-user-dropdown):not(#{$table-action-selectors} *):not(.p-inputnumber-button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 0 .75rem !important;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-base);
+  font-size: var(--erp-font-body, 12px);
+  font-weight: 650;
+  line-height: 30px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
 }
 
-body :is(#{$green-actions}):not(:disabled):not(.disabled):hover,
-body .p-button.p-button-success:not(.p-button-outlined):not(.p-button-text):enabled:hover {
-  background-color: var(--color-primary-hover) !important;
-  border-color: var(--color-primary-hover) !important;
+body :is(.erp-btn, .btn):not(.btn-link):not(.header-item):not(#vertical-menu-btn):not(.noti-icon):not(#page-header-user-dropdown):not(#{$table-action-selectors} *):not(.p-inputnumber-button) {
+  background-color: var(--color-action-secondary);
+  border-color: var(--color-action-secondary);
+  color: var(--color-text-inverse);
 }
 
-body :is(#{$green-actions}):focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+body :is(.erp-btn-sm, .btn-sm, .btn-xs, .p-button-sm):not(.header-item):not(#vertical-menu-btn):not(#{$table-action-selectors} *) {
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 0 .6rem !important;
+  font-size: var(--erp-font-metadata, 11px);
 }
 
-body :is(.btn-outline-primary, .btn-outline-success),
-body .p-button:is(.p-button-outlined, .p-button-text):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-secondary) {
+body .p-button-rounded:not(#{$table-action-selectors} *) {
+  border-radius: 999px !important;
+}
+
+/* SplitButton uniforme a 32px */
+body .p-splitbutton,
+body .p-splitbutton .p-button,
+body .p-splitbutton .p-splitbutton-defaultbutton,
+body .p-splitbutton .p-splitbutton-menubutton {
+  height: 32px !important;
+  min-height: 32px !important;
+  font-size: 12px !important;
+}
+
+/* Acciones principales (con texto / formulario) */
+body :is(#{$primary-actions}):not(.header-item):not(#vertical-menu-btn):not(#{$table-action-selectors} *),
+body .p-button.p-button-success:not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *),
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(#{$table-action-selectors} *):not(.header-item):not(#vertical-menu-btn) {
+  background-color: var(--color-action-primary) !important;
+  border-color: var(--color-action-primary) !important;
+  color: var(--color-text-inverse) !important;
+}
+body :is(#{$primary-actions}):not(#{$table-action-selectors} *) :is(i, span),
+body .p-button.p-button-success:not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *) :is(.p-button-label, .p-button-icon, i),
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(#{$table-action-selectors} *):not(.header-item) :is(.p-button-label, .p-button-icon, i) {
+  color: var(--color-text-inverse) !important;
+}
+body :is(#{$primary-actions}):not(:disabled):not(.disabled):not(#{$table-action-selectors} *):hover,
+body .p-button.p-button-success:not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *):enabled:hover,
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warning):not(.p-button-success):not(.p-button-info):not(#{$table-action-selectors} *):not(.header-item):enabled:hover {
+  background-color: var(--color-action-primary-hover) !important;
+  border-color: var(--color-action-primary-hover) !important;
+  color: var(--color-text-inverse) !important;
+}
+body :is(#{$primary-actions}):not(#{$table-action-selectors} *):active,
+body :is(#{$primary-actions}):not(#{$table-action-selectors} *).active,
+body :is(#{$primary-actions}):not(#{$table-action-selectors} *)[aria-pressed='true'],
+body .p-button.p-button-success:not(#{$table-action-selectors} *):enabled:active,
+body .p-button.p-button-success:not(#{$table-action-selectors} *).p-highlight {
+  background-color: var(--color-action-primary-active) !important;
+  border-color: var(--color-action-primary-active) !important;
+  color: var(--color-text-inverse) !important;
+}
+
+body :is(#{$secondary-actions}):not(#{$table-action-selectors} *):not(.header-item) {
+  background-color: var(--color-action-secondary) !important;
+  border-color: var(--color-action-secondary) !important;
+  color: var(--color-text-inverse) !important;
+}
+body :is(#{$secondary-actions}):not(#{$table-action-selectors} *):not(.header-item) :is(i, span, .p-button-label, .p-button-icon) { color: var(--color-text-inverse) !important; }
+body :is(#{$secondary-actions}):not(:disabled):not(.disabled):not(#{$table-action-selectors} *):not(.header-item):hover,
+body .p-button.p-button-secondary:not(#{$table-action-selectors} *):enabled:hover {
+  background-color: var(--color-action-secondary-hover) !important;
+  border-color: var(--color-action-secondary-hover) !important;
+  color: var(--color-text-inverse) !important;
+}
+body :is(#{$secondary-actions}):not(#{$table-action-selectors} *):active,
+body :is(#{$secondary-actions}):not(#{$table-action-selectors} *).active,
+body :is(#{$secondary-actions}):not(#{$table-action-selectors} *)[aria-pressed='true'] {
+  background-color: var(--color-action-secondary-active) !important;
+  border-color: var(--color-action-secondary-active) !important;
+  color: var(--color-text-inverse) !important;
+}
+
+@each $role in danger, warning, info {
+  $fill: var(--color-action-#{$role});
+  $fill-hover: var(--color-action-#{$role}-hover);
+  $fill-active: var(--color-action-#{$role}-active);
+
+  /* Botones sólidos con fondo lleno */
+  body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *) {
+    background-color: $fill !important;
+    border-color: $fill !important;
+    color: var(--color-text-inverse) !important;
+  }
+  body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *) :is(i, span, .p-button-label, .p-button-icon) { color: var(--color-text-inverse) !important; }
+  body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover {
+    background-color: $fill-hover !important;
+    border-color: $fill-hover !important;
+    color: var(--color-text-inverse) !important;
+  }
+  body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *):active,
+  body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *).active {
+    background-color: $fill-active !important;
+    border-color: $fill-active !important;
+    color: var(--color-text-inverse) !important;
+  }
+
+  /* Botones outlined/ghost: fondo transparente, borde y texto coloreados */
+  body :is(.btn-outline-#{$role}, .erp-btn-outline-#{$role}, .p-button.p-button-#{$role}.p-button-outlined, .p-button.p-button-#{$role}.p-button-text):not(#{$table-action-selectors} *) {
+    background: transparent !important;
+    background-color: transparent !important;
+    border-color: $fill !important;
+    color: $fill !important;
+  }
+  body :is(.btn-outline-#{$role}, .erp-btn-outline-#{$role}, .p-button.p-button-#{$role}.p-button-outlined, .p-button.p-button-#{$role}.p-button-text):not(#{$table-action-selectors} *) :is(i, span, .p-button-label, .p-button-icon) { color: $fill !important; }
+  body :is(.btn-outline-#{$role}, .erp-btn-outline-#{$role}, .p-button.p-button-#{$role}.p-button-outlined, .p-button.p-button-#{$role}.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover {
+    background-color: color-mix(in srgb, #{$fill} 10%, transparent) !important;
+    border-color: $fill-hover !important;
+    color: $fill-hover !important;
+  }
+  body :is(.btn-outline-#{$role}, .erp-btn-outline-#{$role}, .p-button.p-button-#{$role}.p-button-outlined, .p-button.p-button-#{$role}.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover :is(i, span, .p-button-label, .p-button-icon) {
+    color: $fill-hover !important;
+  }
+}
+
+/* Outlined para botones success/primary */
+body :is(.erp-btn-outline-primary, .erp-btn-outline-success, .btn-outline-primary, .btn-outline-success, .p-button.p-button-success.p-button-outlined, .p-button.p-button-success.p-button-text):not(#{$table-action-selectors} *) {
+  background: transparent !important;
   background-color: transparent !important;
-  border-color: var(--color-primary) !important;
+  border-color: var(--color-action-primary) !important;
+  color: var(--color-action-primary) !important;
+}
+body :is(.erp-btn-outline-primary, .erp-btn-outline-success, .btn-outline-primary, .btn-outline-success, .p-button.p-button-success.p-button-outlined, .p-button.p-button-success.p-button-text):not(#{$table-action-selectors} *) :is(i, span, .p-button-label, .p-button-icon) {
+  color: var(--color-action-primary) !important;
+}
+body :is(.erp-btn-outline-primary, .erp-btn-outline-success, .btn-outline-primary, .btn-outline-success, .p-button.p-button-success.p-button-outlined, .p-button.p-button-success.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover {
+  background-color: rgba(0, 169, 107, 0.10) !important;
+  border-color: var(--color-action-primary-hover) !important;
+  color: var(--color-action-primary-hover) !important;
+}
+body :is(.erp-btn-outline-primary, .erp-btn-outline-success, .btn-outline-primary, .btn-outline-success, .p-button.p-button-success.p-button-outlined, .p-button.p-button-success.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover :is(i, span, .p-button-label, .p-button-icon) {
+  color: var(--color-action-primary-hover) !important;
+}
+
+/* ── p-inputNumber spinners: altura automática proporcional, sin bloquear el input ── */
+body .p-inputnumber-buttons-stacked .p-inputnumber-button,
+body .p-inputnumber .p-inputnumber-button {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  width: 1.75rem !important;
+  min-width: 1.75rem !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: var(--color-surface-secondary, #f8fafc) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-muted) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  flex: 1 1 0 !important;
+}
+body .p-inputnumber-buttons-stacked .p-inputnumber-button .p-button-icon,
+body .p-inputnumber .p-inputnumber-button .p-button-icon {
+  font-size: 10px !important;
+  color: var(--color-text-muted) !important;
+}
+body .p-inputnumber-buttons-stacked .p-inputnumber-button:hover:not(:disabled),
+body .p-inputnumber .p-inputnumber-button:hover:not(:disabled) {
+  background-color: var(--color-success-light, #d1fae5) !important;
   color: var(--color-primary) !important;
 }
-
-body :is(.btn-outline-primary, .btn-outline-success):not(:disabled):hover,
-body .p-button:is(.p-button-outlined, .p-button-text):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-secondary):enabled:hover {
-  background-color: var(--color-primary-light) !important;
-}
-
-body .p-button.p-button-success:is(.p-button-outlined, .p-button-text) :is(.p-button-label, .p-button-icon) {
+body .p-inputnumber-buttons-stacked .p-inputnumber-button:hover:not(:disabled) .p-button-icon,
+body .p-inputnumber .p-inputnumber-button:hover:not(:disabled) .p-button-icon {
   color: var(--color-primary) !important;
 }
+body[data-bs-theme='dark'] .p-inputnumber-buttons-stacked .p-inputnumber-button,
+body[data-bs-theme='dark'] .p-inputnumber .p-inputnumber-button {
+  background-color: #243449 !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-muted) !important;
+}
+body[data-bs-theme='dark'] .p-inputnumber-buttons-stacked .p-inputnumber-button:hover:not(:disabled),
+body[data-bs-theme='dark'] .p-inputnumber .p-inputnumber-button:hover:not(:disabled) {
+  background-color: var(--color-success-soft-rgb, #18453b) !important;
+  color: var(--color-focus) !important;
+}
 
-body :is(#{$green-actions}) i { color: inherit !important; }
+/* ==========================================================================
+   BOTONES DE ACCIÓN EN TABLAS Y LISTAS:
+   - SIN FONDO (transparent)
+   - TAMAÑO UNIFORME A 32PX (32px x 32px)
+   - COLOR DE ICONOS ALEGRE, MODERNO Y SUTIL
+   - HOVER SUAVE TRASLÚCIDO AL TONO
+   ========================================================================== */
+body :is(#{$table-action-selectors}) :is(.p-button, button) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  transition: all 0.18s ease-in-out !important;
+
+  :is(i, span, .p-button-icon) {
+    font-size: 14px !important;
+    line-height: 1 !important;
+    transition: transform 0.18s ease, color 0.18s ease !important;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px) scale(1.06);
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+  &:disabled,
+  &.p-disabled {
+    opacity: 0.35 !important;
+    cursor: not-allowed !important;
+    background: transparent !important;
+  }
+}
+
+/* 1. SUCCESS / VER DETALLE (Eye) */
+body :is(#{$table-action-selectors}) :is(.p-button.p-button-success, .btn-success, .erp-btn-success) {
+  background: transparent !important;
+  border-color: transparent !important;
+  :is(i, span, .p-button-icon) {
+    color: #059669 !important;
+  }
+  &:hover:not(:disabled) {
+    background: rgba(5, 150, 105, 0.12) !important;
+    border-color: rgba(5, 150, 105, 0.28) !important;
+    :is(i, span, .p-button-icon) {
+      color: #047857 !important;
+    }
+  }
+}
+
+/* 2. INFO / TRAZABILIDAD (Clock) */
+body :is(#{$table-action-selectors}) :is(.p-button.p-button-info, .btn-info, .erp-btn-info) {
+  background: transparent !important;
+  border-color: transparent !important;
+  :is(i, span, .p-button-icon) {
+    color: #2563eb !important;
+  }
+  &:hover:not(:disabled) {
+    background: rgba(37, 99, 235, 0.12) !important;
+    border-color: rgba(37, 99, 235, 0.28) !important;
+    :is(i, span, .p-button-icon) {
+      color: #1d4ed8 !important;
+    }
+  }
+}
+
+/* 3. WARNING / EDITAR (Pencil) */
+body :is(#{$table-action-selectors}) :is(.p-button.p-button-warning, .btn-warning, .erp-btn-warning) {
+  background: transparent !important;
+  border-color: transparent !important;
+  :is(i, span, .p-button-icon) {
+    color: #d97706 !important;
+  }
+  &:hover:not(:disabled) {
+    background: rgba(217, 119, 6, 0.12) !important;
+    border-color: rgba(217, 119, 6, 0.28) !important;
+    :is(i, span, .p-button-icon) {
+      color: #b45309 !important;
+    }
+  }
+}
+
+/* 4. SECONDARY / IMPRIMIR (Default, Print, etc.) */
+body :is(#{$table-action-selectors}) :is(
+  .p-button:not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger),
+  .p-button-secondary,
+  .btn-secondary
+) {
+  background: transparent !important;
+  border-color: transparent !important;
+  :is(i, span, .p-button-icon) {
+    color: #0891b2 !important;
+  }
+  &:hover:not(:disabled) {
+    background: rgba(8, 145, 178, 0.12) !important;
+    border-color: rgba(8, 145, 178, 0.28) !important;
+    :is(i, span, .p-button-icon) {
+      color: #0e7490 !important;
+    }
+  }
+}
+
+/* 5. DANGER / ANULAR / ELIMINAR (Trash) */
+body :is(#{$table-action-selectors}) :is(.p-button.p-button-danger, .btn-danger, .erp-btn-danger) {
+  background: transparent !important;
+  border-color: transparent !important;
+  :is(i, span, .p-button-icon) {
+    color: #ef4444 !important;
+  }
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(239, 68, 68, 0.28) !important;
+    :is(i, span, .p-button-icon) {
+      color: #dc2626 !important;
+    }
+  }
+}
+
+/* ── MODO OSCURO PARA ACCIONES EN TABLAS ── */
+body[data-bs-theme='dark'] :is(#{$table-action-selectors}) {
+  :is(.p-button.p-button-success, .btn-success, .erp-btn-success) {
+    :is(i, span, .p-button-icon) { color: #34d399 !important; }
+    &:hover:not(:disabled) {
+      background: rgba(52, 211, 153, 0.16) !important;
+      border-color: rgba(52, 211, 153, 0.32) !important;
+      :is(i, span, .p-button-icon) { color: #6ee7b7 !important; }
+    }
+  }
+  :is(.p-button.p-button-info, .btn-info, .erp-btn-info) {
+    :is(i, span, .p-button-icon) { color: #60a5fa !important; }
+    &:hover:not(:disabled) {
+      background: rgba(96, 165, 250, 0.16) !important;
+      border-color: rgba(96, 165, 250, 0.32) !important;
+      :is(i, span, .p-button-icon) { color: #93c5fd !important; }
+    }
+  }
+  :is(.p-button.p-button-warning, .btn-warning, .erp-btn-warning) {
+    :is(i, span, .p-button-icon) { color: #fbbf24 !important; }
+    &:hover:not(:disabled) {
+      background: rgba(251, 191, 36, 0.16) !important;
+      border-color: rgba(251, 191, 36, 0.32) !important;
+      :is(i, span, .p-button-icon) { color: #fde68a !important; }
+    }
+  }
+  :is(
+    .p-button:not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger),
+    .p-button-secondary,
+    .btn-secondary
+  ) {
+    :is(i, span, .p-button-icon) { color: #22d3ee !important; }
+    &:hover:not(:disabled) {
+      background: rgba(34, 211, 238, 0.16) !important;
+      border-color: rgba(34, 211, 238, 0.32) !important;
+      :is(i, span, .p-button-icon) { color: #67e8f9 !important; }
+    }
+  }
+  :is(.p-button.p-button-danger, .btn-danger, .erp-btn-danger) {
+    :is(i, span, .p-button-icon) { color: #f87171 !important; }
+    &:hover:not(:disabled) {
+      background: rgba(248, 113, 113, 0.16) !important;
+      border-color: rgba(248, 113, 113, 0.32) !important;
+      :is(i, span, .p-button-icon) { color: #fca5a5 !important; }
+    }
+  }
+}
+
+body :is(.erp-btn, .btn, .p-button):focus-visible { outline: 2px solid var(--color-focus) !important; outline-offset: 2px; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus) 20%, transparent) !important; }
+body :is(.erp-btn, .btn, .p-button):disabled:not(#{$table-action-selectors} *),
+body :is(.erp-btn, .btn, .p-button).disabled:not(#{$table-action-selectors} *) { cursor: not-allowed; filter: saturate(.55); opacity: .62; box-shadow: none !important; }
+
+/* Keep primary labels readable, including disabled/loading actions in both themes. */
+body :is(#{$primary-actions}):not(#{$table-action-selectors} *) {
+  background-image: none !important;
+  -webkit-text-fill-color: var(--color-text-inverse);
+  &:is(:disabled, .disabled, .p-disabled) {
+    opacity: 1;
+    filter: none;
+    background-color: var(--color-action-primary) !important;
+    border-color: var(--color-action-primary) !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+  }
+}

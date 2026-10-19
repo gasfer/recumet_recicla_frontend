@@ -77,7 +77,7 @@
                     formControlName="comments"
                     placeholder="EJ. Cobro de saldo pendiente"
                     rows="1"
-                    class="erp-input text-uppercase w-full"
+                    class="erp-input uppercase w-full"
                     [class.ng-dirty]="validatorsService.inputValid('comments',abonoForm)">
                 </textarea>
                 <small *ngIf="validatorsService.inputValid('comments',abonoForm)" class="erp-error-msg">
@@ -109,7 +109,7 @@
                 </label>
                 <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="account_input" placeholder="EJ. 12345678"
-                    class="erp-input w-full text-uppercase"
+                    class="erp-input w-full uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('account_input',abonoForm)"/>
                 <small *ngIf="validatorsService.inputValid('account_input',abonoForm)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("account_input",abonoForm) }}

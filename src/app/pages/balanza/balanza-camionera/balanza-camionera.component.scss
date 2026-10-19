@@ -1,6 +1,6 @@
 .bc-peso-display {
   align-items: center;
-  background: #1e293b;
+  background: var(--color-header-modal);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -14,8 +14,8 @@
 }
 
 .bc-peso-display__val {
-  color: #4ade80;
-  font-family: 'Courier New', monospace;
+  color: #6ee7b7;
+  font-family: 'JetBrains Mono', Consolas, monospace;
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: .1em;
@@ -23,7 +23,7 @@
 }
 
 .bc-peso-display__lbl {
-  color: #94a3b8;
+  color: #cbd5e1;
   font-size: .7rem;
   letter-spacing: .08em;
   margin-top: .2rem;
@@ -38,8 +38,8 @@
 }
 
 .bc-suggest {
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0 0 6px 6px;
   max-height: 180px;
   overflow-y: auto;
@@ -49,7 +49,7 @@
 }
 
 .bc-suggest__item {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--color-border);
   cursor: pointer;
   font-size: .85rem;
   padding: .45rem .75rem;
@@ -57,5 +57,5 @@
 }
 
 .bc-suggest__item:hover {
-  background: #e0f2fe;
+  background: var(--color-info-light);
 }

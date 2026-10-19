@@ -1,0 +1,2273 @@
+{
+  "scope": "Static template contract checks and compiled shared-style fixture; authenticated module flows NOT executed",
+  "contracts": [
+    {
+      "module": "inputs",
+      "checkedTemplates": 13,
+      "changedTemplates": 12,
+      "bindingsAndContentPreserved": true
+    },
+    {
+      "module": "Expenses",
+      "checkedTemplates": 10,
+      "changedTemplates": 10,
+      "bindingsAndContentPreserved": true
+    },
+    {
+      "module": "classifieds",
+      "checkedTemplates": 6,
+      "changedTemplates": 6,
+      "bindingsAndContentPreserved": true
+    },
+    {
+      "module": "outputs",
+      "checkedTemplates": 8,
+      "changedTemplates": 8,
+      "bindingsAndContentPreserved": true
+    },
+    {
+      "module": "inventories",
+      "checkedTemplates": 19,
+      "changedTemplates": 19,
+      "bindingsAndContentPreserved": true
+    },
+    {
+      "module": "accounts",
+      "checkedTemplates": 8,
+      "changedTemplates": 8,
+      "bindingsAndContentPreserved": true
+    },
+    {
+      "module": "caja",
+      "checkedTemplates": 4,
+      "changedTemplates": 4,
+      "bindingsAndContentPreserved": true
+    },
+    {
+      "module": "balanza",
+      "checkedTemplates": 3,
+      "changedTemplates": 3,
+      "bindingsAndContentPreserved": true
+    },
+    {
+      "module": "transfers",
+      "checkedTemplates": 10,
+      "changedTemplates": 10,
+      "bindingsAndContentPreserved": true
+    }
+  ],
+  "matrix": [
+    {
+      "theme": "light",
+      "width": 320,
+      "height": 568,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "height": 600,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "height": 568,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "height": 600,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "height": 568,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "height": 600,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "height": 568,
+      "overflow": false,
+      "columns": 2,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "height": 600,
+      "overflow": false,
+      "columns": 2,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "height": 568,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "height": 600,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "height": 568,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "height": 600,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "height": 568,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "height": 600,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 1920,
+      "height": 568,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "light",
+      "width": 1920,
+      "height": 600,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(146, 64, 14)",
+          "background": "rgb(255, 251, 235)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(185, 28, 28)",
+          "background": "rgb(254, 242, 242)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(29, 78, 216)",
+          "background": "rgb(239, 246, 255)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(4, 120, 87)",
+          "background": "rgb(236, 253, 245)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 5.205862916797388
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 6.837002380367332
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 5.914600426850339
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 6.157973971775643
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 5.205862916797388
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "height": 568,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "height": 600,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "height": 568,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "height": 600,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "height": 568,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "height": 600,
+      "overflow": false,
+      "columns": 1,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "height": 568,
+      "overflow": false,
+      "columns": 2,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "height": 600,
+      "overflow": false,
+      "columns": 2,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "height": 568,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "height": 600,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "height": 568,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "height": 600,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "height": 568,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "height": 600,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 1920,
+      "height": 568,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    },
+    {
+      "theme": "dark",
+      "width": 1920,
+      "height": 600,
+      "overflow": false,
+      "columns": 3,
+      "inputHeight": 32,
+      "pairs": {
+        ".erp-btn-primary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(0, 140, 89)"
+        },
+        ".erp-btn-secondary": {
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(71, 85, 105)"
+        },
+        ".erp-badge-success": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        },
+        ".erp-badge-warning": {
+          "foreground": "rgb(252, 211, 77)",
+          "background": "rgb(66, 40, 14)"
+        },
+        ".erp-badge-danger": {
+          "foreground": "rgb(252, 165, 165)",
+          "background": "rgb(69, 26, 32)"
+        },
+        ".erp-badge-info": {
+          "foreground": "rgb(147, 197, 253)",
+          "background": "rgb(23, 47, 77)"
+        },
+        ".p-dropdown-item.p-highlight": {
+          "foreground": "rgb(110, 231, 183)",
+          "background": "rgb(18, 59, 50)"
+        }
+      },
+      "contrasts": [
+        {
+          "selector": ".erp-btn-primary",
+          "ratio": 4.28966500687327
+        },
+        {
+          "selector": ".erp-btn-secondary",
+          "ratio": 7.577663953533317
+        },
+        {
+          "selector": ".erp-badge-success",
+          "ratio": 8.116791387330064
+        },
+        {
+          "selector": ".erp-badge-warning",
+          "ratio": 9.44786471431506
+        },
+        {
+          "selector": ".erp-badge-danger",
+          "ratio": 7.782798036330961
+        },
+        {
+          "selector": ".erp-badge-info",
+          "ratio": 7.512232947621162
+        },
+        {
+          "selector": ".p-dropdown-item.p-highlight",
+          "ratio": 8.116791387330064
+        }
+      ],
+      "passed": false
+    }
+  ],
+  "focus": {
+    "width": "2px",
+    "style": "solid"
+  }
+}

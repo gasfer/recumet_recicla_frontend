@@ -193,6 +193,10 @@ interface AbonosAccountsPayable {
 
 //** Form Search */
 export interface FormSearchInputs {
+    type?: string;
+    query?: string;
+    entity_type?: string;
+    id_commercial_user?: string;
     status:           string;
     type_pay:         string;
     id_storage:       string;

@@ -1,0 +1,34 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const ts = require('typescript');
+const source = ts.createSourceFile('component.ts', fs.readFileSync('src/app/pages/inputs/query-inputs/query-inputs.component.ts', 'utf8'), ts.ScriptTarget.Latest, true);
+const component = source.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'QueryInputsComponent');
+const names = ['formParamsByForm', 'providerTypeChanged', 'isCompanyProviderType', 'getAllTypes'];
+const methods = component.members.filter(node => names.includes(node.name?.getText(source))).map(node => node.getText(source)).join('\n');
+const script = ts.transpileModule(`class Harness { ${methods} }; globalThis.Harness = Harness;`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+const context = { moment: require('moment') }; vm.createContext(context); vm.runInContext(script, context);
+const h = new context.Harness();
+let values = {}, params = {}, searches = 0;
+h.formReport = { get: key => ({ value: values[key] }), get value() { return values; }, patchValue: patch => Object.assign(values, patch) };
+h.types = () => [{ id: '4', code: 'A' }, { id: '5', code: 'B' }];
+h.types.set = () => {};
+h.paramsSearch = { update: fn => { params = fn(params); } };
+h.validatorsService = { id_sucursal: () => 1, id_storage: () => 2 };
+h.type = () => ''; h.query = () => ''; h.rows = () => 50; h.page = { set() {} };
+h.providerSelect = () => undefined; h.clearSelectProvider = () => { values.id_provider = ''; };
+h.getAllAndSearchInputs = () => { searches++; h.formParamsByForm(); };
+const base = { filterBy: 'MONTH', dates: new Date(2026, 9, 17) };
+for (const [key, value] of [['id_type_provider', '4'], ['id_commercial_user', '7'], ['id_provider', '9'], ['type_registry', 'BOLETA'], ['referral_sources', 'REDES'], ['old_customer', 'NO'], ['with_pickup', 'SI']]) {
+  values = { ...base, [key]: value }; searches = 0;
+  h.formParamsByForm();
+  assert.equal(params[key], value, key);
+  assert.equal(searches, 0, 'serializing filters must never launch a search');
+}
+values = { ...base, id_type_provider: '4', entity_type: 'PRIVATE', id_commercial_user: '7', old_customer: 'NO' };
+searches = 0; h.providerTypeChanged();
+assert.equal(searches, 1); assert.equal(params.entity_type, 'PRIVATE'); assert.equal(params.id_commercial_user, '7'); assert.equal(params.old_customer, 'NO');
+values.id_type_provider = '5'; h.formParamsByForm(); assert.equal(params.entity_type, '');
+h.providersService = { getAllTypesProvider: () => ({ subscribe: callback => callback({ typesProvider: [{ id: 5, code: 'B', name: 'Natural' }] }) }) };
+searches = 0; h.getAllTypes(); assert.equal(values.id_type_provider, '5'); assert.equal(searches, 0);
+console.log('OK: independent filters, combined filters, no recursive search, entity dependency and catalog loading');

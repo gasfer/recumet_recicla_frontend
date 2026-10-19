@@ -1,0 +1,83 @@
+[
+  {
+    "module": "inputs",
+    "checkedTemplates": 13,
+    "changedTemplates": 12,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 4,
+    "bootstrapBefore": 152,
+    "bootstrapAfter": 24
+  },
+  {
+    "module": "Expenses",
+    "checkedTemplates": 10,
+    "changedTemplates": 10,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 0,
+    "bootstrapBefore": 118,
+    "bootstrapAfter": 8
+  },
+  {
+    "module": "classifieds",
+    "checkedTemplates": 6,
+    "changedTemplates": 6,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 1,
+    "bootstrapBefore": 67,
+    "bootstrapAfter": 0
+  },
+  {
+    "module": "outputs",
+    "checkedTemplates": 8,
+    "changedTemplates": 8,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 0,
+    "bootstrapBefore": 131,
+    "bootstrapAfter": 2
+  },
+  {
+    "module": "inventories",
+    "checkedTemplates": 19,
+    "changedTemplates": 19,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 4,
+    "bootstrapBefore": 309,
+    "bootstrapAfter": 72
+  },
+  {
+    "module": "accounts",
+    "checkedTemplates": 8,
+    "changedTemplates": 8,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 0,
+    "bootstrapBefore": 128,
+    "bootstrapAfter": 0
+  },
+  {
+    "module": "caja",
+    "checkedTemplates": 4,
+    "changedTemplates": 4,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 2,
+    "bootstrapBefore": 32,
+    "bootstrapAfter": 3
+  },
+  {
+    "module": "balanza",
+    "checkedTemplates": 3,
+    "changedTemplates": 3,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 1,
+    "bootstrapBefore": 431,
+    "bootstrapAfter": 0
+  },
+  {
+    "module": "transfers",
+    "checkedTemplates": 10,
+    "changedTemplates": 10,
+    "bindingsAndContentPreserved": true,
+    "changedStylesheets": 3,
+    "bootstrapBefore": 146,
+    "bootstrapAfter": 25
+  }
+]

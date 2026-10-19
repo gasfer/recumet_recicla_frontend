@@ -21,12 +21,12 @@
               [class.open]="totalMovements()"
               [class.closed]="!totalMovements()">
           <span class="caja-status-dot"></span>
-          <i [class]="totalMovements() ? 'fa-solid fa-cash-register' : 'fa-solid fa-shop-lock'" class="me-1"></i>
+          <i [class]="totalMovements() ? 'fa-solid fa-cash-register' : 'fa-solid fa-shop-lock'" class="mr-1"></i>
           {{ totalMovements() ? 'VIGENTE / ABIERTO' : 'CAJA CERRADA' }}
         </span>
         <span class="caja-date" *ngIf="totalMovements()">
-          <i class="fa-regular fa-calendar me-1"></i>
-          Fecha: <b class="ms-1">{{ date() | date:'dd-MM-YYYY' }}</b>
+          <i class="fa-regular fa-calendar mr-1"></i>
+          Fecha: <b class="ml-1">{{ date() | date:'dd-MM-YYYY' }}</b>
         </span>
       </div>
 
@@ -200,7 +200,7 @@
           <div class="cst-cell cst-cell--label">
             <i class="fa-solid fa-lock app-u-font-size-13px-5e0faad app-u-color-cp-60cf5f3"></i>
             <div class="cst-label-group">
-              <span class="cst-label-main fw-bold app-u-font-size-13px-5e0faad">Total Saldo Cierre Caja</span>
+              <span class="cst-label-main font-bold app-u-font-size-13px-5e0faad">Total Saldo Cierre Caja</span>
             </div>
           </div>
           <div class="cst-cell cst-cell--val">
@@ -230,7 +230,7 @@
               <span class="cst-label-sub">Dinero físico en caja</span>
             </div>
           </div>
-          <div class="cst-cell cst-cell--val cst-cell--income app-u-grid-column-2-1-80a2efc justify-content-end">
+          <div class="cst-cell cst-cell--val cst-cell--income app-u-grid-column-2-1-80a2efc justify-end">
             <span class="cst-curr">BS</span>
             <span class="cst-amount cst-amount--lg">{{ totalMovements()?.monto_apertura_mas_saldo | number: decimal() }}</span>
           </div>
@@ -247,7 +247,7 @@
               <span class="cst-label-sub">Banco y transferencias</span>
             </div>
           </div>
-          <div class="cst-cell cst-cell--val cst-cell--saldo-bank app-u-grid-column-2-1-80a2efc justify-content-end">
+          <div class="cst-cell cst-cell--val cst-cell--saldo-bank app-u-grid-column-2-1-80a2efc justify-end">
             <span class="cst-curr">BS</span>
             <span class="cst-amount cst-amount--lg">{{ ($any(totalMovements())?.total_transferencia ?? 0) | number: decimal() }}</span>
           </div>

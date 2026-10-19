@@ -10,6 +10,12 @@
         <strong class="brand-name">RECUMET ERP</strong>
       </div>
     </div>
+    <button type="button" class="sidebar-toggle" (click)="toggleRequested.emit()"
+      [attr.aria-label]="isMobileViewport ? 'Cerrar menú de navegación' : isCondensed ? 'Expandir menú lateral' : 'Contraer menú lateral'"
+      [pTooltip]="isMobileViewport ? 'Cerrar menú' : isCondensed ? 'Expandir menú' : 'Contraer menú'" tooltipPosition="right"
+      [attr.aria-expanded]="isMobileViewport || !isCondensed" aria-controls="sidebar-navigation">
+      <i class="fa-solid" [ngClass]="isMobileViewport ? 'fa-xmark' : isCondensed ? 'fa-angles-right' : 'fa-angles-left'" aria-hidden="true"></i>
+    </button>
   </div>
 
   <!-- Buscador de Módulos Rápido -->
@@ -30,7 +36,7 @@
   </div>
 
   <!-- Contenedor con Scroll de Grupos de Menú -->
-  <ngx-simplebar class="sidebar-scroll" #componentRef>
+  <nav id="sidebar-navigation" class="sidebar-scroll" #componentRef aria-label="Navegación principal">
     <div class="sidebar-groups-wrapper">
       <div
         *ngFor="let group of filteredGroups; trackBy: trackByGroupId"
@@ -39,29 +45,40 @@
       >
         <!-- Cabecera de Categoría / Acordeón -->
         <a *ngIf="group.directItem" [routerLink]="group.directItem.link"
-          routerLinkActive="active" class="nav-link-item-1">
+          routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link-item-1"
+          [attr.aria-label]="isCondensed ? ((group.directItem.label ?? '') | translate) : null"
+          [pTooltip]="(group.directItem.label ?? '') | translate" [tooltipDisabled]="!isCondensed" tooltipPosition="right">
           <i [class]="getItemIcon(group.directItem)" class="nav-item-icon"></i>
           <span class="nav-item-label">{{ group.title | translate }}</span>
+          <span class="compact-label" aria-hidden="true">{{ getCompactLabel(group) | translate }}</span>
+          <span *ngIf="group.directItem.badge" class="sidebar-notification-badge">{{ group.directItem.badge.text | translate }}</span>
         </a>
         <button
           *ngIf="!group.directItem"
           type="button"
           class="group-header-button"
-          (click)="toggleGroup(group)"
+          (click)="toggleGroup(group, $event)"
+          [class.has-active-route]="hasActiveRoute(group)"
+          [attr.aria-label]="isCondensed ? (group.title | translate) : null"
+          [pTooltip]="group.title | translate" [tooltipDisabled]="!isCondensed" tooltipPosition="right"
           [attr.aria-expanded]="group.isOpen"
+          [attr.aria-controls]="'sidebar-group-' + group.id"
         >
           <div class="group-header-left">
+            <i [ngClass]="getGroupIcon(group)" class="nav-item-icon" aria-hidden="true"></i>
             <span class="group-indicator-dot"></span>
             <span class="group-title-text">{{ group.title | translate | uppercase }}</span>
+            <span class="compact-label" aria-hidden="true">{{ getCompactLabel(group) | translate }}</span>
           </div>
+          <span *ngIf="getGroupNotificationCount(group) > 0" class="sidebar-notification-badge" [attr.aria-label]="getGroupNotificationCount(group) + ' notificaciones'">{{ getGroupNotificationCount(group) }}</span>
           <div class="group-header-right">
-            <span class="group-count-badge">{{ group.badgeCount }}</span>
+            <span class="group-count-badge" [attr.aria-label]="group.badgeCount + ' opciones'">{{ group.badgeCount }}</span>
             <i class="fa-solid fa-chevron-right group-chevron-icon" [class.is-rotated]="group.isOpen"></i>
           </div>
         </button>
 
         <!-- Contenido Desplegable del Grupo -->
-        <div class="group-items-collapse" *ngIf="group.isOpen && !group.directItem">
+        <div class="group-items-collapse" [id]="'sidebar-group-' + group.id" *ngIf="group.isOpen && !group.directItem && !isCondensed">
           <ul class="nav-items-list">
             <li *ngFor="let item of group.items; trackBy: trackByItem" class="nav-item-entry">
               <!-- Ítem Nivel 1 Directo (Ruta) -->
@@ -69,8 +86,11 @@
                 *ngIf="!hasItems(item) && item.link"
                 [routerLink]="item.link"
                 routerLinkActive="active"
+                ariaCurrentWhenActive="page"
                 [routerLinkActiveOptions]="{ exact: false }"
                 class="nav-link-item-1"
+                [attr.aria-label]="isCondensed ? ((item.label ?? '') | translate) : null"
+                [attr.title]="isCondensed ? ((item.label ?? '') | translate) : null"
               >
                 <i [class]="getItemIcon(item)" class="nav-item-icon"></i>
                 <span class="nav-item-label">{{ item.label ?? '' | translate }}</span>
@@ -81,8 +101,10 @@
 
               <!-- Ítem Nivel 1 con Submenú (Menu 1 Padre) -->
               <div *ngIf="hasItems(item)" class="nav-sub-wrapper">
-                <a
-                  href="javascript:void(0);"
+                <button
+                  type="button"
+                  [attr.aria-expanded]="isSubItemExpanded(item)"
+                  [attr.aria-controls]="'sidebar-submenu-' + item.id"
                   class="nav-link-item-1 has-submenu"
                   [class.active]="hasActiveSubChild(item)"
                   (click)="toggleSubItem(item, $event)"
@@ -93,16 +115,16 @@
                     class="fa-solid fa-chevron-down sub-toggle-chevron"
                     [class.is-open]="isSubItemExpanded(item)"
                   ></i>
-                </a>
+                </button>
 
                 <!-- Submenú Nivel 2 (Menu 2 Hijos) -->
-                <ul class="nav-sub-list-2" *ngIf="isSubItemExpanded(item)">
+                <ul [id]="'sidebar-submenu-' + item.id" class="nav-sub-list-2" *ngIf="isSubItemExpanded(item)">
                   <li *ngFor="let subitem of item.subItems; trackBy: trackBySubItem">
                     <a
                       [routerLink]="subitem.link"
                       routerLinkActive="active"
                       [routerLinkActiveOptions]="{ exact: false }"
-                      class="nav-link-item-2"
+                      ariaCurrentWhenActive="page" class="nav-link-item-2"
                     >
                       <span class="sub-bullet-symbol">›</span>
                       <span class="sub-label-text">{{ subitem.label ?? '' | translate }}</span>
@@ -118,7 +140,7 @@
         </div>
       </div>
     </div>
-  </ngx-simplebar>
+  </nav>
 
   <!-- Footer del Sidebar -->
   <div class="sidebar-footer-status" aria-label="Estado del sistema">

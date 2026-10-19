@@ -2,11 +2,11 @@
     [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" (onHide)="resetModal()" styleClass="app-dialog--md">
     <form [formGroup]="formTransferData">
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Sucursal destino<span class="text-danger">*</span></label>
+        <div class="p-fluid erp-form-grid">
+            <div class="erp-field w-[100%] px-2 min-w-0">
+                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
+                        <label class="block mb-0">Sucursal destino<span class="text-erp-danger">*</span></label>
                         <p-dropdown [options]="sucursales()"
                         optionLabel="name" optionValue="id"
                         [showClear]="false" appendTo="body"
@@ -18,10 +18,10 @@
                             {{ validatorsService.inputValidMessage("id_sucursal_received",formTransferData) }}
                         </small>
                     </div>
-                    <div class="col-sm-6 col-12">
-                        <div class="row">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
+                        <div class="flex flex-wrap erp-layout-row gap-y-3">
 
-                            <div class="col-sm-6 col-12">
+                            <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
                                 <label class="block mb-0">Cantidad Productos</label><br>
                                 <p-tag [rounded]="true" [severity]="'success'"
                                     [icon]="'fa-solid fa-tag'"
@@ -30,9 +30,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-1">
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Fecha de Registro <span class="text-danger">*</span>
+                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
+                        <label class="block mb-0">Fecha de Registro <span class="text-erp-danger">*</span>
                         </label>
                         <p-calendar
                             formControlName="date_send"
@@ -48,7 +48,7 @@
                         </small>
                     </div>
 
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
                         <label class="block mb-0">Observaciones de envió</label>
                         <textarea pInputTextarea
                             type="text"
@@ -57,7 +57,7 @@
                             [pKeyFilter]="validatorsService.expRegValidInput"
                             formControlName="observations_send"
                             placeholder="EJ. ......"
-                            class="mt-1 text-uppercase"
+                            class="mt-1 uppercase"
                             [class.ng-dirty]="validatorsService.inputValid('observations_send',formTransferData)"
                         ></textarea>
                         <small *ngIf="validatorsService.inputValid('observations_send',formTransferData)" class="p-error block">
@@ -65,9 +65,9 @@
                         </small>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                        <label class="block mb-0">Balanza:<span class="text-danger">*</span></label>
+                <div class="flex flex-wrap erp-layout-row gap-y-3">
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
+                        <label class="block mb-0">Balanza:<span class="text-erp-danger">*</span></label>
                         <p-dropdown [options]="scalas()"
                         placeholder="Selecciona una opción"
                         optionLabel="name"
@@ -81,8 +81,8 @@
                             {{ validatorsService.inputValidMessage("id_scales",formTransferData) }}
                         </small>
                     </div>
-                    <div class="col-sm-6 col-12">
-                        <label class="block mb-0">Tipo Pesaje<span class="text-danger">*</span></label>
+                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
+                        <label class="block mb-0">Tipo Pesaje<span class="text-erp-danger">*</span></label>
                         <p-dropdown [options]="types_registry()"
                             placeholder="Selecciona una opción"
                             optionLabel="name"
@@ -97,18 +97,18 @@
                         </small>
                     </div>
                     @if (formTransferData.get('type_registry')?.value != 'SIN FICHA') {
-                        <div class="col-sm-6 col-12 animated fadeInDown">
+                        <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] animated fadeInDown">
                             <label class="block mb-0">Nro. Pesaje</label>
                             <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                                 formControlName="registry_number" placeholder="EJ. 0001"
                                 [pKeyFilter]="validatorsService.expRegValidInput"
-                                [class.ng-dirty]="validatorsService.inputValid('registry_number',formTransferData)" class="text-uppercase"/>
+                                [class.ng-dirty]="validatorsService.inputValid('registry_number',formTransferData)" class="uppercase"/>
                             <small *ngIf="validatorsService.inputValid('registry_number',formTransferData)" class="p-error block">
                                 {{ validatorsService.inputValidMessage("registry_number",formTransferData) }}
                             </small>
                         </div>
                     } @else {
-                        <div class="col-sm-6 col-12 animated fadeInDown mt-2">
+                        <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] animated fadeInDown mt-2">
                             <small class="block">
                                 {{ "El número se generará automáticamente al guardar el traslado." }}
                             </small>

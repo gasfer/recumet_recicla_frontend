@@ -2,7 +2,7 @@
     [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" (onShow)="showModal()" (onHide)="resetModal()" styleClass="app-dialog--lg erp-operational-dialog">
     <form [formGroup]="formClassified" class="classified-save-form">
-        <div class="p-2.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 text-xs flex items-center gap-2 mb-3">
+        <div class="p-2.5 rounded-lg border border-erp-border bg-erp-info-soft text-erp-info text-xs flex items-center gap-2 mb-3">
             <i class="fa-solid fa-circle-info"></i>
             <span>Los campos marcados con <b>*</b> son obligatorios.</span>
         </div>
@@ -71,7 +71,7 @@
                 <label class="erp-label">Nro. de pesaje</label>
                 <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="number_registry" placeholder="EJ. 0001"
-                    class="erp-input text-uppercase"
+                    class="erp-input uppercase"
                     [class.ng-dirty]="validatorsService.inputValid('number_registry',formClassified)"/>
                 <small *ngIf="validatorsService.inputValid('number_registry',formClassified)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("number_registry",formClassified) }}
@@ -132,7 +132,7 @@
                     [pKeyFilter]="validatorsService.expRegValidInput"
                     formControlName="comments"
                     placeholder="Ingrese notas sobre la clasificación..."
-                    rows="3" class="text-uppercase w-full"
+                    rows="3" class="uppercase w-full"
                     [class.ng-dirty]="validatorsService.inputValid('comments',formClassified)"
                 ></textarea>
                 <small *ngIf="validatorsService.inputValid('comments',formClassified)" class="erp-error-msg">

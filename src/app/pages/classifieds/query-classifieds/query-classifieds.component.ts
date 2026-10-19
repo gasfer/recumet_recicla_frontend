@@ -13,6 +13,8 @@ import Swal from 'sweetalert2';
 import * as moment from 'moment';
 import { Product } from '../../inventories/interfaces/products.interface';
 import { ProductsService } from '../../inventories/services/products.service';
+import { CategoriesService } from '../../inventories/services/categories.service';
+import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 
 @Component({
@@ -22,6 +24,10 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
   ]
 })
 export class QueryClassifiedsComponent implements OnInit {
+  private categoriesService = inject(CategoriesService);
+  categories = signal<Array<{ id: number; name: string }>>([]);
+  products = signal<Array<{ id: number; label: string }>>([]);
+  catalogError = signal('');
   fb                = inject(FormBuilder);
   validatorsService = inject(ValidatorsService);
   classifiedService = inject(ClassifiedService);
@@ -35,20 +41,21 @@ export class QueryClassifiedsComponent implements OnInit {
   minDate!: Date;
   maxDate!: Date;
   buttonItems: MenuItem[] = [
+    { label: 'Reporte clasificados (PDF)', icon: 'fa-solid fa-file-pdf', command: () => this.printPdfReport() },
     {
-      label: 'Excel',
+      label: 'Reporte clasificados (Excel)',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D'},
       command: () => { this.printExcelReport(); }
     },
     {
-      label: 'Pdf Detalle',
+      label: 'Detalle por producto (PDF)',
       icon: 'fas fa-print',
       iconStyle: { 'color': '#DC4C64'},
       command: () => { this.printPdfDetailsReport(); }
     },
     {
-      label: 'Excel Detalle',
+      label: 'Detalle por producto (Excel)',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': '#14A44D'},
       command: () => { this.printExcelDetailsReport(); }
@@ -80,6 +87,8 @@ export class QueryClassifiedsComponent implements OnInit {
     id_sucursal: ['',[Validators.required]],
     id_storage: [''],
     id_product: [''],
+    category_ids: [[]],
+    product_ids: [[]],
     type_pay: [''],
     status: ['ACTIVE']
   });
@@ -135,15 +144,25 @@ export class QueryClassifiedsComponent implements OnInit {
     date2: ''
   });
   types_filtrado = signal([
-    {name: 'DIA', code: 'DAY'},
-    {name: 'MES', code: 'MONTH'},
-    {name: 'AÑO', code: 'YEAR'},
-    {name: 'RANGO', code: 'RANGE'},
+    {name: 'Día', code: 'DAY'},
+    {name: 'Mes', code: 'MONTH'},
+    {name: 'Año', code: 'YEAR'},
+    {name: 'Rango', code: 'RANGE'},
   ]);
   fieldSort = signal('');
   order     = signal('');
 
   ngOnInit(): void {
+    this.categoriesService.getAllAndSearch(1, 100000, true, '', '', '', 'name', 'ASC', ProductAccessContext.Classifieds)
+      .subscribe({
+        next: r => this.categories.set(r.categories.data.filter(c => c.id != null).map(c => ({ id: c.id!, name: c.name }))),
+        error: () => this.catalogError.set('No se pudieron cargar las categorías. Recarga la página para reintentar.'),
+      });
+    this.productService.getAllAndSearch(1, 100000, true, '', '', false, '', '', 'name', 'ASC', false, '', ProductAccessContext.Classifieds)
+      .subscribe({
+        next: r => this.products.set(r.products.data.map(p => ({ id: p.id, label: `${p.cod} - ${p.name}` }))),
+        error: () => this.catalogError.set('No se pudieron cargar los productos. Recarga la página para reintentar.'),
+      });
     this.getAllAndSearchClassifieds(1,this.rows());
   }
 
@@ -287,6 +306,8 @@ export class QueryClassifiedsComponent implements OnInit {
         id_sucursal: id_sucursal ? id_sucursal : '',
         id_storage : id_storage ? id_storage : '',
         id_product: id_product ? id_product : '',
+        category_ids: (this.formReport.get('category_ids')?.value || []).join(','),
+        product_ids: (this.formReport.get('product_ids')?.value || []).join(','),
         status: params.status,
         filterBy: filterBy,
         date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
@@ -326,15 +347,19 @@ export class QueryClassifiedsComponent implements OnInit {
 
   clearInputs() {
     this.formReport.patchValue({
-      filterBy: 'DAY',
+      filterBy: 'MONTH',
       dates: new Date(),
       type_registry: '',
       id_product: '',
+      category_ids: [],
+      product_ids: [],
       id_storage: '',
       date_range: '',
       status: 'ACTIVE',
     });
     this.productSelect.set(undefined);
+    this.type.set(''); this.query.set('');
+    this.getAllAndSearchClassifieds(1, this.rows());
   }
 
   printPdfReport() {

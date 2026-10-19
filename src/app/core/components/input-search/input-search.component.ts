@@ -11,6 +11,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 })
 export class InputSearchComponent implements OnInit, OnDestroy {
   @Input({required: true}) placeholder:string ='';
+  @Input() inputId?: string;
   @Input() icon :string = '';
   @Input() btnNew :boolean = false;
   @Input() iconBtnNew :string = '';

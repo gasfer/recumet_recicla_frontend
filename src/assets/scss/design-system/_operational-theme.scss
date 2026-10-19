@@ -1,0 +1,738 @@
+/* Semantic values are inherited by body overlays as well as module views. */
+:root, body[data-bs-theme='light'] {
+  color-scheme: light;
+  --color-surface-rgb: 255 255 255;
+  --color-surface-secondary-rgb: 248 250 252;
+  --color-bg-rgb: 243 247 251;
+  --color-border-rgb: 226 232 240;
+  --color-border-subtle-rgb: 241 245 249;
+  --color-sidebar-rgb: 8 15 29;
+  --color-text-rgb: 30 41 59;
+  --color-text-muted-rgb: 71 85 105;
+  --color-success-rgb: 4 120 87;
+  --color-warning-rgb: 146 64 14;
+  --color-danger-rgb: 185 28 28;
+  --color-info-rgb: 29 78 216;
+  --color-success-soft-rgb: 236 253 245;
+  --color-warning-soft-rgb: 255 251 235;
+  --color-danger-soft-rgb: 254 242 242;
+  --color-info-soft-rgb: 239 246 255;
+  --color-action-primary: #00A96B;
+  --color-action-primary-hover: #008C59;
+  --color-action-primary-active: #00B87A;
+  --color-action-secondary: #475569;
+  --color-action-secondary-hover: #334155;
+  --color-action-secondary-active: #1e293b;
+  --color-action-secondary-text: #f1f5f9;
+  --color-action-danger: #ef4444;
+  --color-action-danger-hover: #dc2626;
+  --color-action-danger-active: #b91c1c;
+  --color-action-warning: #f59e0b;
+  --color-action-warning-hover: #d97706;
+  --color-action-warning-active: #b45309;
+  --color-action-info: #3b82f6;
+  --color-action-info-hover: #2563eb;
+  --color-action-info-active: #1d4ed8;
+  --color-primary: #00a96b;
+  --color-primary-hover: #008c59;
+  --color-focus: #008c59;
+  --color-header-modal: var(--color-action-primary);
+  --color-header-modal-text: #ffffff;
+  --color-field-filled: #f3fbf7;
+  --color-field-filled-border: #a7dfc5;
+  --color-field-filled-rgb: 243 251 247;
+  --color-header: var(--color-header-modal);
+  --color-text-inverse: #ffffff;
+  --color-control-disabled: #e2e8f0;
+  --color-overlay-mask: rgb(2 6 23 / .55);
+  --color-border-hover: #64748b;
+  --shadow-md: 0 1px 3px rgb(15 23 42 / .08);
+}
+body[data-bs-theme='dark'] {
+  color-scheme: dark;
+  --color-surface-rgb: 30 41 59;
+  --color-surface-secondary-rgb: 36 52 73;
+  --color-bg-rgb: 15 23 42;
+  --color-border-rgb: 51 65 85;
+  --color-text-rgb: 241 245 249;
+  --color-text-muted-rgb: 203 213 225;
+  --color-success-rgb: 110 231 183;
+  --color-warning-rgb: 252 211 77;
+  --color-danger-rgb: 252 165 165;
+  --color-info-rgb: 147 197 253;
+  --color-success-soft-rgb: 18 59 50;
+  --color-warning-soft-rgb: 66 40 14;
+  --color-danger-soft-rgb: 69 26 32;
+  --color-info-soft-rgb: 23 47 77;
+  --color-focus: #6ee7b7;
+  --color-header-modal: var(--color-action-primary);
+  --color-header-modal-text: #ffffff;
+  --color-field-filled: #203c32;
+  --color-field-filled-border: #3b8063;
+  --color-field-filled-rgb: 32 60 50;
+  --color-control-disabled: #334155;
+  --color-border-hover: #94a3b8;
+  --shadow-md: 0 1px 4px rgb(0 0 0 / .3);
+}
+body {
+  --surface-card: var(--color-surface);
+  --surface-ground: var(--color-bg);
+  --surface-section: var(--color-bg);
+  --surface-border: var(--color-border);
+  --surface-200: var(--color-control-disabled);
+  --text-color: var(--color-text);
+  --text-color-secondary: var(--color-text-muted);
+  --primary-color: var(--color-action-primary);
+  --primary-50: var(--color-success-light);
+  --color-surface: rgb(var(--color-surface-rgb));
+  --color-surface-secondary: rgb(var(--color-surface-secondary-rgb));
+  --color-bg: rgb(var(--color-bg-rgb));
+  --color-border: rgb(var(--color-border-rgb));
+  --color-border-subtle: rgb(var(--color-border-subtle-rgb, 241 245 249));
+  --color-text: rgb(var(--color-text-rgb));
+  --color-text-muted: rgb(var(--color-text-muted-rgb));
+  --color-text-secondary: var(--color-text-muted);
+  --color-success: rgb(var(--color-success-rgb));
+  --color-warning: rgb(var(--color-warning-rgb));
+  --color-danger: rgb(var(--color-danger-rgb));
+  --color-info: rgb(var(--color-info-rgb));
+  --color-success-light: rgb(var(--color-success-soft-rgb));
+  --color-warning-light: rgb(var(--color-warning-soft-rgb));
+  --color-danger-light: rgb(var(--color-danger-soft-rgb));
+  --color-info-light: rgb(var(--color-info-soft-rgb));
+  --color-primary-light: var(--color-success-light);
+  --color-border-focus: var(--color-focus);
+  --erp-shell-canvas: var(--color-bg);
+  font-family: var(--font-family-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+body[data-bs-theme='dark'] #page-topbar,
+body[data-bs-theme='dark'] #page-topbar .navbar-header { background: var(--color-surface) !important; border-color: var(--color-border) !important; }
+body[data-bs-theme='dark'] #page-topbar .work-context,
+body[data-bs-theme='dark'] #page-topbar .global-search { background: var(--color-surface-secondary) !important; border-color: var(--color-border) !important; color: var(--color-text-secondary) !important; }
+body[data-bs-theme='dark'] #page-topbar :is(.work-context__field label, .global-search input, .work-context .p-dropdown-label) { color: var(--color-text) !important; }
+body[data-bs-theme='dark'] #page-topbar .global-search kbd { background: var(--color-surface) !important; border-color: var(--color-border) !important; color: var(--color-text-secondary) !important; }
+
+/* Compatibilidad oscura para utilidades y controles que aún llevan blancos fijos.
+   Mantiene los colores de marca y los estados semánticos; reemplaza solo superficies. */
+body[data-bs-theme='dark'] :is(.bg-white, [class~='bg-white/90'], [class~='bg-white/95']) {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is([class~='bg-slate-50'], [class~='bg-slate-100'], [class~='bg-gray-50'], [class~='bg-gray-100']) {
+  background-color: var(--color-surface-secondary) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is([class~='text-black'], [class~='text-dark'], [class~='text-slate-950'], [class~='text-slate-900'], [class~='text-slate-800'], [class~='text-slate-700'], [class~='text-gray-900'], [class~='text-gray-800'], [class~='text-gray-700'], [class~='text-zinc-900'], [class~='text-zinc-800']) { color: var(--color-text) !important; }
+body[data-bs-theme='dark'] :is([class~='text-slate-600'], [class~='text-slate-500'], [class~='text-gray-600'], [class~='text-gray-500'], [class~='text-zinc-600'], [class~='text-zinc-500']) { color: var(--color-text-muted) !important; }
+body[data-bs-theme='dark'] :is([class~='border-slate-100'], [class~='border-slate-200'], [class~='border-slate-300'], [class~='border-gray-100'], [class~='border-gray-200'], [class~='border-gray-300']) { border-color: var(--color-border) !important; }
+body[data-bs-theme='dark'] :is(.focus\:bg-white:focus, .hover\:bg-white:hover) {
+  background-color: var(--color-surface-secondary) !important;
+  color: var(--color-text) !important;
+}
+body[data-bs-theme='dark'] :is(.card, .modal-content, .dropdown-menu, .p-card, .p-panel, .accordion-item, .erp-card, .erp-card-container, .erp-header-panel) {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.p-dialog .p-dialog-content, .p-dialog.erp-operational-dialog .p-dialog-footer, .p-dialog .p-dialog-footer) {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.p-dropdown-panel, .p-multiselect-panel, .p-autocomplete-panel, .p-datepicker, .p-overlaypanel, .p-menu, .p-tieredmenu, .p-contextmenu, .p-paginator) {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.p-dropdown-items, .p-multiselect-items, .p-autocomplete-items, .p-datepicker table, .p-datepicker table td, .p-datepicker table th, .p-datatable, .p-datatable-wrapper, .p-datatable-table, .p-datatable-tbody > tr, .p-datatable-tbody > tr > td) {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.p-dropdown-item, .p-multiselect-item, .p-autocomplete-item, .p-menuitem-link, .p-datepicker td > span):not(.p-highlight):hover {
+  background-color: var(--color-surface-secondary) !important;
+  color: var(--color-text) !important;
+}
+body[data-bs-theme='dark'] :is(.p-dialog .p-dialog-content, .p-overlaypanel, .p-dropdown-panel, .p-multiselect-panel, .p-autocomplete-panel) :is(input, select, textarea, .p-inputtext, .p-dropdown, .p-multiselect) {
+  background-color: var(--color-surface-secondary) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.table, table) > :not(caption) > * > * {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] .erp-edit-mode-banner { background: var(--color-warning-light) !important; color: var(--color-warning) !important; border-color: var(--color-warning) !important; }
+body[data-bs-theme='dark'] .erp-soft-alert-empty { background: var(--color-surface-secondary) !important; color: var(--color-text-muted) !important; border-color: var(--color-border) !important; }
+body[data-bs-theme='dark'] .erp-soft-alert-empty h5 { color: var(--color-text) !important; }
+body[data-bs-theme='dark'] .p-skeleton { background: linear-gradient(90deg, var(--color-surface-secondary), var(--color-control-disabled), var(--color-surface-secondary)) !important; }
+
+/* Superficies fijas de módulos que todavía declaran blanco en sus estilos locales. */
+body[data-bs-theme='dark'] :is(.recumet-dashboard, .recumet-dashboard .kpi-card, .recumet-dashboard .quick-card, .recumet-dashboard .activity-panel, .recumet-dashboard .activity-tools button, .recumet-dashboard .view-action, .gc-card, .icon-box, .development-card, .transfer-review-alert-dialog, .transfer-review-trace-dialog) {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.recumet-dashboard .kpi-card--primary, .recumet-dashboard .quick-card, .recumet-dashboard .activity-panel, .recumet-dashboard .activity-head, .recumet-dashboard .activity-tools label, .recumet-dashboard .activity-tools button, .recumet-dashboard .view-action, .gc-card, .icon-box, .development-card, .transfer-review-alert-dialog, .transfer-review-trace-dialog) {
+  box-shadow: 0 8px 24px rgb(0 0 0 / .2) !important;
+}
+body[data-bs-theme='dark'] .recumet-dashboard { --ink: var(--color-text); --muted: var(--color-text-muted); --line: var(--color-border); --navy: var(--color-surface-secondary); }
+body[data-bs-theme='dark'] .recumet-dashboard :is(h1, h2, h3, .event-date, .event-detail, .kpi-card strong) { color: var(--color-text) !important; }
+body[data-bs-theme='dark'] .recumet-dashboard :is(p, .eyebrow, .kpi-label, .kpi-card small, .quick-card p, .quick-arrow, .event-time, .table-state) { color: var(--color-text-muted) !important; }
+body[data-bs-theme='dark'] .recumet-dashboard .quick-card::after { background: var(--color-primary); opacity: .12; }
+body[data-bs-theme='dark'] .recumet-dashboard .quick-card:hover { border-color: var(--color-primary) !important; }
+body[data-bs-theme='dark'] .recumet-dashboard .quick-card:hover::after { opacity: .22; }
+body[data-bs-theme='dark'] .recumet-dashboard :is(.kpi-icon, .quick-icon, .user-cell span, .view-action) {
+  background-color: color-mix(in srgb, var(--color-primary) 14%, var(--color-surface-secondary)) !important;
+  color: var(--color-primary) !important;
+}
+body[data-bs-theme='dark'] .recumet-dashboard :is(.activity-table td, .activity-tools label, .activity-tools button, .view-action) { border-color: var(--color-border) !important; }
+body[data-bs-theme='dark'] .recumet-dashboard .activity-table td { border-bottom-color: var(--color-border) !important; }
+body[data-bs-theme='dark'] .recumet-dashboard .btn-report { background: var(--color-surface-secondary) !important; border-color: var(--color-border) !important; color: var(--color-text) !important; }
+body[data-bs-theme='dark'] .recumet-dashboard .btn-scale { background: var(--color-primary) !important; color: #062319 !important; }
+body[data-bs-theme='dark'] .recumet-dashboard .section-note { background: var(--color-surface-secondary) !important; color: var(--color-text-muted) !important; }
+body[data-bs-theme='dark'] .development-card :is(h1, .development-description) { color: var(--color-text) !important; }
+body[data-bs-theme='dark'] .development-card .development-eyebrow { color: var(--color-primary) !important; }
+
+body[data-bs-theme='dark'] :is(.type-a-provider-dialog, .supplier-editor-dialog, .provider-information-section, .provider-information-record, .provider-information-map, .provider-identity-card, .provider-information-grid dd, .profile-card, .supplier-card, .supplier-footer, .supplier-tabs, .supplier-tabs button, .branch-layout aside button, .kpis > div, .compliance > div, .location-editor) {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.supplier-tabs button:hover, .branch-layout aside button:hover) {
+  background: var(--color-surface-secondary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-text) !important;
+}
+body[data-bs-theme='dark'] :is(.supplier-tabs button.active, .branch-layout aside button.active) {
+  background: color-mix(in srgb, var(--color-primary) 16%, var(--color-surface)) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+body[data-bs-theme='dark'] :is(.supplier-card h6, .branch-layout aside > b, .supplier-grid label, .supplier-footer, .location-toolbar small, .compliance span) { color: var(--color-text-muted) !important; }
+body[data-bs-theme='dark'] :is(.supplier-card h6 b, .supplier-card h6 .green, .location-toolbar b, .location-status) { color: var(--color-primary) !important; }
+body[data-bs-theme='dark'] .location-map-empty { background: var(--color-surface-secondary) !important; border-color: var(--color-border) !important; color: var(--color-text-muted) !important; }
+
+body[data-bs-theme='dark'] :is(.transfer-review-alert-dialog, .transfer-review-trace-dialog) :is(.p-dialog-header, .review-card, .review-card__summary, .trace-section, .trace-products-section, .historical-summary, .historical-completion-panel, .historical-preview, .review-case, .review-case__title, .review-next-step, .documentary-close-panel, .documentary-close-panel__header, .documentary-reference-row, .review-assignment-step, .review-assignment-form__observation, .stock-kardex-table, .trace-products-table, .review-differences-table, .historical-completion-form, .resolution-form, .historical-action, .review-inline-message, .historical-row--warning, .review-detail--pending, .review-case__title, .btn-review-secondary) {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.transfer-review-alert-dialog, .transfer-review-trace-dialog) :is(.review-intro, .stock-kardex-alert, .historical-notice, .historical-completion-panel__heading, .historical-preview__allocations, .trace-section-heading, .review-history__heading, .review-note-type) {
+  background: var(--color-surface-secondary) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.transfer-review-alert-dialog, .transfer-review-trace-dialog) :is(.historical-status, .historical-status--complete, .review-case--completed, .review-detail--completed, .historical-completion-panel__heading i, .trace-section-heading > i) { color: var(--color-primary) !important; }
+body[data-bs-theme='dark'] :is(.transfer-review-alert-dialog, .transfer-review-trace-dialog) .btn-review-secondary:hover { background: color-mix(in srgb, var(--color-primary) 14%, var(--color-surface)) !important; color: var(--color-primary) !important; border-color: var(--color-primary) !important; }
+body[data-bs-theme='dark'] :is(.transfer-review-alert-dialog, .transfer-review-trace-dialog) :is(.historical-completion-panel, .historical-preview, .review-case, .review-case__title, .review-next-step, .documentary-close-panel, .documentary-close-panel__header, .review-assignment-step, .review-assignment-form__observation, .review-inline-message, .historical-detail, .resolution-form) * { color: var(--color-text) !important; }
+body[data-bs-theme='dark'] :is(.transfer-review-alert-dialog, .transfer-review-trace-dialog) :is(.historical-status, .historical-status--complete, .review-detail--completed, .review-case--completed .historical-status, .review-inline-message--success, .trace-section-heading > i, .btn-review-primary) { color: var(--color-primary) !important; }
+body[data-bs-theme='dark'] :is(.transfer-review-alert-dialog, .transfer-review-trace-dialog) .btn-review-primary { background: var(--color-primary) !important; color: #062319 !important; }
+
+/* Header, controles sticky y navegación mantienen una superficie oscura legible. */
+body[data-bs-theme='dark'] :is(.sticky-top, .sticky, .fixed-top) { background-color: var(--color-surface) !important; border-color: var(--color-border) !important; }
+body[data-bs-theme='dark'] :is(#page-topbar .header-item, #page-topbar .user-dropdown-menu, #page-topbar .dropdown-menu, #page-topbar .work-context, #page-topbar .global-search kbd) {
+  background-color: var(--color-surface-secondary) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(#page-topbar .header-item, .btn-outline-primary, .btn-outline-secondary, .btn-outline-success, .btn-outline-info, .btn-outline-warning, .btn-outline-danger, .p-button.p-button-text, .p-button.p-button-secondary):hover {
+  background-color: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-secondary)) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+body[data-bs-theme='dark'] :is(#page-topbar .header-item, .btn-outline-primary, .btn-outline-secondary, .btn-outline-success, .btn-outline-info, .btn-outline-warning, .btn-outline-danger, .p-button.p-button-text, .p-button.p-button-secondary):is(:hover, :focus-visible, .active) :is(i, .pi, .fa, .material-symbols-outlined) { color: var(--color-primary) !important; }
+body[data-bs-theme='dark'] :is(button, a, .p-button, .dropdown-item, .p-menuitem-link):focus-visible { outline-color: var(--color-primary) !important; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 28%, transparent) !important; }
+body[data-bs-theme='dark'] :is(.p-tabview-nav li.p-highlight .p-tabview-nav-link, .p-tabmenu .p-tabmenuitem.p-highlight .p-menuitem-link, .p-menuitem-link-active) {
+  background-color: color-mix(in srgb, var(--color-primary) 14%, var(--color-surface)) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+/* Regla final transversal: todas las tablas quedan oscuras y su texto claro. */
+body[data-bs-theme='dark'] :is(.p-datatable, table, .erp-table, .activity-table, .stock-kardex-table, .trace-products-table, .review-differences-table) {
+  --table-header-cell-bg: var(--color-surface-secondary);
+  --table-header-cell-color: #f8fafc;
+  --table-body-row-bg: var(--color-surface);
+  --table-body-row-color: #f1f5f9;
+  --table-body-row-hover-bg: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+  --table-border-color: var(--color-border);
+  background: var(--color-surface) !important;
+  color: #f1f5f9 !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.p-datatable, table, .erp-table, .activity-table, .stock-kardex-table, .trace-products-table, .review-differences-table) :is(thead, tbody, tfoot, tr, th, td) {
+  background-color: var(--color-surface) !important;
+  color: #f1f5f9 !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.p-datatable, table, .erp-table, .activity-table, .stock-kardex-table, .trace-products-table, .review-differences-table) :is(thead th, .p-datatable-thead > tr > th, .erp-table-header th) {
+  background-color: var(--color-primary) !important;
+  color: #f8fafc !important;
+  border-color: var(--color-primary-hover) !important;
+}
+body[data-bs-theme='dark'] :is(.p-datatable, table, .erp-table, .activity-table, .stock-kardex-table, .trace-products-table, .review-differences-table) :is(th, td) :is(*) {
+  color: #f1f5f9 !important;
+}
+body[data-bs-theme='dark'] :is(.p-datatable, table, .erp-table, .activity-table, .stock-kardex-table, .trace-products-table, .review-differences-table) :is(tbody > tr:nth-child(even), .p-datatable-tbody > tr:nth-child(even)) > :is(th, td) {
+  background-color: var(--color-surface-secondary) !important;
+}
+body[data-bs-theme='dark'] :is(.p-datatable, table, .erp-table, .activity-table, .stock-kardex-table, .trace-products-table, .review-differences-table) :is(tbody > tr:hover, .p-datatable-tbody > tr:hover) > :is(th, td) {
+  background-color: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface)) !important;
+}
+body[data-bs-theme='dark'] :is(.p-datatable, table, .erp-table, .activity-table, .stock-kardex-table, .trace-products-table, .review-differences-table) :is(tbody > tr.p-highlight, tbody > tr[aria-selected='true'], tbody > tr.is-active) > :is(th, td) {
+  background-color: color-mix(in srgb, var(--color-primary) 18%, var(--color-surface)) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 42%, transparent);
+}
+body[data-bs-theme='dark'] :is(.p-datatable, table) :is(.p-sortable-column-icon, .p-sortIcon, .pi, .fa, .material-symbols-outlined) { color: var(--color-text-muted) !important; }
+body[data-bs-theme='dark'] :is(.p-datatable, table) :is(.p-sortable-column:hover, .p-sortable-column.p-highlight) :is(.p-sortable-column-icon, .p-sortIcon, .pi, .fa, .material-symbols-outlined) { color: var(--color-primary) !important; }
+body[data-bs-theme='dark'] :is(.p-datatable .p-paginator, .p-paginator, .activity-table-wrap) {
+  background: var(--color-surface-secondary) !important;
+  color: #f1f5f9 !important;
+  border-color: var(--color-border) !important;
+}
+body[data-bs-theme='dark'] :is(.p-datatable .p-paginator, .p-paginator) :is(button, a, span, i) { color: #f1f5f9 !important; }
+body[data-bs-theme='dark'] :is(.p-datatable .p-paginator, .p-paginator) :is(button, a):hover,
+body[data-bs-theme='dark'] :is(.p-datatable .p-paginator, .p-paginator) .p-highlight { background: color-mix(in srgb, var(--color-primary) 16%, var(--color-surface)) !important; color: var(--color-primary) !important; }
+body[data-bs-theme='dark'] :is(.p-datatable, table) .p-tag { color: #f8fafc !important; }
+
+/* Encabezados de modales mantienen el verde corporativo también en modo oscuro. */
+body[data-bs-theme='dark'] :is(.p-dialog .p-dialog-header, .modal-header, .erp-modal-header) {
+  background: var(--color-primary) !important;
+  color: #ffffff !important;
+  border-color: var(--color-primary-hover) !important;
+}
+body[data-bs-theme='dark'] :is(.p-dialog .p-dialog-header, .modal-header, .erp-modal-header) * { color: #ffffff !important; }
+
+/* Topbar: botones transparentes a 36px, sin fondo oscuro y con iconos modernos */
+#page-topbar :is(#vertical-menu-btn, .topbar-utilities .header-item, .topbar-actions .header-item) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+}
+#page-topbar :is(#vertical-menu-btn, .topbar-utilities .header-item, .topbar-actions .header-item) i {
+  color: var(--color-text-muted) !important;
+}
+#page-topbar :is(#vertical-menu-btn, .topbar-utilities .header-item, .topbar-actions .header-item):hover i {
+  color: var(--color-primary) !important;
+}
+body .vertical-menu .search-box-wrapper { background: #101a2d !important; border-color: #1e293b !important; }
+body .vertical-menu .search-input-field,
+body .vertical-menu .search-input-field:focus { background: transparent !important; color: #f1f5f9 !important; border: 0 !important; box-shadow: none !important; }
+.erp-layout-row { width: 100%; min-width: 0; }
+.erp-layout-row > *, .erp-form-grid > * { min-width: 0; }
+.erp-field { min-width: 0; }
+.erp-form-grid { grid-template-columns: minmax(0, 1fr); }
+.erp-col-2, .erp-col-3 { grid-column: 1 / -1; }
+@media (min-width: 768px) {
+  .erp-form-grid, .erp-form-grid.cols-3, .erp-form-grid.cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .erp-col-2 { grid-column: span 2; }
+}
+@media (min-width: 1024px) {
+  .erp-form-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .erp-form-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .erp-form-grid.cols-3 .erp-col-3, .erp-form-grid.cols-4 .erp-col-3 { grid-column: span 3; }
+}
+body :is(.erp-section, .erp-header-panel, .erp-card-container, .erp-readonly-value, .erp-toggle-pill) {
+  background-color: var(--color-surface); color: var(--color-text); border-color: var(--color-border);
+}
+body { --color-primary-light: var(--color-success-light); }
+body :is(.erp-section-title, .erp-label) { color: var(--color-text-muted); }
+body :is(.erp-panel-title, .erp-totals-value.highlight) { color: var(--color-success); }
+body .erp-edit-mode-banner { background: var(--color-warning-light); border-color: var(--color-warning); color: var(--color-warning); }
+body .erp-entity-chip.active { background: var(--color-success-light); color: var(--color-success); border-color: var(--color-success); }
+body .erp-entity-chip.unselected { background: var(--color-bg); color: var(--color-text-muted); border-color: var(--color-border); }
+body :is(.erp-items-header, .erp-card-header) { background: var(--color-header-modal); color: var(--color-header-modal-text); }
+body :is(.erp-items-header, .erp-card-header) :is(span, i) { color: inherit !important; }
+/* Filtros operacionales: grilla compacta, campos alineados y acciones agrupadas. */
+body .erp-form-grid.erp-filter-grid {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: .85rem 1rem;
+  padding: .85rem 1rem 1rem;
+}
+@media (min-width: 640px) {
+  body .erp-form-grid.erp-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  body .erp-form-grid.erp-filter-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+body .erp-filter-grid .erp-field { gap: .35rem; }
+body .erp-filter-grid .erp-label {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+body .erp-filter-grid .erp-label.required::after { color: var(--color-danger); }
+body .erp-filter-grid :is(p-dropdown.erp-input, p-calendar.erp-input, app-input-search) { width: 100%; min-width: 0; }
+body .erp-filter-grid p-dropdown.erp-input .p-dropdown,
+body .erp-filter-grid p-calendar.erp-input .p-calendar,
+body .erp-filter-grid p-calendar.erp-input .p-inputtext { width: 100%; min-width: 0; }
+body .erp-filter-search-field { position: relative; }
+body .erp-filter-search-field .p-inputgroup { display: flex; width: 100%; min-width: 0; }
+body .erp-filter-search-field .p-inputgroup > * { min-width: 0; }
+body .erp-filter-search-field .p-inputgroup .input-group { flex: 1 1 auto; }
+body .erp-filter-search-field .p-inputgroup input { width: 100%; min-width: 0; }
+body .erp-filter-search-results {
+  position: absolute;
+  z-index: 1000;
+  inset-inline: 0;
+  top: calc(100% + .2rem);
+  max-height: min(16rem, 45vh);
+  overflow: auto;
+}
+body .erp-filter-search-list {
+  margin: 0;
+  padding: .25rem;
+  list-style: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+body .erp-filter-search-list li {
+  padding: .55rem .65rem;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+  border-radius: var(--radius-sm);
+}
+body .erp-filter-search-list li[role='option'] { cursor: pointer; }
+body .erp-filter-search-list li[role='option']:is(:hover, :focus-visible) {
+  outline: none;
+  background: var(--color-success-light);
+  color: var(--color-primary-hover);
+}
+body .erp-filter-selected-value-content { display: flex; min-height: var(--field-height); align-items: center; min-width: 0; }
+body .erp-filter-selected-value-content .p-tag { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+body .erp-filter-selected-value-content .p-tag .p-tag-value { white-space: normal; }
+body .erp-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: .55rem;
+  margin: .25rem 1rem 0;
+  padding: .8rem 0 .15rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+body .erp-filter-actions > :is(p-button, p-splitbutton) { flex: 0 0 auto; }
+body .erp-filter-actions .p-button { min-width: 6rem; }
+body .erp-filter-actions .p-splitbutton { display: inline-flex; }
+body :is(.stock-export-trigger.p-button, .stock-export-trigger .p-button) {
+  min-height: 32px;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md);
+}
+body .purchase-more-filters {
+  margin-top: .65rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: .6rem .75rem;
+}
+body .purchase-more-filters > summary {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: var(--erp-font-body, 12px);
+}
+body .purchase-more-filters[open] > .purchase-filter-grid { margin-top: .75rem; }
+body .p-menu.purchase-report-menu .p-menuitem-icon { color: var(--color-primary) !important; }
+body .p-menu.purchase-report-menu .fa-file-pdf { color: var(--color-danger) !important; }
+body .p-menu.purchase-report-menu .fa-file-excel { color: var(--color-success) !important; }
+body .p-menu.stock-export-menu.purchase-report-menu .p-menuitem:not(:hover) > .p-menuitem-content,
+body .p-menu.stock-export-menu.purchase-report-menu .p-menuitem:not(:hover) .p-menuitem-link {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+body .p-menu.stock-export-menu.purchase-report-menu .p-menuitem:not(:hover) .p-menuitem-text { color: var(--color-text) !important; }
+body .p-menu.stock-export-menu.purchase-report-menu .p-menuitem:not(.p-disabled):hover > .p-menuitem-content,
+body .p-menu.stock-export-menu.purchase-report-menu .p-menuitem:not(.p-disabled):hover .p-menuitem-link {
+  background: var(--color-action-primary) !important;
+  color: var(--color-text-inverse) !important;
+}
+body .p-menu.stock-export-menu.purchase-report-menu .p-menuitem:not(.p-disabled):hover :is(.p-menuitem-text, .p-menuitem-icon) {
+  color: var(--color-text-inverse) !important;
+}
+body .p-menu.stock-export-menu.purchase-report-menu .p-menuitem-link:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+body .p-menu.stock-export-menu {
+  z-index: 1200 !important;
+  min-width: min(18rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  padding: .3rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-surface) !important;
+  box-shadow: var(--shadow-md);
+}
+body .p-menu.stock-export-menu .p-menuitem-link {
+  display: flex;
+  justify-content: flex-start;
+  gap: .65rem;
+  min-height: 2.65rem;
+  padding: .6rem .7rem;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  text-align: left;
+  white-space: normal;
+}
+body .p-menu.stock-export-menu .p-menuitem-text {
+  flex: 1 1 auto;
+  color: inherit;
+  text-align: left;
+}
+body .p-menu.stock-export-menu .p-menuitem-icon {
+  flex: 0 0 1rem;
+  width: 1rem;
+  text-align: center;
+}
+body .p-menu.stock-export-menu .p-menuitem-link:hover {
+  background: var(--color-field-filled) !important;
+  color: var(--color-text) !important;
+}
+body .p-menu.stock-export-menu .p-menuitem-link:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+  box-shadow: none;
+}
+@media (max-width: 639px) {
+  body .erp-filter-grid { padding: .75rem .75rem .85rem; }
+  body .erp-filter-actions { display: grid; grid-template-columns: 1fr; margin-inline: .75rem; }
+  body .erp-filter-actions > :is(p-button, p-splitbutton),
+  body .erp-filter-actions :is(.p-button, .p-splitbutton, .p-splitbutton-defaultbutton, .p-splitbutton-menubutton) { width: 100%; }
+  body .erp-filter-actions .p-splitbutton .p-button:first-child { flex: 1 1 auto; }
+}
+body :is(.card, .modal-content, .dropdown-menu, .p-card, .p-panel, .accordion-item) {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+body :is(.card-header, .modal-header, .p-card .p-card-header, .p-panel .p-panel-header) {
+  background-color: var(--color-header-modal) !important;
+  color: var(--color-header-modal-text) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+body :is(.card-header, .modal-header, .p-card .p-card-header, .p-panel .p-panel-header) * { color: inherit !important; }
+body :is(.erp-items-header, .erp-card-header, .card-header, .modal-header, .p-card .p-card-header, .p-panel .p-panel-header, .p-dialog .p-dialog-header),
+body :is(.erp-items-header, .erp-card-header, .card-header, .modal-header, .p-card .p-card-header, .p-panel .p-panel-header, .p-dialog .p-dialog-header) * {
+  color: #ffffff !important;
+}
+@each $role in success, warning, danger, info {
+  body .erp-badge-#{$role}, body .p-tag.p-tag-#{$role} {
+    background: var(--color-#{$role}-light) !important; color: var(--color-#{$role}) !important; border: 1px solid var(--color-#{$role}) !important;
+  }
+}
+body :is(.erp-badge-neutral, .p-tag) { background: var(--color-bg) !important; color: var(--color-text-muted) !important; border-color: var(--color-border) !important; }
+body .p-tag.p-tag-success { background: var(--color-success-light) !important; color: var(--color-success) !important; }
+body .p-tag.p-tag-info { background: var(--color-info-light) !important; color: var(--color-info) !important; }
+body .p-tag.p-tag-warning { background: var(--color-warning-light) !important; color: var(--color-warning) !important; }
+body .p-tag.p-tag-danger { background: var(--color-danger-light) !important; color: var(--color-danger) !important; }
+body :is(.p-inputtext, .p-dropdown, .p-multiselect, .p-autocomplete-panel, .p-dropdown-panel, .p-multiselect-panel, .p-datepicker, .p-paginator, .p-dialog-content, .swal2-popup) {
+  background: var(--color-surface) !important; color: var(--color-text) !important; border-color: var(--color-border) !important;
+}
+/* Campos vacíos conservan superficie neutra; con valor reciben un tinte verde muy sutil. */
+body :is(input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']), select, textarea, .p-inputtext, .p-dropdown, .p-multiselect, .p-inputnumber-input, .p-calendar .p-inputtext) {
+  background-color: var(--color-surface) !important;
+}
+body :is(input[placeholder]:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']), textarea[placeholder], .p-inputtext[placeholder], .p-inputnumber-input[placeholder], .p-calendar .p-inputtext[placeholder]):is(.ng-valid.ng-dirty, .ng-valid.ng-touched):not(:placeholder-shown) {
+  background-color: var(--color-field-filled) !important;
+  border-color: var(--color-field-filled-border) !important;
+}
+body select:is(.ng-valid.ng-dirty, .ng-valid.ng-touched):has(option:checked:not([value=''])),
+body .p-dropdown:is(.ng-valid.ng-dirty, .ng-valid.ng-touched):has(.p-dropdown-label:not(.p-placeholder)),
+body .p-multiselect:is(.ng-valid.ng-dirty, .ng-valid.ng-touched):has(.p-multiselect-label:not(.p-placeholder)) {
+  background-color: var(--color-field-filled) !important;
+  border-color: var(--color-field-filled-border) !important;
+}
+body :is(input, select, textarea, .p-inputtext, .p-dropdown, .p-multiselect, .p-inputnumber-input, .p-calendar .p-inputtext):is(.ng-invalid.ng-dirty, .ng-invalid.ng-touched) {
+  background-color: var(--color-surface) !important;
+  border-color: var(--color-danger) !important;
+}
+body :is(.p-multiselect-header, .p-accordion-content, .p-tabview-panels) { background: var(--color-surface) !important; color: var(--color-text) !important; border-color: var(--color-border) !important; }
+body .p-multiselect .p-multiselect-token { background: var(--color-info-light); color: var(--color-info); }
+body .p-selectbutton .p-button.p-highlight { background: var(--color-action-primary-active) !important; border-color: var(--color-action-primary-active) !important; color: var(--color-text-inverse) !important; }
+body :is(.p-inputtext, .p-dropdown, .p-multiselect).ng-invalid.ng-dirty { border-color: var(--color-danger) !important; }
+body :is(input, select, textarea, .p-inputtext, .p-dropdown, .p-multiselect, .p-inputnumber-input, .p-calendar .p-inputtext):is(.ng-invalid.ng-dirty, .ng-invalid.ng-touched) { background: var(--color-surface) !important; border-color: var(--color-danger) !important; }
+body :is(.p-dropdown-item, .p-multiselect-item, .p-autocomplete-item, .p-datepicker td > span, .p-paginator-element, .swal2-title, .swal2-html-container) { color: var(--color-text) !important; }
+body :is(.p-dropdown-item, .p-multiselect-item, .p-autocomplete-item).p-highlight,
+body .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+body .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight,
+body .p-datepicker td > span.p-highlight,
+body .p-paginator .p-paginator-page.p-highlight {
+  background: var(--color-success-light) !important; color: var(--color-success) !important;
+}
+body :is(.p-dropdown-item, .p-multiselect-item, .p-autocomplete-item):not(.p-highlight):hover { background: var(--color-bg) !important; }
+body :is(.p-dropdown-trigger, .p-multiselect-trigger, .p-dropdown-label.p-placeholder, .p-multiselect-label.p-placeholder) { color: var(--color-text-muted) !important; }
+body .p-dropdown .p-dropdown-label { border: 0 !important; background: transparent !important; height: auto !important; min-height: 0 !important; line-height: normal !important; box-shadow: none !important; }
+body .p-inputtext::placeholder { color: var(--color-text-muted); opacity: 1; }
+body .p-inputtext:disabled, body :is(.p-dropdown, .p-multiselect).p-disabled { background: var(--color-control-disabled) !important; opacity: .75; }
+body .p-dialog .p-dialog-footer { background: var(--color-bg) !important; border-color: var(--color-border) !important; flex-wrap: wrap; }
+body .p-dialog.erp-operational-dialog { border-color: var(--color-border) !important; }
+body .p-dialog.erp-operational-dialog section { border-color: var(--color-border); }
+body .p-dialog.erp-operational-dialog :is(.erp-input, .p-inputtext, .p-dropdown) { height: var(--field-height) !important; min-height: var(--field-height) !important; }
+body .p-dialog.erp-operational-dialog textarea.p-inputtext { height: auto !important; min-height: calc(var(--field-height) * 2) !important; }
+body .p-dialog :is(.p-dropdown, .p-calendar, .p-inputnumber, .p-multiselect) { max-width: 100%; min-width: 0; }
+body :is(.p-dialog-mask, .p-component-overlay) { background-color: var(--color-overlay-mask); }
+body .p-tooltip .p-tooltip-text { background: var(--color-header-modal); color: var(--color-header-modal-text); }
+body .p-datatable .p-datatable-tbody > tr > td { background: var(--color-surface); color: var(--color-text) !important; }
+body .p-datatable .p-datatable-tbody > tr:hover > td { background: var(--color-success-light) !important; }
+body .p-datatable .p-datatable-tbody > tr.p-highlight > td { background: var(--color-info-light) !important; }
+body :is(.table, table) { color: var(--color-text); }
+body .table > :not(caption) > * > * { background-color: var(--color-surface); color: var(--color-text); border-color: var(--color-border); }
+body :is(.p-datatable .p-datatable-thead > tr > th, table thead th, .erp-table-header th) {
+  background: var(--color-header-modal) !important;
+  color: var(--color-header-modal-text) !important;
+  border-color: var(--color-primary-hover) !important;
+  font-size: var(--erp-font-label, 12px) !important;
+  font-weight: 700 !important;
+  letter-spacing: .02em;
+  padding: .55rem .7rem !important;
+}
+body :is(.p-datatable .p-datatable-thead > tr > th, table thead th, .erp-table-header th) * { color: var(--color-header-modal-text) !important; }
+body .p-skeleton { background: var(--color-control-disabled); }
+body :is(.erp-btn, .p-button, input, select, textarea, a):focus-visible { outline: 2px solid var(--color-focus) !important; outline-offset: 2px; }
+body :is(.p-inputtext:enabled:focus, .p-dropdown.p-focus, .p-multiselect.p-focus) { border-color: var(--color-focus) !important; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus) 25%, transparent) !important; }
+body :is(input, select, textarea, .p-inputtext, .p-dropdown, .p-multiselect, .p-inputnumber-input, .p-calendar .p-inputtext):is(.ng-valid.ng-dirty, .ng-valid.ng-touched):focus,
+body :is(.p-dropdown.ng-valid.ng-dirty, .p-dropdown.ng-valid.ng-touched, .p-multiselect.ng-valid.ng-dirty, .p-multiselect.ng-valid.ng-touched, .p-inputnumber.ng-valid.ng-dirty, .p-inputnumber.ng-valid.ng-touched, .p-calendar.ng-valid.ng-dirty, .p-calendar.ng-valid.ng-touched).p-focus {
+  border-color: var(--color-focus) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus) 22%, transparent) !important;
+}
+body .p-button :is(.p-button-label, .p-button-icon, i) { color: inherit !important; }
+body .erp-btn :is(span, i) { color: inherit !important; }
+
+/* Controles compartidos: alineación consistente en formularios y diálogos. */
+body :is(.form-control, .form-select, .erp-input, .p-inputtext, .p-dropdown, .p-multiselect, .p-inputnumber-input, .p-calendar .p-inputtext, .p-autocomplete .p-inputtext):not(textarea) {
+  box-sizing: border-box;
+  min-height: var(--field-height);
+  height: var(--field-height);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-base);
+  font-size: var(--erp-font-body);
+  line-height: 30px;
+}
+body .p-dropdown .p-dropdown-label {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+body .p-dropdown .p-dropdown-trigger {
+  height: 30px !important;
+}
+body .p-datatable .p-datatable-tbody > tr > td {
+  padding: 6px 10px !important;
+  vertical-align: middle !important;
+}
+body :is(.p-calendar, .p-inputnumber, .p-autocomplete, .p-inputgroup) { min-width: 0; width: 100%; }
+body :is(.p-datepicker-trigger, .p-inputgroup-addon) { box-sizing: border-box; min-height: var(--field-height); height: var(--field-height); }
+body textarea.form-control, body textarea.erp-input, body textarea.p-inputtext { height: auto; min-height: calc(var(--field-height) * 2); }
+body :is(.badge-subtle-cost, .badge-subtle-price, .badge-subtle-stock) { border-color: var(--color-border) !important; }
+body .badge-subtle-cost { background: var(--color-success-light) !important; color: var(--color-success) !important; }
+body :is(.badge-subtle-price, .badge-subtle-stock) { background: var(--color-info-light) !important; color: var(--color-info) !important; }
+body .badge-subtle-stock.stock-empty { background: var(--color-danger-light) !important; color: var(--color-danger) !important; }
+body .product-catalog-card { background: var(--color-surface) !important; border: 1px solid var(--color-border) !important; box-shadow: var(--shadow-md) !important; }
+body .product-catalog-scroll { background: var(--color-bg); scrollbar-color: var(--color-primary) var(--color-surface-secondary); }
+body .product-catalog-scroll::-webkit-scrollbar { width: 9px; }
+body .product-catalog-scroll::-webkit-scrollbar-track { background: var(--color-surface-secondary); border-radius: 8px; }
+body .product-catalog-scroll::-webkit-scrollbar-thumb { background: var(--color-primary); border: 2px solid var(--color-surface-secondary); border-radius: 8px; }
+body .product-catalog-paginator {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem;
+  margin: .55rem 0 0; padding: .5rem .65rem !important;
+  color: var(--color-text) !important; background: var(--color-surface-secondary) !important;
+  border: 1px solid var(--color-border) !important; border-radius: .65rem !important;
+  box-shadow: var(--shadow-md);
+}
+body .product-catalog-paginator .p-paginator-current { color: var(--color-text-secondary) !important; font-size: .78rem; }
+body .product-catalog-paginator .p-paginator-element { color: var(--color-text) !important; border-radius: .45rem !important; }
+body .product-catalog-paginator .p-paginator-element:not(.p-disabled):hover { background: var(--color-success-light) !important; color: var(--color-primary-hover) !important; }
+body .product-catalog-paginator .p-paginator-page.p-highlight { background: var(--color-primary) !important; border-color: var(--color-primary) !important; color: #ffffff !important; }
+body .product-catalog-paginator .p-paginator-page.p-highlight * { color: #ffffff !important; }
+
+/* Barras de filtro y acordeón: verde corporativo en ambos modos. */
+body :is(.p-accordion .p-accordion-header, .p-accordion .p-accordion-header .p-accordion-header-link, .p-accordion .p-accordion-header > a) {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary-hover) !important;
+  color: #ffffff !important;
+}
+body :is(.p-accordion .p-accordion-header .p-accordion-header-link, .p-accordion .p-accordion-header > a) * { color: #ffffff !important; }
+body :is(.p-accordion .p-accordion-header .p-accordion-header-link, .p-accordion .p-accordion-header > a):is(:hover, :focus-visible, .p-highlight) {
+  background: var(--color-primary-hover) !important;
+  color: #ffffff !important;
+}
+body .table-caption-container {
+  box-sizing: border-box;
+  width: 100%;
+  background: var(--color-primary) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  padding: .45rem .55rem;
+}
+body .p-datatable .p-datatable-header {
+  box-sizing: border-box;
+  background: var(--color-primary) !important;
+  border: 0 !important;
+  border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  padding: 0 !important;
+}
+/* Un marco único y sin rebordes claros entre filtro y encabezado. */
+body .p-datatable.app-table-scroll {
+  border: 0 !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+body .p-datatable.app-table-scroll .p-datatable-wrapper {
+  border: 0 !important;
+  border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+}
+/* El filtro conserva el verde institucional; las columnas usan un matiz
+   cercano para separarlas visualmente sin dibujar una línea de borde. */
+body :is(.p-datatable .p-datatable-thead > tr > th, table thead th, .erp-table-header th) {
+  background: color-mix(in srgb, var(--color-primary) 94%, var(--color-sidebar)) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background-clip: padding-box;
+}
+body :is(.p-datatable .p-datatable-thead > tr, table thead tr, .erp-table-header) {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+body .table-caption-container :is(.p-dropdown, .p-inputtext) {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+body .table-caption-container .p-dropdown :is(.p-dropdown-label, .p-dropdown-trigger) { color: var(--color-text) !important; }
+body .table-caption-container .p-input-icon-right > i { color: var(--color-danger) !important; }
+
+/* Chips documentales oscuros para mantener sus rótulos blancos legibles. */
+body[data-bs-theme='dark'] :is(.p-datatable, table) td .app-table-document__type--without-file { background: #064e3b !important; border-color: #10b981 !important; color: #ffffff !important; }
+body[data-bs-theme='dark'] :is(.p-datatable, table) td .app-table-document__type--without-file i { color: #ffffff !important; }
+body[data-bs-theme='dark'] :is(.p-datatable, table) td .app-table-document__type--receipt { background: #78350f !important; border-color: #f59e0b !important; color: #ffffff !important; }
+body[data-bs-theme='dark'] :is(.p-datatable, table) td .app-table-document__type--receipt i { color: #ffffff !important; }
+body[data-bs-theme='dark'] :is(.p-datatable, table) td .app-table-document__type--file { background: #1e3a8a !important; border-color: #60a5fa !important; color: #ffffff !important; }
+body[data-bs-theme='dark'] :is(.p-datatable, table) td .app-table-document__type--file i { color: #ffffff !important; }
+@media (max-width: 767px) {
+  body .p-dialog .p-dialog-footer .p-button { white-space: normal; }
+  body .erp-totals-row { flex-wrap: wrap; gap: .25rem; }
+}

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Output, HostListener, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 import { EventService } from 'src/app/core/services/event.service';
@@ -11,12 +11,14 @@ import { TransferReviewService } from 'src/app/services/transfer-review.service'
   styles: [
   ]
 })
-export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
+export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   readonly sidebarId = 'app-sidebar';
-  readonly mobileBreakpoint = 992;
+  readonly mobileBreakpoint = 767;
   isDesktopSidebarHidden = false;
   isMobileViewport = false;
   isMobileSidebarOpen = false;
+  @Input() isCondensed = false;
+  @Output() condensedChange = new EventEmitter<boolean>();
   @Input() breadcrumbs:any = [];
   // sidebartype: string;
   validatorsService = inject(ValidatorsService);
@@ -31,9 +33,13 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     document.body.setAttribute('data-layout', 'vertical');
-    this.isDesktopSidebarHidden = document.body.classList.contains('app-sidebar-hidden');
+    document.body.classList.remove('app-sidebar-hidden');
     this.synchronizeViewportState();
     this.reviewService.checkCurrentContext().subscribe();
+  }
+
+  ngOnChanges() {
+    this.synchronizeViewportState();
   }
 
   ngAfterViewInit() {
@@ -55,10 +61,11 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.isDesktopSidebarHidden = !document.body.classList.contains('app-sidebar-hidden');
-    document.body.classList.toggle('app-sidebar-hidden', this.isDesktopSidebarHidden);
-    document.body.classList.remove('vertical-collpsed');
-    document.body.classList.remove('sidebar-enable', 'app-sidebar-open');
+    this.isDesktopSidebarHidden = false;
+    this.isCondensed = !this.isCondensed;
+    document.body.classList.remove('app-sidebar-hidden', 'sidebar-enable', 'app-sidebar-open');
+    document.body.classList.toggle('vertical-collpsed', this.isCondensed);
+    this.condensedChange.emit(this.isCondensed);
   }
 
   closeMobileSidebar(restoreFocus = false) {
@@ -78,7 +85,7 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.routerEventsSubscription.unsubscribe();
-    document.body.classList.remove('sidebar-enable', 'app-sidebar-open', 'app-sidebar-hidden');
+    document.body.classList.remove('sidebar-enable', 'app-sidebar-open', 'app-sidebar-hidden', 'vertical-collpsed');
   }
 
   private synchronizeViewportState() {
@@ -91,7 +98,7 @@ export class VerticalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (wasMobile || this.isMobileSidebarOpen) this.closeMobileSidebar(false);
-    document.body.classList.remove('vertical-collpsed');
+    document.body.classList.toggle('vertical-collpsed', this.isCondensed && !this.isDesktopSidebarHidden);
     document.body.classList.toggle('app-sidebar-hidden', this.isDesktopSidebarHidden);
   }
 

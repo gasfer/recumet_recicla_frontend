@@ -1,7 +1,7 @@
 <p-dialog [header]="'Vista de sectores: '" [(visible)]="providersService.showModalSectors" [modal]="true" [draggable]="false"
     [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--md">
-    <div class="justify-content-between d-flex">
-        <h3 class="text-muted">Sectores</h3>
+    <div class="justify-between flex">
+        <h3 class="text-erp-text-muted">Sectores</h3>
         <p-button icon="fa-solid fa-circle-plus" (click)="providersService.showModalNewSector = true" pTooltip="Añadir Nuevo" tooltipPosition="left"
             styleClass="p-button-primary p-button-rounded mb-1" label="Añadir"></p-button>
     </div>

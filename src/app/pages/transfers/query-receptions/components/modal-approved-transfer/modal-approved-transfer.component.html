@@ -4,10 +4,10 @@
     [dismissableMask]="true" styleClass="app-dialog--lg">
     <form [formGroup]="approvedForm">
         <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="field col-12">
-                <div class="field">
-                    <label class="block mb-0">Area / Almacén ingreso stock<span class="text-danger">*</span>
+        <div class="p-fluid erp-form-grid">
+            <div class="erp-field w-[100%] px-2 min-w-0">
+                <div class="erp-field">
+                    <label class="block mb-0">Area / Almacén ingreso stock<span class="text-erp-danger">*</span>
                     </label>
                     <p-dropdown [options]="validatorsService.storages()"
                         placeholder="Selecciona un almacén"
@@ -23,9 +23,9 @@
                     </small>
                 </div>
             </div>
-            <div class="field mt-2 row">
-                <div class="col-sm-6 col-12 mt-sm-0 mt-1">
-                    <label class="block mb-0">Fecha de Registro <span class="text-danger">*</span>
+            <div class="erp-field mt-2 flex flex-wrap erp-layout-row gap-y-3">
+                <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
+                    <label class="block mb-0">Fecha de Registro <span class="text-erp-danger">*</span>
                     </label>
                     <p-calendar
                         formControlName="date_received"
@@ -40,7 +40,7 @@
                         {{ validatorsService.inputValidMessage("date_received",approvedForm) }}
                     </small>
                 </div>
-                <div class="col-sm-6 col-12 mt-sm-0 mt-1">
+                <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
                     <label class="block mb-0">Observaciones de recepción</label>
                     <textarea pInputTextarea
                         type="text"
@@ -49,7 +49,7 @@
                         [pKeyFilter]="validatorsService.expRegValidInput"
                         formControlName="observations_received"
                         placeholder="EJ. ......"
-                        class="mt-1 text-uppercase"
+                        class="mt-1 uppercase"
                         [class.ng-dirty]="validatorsService.inputValid('observations_received',approvedForm)"
                     ></textarea>
                     <small *ngIf="validatorsService.inputValid('observations_received',approvedForm)" class="p-error block">
@@ -57,8 +57,8 @@
                     </small>
                 </div>
             </div>
-            <div class="field col-12" *ngIf="hasShortage()">
-                <label class="block mb-0">Producto para registrar diferencia de peso <span class="text-danger">*</span></label>
+            <div class="erp-field w-[100%] px-2 min-w-0" *ngIf="hasShortage()">
+                <label class="block mb-0">Producto para registrar diferencia de peso <span class="text-erp-danger">*</span></label>
                 <p-dropdown [options]="mermaProducts()"
                     placeholder="Seleccione el producto de diferencia"
                     optionLabel="name" optionValue="id" appendTo="body"
@@ -91,10 +91,10 @@
                     <tbody formArrayName="details">
                         <tr *ngFor="let group of detailsFormArray.controls; let i = index" [formGroupName]="i">
                             <td>
-                                <h5 class="m-0 p-0 text-dark fw-semibold">{{ group.get('product_name')?.value }}</h5>
-                                <p class="text-muted m-0 app-u-font-size-10px-0d5be05">{{ group.get('product_cod')?.value }}</p>
+                                <h5 class="m-0 p-0 text-erp-text font-semibold">{{ group.get('product_name')?.value }}</h5>
+                                <p class="text-erp-text-muted m-0 app-u-font-size-10px-0d5be05">{{ group.get('product_cod')?.value }}</p>
                             </td>
-                           <td class="text-center align-middle text-dark fw-medium">
+                           <td class="text-center align-middle text-erp-text font-medium">
                               {{ group.get('quantity_sent')?.value | number: decimalFormat.digitsInfo }}
                           </td>
                             <td class="text-center align-middle">
@@ -119,18 +119,18 @@
                                     formControlName="observation"
 
                                     [pKeyFilter]="validatorsService.expRegValidInput"
-                                    class="p-inputtext-sm form-control text-uppercase"
+                                    class="p-inputtext-sm form-control uppercase"
                                     [placeholder]="isProductObservationRequired(group) ? 'OBS. REQUERIDA *' : 'OBS. OPCIONAL'"
                                     [class.ng-dirty]="group.get('observation')?.invalid"
                                 />
-                                <small *ngIf="group.get('observation')?.touched && group.get('observation')?.invalid" class="p-error block text-start">
+                                <small *ngIf="group.get('observation')?.touched && group.get('observation')?.invalid" class="p-error block text-left">
                                     Observación requerida
                                 </small>
                             </td>
-                            <td class="text-center align-middle text-dark">
+                            <td class="text-center align-middle text-erp-text">
                                 {{ getExcedente(group) | number:decimalFormat.digitsInfo }}
                             </td>
-                            <td class="text-center align-middle text-dark">
+                            <td class="text-center align-middle text-erp-text">
                                 {{ getFaltante(group) | number:decimalFormat.digitsInfo }}
                             </td>
                             <td class="text-center align-middle">
@@ -141,19 +141,19 @@
                         </tr>
                     </tbody>
                       <tfoot>
-                        <tr class="table-light fw-bold">
-                            <td class="text-end">TOTALES</td>
-                            <td class="text-center text-dark">
+                        <tr class="table-light font-bold">
+                            <td class="text-right">TOTALES</td>
+                            <td class="text-center text-erp-text">
                                 {{ getTotalSent() | number:decimalFormat.digitsInfo }}
                             </td>
-                            <td class="text-center text-dark">
+                            <td class="text-center text-erp-text">
                                 {{ getTotalReceived() | number:decimalFormat.digitsInfo }}
                             </td>
                             <td></td>
-                            <td class="text-center text-dark">
+                            <td class="text-center text-erp-text">
                                 {{ getTotalExcedente() | number:decimalFormat.digitsInfo }}
                             </td>
-                            <td class="text-center text-dark">
+                            <td class="text-center text-erp-text">
                                 {{ getTotalFaltante() | number:decimalFormat.digitsInfo }}
                             </td>
                             <td class="text-center">

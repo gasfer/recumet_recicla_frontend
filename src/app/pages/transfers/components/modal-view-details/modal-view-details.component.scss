@@ -7,7 +7,7 @@
 }
 
 .transfer-details {
-  color: #26364a;
+  color: var(--color-text);
   font-size: .92rem;
 }
 
@@ -29,7 +29,7 @@
 
 .transfer-details__summary td:nth-child(odd) {
   width: 18%;
-  color: #334155;
+  color: var(--color-text);
   font-size: .78rem;
   letter-spacing: .01em;
 }

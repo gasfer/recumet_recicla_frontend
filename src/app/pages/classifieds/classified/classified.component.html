@@ -9,13 +9,13 @@
 <div class="erp-header-panel classified-header mb-3">
     <div class="classified-heading">
     <div class="erp-panel-title">
-        <i class="fa-solid fa-layer-group text-emerald-600"></i>
+        <i class="fa-solid fa-layer-group text-erp-success"></i>
         <span>REGISTRO DE CLASIFICADOS</span>
     </div>
-    <button type="button" class="btn btn-light border rounded-circle classified-settings"
+    <button type="button" class="erp-btn erp-btn-secondary border rounded-full classified-settings"
         aria-label="Configurar clasificado" pTooltip="Configurar clasificado" tooltipPosition="left"
         (click)="classifiedService.showModalConfigClassified = true">
-        <i class="fa-solid fa-gear text-slate-500"></i>
+        <i class="fa-solid fa-gear text-erp-text-muted"></i>
     </button>
     </div>
 
@@ -30,29 +30,29 @@
             <div class="classified-suggestions">
                 <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
                     <li class="list-group-item list-group-item-action">
-                        <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
+                        <span class='font-bold text-erp-text-muted'><i class="fa-solid fa-spinner fa-spin mr-1"></i> Cargando...</span>
                     </li>
                 </ul>
                 <ul class="list-group shadow cursor-pointer">
                     <li *ngFor="let product of suggestedProducts()"
-                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between gap-3" (click)="selectProduct(product)">
-                        <span class="d-flex flex-column">
-                            <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
-                            <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                        class="list-group-item list-group-item-action flex items-center justify-between gap-3" (click)="selectProduct(product)">
+                        <span class="flex flex-col">
+                            <span class='font-bold text-erp-text'>{{product.cod}} - {{ product.name}}</span>
+                            <span class="text-erp-text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
                         </span>
-                        <span class="badge-subtle-stock flex-shrink-0">
+                        <span class="badge-subtle-stock shrink-0">
                             Stock: {{ product.total_stock | number: decimal() }}
                         </span>
                     </li>
                 </ul>
                 <ul *ngIf="suggestedProducts().length == 0 && txtSearchProduct() && !loadingSearchProduct()" class="list-group shadow">
-                    <li class="list-group-item list-group-item-action text-danger">
-                            <span class='fw-bold'> No se encontró producto con stock disponible: "{{txtSearchProduct() | uppercase}}"</span>
+                    <li class="list-group-item list-group-item-action text-erp-danger">
+                            <span class='font-bold'> No se encontró producto con stock disponible: "{{txtSearchProduct() | uppercase}}"</span>
                     </li>
                 </ul>
             </div>
             </div>
-            <small class="text-muted">Stock de la sucursal y almacén seleccionados.</small>
+            <small class="text-erp-text-muted">Stock de la sucursal y almacén seleccionados.</small>
         </div>
 
         <div class="erp-field">
@@ -78,33 +78,33 @@
     <div>
         <div class="card erp-card-container border-0 shadow-sm">
             <div class="erp-items-header">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="fa-solid fa-boxes-packing text-emerald-400"></i>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-packing text-erp-success"></i>
                     <span>ITEMS CLASIFICADOS RESULTANTES</span>
                 </div>
                 <span class="erp-counter-chip">{{totalItems()}} items</span>
             </div>
-            <div class="p-3 border-bottom classified-search" *ngIf="!classifiedService._classifiedConfig.viewCardProducts">
+            <div class="p-3 border-b classified-search" *ngIf="!classifiedService._classifiedConfig.viewCardProducts">
                 <app-input-search (onEnters)="suggestedProductClassifieds($event)" (onDebounce)="suggestedProductClassifieds($event)"
                     [icon]="'fa-solid fa-cart-plus'"
                     [placeholder]="'Busque un producto aquí....'"></app-input-search>
                 <div class="classified-suggestions">
                     <ul *ngIf="loadingSearchProductClassified()" class="list-group shadow">
                         <li class="list-group-item list-group-item-action">
-                            <span class='fw-bold text-muted'><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando...</span>
+                            <span class='font-bold text-erp-text-muted'><i class="fa-solid fa-spinner fa-spin mr-1"></i> Cargando...</span>
                         </li>
                     </ul>
                     <ul class="list-group shadow cursor-pointer">
                         <li *ngFor="let product of suggestedProductsClassified()"
                             class="list-group-item list-group-item-action" (click)="addItemCar(product)">
-                            <span class='fw-bold text-slate-800'>{{product.cod}} - {{ product.name}}</span>
+                            <span class='font-bold text-erp-text'>{{product.cod}} - {{ product.name}}</span>
                             <br>
-                            <span class="text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
+                            <span class="text-erp-text-muted small">{{product.description }} - {{product.category.name}} / {{product.unit.siglas}}</span>
                         </li>
                     </ul>
                     <ul *ngIf="suggestedProductsClassified().length == 0 && txtSearchProductClassified() && !loadingSearchProductClassified()" class="list-group shadow">
-                        <li class="list-group-item list-group-item-action text-danger">
-                            <span class='fw-bold'> No se encontró el producto: "{{txtSearchProductClassified() | uppercase}}"</span>
+                        <li class="list-group-item list-group-item-action text-erp-danger">
+                            <span class='font-bold'> No se encontró el producto: "{{txtSearchProductClassified() | uppercase}}"</span>
                         </li>
                     </ul>
                 </div>
