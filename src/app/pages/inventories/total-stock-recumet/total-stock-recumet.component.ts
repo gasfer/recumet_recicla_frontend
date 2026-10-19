@@ -14,7 +14,7 @@ import { MenuItem } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { CategoriesService } from '../services/categories.service';
 import { ProductsService } from '../services/products.service';
-import { forkJoin, finalize, Observable, Subscription, from, of, switchMap } from 'rxjs';
+import { forkJoin, finalize, Observable, Subscription, from, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProvidersService } from '../../inputs/services/providers.service';
 import { Provider, TypesProvider } from '../../inputs/interfaces/provider.interface';
@@ -444,18 +444,25 @@ export class TotalStockRecumetComponent implements OnInit {
     this.getAllAndSearchKardex(1, this.rows());
   }
 
-  private exportBlob(request: Observable<Blob>, filename?: string): void {
+  private exportPdf(request: Observable<Blob>): void {
     this.exporting.set(true);
-    this.pdfActions.prepareRequest(request, !filename).pipe(
+    this.pdfActions.prepareRequest(request).pipe(
       takeUntilDestroyed(this.destroyRef),
-      switchMap(data => {
-        if (!filename) return from(this.pdfActions.show(data, 'reporte_stock_total.pdf', 'Reporte de stock total'));
-        this.downloadExcel(data, filename);
-        return of(undefined);
-      }),
+      switchMap(data => from(this.pdfActions.show(data, 'reporte_stock_total.pdf', 'Reporte de stock total'))),
       finalize(() => this.exporting.set(false)),
     ).subscribe({
-      error: () => Swal.fire('Error al generar reporte', 'No se pudo generar el reporte. Intente nuevamente.', 'error'),
+      error: () => Swal.fire('Error al generar PDF', 'No se pudo generar el PDF. Intente nuevamente.', 'error'),
+    });
+  }
+
+  private exportExcel(request: Observable<Blob>, filename: string): void {
+    this.exporting.set(true);
+    request.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.exporting.set(false)),
+    ).subscribe({
+      next: file => this.downloadExcel(file, filename),
+      error: () => Swal.fire('Error al generar Excel', 'No se pudo generar el Excel. Intente nuevamente.', 'error'),
     });
   }
 
@@ -465,31 +472,45 @@ export class TotalStockRecumetComponent implements OnInit {
       return;
     }
 
-    const excel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      ? file
-      : new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(excel);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    void file.slice(0, 4).arrayBuffer().then(buffer => {
+      const signature = new Uint8Array(buffer);
+      const isZip = signature[0] === 0x50 && signature[1] === 0x4b
+        && ((signature[2] === 0x03 && signature[3] === 0x04)
+          || (signature[2] === 0x05 && signature[3] === 0x06)
+          || (signature[2] === 0x07 && signature[3] === 0x08));
+      if (!isZip) {
+        void Swal.fire('Excel no válido', 'El servidor no devolvió un archivo Excel válido. Verifique que el backend esté actualizado e intente nuevamente.', 'error');
+        return;
+      }
+
+      const excel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ? file
+        : new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(excel);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }).catch(() => {
+      void Swal.fire('Excel no válido', 'No se pudo leer el archivo Excel generado. Intente nuevamente.', 'error');
+    });
   }
 
   printPdfReport(): void {
     this.formReport.markAllAsTouched();
     if (!this.formReport.valid || this.exporting()) return;
     this.formParamsByForm();
-    this.exportBlob(this.kardexService.getReportPdfTotalStock(this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()));
+    this.exportPdf(this.kardexService.getReportPdfTotalStock(this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()));
   }
 
   printExcelReport(): void {
     this.formReport.markAllAsTouched();
     if (!this.formReport.valid || this.exporting()) return;
     this.formParamsByForm();
-    this.exportBlob(this.kardexService.getReportExcelTotalStock(this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()), 'listado_stock_' + this.getDatePartForFilename() + '.xlsx');
+    this.exportExcel(this.kardexService.getReportExcelTotalStock(this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()), 'listado_stock_' + this.getDatePartForFilename() + '.xlsx');
   }
 
   getDatePartForFilename(): string {
@@ -513,7 +534,7 @@ export class TotalStockRecumetComponent implements OnInit {
     this.formParamsByForm();
     const method = purchasesByBranch ? 'getReportExcelPurchasesByBranch' : 'getReportExcelConsolidatedTotalStock';
     const filename = purchasesByBranch ? 'reporte_compras_x_sucursal' : 'consolidado_inventario';
-    this.exportBlob(this.kardexService[method](this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()), filename + '_' + this.getDatePartForFilename() + '.xlsx');
+    this.exportExcel(this.kardexService[method](this.paramsSearch(), this.type(), this.query(), this.fieldSort(), this.order()), filename + '_' + this.getDatePartForFilename() + '.xlsx');
   }
 
   getSucursalesList(): any[] {
