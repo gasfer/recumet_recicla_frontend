@@ -17,7 +17,6 @@ import { Account, AccountsPayableProvider } from '../../accounts/interfaces/acco
 import { ProviderCompanyProfile, ProviderSiteProfile } from '../interfaces/provider-commercial-profile.interface';
 import { InputsService } from '../services/inputs.service';
 import { GetAllInputs, Input } from '../interfaces/input.interface';
-import { UsersService } from 'src/app/pages/managements/services/users.service';
 import {
   PROVIDER_ACCOUNT_TYPES, PROVIDER_CURRENCIES, PROVIDER_ENTITY_TYPES,
   PROVIDER_FREQUENCIES, PROVIDER_NEGOTIATION_CONDITIONS, PROVIDER_ORIGIN_CHANNELS,
@@ -173,7 +172,6 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   accountsLoading = signal(false);
   providerAccounts = signal<AccountsPayableProvider | null>(null);
 
-  private usersService = inject(UsersService);
   private inputsService = inject(InputsService);
   commercialUsers = signal<{ id: number; full_names: string }[]>([]);
   infoFrequencyAnalysis = signal<{
@@ -235,14 +233,8 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   }
 
   loadCommercialUsers() {
-    this.usersService.getAllAndSearch(1, 1000, true).subscribe({
-      next: (resp) => {
-        const list = (resp.users?.data || []).map(u => ({
-          id: u.id,
-          full_names: u.full_names || `Usuario #${u.id}`
-        }));
-        this.commercialUsers.set(list);
-      },
+    this.providersService.getManagementCatalogs().subscribe({
+      next: ({ catalogs }) => this.commercialUsers.set(catalogs.users || []),
       error: () => this.commercialUsers.set([])
     });
   }

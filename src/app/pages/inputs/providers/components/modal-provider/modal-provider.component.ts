@@ -11,7 +11,6 @@ import { ProductsService } from 'src/app/pages/inventories/services/products.ser
 import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 import { BOLIVIA_DEPARTMENTS } from 'src/app/core/constants/bolivia-geography.constants';
 import { SucursalesService } from 'src/app/pages/managements/services/sucursales.service';
-import { UsersService } from 'src/app/pages/managements/services/users.service';
 import { InputsService } from '../../../services/inputs.service';
 import { GetAllInputs, Input } from '../../../interfaces/input.interface';
 import * as L from 'leaflet';
@@ -157,7 +156,6 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   categoriesService = inject( CategoriesService );
   productsService = inject(ProductsService);
   sucursalesService = inject(SucursalesService);
-  usersService      = inject(UsersService);
   inputsService     = inject(InputsService);
   bankService       = inject(BankService);
   fb                = inject( FormBuilder );
@@ -1345,14 +1343,8 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   }
 
   loadCommercialUsers() {
-    this.usersService.getAllAndSearch(1, 1000, true).subscribe({
-      next: (resp) => {
-        const users = (resp.users?.data || []).map(u => ({
-          id: u.id,
-          full_names: u.full_names || `Usuario #${u.id}`
-        }));
-        this.commercialUsers.set(users);
-      },
+    this.providersService.getManagementCatalogs().subscribe({
+      next: ({ catalogs }) => this.commercialUsers.set(catalogs.users || []),
       error: () => this.commercialUsers.set([])
     });
   }
