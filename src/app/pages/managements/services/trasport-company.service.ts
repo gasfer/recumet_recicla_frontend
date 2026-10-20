@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { GetAllTransportCompany, NewCargoTruck, NewChauffeur, TransportCompany } from '../interfaces/trasport_company.interfaces';
+import { CargoTruck, Chauffeur, GetAllTransportCompany, NewCargoTruck, NewChauffeur, TransportCompany } from '../interfaces/trasport_company.interfaces';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -17,10 +17,14 @@ export class TransportCompanyService {
   showModalCargoTrucks   : boolean = false;
   showModalNewChauffeur  : boolean = false;
   showModalNewCargoTruck : boolean = false;
+  isEditChauffeur = false;
+  isEditCargoTruck = false;
   save$: Subject<boolean> = new Subject();
   editSubs: EventEmitter<TransportCompany> = new EventEmitter<TransportCompany>();
   chauffeursSubs: EventEmitter<TransportCompany> = new EventEmitter<TransportCompany>();
   cargoTrucksSubs: EventEmitter<TransportCompany> = new EventEmitter<TransportCompany>();
+  chauffeurEditSubs: EventEmitter<Chauffeur> = new EventEmitter<Chauffeur>();
+  cargoTruckEditSubs: EventEmitter<CargoTruck> = new EventEmitter<CargoTruck>();
 
   getAllAndSearch(page: number, limit: number,status:boolean, type: string = '', query?: string,field_sort:string = 'id',order:string = 'DESC'): Observable<GetAllTransportCompany>{
     let url = '';
@@ -32,7 +36,7 @@ export class TransportCompanyService {
     return this.http.get<GetAllTransportCompany>(url);
   }
 
-  postNew(form:TransportCompany) {
+  postNew(form: Pick<TransportCompany, 'name'> & Partial<TransportCompany>) {
     const {id, ...body}= form;
     const url = `${base_url}/trasport_company`;
     return this.http.post(url, body);
@@ -42,6 +46,16 @@ export class TransportCompanyService {
     const {id, ...body}= form;
     const url = `${base_url}/trasport_company/${form.id}`;
     return this.http.put(url, body);
+  }
+
+  putUpdateChauffeur(form: Chauffeur) {
+    const { id, ...body } = form;
+    return this.http.put(`${base_url}/trasport_company/chauffeur/${id}`, body);
+  }
+
+  putUpdateCargoTruck(form: CargoTruck) {
+    const { id, ...body } = form;
+    return this.http.put(`${base_url}/trasport_company/cargo_truck/${id}`, body);
   }
 
   putInactiveOrActive(id:number,status:boolean) {

@@ -1,9 +1,11 @@
 <p-dialog [header]="'Vista de camiones: '" [(visible)]="transportCompanyService.showModalCargoTrucks"
     [modal]="true" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--md">
-    <div class="justify-content-between d-flex">
-        <h3 class="text-muted">{{transportCompany?.name}}</h3>
-        <p-button icon="fa-solid fa-circle-plus" (click)="transportCompanyService.showModalNewCargoTruck = true" pTooltip="Añadir Nuevo" tooltipPosition="left"
+    [resizable]="false" [dismissableMask]="true" [breakpoints]="{'800px': '94vw'}"
+    [style]="{width: 'min(56rem, calc(100vw - 2rem))'}" [contentStyle]="{maxHeight: 'calc(100dvh - 9rem)', overflow: 'auto'}"
+    styleClass="app-dialog--xl erp-operational-dialog transport-child-list-dialog">
+    <div class="transport-child-list-toolbar">
+        <h3>{{transportCompany?.name}}</h3>
+        <p-button *ngIf="validatorsService.withPermission('COMP. TRASPORTE','create')" icon="fa-solid fa-circle-plus" (click)="transportCompanyService.isEditCargoTruck = false; transportCompanyService.showModalNewCargoTruck = true" pTooltip="Añadir Nuevo" tooltipPosition="left"
             styleClass="p-button-primary p-button-rounded mb-1" label="Añadir"></p-button>
     </div>
     <app-table responsiveStrategy="stack" [cols]="cols()" [includeSearch]="false" [data]="cargoTrucks()"
@@ -11,7 +13,7 @@
         [customPagination]="true">
     </app-table>
     <ng-template pTemplate="footer">
-        <p-button (click)="transportCompanyService.showModalCargoTrucks = false" label="Cerrar"
+        <p-button type="button" (click)="transportCompanyService.showModalCargoTrucks = false" label="Cerrar"
             styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     </ng-template>
 </p-dialog>

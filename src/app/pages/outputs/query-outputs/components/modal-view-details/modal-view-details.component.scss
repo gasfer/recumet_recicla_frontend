@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+:host ::ng-deep .sales-detail-modal .p-dialog-content,
+:host ::ng-deep .sales-detail-modal .p-dialog-header,
+:host ::ng-deep .sales-detail-modal .p-dialog-footer {
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+:host ::ng-deep .sales-detail-modal .p-dialog-content {
+  overflow: auto;
+}
+
+:host ::ng-deep .sales-detail-modal .table {
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+:host ::ng-deep .sales-detail-modal .table td,
+:host ::ng-deep .sales-detail-modal .table th {
+  padding: var(--spacing-sm);
+  border-color: var(--color-border);
+  overflow-wrap: anywhere;
+}
+
+:host ::ng-deep .sales-detail-modal .sales-detail-lines thead th {
+  background: var(--color-header-modal);
+  color: var(--color-header-modal-text);
+}
+
+:host ::ng-deep .sales-detail-modal .sales-detail-table td:nth-child(odd) {
+  background: var(--color-surface-secondary);
+  color: var(--color-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+:host ::ng-deep .sales-detail-modal .sales-detail-table td:nth-child(even) {
+  background: var(--color-surface);
+}
+
+:host ::ng-deep .sales-detail-modal .table tfoot tr {
+  background: var(--color-surface-secondary);
+  color: var(--color-text);
+}

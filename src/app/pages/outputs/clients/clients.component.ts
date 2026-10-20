@@ -11,8 +11,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',
-  styles: [
-  ]
+  styleUrls: ['./clients.component.scss']
 })
 export class ClientsComponent implements OnInit, OnDestroy {
   searchItems = signal<MenuItem[]>([

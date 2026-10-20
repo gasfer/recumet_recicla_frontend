@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  color: var(--color-text);
+}
+
+.sales-client-form {
+  min-width: 0;
+}
+
+:host ::ng-deep .sales-client-dialog .p-dialog-content,
+:host ::ng-deep .sales-client-dialog .p-dialog-footer,
+:host ::ng-deep .sales-client-dialog .p-dialog-header {
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+:host ::ng-deep .sales-client-dialog .p-dialog-content {
+  overflow: auto;
+}
+
+:host ::ng-deep .sales-client-dialog textarea.erp-input {
+  min-height: 5rem;
+  height: auto;
+}

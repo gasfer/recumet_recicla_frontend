@@ -1,15 +1,21 @@
-<p-dialog [header]="'Registro chofer para: ' + transportCompany?.name" [(visible)]="transportCompanyService.showModalNewChauffeur"
+<p-dialog [header]="transportCompanyService.isEditChauffeur ? 'Editar conductor' : 'Registro de conductor para: ' + transportCompany?.name" [(visible)]="transportCompanyService.showModalNewChauffeur"
     [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
     [dismissableMask]="true" styleClass="app-dialog--sm">
-    <form [formGroup]="chauffeurForm">
+    <form [formGroup]="chauffeurForm" class="erp-form-grid">
         <app-alert-notify></app-alert-notify>
+        <div class="erp-field" *ngIf="transportCompanyService.isEditChauffeur">
+            <label class="erp-label required" for="chauffeur-transport-company">Empresa de transporte</label>
+            <p-dropdown inputId="chauffeur-transport-company" class="erp-input" [options]="transportCompanies()"
+                optionLabel="name" optionValue="id" placeholder="Selecciona empresa" appendTo="body"
+                formControlName="id_trasport_company"></p-dropdown>
+        </div>
         <div class="p-fluid grid">
             <div class="field col-12">
                 <div class="field">
-                    <label class="block mb-0">Nombre Chofer<span class="text-danger">*</span>
+                    <label class="erp-label required" for="chauffeur-full-names">Nombre del conductor
                     </label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                    <input id="chauffeur-full-names" type="text" pInputText class="erp-input" [pKeyFilter]="validatorsService.expRegValidInput"
                         formControlName="full_names" placeholder="EJ. DANIEL..."
                         [class.ng-dirty]="validatorsService.inputValid('full_names',chauffeurForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('full_names',chauffeurForm)" class="p-error block">
@@ -17,8 +23,8 @@
                     </small>
                 </div>
                 <div class="field">
-                    <label class="block mb-0">Ci / Licencia</label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                    <label class="erp-label" for="chauffeur-document">CI / Licencia</label>
+                    <input id="chauffeur-document" type="text" pInputText class="erp-input" [pKeyFilter]="validatorsService.expRegValidInput"
                         formControlName="number_document" placeholder="EJ. 512..."
                         [class.ng-dirty]="validatorsService.inputValid('number_document',chauffeurForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('number_document',chauffeurForm)" class="p-error block">
@@ -44,8 +50,8 @@
         </div>
     </form>
     <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ?  newCargoTruck() : null" styleClass="p-button-sm p-button-rounded"
-            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button type="button" (click)="!loading() ? saveChauffeur() : null" styleClass="p-button-sm p-button-rounded"
+            [label]="transportCompanyService.isEditChauffeur ? 'Guardar cambios' : 'Guardar'" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
         <p-button (click)="transportCompanyService.showModalNewChauffeur = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     </ng-template>
 </p-dialog>

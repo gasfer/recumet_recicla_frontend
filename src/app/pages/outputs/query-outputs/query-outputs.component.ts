@@ -18,14 +18,7 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
 @Component({
   selector: 'app-query-outputs',
   templateUrl: './query-outputs.component.html',
-  styles: [`
-    .card {
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0.1px 0 30px rgba(0, 0, 0, 0.1);
-    }
-  `]
+  styleUrls: ['./query-outputs.component.scss']
 })
 export class QueryOutputsComponent {
   fb                = inject(FormBuilder);

@@ -20,6 +20,7 @@ import { TransportCompanyService } from 'src/app/pages/managements/services/tras
 import {
   CargoTruck,
   Chauffeur,
+  TransportCompany,
 } from 'src/app/pages/managements/interfaces/trasport_company.interfaces';
 import { ComponentsService } from 'src/app/core/services/components.service';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
@@ -27,7 +28,7 @@ import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 @Component({
   selector: 'app-modal-save-output',
   templateUrl: './modal-save-output.component.html',
-  styles: [],
+  styleUrls: ['./modal-save-output.component.scss'],
 })
 export class ModalSaveOutputComponent implements OnInit {
   outputService = inject(OutputService);
@@ -53,6 +54,22 @@ export class ModalSaveOutputComponent implements OnInit {
     { name: 'ICE INGENIEROS' },
     { name: 'CIASA - SAN AURELIO' },
   ]);
+  transportCompanies = signal<TransportCompany[]>([]);
+  selectedTransportCompany = signal<TransportCompany | null>(null);
+  quickCompanyVisible = signal(false);
+  quickChauffeurVisible = signal(false);
+  quickTruckVisible = signal(false);
+  quickCompanyForm = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(174), this.validatorsService.isSpacesInDynamicTxt]],
+    nit: [''], cellphone: [''], city: [''], address: [''],
+  });
+  quickChauffeurForm = this.fb.group({
+    full_names: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(174), this.validatorsService.isSpacesInDynamicTxt]],
+    number_document: [''],
+  });
+  quickTruckForm = this.fb.group({
+    placa: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25), this.validatorsService.isSpacesInDynamicTxt]],
+  });
   types_destination = signal([
     { name: 'ARICA CHILE' },
     { name: 'IQUIQUE CHILE' },
@@ -122,6 +139,7 @@ export class ModalSaveOutputComponent implements OnInit {
       status: ['ACTIVE'],
     }),
     output_big: this.fb.group({
+      id_transport_company: [null],
       origin: ['RECUMET BOLIVIA SRL', []],
       destination: ['ARICA CHILE', []],
       chauffeur: [null, []],
@@ -200,6 +218,7 @@ saveOutput() {
   }));
 
   const { output_data, output_big } = this.formOutput.getRawValue();
+  delete output_big.id_transport_company;
 
   // 🔹 SIN FICHA → eliminar número
   if (output_data.type_registry === 'SIN FICHA') {
@@ -322,6 +341,7 @@ saveOutput() {
   }));
 
   const { output_data, output_big } = this.formOutput.getRawValue();
+  delete output_big.id_transport_company;
 
   // 🔹 SIN FICHA → eliminar número
   if (output_data.type_registry === 'SIN FICHA') {
@@ -400,7 +420,9 @@ canPrintAfterSave(): boolean {
 
   selectTypeOutput() {
     const type_output = this.formOutput.get('output_data.voucher')?.value;
-    if (type_output != 'MENOR') {
+    const companyControl = this.formOutput.get('output_big.id_transport_company');
+    if (this.showTransportFields()) {
+      companyControl?.setValidators([Validators.required]);
       this.formOutput
         .get('output_big.chauffeur')
         ?.setValidators([Validators.required]);
@@ -408,21 +430,104 @@ canPrintAfterSave(): boolean {
         .get('output_big.id_cargo_truck')
         ?.setValidators([Validators.required]);
     } else {
+      companyControl?.clearValidators();
       this.formOutput.get('output_big.chauffeur')?.clearValidators();
       this.formOutput.get('output_big.id_cargo_truck')?.clearValidators();
     }
     this.formOutput.get('output_big.chauffeur')?.updateValueAndValidity();
     this.formOutput.get('output_big.id_cargo_truck')?.updateValueAndValidity();
+    companyControl?.updateValueAndValidity();
   }
 
   selectCargoTrucks() {
-    const { id_trasport_company } = this.formOutput.get(
+    const id_trasport_company = this.formOutput.get(
       'output_big.chauffeur',
-    )?.value;
-    const cargoTrucksSelect = this.allCargoTrucks().filter(
-      (cargoTrucks) => cargoTrucks.id_trasport_company == id_trasport_company,
-    );
+    )?.value?.id_trasport_company ?? this.selectedTransportCompany()?.id;
+    const cargoTrucksSelect = id_trasport_company
+      ? this.allCargoTrucks().filter((truck) => truck.id_trasport_company === id_trasport_company)
+      : [];
     this.cargoTrucksSelect.set(cargoTrucksSelect);
+  }
+
+  showTransportFields(): boolean {
+    const voucher = this.formOutput.get('output_data.voucher')?.value;
+    return voucher === 'MAYOR. NACIONAL' || voucher === 'MAYOR. EXTERIOR';
+  }
+
+  onChangeTransportCompany(id: number | string | null): void {
+    const company = this.transportCompanies().find((item) => item.id === Number(id)) ?? null;
+    this.selectedTransportCompany.set(company);
+    this.chauffeurs.set(company?.chauffeurs ?? []);
+    this.cargoTrucksSelect.set(company?.cargo_trucks ?? []);
+    this.formOutput.patchValue({ output_big: { chauffeur: null, id_cargo_truck: null } });
+  }
+
+  openQuickCompany(): void {
+    this.quickCompanyForm.reset({ name: '', nit: '', cellphone: '', city: '', address: '' });
+    this.quickCompanyVisible.set(true);
+  }
+
+  openQuickChauffeur(): void {
+    this.quickChauffeurForm.reset({ full_names: '', number_document: '' });
+    this.quickChauffeurVisible.set(true);
+  }
+
+  openQuickTruck(): void {
+    this.quickTruckForm.reset({ placa: '' });
+    this.quickTruckVisible.set(true);
+  }
+
+  createQuickCompany(): void {
+    this.quickCompanyForm.markAllAsTouched();
+    if (this.quickCompanyForm.invalid) return;
+    const companyData = this.quickCompanyForm.getRawValue();
+    this.transportCompanyService.postNew({
+      ...companyData,
+      name: companyData.name!.trim(),
+      cellphone: companyData.cellphone ? Number(companyData.cellphone) : null,
+      status: true,
+    }).subscribe({
+      next: (response: any) => {
+        const company: TransportCompany = response.trasport_company;
+        this.transportCompanies.update((items) => [...items, { ...company, chauffeurs: [], cargo_trucks: [] }]);
+        this.onChangeTransportCompany(company.id);
+        this.quickCompanyVisible.set(false);
+      },
+    });
+  }
+
+  createQuickChauffeur(): void {
+    const company = this.selectedTransportCompany();
+    if (!company) return;
+    this.quickChauffeurForm.markAllAsTouched();
+    if (this.quickChauffeurForm.invalid) return;
+    this.transportCompanyService.postNewChauffeur({ ...this.quickChauffeurForm.getRawValue(), id_trasport_company: company.id, status: true } as any).subscribe({
+      next: (response: any) => {
+        const chauffeur: Chauffeur = response.chauffeur;
+        this.chauffeurs.update((items) => [...items, chauffeur]);
+        this.transportCompanies.update((items) => items.map((item) => item.id === company.id ? { ...item, chauffeurs: [...item.chauffeurs, chauffeur] } : item));
+        this.formOutput.get('output_big.chauffeur')?.setValue(chauffeur);
+        this.selectCargoTrucks();
+        this.quickChauffeurVisible.set(false);
+      },
+    });
+  }
+
+  createQuickTruck(): void {
+    const company = this.selectedTransportCompany();
+    if (!company) return;
+    this.quickTruckForm.markAllAsTouched();
+    if (this.quickTruckForm.invalid) return;
+    this.transportCompanyService.postNewCargoTruck({ ...this.quickTruckForm.getRawValue(), id_trasport_company: company.id, status: true } as any).subscribe({
+      next: (response: any) => {
+        const truck: CargoTruck = response.cargo_truck;
+        this.allCargoTrucks.update((items) => [...items, truck]);
+        this.cargoTrucksSelect.update((items) => [...items, truck]);
+        this.transportCompanies.update((items) => items.map((item) => item.id === company.id ? { ...item, cargo_trucks: [...item.cargo_trucks, truck] } : item));
+        this.formOutput.get('output_big.id_cargo_truck')?.setValue(truck.id);
+        this.quickTruckVisible.set(false);
+      },
+    });
   }
 
   getAllScales() {
@@ -435,24 +540,14 @@ canPrintAfterSave(): boolean {
   getAllTrasportCompanies() {
     this.transportCompanyService.getAllAndSearch(1, 1000, true).subscribe({
       next: (resp) => {
-        resp.trasport_company.data.forEach((trasport) => {
-          trasport.chauffeurs.forEach((chauffeur) => {
-            const chauffeur_new = {
-              ...chauffeur,
-              name: `${chauffeur.full_names} - ${trasport.name}`,
-            };
-            this.chauffeurs.update((chauffeurs) => [
-              ...chauffeurs,
-              chauffeur_new,
-            ]);
-          });
-          this.allCargoTrucks.update((cargoTrucks) => [
-            ...cargoTrucks,
-            ...trasport.cargo_trucks,
-          ]);
-        });
+        const companies = resp.trasport_company.data;
+        this.transportCompanies.set(companies);
+        this.chauffeurs.set(companies.flatMap((company) => company.chauffeurs));
+        this.allCargoTrucks.set(companies.flatMap((company) => company.cargo_trucks));
+        if (this.outputService.isEdit) this.syncTransportCompanyForEdit();
       },
       error: () => {
+        this.transportCompanies.set([]);
         this.chauffeurs.set([]);
         this.allCargoTrucks.set([]);
         this.cargoTrucksSelect.set([]);
@@ -500,8 +595,6 @@ canPrintAfterSave(): boolean {
         //no podemos editar el monto abonado. asi que bloquear
         this.blockedOutputCredit.set(true);
       }
-      const { trasport_company, ...chauffeur } =
-        output_edit?.outputBig?.chauffeur || {};
       this.formOutput.patchValue({
         output_data: {
           voucher: output_edit?.voucher,
@@ -528,10 +621,7 @@ canPrintAfterSave(): boolean {
         output_big: {
           origin: output_edit?.outputBig?.origin,
           destination: output_edit?.outputBig?.destination,
-          chauffeur: {
-            ...chauffeur,
-            name: `${output_edit?.outputBig?.chauffeur?.full_names} - ${output_edit?.outputBig?.chauffeur?.trasport_company?.name}`,
-          },
+          chauffeur: null,
           agencia: output_edit?.outputBig?.agencia,
           trans_mariti: output_edit?.outputBig?.trans_mariti,
           number_factura: output_edit?.outputBig?.number_factura,
@@ -541,12 +631,14 @@ canPrintAfterSave(): boolean {
           number_contenedor: output_edit?.outputBig?.number_contenedor,
         },
       });
+      this.syncTransportCompanyForEdit();
       this.selectCargoTrucks();
       this.formOutput
         .get('output_big.id_cargo_truck')
         ?.setValue(output_edit?.outputBig?.id_cargo_truck);
       this.onChangeDescuento();
       this.selectTypeRegistry();
+      this.selectTypeOutput();
     }
   }
 
@@ -576,6 +668,7 @@ canPrintAfterSave(): boolean {
 
       },
       output_big: {
+        id_transport_company: null,
         origin: 'RECUMET BOLIVIA SRL',
         destination: 'ARICA CHILE',
         chauffeur: null,
@@ -595,6 +688,22 @@ this.formOutput.get('output_data.number_registry')?.enable();
 this.selectTypeRegistry(
   this.formOutput.get('output_data.type_registry')?.value
 );
+this.selectTypeOutput();
+  }
+
+  private syncTransportCompanyForEdit(): void {
+    const output = this.outputService.dataOutputForEdit();
+    const companyId = output?.outputBig?.chauffeur?.id_trasport_company;
+    if (!companyId) return;
+    const company = this.transportCompanies().find((item) => item.id === companyId);
+    if (!company) return;
+    const driver = company.chauffeurs.find((item) => item.id === output?.outputBig?.id_chauffeur)
+      ?? company.chauffeurs.find((item) => item.id === output?.outputBig?.chauffeur?.id);
+    this.selectedTransportCompany.set(company);
+    this.chauffeurs.set(company.chauffeurs);
+    this.cargoTrucksSelect.set(company.cargo_trucks);
+    this.formOutput.get('output_big.id_transport_company')?.setValue(company.id);
+    if (driver) this.formOutput.get('output_big.chauffeur')?.setValue(driver);
   }
 
 

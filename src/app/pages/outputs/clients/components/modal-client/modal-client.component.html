@@ -1,107 +1,74 @@
-<p-dialog [header]="!clientsService.isEdit ? 'Registro Cliente' : 'Modificar Cliente'" [(visible)]="clientsService.showModal"
-    [modal]="true" [draggable]="false"
-    [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true" styleClass="app-dialog--md">
-    <form [formGroup]="clientForm">
-        <app-alert-notify></app-alert-notify>
-        <div class="p-fluid erp-form-grid">
-            <div class="erp-field w-[100%] px-2 min-w-0">
-                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
-                        <label class="block mb-0">Nombre completo<span class="text-erp-danger">*</span>
-                        </label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="full_names" placeholder="EJ. RONALD..."
-                            [class.ng-dirty]="validatorsService.inputValid('full_names',clientForm)" class="uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('full_names',clientForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("full_names",clientForm) }}
-                        </small>
-                    </div>
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
-                        <label class="block mb-0">Numero documento (NIT/CI)<span class="text-erp-danger">*</span></label>
-                        <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="number_document" placeholder="EJ. ..."
-                            [class.ng-dirty]="validatorsService.inputValid('number_document',clientForm)" class="uppercase"/>
-                        <small *ngIf="validatorsService.inputValid('number_document',clientForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("number_document",clientForm)  }}
-                        </small>
-                    </div>
-                </div>
-                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
-                       <div class="erp-field">
-                            <label class="block mb-0">tipo<span class="text-erp-danger">*</span>
-                            </label>
-                            <p-dropdown [options]="types()"
-                                placeholder="Selecciona un tipo"
-                                optionLabel="name"
-                                optionValue="code"
-                                appendTo="body"
-                                formControlName="type"
-                                [class.ng-dirty]="validatorsService.inputValid('type',clientForm)"
-                            ></p-dropdown>
-                            <small *ngIf="validatorsService.inputValid('type',clientForm)" class="p-error block">
-                                {{ validatorsService.inputValidMessage("type",clientForm) }}
-                            </small>
-                       </div>
-                    </div>
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
-                        <label class="block mb-0">Celular</label>
-                        <input
-                            type="number"
-                            pInputText
-                            placeholder="EJ. 79....03"
-                            formControlName="cellphone"
-                            pKeyFilter="int"
-                            [class.ng-dirty]="validatorsService.inputValid('cellphone',clientForm)"
-                        />
-                        <small *ngIf="validatorsService.inputValid('cellphone',clientForm)" class="p-error block">
-                            {{ 'Celular no valido' }}
-                        </small>
-                    </div>
-                </div>
-                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
-                        <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
-                            <label class="block">Estado:<span class="text-erp-danger">*</span></label>
-                        </div>
-                        <div class="flex flex-wrap erp-layout-row gap-y-3 mt-0">
-                            <div class="md:w-[25%] px-2 min-w-0 w-full">
-                                <p-inputSwitch formControlName="status"></p-inputSwitch>
-                            </div>
-                            <div class="w-full md:flex-1 px-2 min-w-0">
-                                <p-tag  [rounded]="true"
-                                        [icon]="clientForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                                        [styleClass]="clientForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
-                                        [value]="clientForm.get('status')!.value ? 'Activo' : 'Inactivo'">
-                                </p-tag>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
-                        <label class="block mb-0">Negocio</label>
-                        <textarea pInputTextarea
-                            type="text"
-
-                            pInputText
-                            [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="business_name"
-                            placeholder="EJ. ......"
-                            class="mt-1 uppercase"
-                            [class.ng-dirty]="validatorsService.inputValid('business_name',clientForm)"
-                        ></textarea>
-                        <small *ngIf="validatorsService.inputValid('business_name',clientForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("business_name",clientForm) }}
-                        </small>
-                    </div>
-                </div>
-
+<p-dialog [header]="!clientsService.isEdit ? 'Registro de cliente' : 'Modificar cliente'"
+    [(visible)]="clientsService.showModal" [modal]="true" [draggable]="false" [resizable]="false"
+    (onHide)="resetModal()" [dismissableMask]="!loading()"
+    [breakpoints]="{'960px': '92vw', '640px': '96vw'}"
+    [style]="{width: 'min(42rem, calc(100vw - 2rem))'}"
+    [contentStyle]="{maxHeight: 'calc(100dvh - 9rem)', overflow: 'auto'}"
+    styleClass="app-dialog--md erp-operational-dialog sales-client-dialog">
+    <form [formGroup]="clientForm" class="erp-form-grid cols-2 sales-client-form">
+        <div class="erp-col-full"><app-alert-notify></app-alert-notify></div>
+        <div class="erp-field">
+            <label class="erp-label required" for="client-full-names">Nombre completo</label>
+            <input id="client-full-names" type="text" pInputText class="erp-input uppercase"
+                [pKeyFilter]="validatorsService.expRegValidInput" formControlName="full_names"
+                placeholder="Ej. NOMBRE COMPLETO"
+                [class.ng-dirty]="validatorsService.inputValid('full_names', clientForm)" />
+            <small *ngIf="validatorsService.inputValid('full_names', clientForm)" class="p-error block">
+                {{ validatorsService.inputValidMessage('full_names', clientForm) }}
+            </small>
+        </div>
+        <div class="erp-field">
+            <label class="erp-label required" for="client-document">Número de documento (NIT/CI)</label>
+            <input id="client-document" type="text" pInputText class="erp-input uppercase"
+                [pKeyFilter]="validatorsService.expRegValidInput" formControlName="number_document"
+                placeholder="Ej. 1234567"
+                [class.ng-dirty]="validatorsService.inputValid('number_document', clientForm)" />
+            <small *ngIf="validatorsService.inputValid('number_document', clientForm)" class="p-error block">
+                {{ validatorsService.inputValidMessage('number_document', clientForm) }}
+            </small>
+        </div>
+        <div class="erp-field">
+            <label class="erp-label required" for="client-type">Tipo de cliente</label>
+            <p-dropdown inputId="client-type" class="erp-input" [options]="types()"
+                placeholder="Selecciona un tipo" optionLabel="name" optionValue="code"
+                appendTo="body" formControlName="type"
+                [class.ng-dirty]="validatorsService.inputValid('type', clientForm)"></p-dropdown>
+            <small *ngIf="validatorsService.inputValid('type', clientForm)" class="p-error block">
+                {{ validatorsService.inputValidMessage('type', clientForm) }}
+            </small>
+        </div>
+        <div class="erp-field">
+            <label class="erp-label" for="client-cellphone">Celular</label>
+            <input id="client-cellphone" type="number" pInputText class="erp-input"
+                placeholder="Ej. 70000000" formControlName="cellphone" pKeyFilter="int"
+                [class.ng-dirty]="validatorsService.inputValid('cellphone', clientForm)" />
+            <small *ngIf="validatorsService.inputValid('cellphone', clientForm)" class="p-error block">Celular no válido.</small>
+        </div>
+        <div class="erp-field">
+            <span class="erp-label">Estado</span>
+            <div class="flex items-center gap-3">
+                <p-inputSwitch inputId="client-status" formControlName="status"></p-inputSwitch>
+                <p-tag [rounded]="true"
+                    [icon]="clientForm.get('status')?.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                    [styleClass]="clientForm.get('status')?.value ? 'app-status-active' : 'app-status-inactive'"
+                    [value]="clientForm.get('status')?.value ? 'Activo' : 'Inactivo'"></p-tag>
             </div>
+        </div>
+        <div class="erp-field erp-col-full">
+            <label class="erp-label" for="client-business">Negocio</label>
+            <textarea id="client-business" pInputTextarea rows="3" class="erp-input uppercase"
+                [pKeyFilter]="validatorsService.expRegValidInput" formControlName="business_name"
+                placeholder="Nombre del negocio"
+                [class.ng-dirty]="validatorsService.inputValid('business_name', clientForm)"></textarea>
+            <small *ngIf="validatorsService.inputValid('business_name', clientForm)" class="p-error block">
+                {{ validatorsService.inputValidMessage('business_name', clientForm) }}
+            </small>
         </div>
     </form>
     <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ? (clientsService.isEdit ? editClient() : newClient()) : null" styleClass="p-button-sm p-button-rounded"
-            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
-        <p-button (click)="clientsService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+        <p-button type="button" (click)="!loading() ? (clientsService.isEdit ? editClient() : newClient()) : null"
+            styleClass="p-button-sm p-button-rounded" label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button type="button" (click)="clientsService.showModal = false" label="Cancelar"
+            [disabled]="loading()" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     </ng-template>
 </p-dialog>

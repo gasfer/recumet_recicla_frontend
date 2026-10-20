@@ -1,0 +1,111 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.sales-query-panel {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.sales-query-panel h3 {
+  margin: 0 0 var(--spacing-md);
+  color: var(--color-text);
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-semibold);
+}
+
+.sales-query-filter-grid {
+  align-items: start;
+}
+
+.sales-query-filter-grid.cols-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.erp-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.erp-filter-search-field,
+.erp-filter-selected-value {
+  min-width: 0;
+}
+
+.erp-filter-selected-value-content {
+  display: flex;
+  align-items: center;
+  min-height: var(--field-height);
+  min-width: 0;
+}
+
+:host ::ng-deep .erp-filter-selected-value-content .p-tag {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.erp-filter-search-results {
+  position: relative;
+  z-index: 20;
+}
+
+.erp-filter-search-list {
+  max-height: min(40dvh, 18rem);
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-md);
+}
+
+.erp-filter-search-list li {
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+}
+
+.erp-filter-search-list li:hover,
+.erp-filter-search-list li:focus-visible {
+  background: var(--color-surface-secondary);
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+:host ::ng-deep .sales-query-panel .p-accordion .p-accordion-header .p-accordion-header-link,
+:host ::ng-deep .sales-query-panel .p-accordion .p-accordion-content,
+:host ::ng-deep .sales-query-panel .p-tabmenu .p-tabmenu-nav {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+@media (max-width: 639px) {
+  .sales-query-filter-grid.cols-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .erp-filter-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .erp-filter-actions > * {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sales-query-filter-grid.cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

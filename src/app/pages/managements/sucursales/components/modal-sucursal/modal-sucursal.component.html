@@ -1,85 +1,140 @@
-<p-dialog [header]="!sucursalService.isEdit ? 'Registro Sucursal' : 'Modificar sucursalForm'" [(visible)]="sucursalService.showModal"
-    [modal]="true" [draggable]="false"
-    [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true" styleClass="app-dialog--sm">
-    <form [formGroup]="sucursalForm">
-        <app-alert-notify></app-alert-notify>
-        <div class="p-fluid grid">
-            <div class="erp-field erp-col-full">
-                <div class="field">
-                    <label class="block mb-0">Nombre Sucursal<span class="text-danger">*</span>
-                    </label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                        formControlName="name" placeholder="EJ. SUCURSAL PRIMERA"
-                        [class.ng-dirty]="validatorsService.inputValid('name',sucursalForm)" class="text-uppercase"/>
-                    <small *ngIf="validatorsService.inputValid('name',sucursalForm)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("name",sucursalForm) }}
-                    </small>
-                </div>
-                <div class="erp-form-grid cols-2">
-                    <div class="erp-field">
-                        <label class="block mb-0">Celular<span class="text-danger">*</span>
-                        </label>
-                        <input
-                            type="number"
-                            pInputText
-                            placeholder="EJ. 79....03"
-                            formControlName="cellphone"
-                            pKeyFilter="int"
-                            [class.ng-dirty]="validatorsService.inputValid('cellphone',sucursalForm)"
-                        />
-                        <small *ngIf="validatorsService.inputValid('cellphone',sucursalForm)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("cellphone",sucursalForm) }}
-                        </small>
-                    </div>
-                    <div class="erp-field">
-                        <label class="block mb-0">Correo</label>
-                        <input type="text" pInputText
-                            formControlName="email"
-                            [class.ng-dirty]="validatorsService.inputValid('email',sucursalForm)" />
-                        <small *ngIf="validatorsService.inputValid('email',sucursalForm)" class="p-error block">
-                            {{ 'Correo no valido' }}
-                        </small>
-                    </div>
-                </div>
-            </div>
-            <div class="field mt-2">
-                <label class="block mb-0">Dirección<span class="text-danger">*</span>
-                </label>
-                <textarea pInputTextarea
-                    type="text"
+<p-dialog
+    [header]="!sucursalService.isEdit ? 'Registro de sucursal' : 'Modificar sucursal'"
+    [(visible)]="sucursalService.showModal"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="!loading()"
+    [breakpoints]="{'960px': '92vw', '640px': '96vw'}"
+    [style]="{width: 'min(44rem, calc(100vw - 2rem))'}"
+    [contentStyle]="{maxHeight: 'calc(100dvh - 9rem)', overflow: 'auto'}"
+    (onHide)="resetModal()"
+    styleClass="app-dialog--md erp-operational-dialog branch-editor-dialog">
+    <form [formGroup]="sucursalForm" class="branch-editor-form erp-form-grid cols-2">
+        <div class="erp-col-full">
+            <app-alert-notify></app-alert-notify>
+        </div>
 
-                    pInputText
-                    [pKeyFilter]="validatorsService.expRegValidInput"
-                    formControlName="address"
-                    placeholder="EJ. ......"
-                    class="mt-1 text-uppercase"
-                    [class.ng-dirty]="validatorsService.inputValid('address',sucursalForm)"
-                ></textarea>
-                <small *ngIf="validatorsService.inputValid('address',sucursalForm)" class="p-error block">
-                    {{ validatorsService.inputValidMessage("address",sucursalForm) }}
-                </small>
-            </div>
-            <div class="erp-form-grid cols-2">
-                <label class="block">Estado:<span class="text-danger">*</span></label>
-            </div>
-            <div class="erp-form-grid cols-2">
-                <div class="erp-field">
-                    <p-inputSwitch formControlName="status"></p-inputSwitch>
+        <div class="erp-field erp-col-full">
+            <label class="erp-label required" for="branch-name">Nombre de sucursal</label>
+            <input id="branch-name" type="text" pInputText class="erp-input text-uppercase"
+                [pKeyFilter]="validatorsService.expRegValidInput" formControlName="name"
+                placeholder="Ej. SUCURSAL SANTA CRUZ"
+                [class.ng-dirty]="validatorsService.inputValid('name', sucursalForm)" />
+            <small *ngIf="validatorsService.inputValid('name', sucursalForm)" class="p-error block">
+                {{ validatorsService.inputValidMessage('name', sucursalForm) }}
+            </small>
+        </div>
+
+        <div class="erp-field">
+            <label class="erp-label required" for="branch-cellphone">Celular</label>
+            <input id="branch-cellphone" type="number" pInputText class="erp-input"
+                placeholder="Ej. 70000000" formControlName="cellphone" pKeyFilter="int"
+                [class.ng-dirty]="validatorsService.inputValid('cellphone', sucursalForm)" />
+            <small *ngIf="validatorsService.inputValid('cellphone', sucursalForm)" class="p-error block">
+                {{ validatorsService.inputValidMessage('cellphone', sucursalForm) }}
+            </small>
+        </div>
+
+        <div class="erp-field">
+            <label class="erp-label" for="branch-email">Correo</label>
+            <input id="branch-email" type="email" pInputText class="erp-input" formControlName="email"
+                [class.ng-dirty]="validatorsService.inputValid('email', sucursalForm)" />
+            <small *ngIf="validatorsService.inputValid('email', sucursalForm)" class="p-error block">
+                Correo no válido.
+            </small>
+        </div>
+
+        <div class="erp-field erp-col-full">
+            <label class="erp-label required" for="branch-address">Dirección</label>
+            <textarea id="branch-address" pInputTextarea rows="3" formControlName="address"
+                [pKeyFilter]="validatorsService.expRegValidInput" class="erp-input branch-address"
+                placeholder="Dirección de la sucursal"
+                [class.ng-dirty]="validatorsService.inputValid('address', sucursalForm)"></textarea>
+            <small *ngIf="validatorsService.inputValid('address', sucursalForm)" class="p-error block">
+                {{ validatorsService.inputValidMessage('address', sucursalForm) }}
+            </small>
+        </div>
+
+        <section class="storage-section erp-col-full" aria-labelledby="branch-storage-title">
+            <div class="storage-section__header">
+                <div class="min-w-0">
+                    <h3 id="branch-storage-title" class="erp-section-title">
+                        <i class="fa-solid fa-warehouse" aria-hidden="true"></i>
+                        Almacenes de la sucursal
+                    </h3>
+                    <p id="branch-storage-help" class="storage-section__help">
+                        Agrega uno o varios almacenes. Se crearán asignados a esta sucursal.
+                    </p>
                 </div>
-                <div class="col">
-                    <p-tag  [rounded]="true"
-                            [icon]="sucursalForm.get('status')!.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
-                            [styleClass]="sucursalForm.get('status')!.value ? 'app-status-active' : 'app-status-inactive'"
-                            [value]="sucursalForm.get('status')!.value ? 'Activo' : 'Inactivo'">
-                    </p-tag>
+                <p-button type="button" label="Agregar almacén" icon="fa-solid fa-plus"
+                    styleClass="p-button-sm p-button-rounded p-button-outlined storage-add-button"
+                    [disabled]="loading()" (onClick)="addStorageName()">
+                </p-button>
+            </div>
+
+            <div class="existing-storages" *ngIf="existingStorages().length">
+                <span class="erp-label">Almacenes activos asignados</span>
+                <ul class="storage-chip-list" aria-label="Almacenes ya asignados a esta sucursal">
+                    <li *ngFor="let storage of existingStorages()">
+                        <i class="fa-solid fa-warehouse" aria-hidden="true"></i>
+                        <span>{{ storage.name }}</span>
+                    </li>
+                </ul>
+            </div>
+            <p *ngIf="sucursalService.isEdit && !existingStorages().length" class="storage-empty">
+                Esta sucursal todavía no tiene almacenes activos.
+            </p>
+
+            <div class="storage-entry-list" formArrayName="storageNames" *ngIf="storageNames.length">
+                <div class="storage-entry" *ngFor="let control of storageNames.controls; let i = index">
+                    <div class="erp-field min-w-0">
+                        <label class="erp-label required" [for]="'new-storage-' + i">Nuevo almacén {{ i + 1 }}</label>
+                        <input [id]="'new-storage-' + i" type="text" pInputText class="erp-input text-uppercase"
+                            [pKeyFilter]="validatorsService.expRegValidInput" [formControlName]="i"
+                            [attr.aria-describedby]="'branch-storage-help storage-error-' + i"
+                            placeholder="Ej. ALMACÉN PRINCIPAL" />
+                        <small *ngIf="control.invalid && (control.dirty || control.touched)"
+                            class="p-error block" [id]="'storage-error-' + i">
+                            <ng-container *ngIf="control.hasError('required')">El nombre del almacén es obligatorio.</ng-container>
+                            <ng-container *ngIf="control.hasError('minlength')">Escribe al menos 4 caracteres.</ng-container>
+                            <ng-container *ngIf="control.hasError('maxlength')">No superes 174 caracteres.</ng-container>
+                            <ng-container *ngIf="control.hasError('isSpacesInTxt')">Escribe un nombre válido.</ng-container>
+                        </small>
+                    </div>
+                    <button type="button" class="storage-remove-button" (click)="removeStorageName(i)"
+                        [disabled]="loading()" [attr.aria-label]="'Quitar almacén nuevo ' + (i + 1)">
+                        <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                    </button>
                 </div>
+            </div>
+            <p *ngIf="!storageNames.length" class="storage-empty">
+                Puedes guardar la sucursal sin almacenes y agregarlos después desde este formulario.
+            </p>
+        </section>
+
+        <div class="erp-field erp-col-full">
+            <span class="erp-label">Estado</span>
+            <div class="flex items-center gap-3">
+                <p-inputSwitch inputId="branch-status" formControlName="status"></p-inputSwitch>
+                <p-tag [rounded]="true"
+                    [icon]="sucursalForm.get('status')?.value ? 'fa-solid fa-circle-check' : 'fa-solid fa-trash-can'"
+                    [styleClass]="sucursalForm.get('status')?.value ? 'app-status-active' : 'app-status-inactive'"
+                    [value]="sucursalForm.get('status')?.value ? 'Activo' : 'Inactivo'">
+                </p-tag>
             </div>
         </div>
     </form>
+
     <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ? (sucursalService.isEdit ? editSucursal() : newSucursal()) : null" styleClass="p-button-sm p-button-rounded"
-            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
-        <p-button (click)="sucursalService.showModal = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+        <div class="branch-editor-actions">
+            <p-button type="button" (onClick)="!loading() ? (sucursalService.isEdit ? editSucursal() : newSucursal()) : null"
+                styleClass="p-button-sm p-button-rounded" label="Guardar" icon="fa-solid fa-floppy-disk"
+                [loading]="loading()">
+            </p-button>
+            <p-button type="button" (onClick)="sucursalService.showModal = false" label="Cancelar"
+                styleClass="p-button-outlined p-button-sm p-button-rounded" [disabled]="loading()">
+            </p-button>
+        </div>
     </ng-template>
 </p-dialog>

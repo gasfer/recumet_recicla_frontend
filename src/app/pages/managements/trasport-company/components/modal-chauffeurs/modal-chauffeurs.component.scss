@@ -1,0 +1,28 @@
+:host { display: block; min-width: 0; }
+
+.transport-child-list-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.transport-child-list-toolbar h3 {
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  overflow-wrap: anywhere;
+}
+
+:host ::ng-deep .transport-child-list-dialog .p-dialog-header,
+:host ::ng-deep .transport-child-list-dialog .p-dialog-content,
+:host ::ng-deep .transport-child-list-dialog .p-dialog-footer {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+:host ::ng-deep .transport-child-list-dialog .p-dialog-content { overflow: auto; }

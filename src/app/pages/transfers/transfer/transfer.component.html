@@ -19,9 +19,8 @@
     </div>
 </div>
 
-<div class="flex flex-wrap erp-layout-row gap-y-2">
-    <div class="min-[768px]:w-[100%] px-2 min-w-0 w-full"
-        [ngClass]="{'col-md-7': transfersService._transferConfig.viewCardProducts, 'col-md-12': !transfersService._transferConfig.viewCardProducts}">
+<div class="transfer-workspace">
+    <div class="transfer-workspace__panel transfer-workspace__detail">
         <div class="card erp-card-container border-0 shadow-sm">
             <div class="erp-items-header">
                 <div class="flex items-center gap-2">
@@ -58,7 +57,7 @@
             <app-table-transfer-details></app-table-transfer-details>
         </div>
     </div>
-    <div *ngIf="transfersService._transferConfig.viewCardProducts" class="min-[768px]:w-[100%] px-2 min-w-0 w-full min-[768px]:w-[41.66666666666667%]">
+    <div class="transfer-workspace__panel transfer-workspace__catalog">
         <app-dataview-products
             [prominentProductCode]="true"
             [productContext]="productContext"

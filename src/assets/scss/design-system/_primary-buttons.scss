@@ -3,14 +3,14 @@ $secondary-actions: '.btn-secondary, .btn-light, .erp-btn-secondary, .erp-btn-gh
 
 $table-action-selectors: '.erp-table-cell-action, .rc__actions, .gc-card__actions, .app-table-action-column';
 
-/* Botones estándar de la aplicación: altura unificada a 32px */
+/* Botones estándar de la aplicación: siguen la altura del control RECUMET. */
 body :is(.erp-btn, .btn, .p-button):not(.btn-link):not(.header-item):not(#vertical-menu-btn):not(.noti-icon):not(#page-header-user-dropdown):not(#{$table-action-selectors} *):not(.p-inputnumber-button) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: .4rem;
-  min-height: 32px !important;
-  height: 32px !important;
+  min-height: var(--button-height) !important;
+  height: var(--button-height) !important;
   padding: 0 .75rem !important;
   border-width: 1px;
   border-style: solid;
@@ -18,7 +18,7 @@ body :is(.erp-btn, .btn, .p-button):not(.btn-link):not(.header-item):not(#vertic
   font-family: var(--font-family-base);
   font-size: var(--erp-font-body, 12px);
   font-weight: 650;
-  line-height: 30px;
+  line-height: calc(var(--button-height) - 2px);
   text-decoration: none;
   white-space: nowrap;
   transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
@@ -31,8 +31,8 @@ body :is(.erp-btn, .btn):not(.btn-link):not(.header-item):not(#vertical-menu-btn
 }
 
 body :is(.erp-btn-sm, .btn-sm, .btn-xs, .p-button-sm):not(.header-item):not(#vertical-menu-btn):not(#{$table-action-selectors} *) {
-  min-height: 32px !important;
-  height: 32px !important;
+  min-height: var(--button-height-sm) !important;
+  height: var(--button-height-sm) !important;
   padding: 0 .6rem !important;
   font-size: var(--erp-font-metadata, 11px);
 }

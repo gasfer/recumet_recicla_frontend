@@ -5,7 +5,7 @@
 <!--client new modal-->
 <app-modal-client></app-modal-client>
 
-<div class="erp-header-panel mb-2">
+<div class="erp-header-panel mb-2 sales-header-panel">
     <!-- AVISO MODO EDICIÓN SUTIL -->
     <div *ngIf="outputService.isEdit" class="erp-edit-mode-banner animated fadeInDown">
         <div class="flex items-center gap-2">
@@ -23,13 +23,13 @@
         <span>{{outputService.isEdit ? 'MODIFICAR VENTA' : 'REGISTRO DE VENTAS'}}</span>
     </div>
 
-    <div class="flex flex-wrap erp-layout-row items-center gap-y-2 mt-1">
-        <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] relative">
+    <div class="sales-client-toolbar">
+        <div class="sales-client-search min-w-0 relative">
             <app-input-search (onEnters)="suggestedClient($event)" (onDebounce)="suggestedClient($event)"
                 (onBtnNew)="newClient()" [icon]="'fa-solid fa-user'" [btnNew]="this.validatorsService.withPermission('CLIENTES','create')"
                 [iconBtnNew]="'fa-solid fa-circle-plus'" [placeholder]="'Busque un cliente aquí....'">
             </app-input-search>
-            <div class="absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
+            <div class="sales-autocomplete absolute app-u-z-index-999-97b00ee app-u-width-90-d92be91">
                 <ul *ngIf="loadingSearchClient()" class="list-group shadow">
                     <li class="list-group-item list-group-item-action">
                         <span class='font-bold text-erp-text-muted'><i class="fa-solid fa-spinner fa-spin mr-1"></i> Cargando...</span>
@@ -52,35 +52,32 @@
             </div>
         </div>
 
-        <div class="min-[768px]:w-[41.66666666666667%] px-2 min-w-0 w-full w-[100%] flex items-center gap-2">
+        <div class="sales-selected-client min-w-0 flex items-center gap-2">
             <span class="text-erp-text-muted small font-bold">Cliente:</span>
             <div class="erp-entity-chip" [ngClass]="clientSelect() ? 'active' : 'unselected'">
                 <i class="fa-solid fa-user"></i>
                 <span>{{ clientSelect() ? 'NIT-CI: ' + clientSelect()?.number_document + ' · ' + clientSelect()?.full_names : 'SELECCIONE UN CLIENTE' }}</span>
-                <span *ngIf="clientSelect()" class="remove-btn"
+                <button *ngIf="clientSelect()" type="button" class="remove-btn" aria-label="Quitar cliente"
                     (click)="outputService.clientSelect.set(undefined)"
                     pTooltip="Quitar Cliente" tooltipPosition="top">
-                    ✕
-                </span>
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
 
-        <div class="min-[768px]:w-[8.333333333333332%] px-2 min-w-0 w-full w-[100%]">
-            <div class="flex justify-end">
+        <div class="sales-config-action">
                 <button type="button" class="erp-btn erp-btn-sm erp-btn-secondary border rounded-full p-2 text-secondary"
                     pTooltip="Configurar modo de venta" tooltipPosition="left"
-                    (click)="outputService.showModalConfigInput = true">
+                    aria-label="Configurar modo de venta" (click)="outputService.showModalConfigInput = true">
                     <i class="fa-solid fa-gear"></i>
                 </button>
-            </div>
         </div>
     </div>
 </div>
 
-<div class="flex flex-wrap erp-layout-row gap-y-2">
-    <div class="min-[768px]:w-[100%] px-2 min-w-0 w-full"
-        [ngClass]="{'col-md-7': outputService._outputConfig.viewCardProducts, 'col-md-12': !outputService._outputConfig.viewCardProducts}">
-        <div class="card erp-card-container border-0 shadow-sm">
+<div class="sales-workspace" [class.sales-workspace--with-catalog]="outputService._outputConfig.viewCardProducts">
+    <div class="sales-workspace__details min-w-0">
+        <div class="card erp-card-container border-0 shadow-sm sales-detail-card">
             <div class="erp-items-header">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-cart-arrow-down text-erp-success"></i>
@@ -92,7 +89,7 @@
                 <app-input-search (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
                     [icon]="'fa-solid fa-cart-plus'"
                     [placeholder]="'Busque un producto aquí....'"></app-input-search>
-                <div class="absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
+                <div class="sales-autocomplete absolute app-u-z-index-999-97b00ee app-u-width-96-1ce6632">
                     <ul *ngIf="loadingSearchProduct()" class="list-group shadow">
                         <li class="list-group-item list-group-item-action">
                             <span class='font-bold text-erp-text-muted'><i class="fa-solid fa-spinner fa-spin mr-1"></i> Cargando...</span>
@@ -117,7 +114,7 @@
         </div>
     </div>
 
-    <div *ngIf="outputService._outputConfig.viewCardProducts" class="min-[768px]:w-[100%] px-2 min-w-0 w-full min-[768px]:w-[41.66666666666667%]">
+    <div *ngIf="outputService._outputConfig.viewCardProducts" class="sales-workspace__catalog min-w-0">
         <app-dataview-products
             [prominentProductCode]="true"
             [productContext]="productContext"

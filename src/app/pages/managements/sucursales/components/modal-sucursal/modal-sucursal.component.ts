@@ -1,15 +1,15 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { ValidatorsService } from 'src/app/services/validators.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Subscription } from 'rxjs';
 import { SucursalesService } from '../../../services/sucursales.service';
+import { Storage } from '../../../interfaces/sucursales.interface';
 
 @Component({
   selector: 'app-modal-sucursal',
   templateUrl: './modal-sucursal.component.html',
-  styles: [
-  ]
+  styleUrls: ['./modal-sucursal.component.scss']
 })
 export class ModalSucursalComponent implements OnInit , OnDestroy {
   validatorsService = inject( ValidatorsService );
@@ -24,8 +24,13 @@ export class ModalSucursalComponent implements OnInit , OnDestroy {
     email: ['', [Validators.pattern(this.validatorsService.emailPattern())]],
     city: ['CBBA', [ Validators.required]],
     type: ['NINGUNO', [ Validators.required]],
-    status: [true]
+    status: [true],
+    storageNames: this.fb.array<FormControl<string>>([]),
   });
+  existingStorages = signal<Storage[]>([]);
+  get storageNames(): FormArray<FormControl<string>> {
+    return this.sucursalForm.get('storageNames') as FormArray<FormControl<string>>;
+  }
   isEditSub$!: Subscription;
 
   ngOnInit(): void {
@@ -40,6 +45,8 @@ export class ModalSucursalComponent implements OnInit , OnDestroy {
         type: resp.type,
         status: resp.status,
       });
+      this.existingStorages.set(resp.storage || []);
+      this.storageNames.clear();
     });
   }
   ngOnDestroy(): void {
@@ -50,7 +57,7 @@ export class ModalSucursalComponent implements OnInit , OnDestroy {
     this.sucursalForm.markAllAsTouched();
     if(!this.sucursalForm.valid) return;
     this.loading.set(true);
-    this.sucursalService.postNew(this.sucursalForm.value).subscribe({
+    this.sucursalService.postNew(this.formPayload()).subscribe({
       complete: () => {
         this.sucursalService.save$.next(true);
         this.loading.set(false);
@@ -72,7 +79,7 @@ export class ModalSucursalComponent implements OnInit , OnDestroy {
     this.sucursalForm.markAllAsTouched();
     if(!this.sucursalForm.valid) return;
     this.loading.set(true);
-    this.sucursalService.putUpdate(this.sucursalForm.value).subscribe({
+    this.sucursalService.putUpdate(this.formPayload()).subscribe({
       complete: () => {
         this.sucursalService.save$.next(true);
         this.loading.set(false);
@@ -84,6 +91,7 @@ export class ModalSucursalComponent implements OnInit , OnDestroy {
           showClass: { popup: 'animated animate fadeInDown' },
           customClass: { container: 'swal-alert'},
         });
+        this.validatorsService.reload_sucursal_storages$.next(true);
       },
       error: () => this.loading.set(false) 
     });
@@ -100,5 +108,27 @@ export class ModalSucursalComponent implements OnInit , OnDestroy {
       type : 'NINGUNO',
       status : true,
     });
+    this.existingStorages.set([]);
+    this.storageNames.clear();
+  }
+
+  addStorageName(): void {
+    this.storageNames.push(this.fb.nonNullable.control('', [
+      Validators.required,
+      Validators.minLength(4),
+      Validators.maxLength(174),
+      this.validatorsService.isSpacesInDynamicTxt,
+    ]));
+  }
+
+  removeStorageName(index: number): void {
+    this.storageNames.removeAt(index);
+  }
+
+  private formPayload(): any {
+    return {
+      ...this.sucursalForm.getRawValue(),
+      storageNames: this.storageNames.getRawValue().map(name => name.trim()),
+    };
   }
 }

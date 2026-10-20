@@ -92,7 +92,13 @@ export class ValidatorsService {
 
   withPermission(module_search: string, action:'view'|'create'|'update'|'delete'|'reports') {
     if(!module_search) return false;
-    if(this.user()?.role === 'ADMINISTRADOR') return true;
+    const role = this.user()?.role
+      ?.normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z]/g, '');
+    if(role === 'ADMINISTRADOR' || role === 'ADMINISTRADORA') return true;
     const permission = this.user()?.assign_permission.find(assign_permission => assign_permission.module === module_search);
     if(!permission) return false;
     return permission![action] ?? false;

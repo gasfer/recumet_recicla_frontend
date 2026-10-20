@@ -1,7 +1,9 @@
 <p-dialog
   [header]="outputService.isEdit ? 'Editar venta: ' + outputService.dataOutputForEdit()?.cod : 'Registro de venta'"
-  [(visible)]="outputService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
-  (onHide)="resetModal()" styleClass="app-dialog--xl">
+  [(visible)]="outputService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="!loading()"
+  [breakpoints]="{'960px': '96vw', '640px': '98vw'}" [style]="{width: 'min(76rem, calc(100vw - 2rem))'}"
+  [contentStyle]="{maxHeight: 'calc(100dvh - 8rem)', overflow: 'auto'}" (onShow)="onShowModal()"
+  (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog sales-save-dialog">
   <form [formGroup]="formOutput">
 
     <!-- Mensaje de edición -->
@@ -17,7 +19,7 @@
 
     <!-- ══ BLOQUE 1: DATOS DE VENTA Y PESAJE ══ -->
     <div formGroupName="output_data">
-      <section class="erp-section">
+      <section class="erp-section erp-section--sales-data">
         <div class="erp-section-title">
           <i class="fa-solid fa-cart-shopping"></i> Datos de Venta y Despacho
         </div>
@@ -111,7 +113,7 @@
       </section>
 
       <!-- ══ BLOQUE 2: LIQUIDACIÓN Y PAGO ══ -->
-      <section class="erp-section">
+      <section class="erp-section erp-section--sales-payment">
         <div class="erp-section-title">
           <i class="fa-solid fa-money-bill-wave"></i> Liquidación y Condiciones de Cobro
         </div>
@@ -143,7 +145,7 @@
 
           <div class="erp-field">
             <label class="erp-label required">Total a Cobrar</label>
-            <div class="erp-toggle-pill justify-between" style="border-color: #059669; background-color: #ecfdf5;">
+            <div class="erp-toggle-pill justify-between sales-total-pill">
               <span class="text-xs text-erp-success font-bold"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>TOTAL</span>
               <span class="font-extrabold text-base text-erp-success">{{ formOutput.get('output_data.total')?.value | number:decimalFormat.digitsInfo }} Bs</span>
             </div>
@@ -228,7 +230,7 @@
       </section>
 
       <!-- ══ BLOQUE 3: OBSERVACIONES ══ -->
-      <section class="erp-section">
+      <section class="erp-section erp-section--sales-notes">
         <div class="erp-section-title">
           <i class="fa-solid fa-comment-dots"></i> Observaciones
         </div>
@@ -244,8 +246,8 @@
     </div>
 
     <!-- DATOS ADICIONALES PARA VENTA MAYOR / EXTERIOR -->
-    <div *ngIf="formOutput.get('output_data.voucher')!.value != 'MENOR'" formGroupName="output_big" class="animated fadeInDown">
-      <section class="erp-section">
+    <div *ngIf="showTransportFields()" formGroupName="output_big" class="animated fadeInDown">
+      <section class="erp-section erp-section--sales-transport">
         <div class="erp-section-title">
           <i class="fa-solid fa-truck-fast"></i> Datos de Transporte y Exportación
         </div>
@@ -281,20 +283,51 @@
         </div>
 
         <div class="erp-form-grid cols-3 mb-2">
+          <div class="erp-field sales-transport-company-field">
+            <label class="erp-label required" for="sales-transport-company">Empresa de transporte</label>
+            <div class="sales-transport-control-row">
+              <p-dropdown inputId="sales-transport-company" [options]="transportCompanies()"
+                placeholder="Selecciona empresa" optionLabel="name" optionValue="id" appendTo="body"
+                [filter]="true" filterBy="name" class="erp-input w-full"
+                formControlName="id_transport_company"
+                (onChange)="onChangeTransportCompany($event.value)"></p-dropdown>
+              <p-button *ngIf="validatorsService.withPermission('COMP. TRASPORTE','create')"
+                type="button" icon="fa-solid fa-plus" styleClass="erp-btn-primary sales-transport-add-button"
+                pTooltip="Agregar empresa de transporte" ariaLabel="Agregar empresa de transporte"
+                (onClick)="openQuickCompany()"></p-button>
+            </div>
+            <small *ngIf="!transportCompanies().length" class="sales-transport-hint">
+              Registra una empresa de transporte para continuar.
+            </small>
+            <small *ngIf="validatorsService.inputValid('output_big.id_transport_company', formOutput)" class="erp-error-msg">
+              {{ validatorsService.inputValidMessage('output_big.id_transport_company', formOutput) }}
+            </small>
+          </div>
           <div class="erp-field">
-            <label class="erp-label required">Chofer</label>
-            <p-dropdown [options]="chauffeurs()" [filter]="true" filterBy="name" placeholder="Selecciona chofer"
-              optionLabel="name" appendTo="body" (onChange)="selectCargoTrucks()" formControlName="chauffeur" class="erp-input w-full"
+            <label class="erp-label required" for="sales-transport-driver">Conductor</label>
+            <div class="sales-transport-control-row">
+            <p-dropdown inputId="sales-transport-driver" [options]="chauffeurs()" [filter]="true" filterBy="full_names" placeholder="Selecciona conductor"
+              optionLabel="full_names" appendTo="body" (onChange)="selectCargoTrucks()" formControlName="chauffeur" class="erp-input w-full"
               [class.ng-dirty]="validatorsService.inputValid('output_big.chauffeur',formOutput)"></p-dropdown>
+            <p-button *ngIf="selectedTransportCompany() && validatorsService.withPermission('COMP. TRASPORTE','create')"
+              type="button" icon="fa-solid fa-plus" styleClass="erp-btn-primary sales-transport-add-button"
+              pTooltip="Agregar conductor" ariaLabel="Agregar conductor" (onClick)="openQuickChauffeur()"></p-button>
+            </div>
             <small *ngIf="validatorsService.inputValid('output_big.chauffeur',formOutput)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("output_big.chauffeur",formOutput) }}
             </small>
           </div>
           <div class="erp-field">
-            <label class="erp-label required">Camión</label>
-            <p-dropdown [options]="cargoTrucksSelect()" placeholder="Selecciona camión" optionLabel="placa"
+            <label class="erp-label required" for="sales-transport-truck">Camión</label>
+            <div class="sales-transport-control-row">
+            <p-dropdown inputId="sales-transport-truck" [options]="cargoTrucksSelect()" placeholder="Selecciona camión" optionLabel="placa"
               optionValue="id" appendTo="body" formControlName="id_cargo_truck" class="erp-input w-full"
               [class.ng-dirty]="validatorsService.inputValid('output_big.id_cargo_truck',formOutput)"></p-dropdown>
+            <p-button *ngIf="selectedTransportCompany() && validatorsService.withPermission('COMP. TRASPORTE','create')"
+              type="button" icon="fa-solid fa-plus" styleClass="erp-btn-primary sales-transport-add-button"
+              pTooltip="Agregar camión" ariaLabel="Agregar camión" (onClick)="openQuickTruck()"></p-button>
+            </div>
+            <small class="sales-transport-hint">Seleccionar un camión registrado lo asigna a esta venta; cambiarlo permite reasignarlo.</small>
             <small *ngIf="validatorsService.inputValid('output_big.id_cargo_truck',formOutput)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("output_big.id_cargo_truck",formOutput) }}
             </small>
@@ -366,10 +399,58 @@
     </div>
   </form>
   <ng-template pTemplate="footer">
-    <p-button (click)="loading() ? null : this.outputService.isEdit ? editOutput() : saveOutput()"
+    <p-button type="button" (click)="loading() ? null : this.outputService.isEdit ? editOutput() : saveOutput()"
       styleClass="p-button-sm p-button-rounded" label="Guardar y continuar" icon="fa-solid fa-floppy-disk"
       [loading]="loading()"></p-button>
-    <p-button (click)="outputService.showModalSaveInput = false" label="Cancelar"
+    <p-button type="button" (click)="outputService.showModalSaveInput = false" [disabled]="loading()" label="Cancelar"
       styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog header="Agregar empresa de transporte" [visible]="quickCompanyVisible()"
+  (visibleChange)="quickCompanyVisible.set($event)" [modal]="true" [draggable]="false" [resizable]="false"
+  [breakpoints]="{'640px': '94vw'}" [style]="{width: 'min(34rem, calc(100vw - 2rem))'}"
+  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog">
+  <form [formGroup]="quickCompanyForm" class="erp-form-grid cols-2">
+    <div class="erp-field erp-col-full">
+      <label class="erp-label required" for="quick-transport-name">Nombre de empresa</label>
+      <input id="quick-transport-name" pInputText class="erp-input" formControlName="name" placeholder="Nombre de transportista" />
+      <small *ngIf="quickCompanyForm.get('name')?.invalid && quickCompanyForm.get('name')?.touched" class="p-error">Ingresa un nombre válido.</small>
+    </div>
+    <div class="erp-field"><label class="erp-label" for="quick-transport-nit">NIT</label><input id="quick-transport-nit" pInputText class="erp-input" formControlName="nit" /></div>
+    <div class="erp-field"><label class="erp-label" for="quick-transport-phone">Celular</label><input id="quick-transport-phone" pInputText class="erp-input" formControlName="cellphone" /></div>
+    <div class="erp-field"><label class="erp-label" for="quick-transport-city">Ciudad</label><input id="quick-transport-city" pInputText class="erp-input" formControlName="city" /></div>
+    <div class="erp-field erp-col-full"><label class="erp-label" for="quick-transport-address">Dirección</label><input id="quick-transport-address" pInputText class="erp-input" formControlName="address" /></div>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button type="button" label="Guardar empresa" icon="fa-solid fa-floppy-disk" (onClick)="createQuickCompany()"></p-button>
+    <p-button type="button" label="Cancelar" styleClass="p-button-outlined" (onClick)="quickCompanyVisible.set(false)"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog header="Agregar conductor" [visible]="quickChauffeurVisible()"
+  (visibleChange)="quickChauffeurVisible.set($event)" [modal]="true" [draggable]="false" [resizable]="false"
+  [breakpoints]="{'640px': '94vw'}" [style]="{width: 'min(34rem, calc(100vw - 2rem))'}"
+  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog">
+  <form [formGroup]="quickChauffeurForm" class="erp-form-grid cols-2">
+    <div class="erp-field erp-col-full"><label class="erp-label required" for="quick-driver-name">Nombre completo</label><input id="quick-driver-name" pInputText class="erp-input" formControlName="full_names" /></div>
+    <div class="erp-field erp-col-full"><label class="erp-label" for="quick-driver-document">CI / licencia</label><input id="quick-driver-document" pInputText class="erp-input" formControlName="number_document" /></div>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button type="button" label="Guardar conductor" icon="fa-solid fa-floppy-disk" (onClick)="createQuickChauffeur()"></p-button>
+    <p-button type="button" label="Cancelar" styleClass="p-button-outlined" (onClick)="quickChauffeurVisible.set(false)"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog header="Agregar camión" [visible]="quickTruckVisible()"
+  (visibleChange)="quickTruckVisible.set($event)" [modal]="true" [draggable]="false" [resizable]="false"
+  [breakpoints]="{'640px': '94vw'}" [style]="{width: 'min(30rem, calc(100vw - 2rem))'}"
+  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog">
+  <form [formGroup]="quickTruckForm" class="erp-form-grid">
+    <div class="erp-field"><label class="erp-label required" for="quick-truck-plate">Placa</label><input id="quick-truck-plate" pInputText class="erp-input" formControlName="placa" /></div>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button type="button" label="Guardar camión" icon="fa-solid fa-floppy-disk" (onClick)="createQuickTruck()"></p-button>
+    <p-button type="button" label="Cancelar" styleClass="p-button-outlined" (onClick)="quickTruckVisible.set(false)"></p-button>
   </ng-template>
 </p-dialog>

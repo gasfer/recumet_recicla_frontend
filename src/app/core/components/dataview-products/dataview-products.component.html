@@ -11,8 +11,8 @@
 
         <!-- BUSCADOR -->
         <div class="search-container mb-2" [formGroup]="formSearch">
-            <div class="row g-2 align-items-center">
-                <div class="col-12 col-md-4">
+            <div class="product-search-grid">
+                <div class="min-w-0">
                     <p-dropdown
                         [options]="searchFor()"
                         formControlName="searchSelect"
@@ -25,7 +25,7 @@
                     </p-dropdown>
                 </div>
 
-                <div class="col-12 col-md-8">
+                <div class="min-w-0">
                     <p-dropdown
                         *ngIf="!isSearchByProduct()"
                         [options]="categories()"
@@ -65,12 +65,12 @@
 
         <!-- LISTADO DE PRODUCTOS -->
         <div *ngIf="!loading()" class="product-catalog-scroll" role="region" aria-label="Lista de productos" tabindex="0">
-            <div class="container-fluid px-1 mt-1">
-                <div class="row g-2">
+            <div class="product-grid-wrap">
+                <div class="product-grid">
 
                     <div
                         *ngFor="let product of products()"
-                        class="col-12 col-sm-6 col-lg-4 animated animate zoomIn">
+                        class="product-grid__item animated animate zoomIn">
 
                         <!-- CARD PRODUCTO COMPACTA Y MODERNA -->
                         <div class="cardProduct">
@@ -171,8 +171,8 @@
                                 <!-- INPUT DE CANTIDAD (si typeFrom === 'INPUT') -->
                                 @if(typeFrom === 'INPUT') {
                                     <div class="quantity-input-section">
-                                        <div class="row g-1 align-items-center">
-                                            <div class="col-auto">
+                                        <div class="product-quantity-grid">
+                                            <div>
                                                 <p-button
                                                     ariaLabel="Añadir producto con cantidad"
                                                     icon="fa-solid fa-arrow-left"
@@ -182,7 +182,7 @@
                                                     severity="success"
                                                     size="small" />
                                             </div>
-                                            <div class="col">
+                                            <div class="min-w-0">
                                                 <input
                                                     type="number"
                                                     [(ngModel)]="product.set_quantity"
@@ -229,7 +229,10 @@
     [modal]="true"
     [draggable]="false"
     [resizable]="false"
-    [dismissableMask]="true" styleClass="app-dialog--xl">
+    [dismissableMask]="true" [breakpoints]="{'960px': '94vw', '640px': '98vw'}"
+    [style]="{width: 'min(72rem, calc(100vw - 2rem))'}"
+    [contentStyle]="{maxHeight: 'calc(100dvh - 8rem)', overflow: 'auto'}"
+    styleClass="app-dialog--xl erp-operational-dialog sales-product-dialog">
 
     <div class="modal-product-detail" *ngIf="selectedProductImage()">
 

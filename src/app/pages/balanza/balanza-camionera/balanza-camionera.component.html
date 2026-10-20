@@ -4,7 +4,7 @@
 <!-- ══════════════════════════════════════════════════════════════════════════
      HEADER
 ══════════════════════════════════════════════════════════════════════════ -->
-<div class="card bg-erp-bg m-0">
+<div class="card bg-erp-bg m-0 bc-page-header">
   <div class="card-body shadow pt-2 pb-2">
     <div class="flex justify-between items-center">
       <div>
@@ -26,7 +26,7 @@
 <!-- ══════════════════════════════════════════════════════════════════════════
      FILTROS AVANZADOS
 ══════════════════════════════════════════════════════════════════════════ -->
-<div *ngIf="mostrarFiltros()" class="card mt-2 mb-0">
+<div *ngIf="mostrarFiltros()" class="card mt-2 mb-0 bc-filter-panel">
   <div class="card-body shadow py-2">
     <div class="flex flex-wrap erp-layout-row gap-y-2 items-end">
 
@@ -106,30 +106,30 @@
 <!-- ══════════════════════════════════════════════════════════════════════════
      STATS
 ══════════════════════════════════════════════════════════════════════════ -->
-<div class="flex flex-wrap erp-layout-row mt-2 mb-1 gap-y-2">
+<div class="bc-stats-grid flex flex-wrap erp-layout-row mt-2 mb-1 gap-y-2">
   <div class="md:w-[50%] px-2 min-w-0 w-full min-[768px]:w-[25%]">
-    <div class="card shadow-sm text-center py-2">
+    <div class="card shadow-sm text-center py-2 bc-stat-card">
       <i class="fa-solid fa-truck-moving fa-lg text-erp-success mb-1"></i>
       <div class="font-bold text-lg">{{ totalPesajes() }}</div>
       <small class="text-erp-text-muted">Total Pesajes</small>
     </div>
   </div>
   <div class="md:w-[50%] px-2 min-w-0 w-full min-[768px]:w-[25%]">
-    <div class="card shadow-sm text-center py-2">
+    <div class="card shadow-sm text-center py-2 bc-stat-card">
       <i class="fa-solid fa-circle-check fa-lg text-erp-success mb-1"></i>
       <div class="font-bold text-lg">{{ totalCompletos() }}</div>
       <small class="text-erp-text-muted">Completos</small>
     </div>
   </div>
   <div class="md:w-[50%] px-2 min-w-0 w-full min-[768px]:w-[25%]">
-    <div class="card shadow-sm text-center py-2">
+    <div class="card shadow-sm text-center py-2 bc-stat-card">
       <i class="fa-solid fa-clock fa-lg text-erp-warning mb-1"></i>
       <div class="font-bold text-lg">{{ totalPendient() }}</div>
       <small class="text-erp-text-muted">En 1° Peso</small>
     </div>
   </div>
   <div class="md:w-[50%] px-2 min-w-0 w-full min-[768px]:w-[25%]">
-    <div class="card shadow-sm text-center py-2">
+    <div class="card shadow-sm text-center py-2 bc-stat-card">
       <i class="fa-solid fa-weight-hanging fa-lg text-erp-info mb-1"></i>
       <div class="font-bold text-lg">{{ totalNetoKg() | number:'1.0-0' }} kg</div>
       <small class="text-erp-text-muted">Neto Total</small>
@@ -142,18 +142,15 @@
 ══════════════════════════════════════════════════════════════════════════ -->
 <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
   <div class="w-[100%] px-2 min-w-0">
-    <div class="card">
+    <div class="card bc-table-card">
       <div class="card-body shadow m-0 p-0">
 
         <div class="flex flex-wrap erp-layout-row gap-y-3 m-1 mt-0">
           <div class="w-[100%] px-2 min-w-0">
-            <p-messages severity="info">
-              <ng-template pTemplate>
-                <b>LISTA PESAJE BALANZA CAMIONERA &nbsp;<i class="fa-solid fa-weight-scale"></i></b>
-                <i class="fa-solid fa-truck ml-6 p-text-secondary app-u-font-size-1-2rem-101860a" pBadge
-                   value="{{ totalPesajes() }}"></i>
-              </ng-template>
-            </p-messages>
+            <div class="bc-list-heading" role="heading" aria-level="2">
+              <strong><i class="fa-solid fa-weight-scale" aria-hidden="true"></i> Lista de pesajes de balanza camionera</strong>
+              <span class="bc-list-heading__count">{{ totalPesajes() }} registros</span>
+            </div>
           </div>
         </div>
 
@@ -161,7 +158,7 @@
           [value]="pesajesFiltrados()"
           [loading]="loading()"
           responsiveLayout="scroll"
-          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped app-table-scroll"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped app-table-scroll bc-truck-scale-table"
           [rowHover]="true"
           [paginator]="true"
           [rows]="15"
@@ -305,14 +302,14 @@
   [header]="modoDialog() === 'EDITAR' ? 'Editar Pesaje' : 'Registrar Primer Peso'"
   [maximizable]="true"
   [draggable]="false"
-  appendTo="body" styleClass="app-dialog--lg">
+  appendTo="body" styleClass="app-dialog--xl erp-operational-dialog bc-first-weight-dialog">
 
   <form [formGroup]="formPrimer">
     <div class="flex flex-wrap erp-layout-row gap-y-2">
 
       <!-- ══ BLOQUE: VER PESO BALANZA ══ -->
       <div class="w-[100%] px-2 min-w-0">
-        <div class="card border-primary mb-0">
+        <div class="card bc-scale-reader mb-0">
           <div class="card-header bg-erp-success-soft text-erp-success py-1 px-2">
             <i class="fa-solid fa-display mr-2"></i>
             <strong>PESO EN BALANZA</strong>
@@ -336,8 +333,9 @@
                   <button pButton icon="fa-solid fa-desktop" label="Mostrar en pantalla completa"
                           class="p-button-sm p-button-outlined p-button-secondary"
                           (click)="abrirPantallaCompleta()"></button>
-                  <small class="text-erp-text-muted">
-                    <i class="fa-solid fa-circle-info mr-1"></i>Balanza: 192.168.0.240:8000
+                  <small class="bc-scale-reader__status" [class.is-error]="estadoBalanza() === 'error'" [class.is-success]="estadoBalanza() === 'success'" role="status" aria-live="polite">
+                    <i class="fa-solid" [ngClass]="conectandoBalanza() ? 'fa-spinner fa-spin' : estadoBalanza() === 'error' ? 'fa-circle-exclamation' : estadoBalanza() === 'success' ? 'fa-circle-check' : 'fa-circle-info'" aria-hidden="true"></i>
+                    {{ mensajeBalanza() }}
                   </small>
                 </div>
               </div>
@@ -370,7 +368,7 @@
 
       <!-- ══ BLOQUE: TARA ══ -->
       <div class="w-[100%] px-2 min-w-0">
-        <div class="alert alert-primary py-2 flex justify-between items-center mb-0">
+        <div class="bc-weight-field py-2 flex justify-between items-center mb-0">
           <div>
             <label class="font-bold mb-0 block">
               <i class="fa-solid fa-weight-scale mr-1"></i>TARA (kg) — Peso camión + material *
@@ -591,7 +589,7 @@
   [closable]="true"
   header="Registrar Segundo Peso"
   [draggable]="false"
-  appendTo="body" styleClass="app-dialog--md">
+  appendTo="body" styleClass="app-dialog--md erp-operational-dialog bc-second-weight-dialog">
 
   <form [formGroup]="formSegundo">
     <div class="flex flex-wrap erp-layout-row gap-y-2">
@@ -615,6 +613,10 @@
                   pTooltip="Pantalla completa"
                   (click)="abrirPantallaCompleta()"></button>
         </div>
+        <small class="bc-scale-reader__status mt-2" [class.is-error]="estadoBalanza() === 'error'" [class.is-success]="estadoBalanza() === 'success'" role="status" aria-live="polite">
+          <i class="fa-solid" [ngClass]="conectandoBalanza() ? 'fa-spinner fa-spin' : estadoBalanza() === 'error' ? 'fa-circle-exclamation' : estadoBalanza() === 'success' ? 'fa-circle-check' : 'fa-circle-info'" aria-hidden="true"></i>
+          {{ mensajeBalanza() }}
+        </small>
       </div>
 
       <!-- ══ BUSCAR BOLETA / PLACA ══ -->

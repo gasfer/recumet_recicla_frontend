@@ -29,6 +29,7 @@ export interface Sucursal {
     createdAt:  string;
     updatedAt:  string;
     storage:    Storage[];
+    storageNames?: string[];
     options?:   Options[];
     select?:    boolean;
 }

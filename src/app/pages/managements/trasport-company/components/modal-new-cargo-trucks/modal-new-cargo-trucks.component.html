@@ -1,15 +1,21 @@
-<p-dialog [header]="'Registro camion / vehículo para: ' + transportCompany?.name" [(visible)]="transportCompanyService.showModalNewCargoTruck"
+<p-dialog [header]="transportCompanyService.isEditCargoTruck ? 'Editar camión' : 'Registro de camión para: ' + transportCompany?.name" [(visible)]="transportCompanyService.showModalNewCargoTruck"
     [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
     [dismissableMask]="true" styleClass="app-dialog--sm">
-    <form [formGroup]="cargoTruckForm">
+    <form [formGroup]="cargoTruckForm" class="erp-form-grid">
         <app-alert-notify></app-alert-notify>
+        <div class="erp-field" *ngIf="transportCompanyService.isEditCargoTruck">
+            <label class="erp-label required" for="cargo-truck-transport-company">Empresa de transporte</label>
+            <p-dropdown inputId="cargo-truck-transport-company" class="erp-input" [options]="transportCompanies()"
+                optionLabel="name" optionValue="id" placeholder="Selecciona empresa" appendTo="body"
+                formControlName="id_trasport_company"></p-dropdown>
+        </div>
         <div class="p-fluid grid">
             <div class="field col-12">
                 <div class="field">
-                    <label class="block mb-0">Placa<span class="text-danger">*</span>
+                    <label class="erp-label required" for="cargo-truck-plate">Placa
                     </label>
-                    <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
+                    <input id="cargo-truck-plate" type="text" pInputText class="erp-input" [pKeyFilter]="validatorsService.expRegValidInput"
                         formControlName="placa" placeholder="EJ. 123ABC..."
                         [class.ng-dirty]="validatorsService.inputValid('placa',cargoTruckForm)" class="text-uppercase"/>
                     <small *ngIf="validatorsService.inputValid('placa',cargoTruckForm)" class="p-error block">
@@ -35,8 +41,8 @@
         </div>
     </form>
     <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ?  newCargoTruck() : null" styleClass="p-button-sm p-button-rounded"
-            label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
+        <p-button type="button" (click)="!loading() ? saveCargoTruck() : null" styleClass="p-button-sm p-button-rounded"
+            [label]="transportCompanyService.isEditCargoTruck ? 'Guardar cambios' : 'Guardar'" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
         <p-button (click)="transportCompanyService.showModalNewCargoTruck = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     </ng-template>
 </p-dialog>

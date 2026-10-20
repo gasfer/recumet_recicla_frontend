@@ -18,8 +18,8 @@ module.exports = {
         'erp-danger-soft': 'rgb(var(--color-danger-soft-rgb) / <alpha-value>)',
         'erp-primary':      'rgb(var(--color-primary-rgb) / <alpha-value>)',
         'erp-primary-hover':'rgb(var(--color-primary-hover-rgb) / <alpha-value>)',
-        'erp-primary-active': '#00B87A',
-        'erp-selection': '#ECFDF5',
+        'erp-primary-active': 'var(--color-primary-active)',
+        'erp-selection': 'var(--color-primary-light)',
         'erp-action': 'var(--color-action-primary)',
         'erp-action-hover': 'var(--color-action-primary-hover)',
         'erp-action-secondary': 'var(--color-action-secondary)',
@@ -43,6 +43,13 @@ module.exports = {
           accent: 'var(--color-info)',
           'accent-soft': 'var(--color-info-light)'
         }
+      },
+      spacing: {
+        'erp-xs': 'var(--spacing-xs)',
+        'erp-sm': 'var(--spacing-sm)',
+        'erp-md': 'var(--spacing-md)',
+        'erp-lg': 'var(--spacing-lg)',
+        'erp-xl': 'var(--spacing-xl)',
       },
       fontFamily: {
         'inter': ['Inter', 'sans-serif'],

@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.sales-config-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.sales-config-option:last-child {
+  border-bottom: 0;
+}
+
+.sales-config-option label {
+  min-width: 0;
+  color: var(--color-text);
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+:host ::ng-deep .sales-config-dialog .p-dialog-content,
+:host ::ng-deep .sales-config-dialog .p-dialog-footer,
+:host ::ng-deep .sales-config-dialog .p-dialog-header {
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}

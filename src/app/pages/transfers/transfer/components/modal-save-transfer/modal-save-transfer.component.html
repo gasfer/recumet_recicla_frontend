@@ -1,122 +1,89 @@
 <p-dialog [header]="'Registro de traslado'" [(visible)]="transfersService.showModalSaveTransfer"
     [modal]="true" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true" (onHide)="resetModal()" styleClass="app-dialog--md">
+    [resizable]="false" [dismissableMask]="true" (onHide)="resetModal()" styleClass="app-dialog--md erp-operational-dialog transfer-save-dialog">
     <form [formGroup]="formTransferData">
-        <div class="p-fluid erp-form-grid">
-            <div class="erp-field w-[100%] px-2 min-w-0">
-                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
-                        <label class="block mb-0">Sucursal destino<span class="text-erp-danger">*</span></label>
-                        <p-dropdown [options]="sucursales()"
-                        optionLabel="name" optionValue="id"
-                        [showClear]="false" appendTo="body"
-                        [virtualScrollItemSize]="38" [lazy]="true"
-                        formControlName="id_sucursal_received"
+        <section class="erp-section erp-section--transfer-summary">
+            <div class="erp-section-title"><i class="fa-solid fa-truck-ramp-box"></i> Datos del traslado</div>
+            <div class="erp-form-grid cols-2">
+                <div class="erp-field">
+                    <label class="erp-label required" for="transfer-destination">Sucursal destino</label>
+                    <p-dropdown inputId="transfer-destination" [options]="sucursales()" optionLabel="name" optionValue="id"
+                        [showClear]="false" appendTo="body" [virtualScrollItemSize]="38" [lazy]="true"
+                        formControlName="id_sucursal_received" class="erp-input w-full"
                         [class.ng-dirty]="validatorsService.inputValid('id_sucursal_received',formTransferData)"
-                        placeholder="SELECCIONA SUCURSAL"></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('id_sucursal_received',formTransferData)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("id_sucursal_received",formTransferData) }}
-                        </small>
-                    </div>
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
-                        <div class="flex flex-wrap erp-layout-row gap-y-3">
-
-                            <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
-                                <label class="block mb-0">Cantidad Productos</label><br>
-                                <p-tag [rounded]="true" [severity]="'success'"
-                                    [icon]="'fa-solid fa-tag'"
-                                    value="{{totalSummaryItems() | number:decimalFormat.digitsInfo }}"></p-tag>
-                            </div>
-                        </div>
+                        placeholder="Selecciona sucursal"></p-dropdown>
+                    <small *ngIf="validatorsService.inputValid('id_sucursal_received',formTransferData)" class="erp-error-msg">
+                        {{ validatorsService.inputValidMessage("id_sucursal_received",formTransferData) }}
+                    </small>
+                </div>
+                <div class="erp-field">
+                    <label class="erp-label">Cantidad de productos</label>
+                    <div class="erp-toggle-pill"><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
+                        <p-tag [rounded]="true" [severity]="'success'" [icon]="'fa-solid fa-tag'"
+                            value="{{totalSummaryItems() | number:decimalFormat.digitsInfo }}"></p-tag>
                     </div>
                 </div>
-                <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
-                        <label class="block mb-0">Fecha de Registro <span class="text-erp-danger">*</span>
-                        </label>
-                        <p-calendar
-                            formControlName="date_send"
-                            appendTo="body"
-                            dateFormat="dd/mm/yy"
-                            [showIcon]="true"
-                            [showTime]="true"
-                            [hourFormat]="'24'"
-                            [class.ng-dirty]="validatorsService.inputValid('date_send',formTransferData)">
-                        </p-calendar>
-                        <small *ngIf="validatorsService.inputValid('date_send',formTransferData)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("date_send",formTransferData) }}
-                        </small>
-                    </div>
-
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
-                        <label class="block mb-0">Observaciones de envió</label>
-                        <textarea pInputTextarea
-                            type="text"
-
-                            pInputText
-                            [pKeyFilter]="validatorsService.expRegValidInput"
-                            formControlName="observations_send"
-                            placeholder="EJ. ......"
-                            class="mt-1 uppercase"
-                            [class.ng-dirty]="validatorsService.inputValid('observations_send',formTransferData)"
-                        ></textarea>
-                        <small *ngIf="validatorsService.inputValid('observations_send',formTransferData)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("observations_send",formTransferData) }}
-                        </small>
-                    </div>
+                <div class="erp-field">
+                    <label class="erp-label required" for="transfer-date">Fecha de registro</label>
+                    <p-calendar inputId="transfer-date" formControlName="date_send" appendTo="body" dateFormat="dd/mm/yy"
+                        [showIcon]="true" [showTime]="true" [hourFormat]="'24'" class="erp-input w-full"
+                        [class.ng-dirty]="validatorsService.inputValid('date_send',formTransferData)"></p-calendar>
+                    <small *ngIf="validatorsService.inputValid('date_send',formTransferData)" class="erp-error-msg">
+                        {{ validatorsService.inputValidMessage("date_send",formTransferData) }}
+                    </small>
                 </div>
-                <div class="flex flex-wrap erp-layout-row gap-y-3">
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] mt-sm-0 mt-1">
-                        <label class="block mb-0">Balanza:<span class="text-erp-danger">*</span></label>
-                        <p-dropdown [options]="scalas()"
-                        placeholder="Selecciona una opción"
-                        optionLabel="name"
-                        optionValue="id"
-                        appendTo="body"
-                        selected="1"
-                        formControlName="id_scales"
-                        [class.ng-dirty]="validatorsService.inputValid('id_scales',formTransferData)"
-                        ></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('id_scales',formTransferData)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("id_scales",formTransferData) }}
-                        </small>
-                    </div>
-                    <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%]">
-                        <label class="block mb-0">Tipo Pesaje<span class="text-erp-danger">*</span></label>
-                        <p-dropdown [options]="types_registry()"
-                            placeholder="Selecciona una opción"
-                            optionLabel="name"
-                            optionValue="code"
-                            appendTo="body"
-                            formControlName="type_registry"
-                            [class.ng-dirty]="validatorsService.inputValid('type_registry',formTransferData)"
-                            (onChange)="selectTypeRegistry()"
-                            ></p-dropdown>
-                        <small *ngIf="validatorsService.inputValid('type_registry',formTransferData)" class="p-error block">
-                            {{ validatorsService.inputValidMessage("type_registry",formTransferData) }}
-                        </small>
-                    </div>
-                    @if (formTransferData.get('type_registry')?.value != 'SIN FICHA') {
-                        <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] animated fadeInDown">
-                            <label class="block mb-0">Nro. Pesaje</label>
-                            <input type="text" pInputText [pKeyFilter]="validatorsService.expRegValidInput"
-                                formControlName="registry_number" placeholder="EJ. 0001"
-                                [pKeyFilter]="validatorsService.expRegValidInput"
-                                [class.ng-dirty]="validatorsService.inputValid('registry_number',formTransferData)" class="uppercase"/>
-                            <small *ngIf="validatorsService.inputValid('registry_number',formTransferData)" class="p-error block">
-                                {{ validatorsService.inputValidMessage("registry_number",formTransferData) }}
-                            </small>
-                        </div>
-                    } @else {
-                        <div class="min-[768px]:w-[50%] px-2 min-w-0 w-full w-[100%] animated fadeInDown mt-2">
-                            <small class="block">
-                                {{ "El número se generará automáticamente al guardar el traslado." }}
-                            </small>
-                        </div>
-                    }
+                <div class="erp-field erp-col-full">
+                    <label class="erp-label" for="transfer-observations">Observaciones de envío</label>
+                    <textarea id="transfer-observations" pInputTextarea [pKeyFilter]="validatorsService.expRegValidInput"
+                        formControlName="observations_send" placeholder="Añade una observación (opcional)"
+                        class="erp-input w-full" rows="2"
+                        [class.ng-dirty]="validatorsService.inputValid('observations_send',formTransferData)"></textarea>
+                    <small *ngIf="validatorsService.inputValid('observations_send',formTransferData)" class="erp-error-msg">
+                        {{ validatorsService.inputValidMessage("observations_send",formTransferData) }}
+                    </small>
                 </div>
             </div>
-        </div>
+        </section>
+        <section class="erp-section erp-section--transfer-weighing">
+            <div class="erp-section-title"><i class="fa-solid fa-scale-balanced"></i> Datos de pesaje</div>
+            <div class="erp-form-grid cols-2">
+                <div class="erp-field">
+                    <label class="erp-label required" for="transfer-scale">Balanza</label>
+                    <p-dropdown inputId="transfer-scale" [options]="scalas()" placeholder="Selecciona balanza"
+                        optionLabel="name" optionValue="id" appendTo="body" formControlName="id_scales"
+                        class="erp-input w-full" [class.ng-dirty]="validatorsService.inputValid('id_scales',formTransferData)"></p-dropdown>
+                    <small *ngIf="validatorsService.inputValid('id_scales',formTransferData)" class="erp-error-msg">
+                        {{ validatorsService.inputValidMessage("id_scales",formTransferData) }}
+                    </small>
+                </div>
+                <div class="erp-field">
+                    <label class="erp-label required" for="transfer-registry-type">Tipo de pesaje</label>
+                    <p-dropdown inputId="transfer-registry-type" [options]="types_registry()" placeholder="Selecciona tipo"
+                        optionLabel="name" optionValue="code" appendTo="body" formControlName="type_registry"
+                        class="erp-input w-full" (onChange)="selectTypeRegistry()"
+                        [class.ng-dirty]="validatorsService.inputValid('type_registry',formTransferData)"></p-dropdown>
+                    <small *ngIf="validatorsService.inputValid('type_registry',formTransferData)" class="erp-error-msg">
+                        {{ validatorsService.inputValidMessage("type_registry",formTransferData) }}
+                    </small>
+                </div>
+                @if (formTransferData.get('type_registry')?.value != 'SIN FICHA') {
+                    <div class="erp-field">
+                        <label class="erp-label" for="transfer-registry-number">Nro. de pesaje</label>
+                        <input id="transfer-registry-number" type="text" pInputText formControlName="registry_number"
+                            placeholder="Ej. 0001" [pKeyFilter]="validatorsService.expRegValidInput"
+                            class="erp-input w-full uppercase"
+                            [class.ng-dirty]="validatorsService.inputValid('registry_number',formTransferData)" />
+                        <small *ngIf="validatorsService.inputValid('registry_number',formTransferData)" class="erp-error-msg">
+                            {{ validatorsService.inputValidMessage("registry_number",formTransferData) }}
+                        </small>
+                    </div>
+                } @else {
+                    <div class="erp-field erp-col-full"><small class="erp-text-muted">
+                        El número se generará automáticamente al guardar el traslado.
+                    </small></div>
+                }
+            </div>
+        </section>
       </form>
       <ng-template pTemplate="footer">
         <p-button (click)="loading() ? null : saveTransfer()" styleClass="p-button-sm p-button-rounded"

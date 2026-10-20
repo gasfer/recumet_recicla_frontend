@@ -5,6 +5,11 @@ import { authGuard } from './core/guards/auth.guard';
 import { permissionGuard } from './core/guards/permission.guard';
 
 const routes: Routes = [
+  {
+    path: 'scale-display',
+    loadComponent: () => import('./pages/balanza/scale-weight-display/scale-weight-display.component')
+      .then(m => m.ScaleWeightDisplayComponent),
+  },
   { path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
   { path: '', component: LayoutComponent,canActivateChild: [authGuard, permissionGuard], loadChildren: () => import('./pages/pages.module').then(m => m.PagesModule) },
 ];

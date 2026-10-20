@@ -11,13 +11,6 @@ import { ProductAccessContext } from 'src/app/core/constants/product-category-ac
 @Component({
   selector: 'app-transfer',
   templateUrl: './transfer.component.html',
-  styles: [`
-  .card {
-    border-radius: 20px;
-    box-sizing: border-box;
-  }
-`
-  ]
 })
 export class TransferComponent implements OnInit {
   readonly productContext = ProductAccessContext.Transfers;

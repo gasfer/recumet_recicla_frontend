@@ -9,8 +9,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 @Component({
   selector: 'app-modal-client',
   templateUrl: './modal-client.component.html',
-  styles: [
-  ]
+  styleUrls: ['./modal-client.component.scss']
 })
 export class ModalClientComponent implements OnInit, OnDestroy {
   validatorsService = inject( ValidatorsService );

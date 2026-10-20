@@ -1,0 +1,134 @@
+:host {
+  display: block;
+  min-width: 0;
+  color: var(--color-text);
+}
+
+.sales-header-panel,
+.sales-detail-card {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.sales-client-toolbar {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1.2fr) minmax(14rem, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+  margin-top: var(--spacing-sm);
+}
+
+.sales-client-search,
+.sales-selected-client,
+.sales-config-action {
+  min-width: 0;
+}
+
+.sales-autocomplete {
+  z-index: 30;
+  width: min(100%, 42rem);
+  max-height: min(50dvh, 24rem);
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.sales-autocomplete ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sales-autocomplete li {
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.sales-autocomplete li:hover,
+.sales-autocomplete li:focus-visible {
+  background: var(--color-hover, var(--color-surface-secondary));
+  outline: none;
+}
+
+.sales-selected-client .erp-entity-chip {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sales-selected-client .erp-entity-chip span {
+  overflow-wrap: anywhere;
+}
+
+.sales-selected-client .remove-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-danger);
+  cursor: pointer;
+}
+
+.sales-config-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sales-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.sales-workspace--with-catalog {
+  grid-template-columns: minmax(0, 1.45fr) minmax(20rem, 1fr);
+  align-items: stretch;
+}
+
+.sales-workspace__details,
+.sales-workspace__catalog {
+  min-width: 0;
+}
+
+.sales-detail-card {
+  height: 100%;
+  overflow: visible;
+}
+
+@media (max-width: 1199px) {
+  .sales-workspace--with-catalog {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .sales-client-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .sales-client-search,
+  .sales-selected-client {
+    grid-column: 1 / -1;
+  }
+
+  .sales-selected-client {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sales-config-action {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}

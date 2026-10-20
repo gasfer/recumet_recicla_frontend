@@ -20,8 +20,7 @@ import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-query-receptions',
-  templateUrl: './query-receptions.component.html',
-  styleUrls: ['./query-receptions.component.scss']
+  templateUrl: './query-receptions.component.html'
 })
 
 export class QueryReceptionsComponent implements OnInit {
@@ -151,8 +150,10 @@ export class QueryReceptionsComponent implements OnInit {
             {
               label:'',icon:'fa-solid fa-thumbs-up',
               tooltip: 'Aprobar',
+              ariaLabel: `Aprobar recepción del traslado ${transfer.cod}`,
+              // app-table interpreta `disabled` como estado habilitado por compatibilidad histórica.
               disabled: this.validatorsService.withPermission('RECEPCIONES','create'),
-              class:'p-button-rounded p-button-secondary p-button-sm ms-1',
+              class:'p-button-rounded p-button-success p-button-sm ms-1',
               eventClick: () => {
                 this.id_transfer.set(transfer.id);
                 this.transfersService.showModalConfirmationReception = true;
@@ -161,6 +162,7 @@ export class QueryReceptionsComponent implements OnInit {
             {
               label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
+              ariaLabel: `Ver detalle del traslado ${transfer.cod}`,
               class:'p-button-rounded p-button-success p-button-sm ms-1',
               eventClick: () => {
                 this.transfersService.detailsSubs$.next(transfer);
@@ -168,8 +170,9 @@ export class QueryReceptionsComponent implements OnInit {
               }
             },
             {
-              label:'',icon:'fas fa-print',
+              label:'',icon:'fa-solid fa-print',
               tooltip: 'Imprimir guía de traslado (vertical)',
+              ariaLabel: `Imprimir guía de traslado ${transfer.cod}`,
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -180,6 +183,7 @@ export class QueryReceptionsComponent implements OnInit {
             {
               label:'',icon:'fas fa-eye',
               tooltip: 'Ver detalle',
+              ariaLabel: `Ver detalle del traslado ${transfer.cod}`,
               class:'p-button-rounded p-button-success p-button-sm ms-1',
               eventClick: () => {
                 this.transfersService.detailsSubs$.next(transfer);
@@ -196,8 +200,9 @@ export class QueryReceptionsComponent implements OnInit {
               eventClick: () => this.reviewService.openTrace(transfer.id)
             }] : []),
             {
-              label:'',icon:'fas fa-print',
+              label:'',icon:'fa-solid fa-print',
               tooltip: 'Imprimir guía de traslado (vertical)',
+              ariaLabel: `Imprimir guía de traslado ${transfer.cod}`,
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
@@ -205,8 +210,9 @@ export class QueryReceptionsComponent implements OnInit {
               }
             },
             {
-              label:'',icon:'fas fa-clipboard-check',
+              label:'',icon:'fa-solid fa-clipboard-check',
               tooltip: 'Imprimir guía de recepción (horizontal)',
+              ariaLabel: `Imprimir guía de recepción ${transfer.cod}`,
               disabled: this.validatorsService.withPermission('RECEPCIONES','reports'),
               class:'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {

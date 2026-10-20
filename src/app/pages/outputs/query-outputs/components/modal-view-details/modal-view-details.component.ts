@@ -7,8 +7,7 @@ import { Output } from '../../../interfaces/output.interface';
 @Component({
   selector: 'app-modal-view-details-output',
   templateUrl: './modal-view-details.component.html',
-  styles: [
-  ]
+  styleUrls: ['./modal-view-details.component.scss']
 })
 export class ModalViewDetailsComponent {
   outputService     = inject(OutputService);

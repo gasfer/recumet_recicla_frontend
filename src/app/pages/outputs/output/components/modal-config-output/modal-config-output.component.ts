@@ -5,8 +5,7 @@ import { FormBuilder, UntypedFormGroup } from '@angular/forms';
 @Component({
   selector: 'app-modal-config-output',
   templateUrl: './modal-config-output.component.html',
-  styles: [
-  ]
+  styleUrls: ['./modal-config-output.component.scss']
 })
 export class ModalConfigOutputComponent {
   outputService = inject( OutputService );

@@ -7,7 +7,7 @@ import { CompaniesService } from 'src/app/pages/managements/services/companies.s
 @Component({
   selector: 'app-modal-update-bs-sus',
   templateUrl: './modal-update-bs-sus.component.html',
-  styles: []
+  styleUrls: ['./modal-update-bs-sus.component.scss']
 })
 export class ModalUpdateBsSusComponent  {
   componentsService = inject(ComponentsService);

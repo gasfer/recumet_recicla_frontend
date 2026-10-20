@@ -10,8 +10,7 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 @Component({
   selector: 'app-trasport-company',
   templateUrl: './trasport-company.component.html',
-  styles: [
-  ]
+  styleUrls: ['./trasport-company.component.scss']
 })
 export class TrasportCompanyComponent implements OnInit, OnDestroy {
   searchItems = signal<MenuItem[]>([
@@ -93,7 +92,7 @@ export class TrasportCompanyComponent implements OnInit, OnDestroy {
             { 
               label:'',icon:'fas fa-edit', 
               tooltip: 'Editar',
-              disabled: this.validatorsService.withPermission('COMP. TRASPORTE','update'),
+              disabled: !this.validatorsService.withPermission('COMP. TRASPORTE','update'),
               class:'p-button-rounded p-button-warning p-button-sm ms-1',
               eventClick: () => {
                 this.editShowModal(trasportCompany);
@@ -102,7 +101,7 @@ export class TrasportCompanyComponent implements OnInit, OnDestroy {
             {
               label:'',icon:'fa-solid fa-trash-can', 
               tooltip: 'Inactivar',
-              disabled: this.validatorsService.withPermission('COMP. TRASPORTE','delete'),
+              disabled: !this.validatorsService.withPermission('COMP. TRASPORTE','delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
               eventClick: () => {
                 this.updateStatus(trasportCompany,false);
@@ -112,7 +111,7 @@ export class TrasportCompanyComponent implements OnInit, OnDestroy {
             {
               label:'',icon:'fa-solid fa-circle-check',
               tooltip: 'Activar',
-              disabled: this.validatorsService.withPermission('COMP. TRASPORTE','delete'),
+              disabled: !this.validatorsService.withPermission('COMP. TRASPORTE','delete'),
               class:'p-button-rounded p-button-sm ms-1',
               eventClick: () => {
                 this.updateStatus(trasportCompany,true);

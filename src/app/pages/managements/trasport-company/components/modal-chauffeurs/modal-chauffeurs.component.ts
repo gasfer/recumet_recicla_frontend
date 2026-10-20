@@ -4,16 +4,18 @@ import { Subscription } from 'rxjs';
 import { Chauffeur, TransportCompany } from '../../../interfaces/trasport_company.interfaces';
 import { ColsTable } from 'src/app/core/components/interfaces/OptionsTable.interface';
 import Swal from 'sweetalert2';
+import { ValidatorsService } from 'src/app/services/validators.service';
 
 @Component({
   selector: 'app-modal-chauffeurs',
   templateUrl: './modal-chauffeurs.component.html',
-  styles: [
-  ]
+  styleUrls: ['./modal-chauffeurs.component.scss']
 })
 export class ModalChauffeursComponent implements OnInit, OnDestroy {
   transportCompanyService = inject(TransportCompanyService);
+  validatorsService = inject(ValidatorsService);
   isChauffeursSub$!: Subscription;
+  saveSub$!: Subscription;
   transportCompany?: TransportCompany;
   chauffeurs = signal<{data:Chauffeur[],status:boolean}>({data: [],status:true});
   cols = signal<ColsTable[]>([
@@ -30,8 +32,15 @@ export class ModalChauffeursComponent implements OnInit, OnDestroy {
       this.transportCompany.chauffeurs.forEach(chauffeur => {
         chauffeur.options = [
           {
+            label:'Editar', icon:'fa-solid fa-pen-to-square', tooltip:'Editar conductor',
+            disabled: !this.validatorsService.withPermission('COMP. TRASPORTE','update'),
+            class:'p-button-rounded p-button-warning p-button-sm',
+            eventClick: () => this.editChauffeur(chauffeur),
+          },
+          {
             label:'Eliminar',icon:'fa-solid fa-trash-can', 
             tooltip: 'Eliminar',
+            disabled: !this.validatorsService.withPermission('COMP. TRASPORTE','delete'),
             class:'p-button-rounded p-button-danger p-button-sm ms-1',
             eventClick: () => {
               this.deleteChauffeurs(chauffeur);
@@ -41,10 +50,36 @@ export class ModalChauffeursComponent implements OnInit, OnDestroy {
       });
       this.chauffeurs.set({data: this.transportCompany.chauffeurs, status:true});
     });
+    this.saveSub$ = this.transportCompanyService.save$.subscribe(() => this.refreshCompanyList());
   }
 
   ngOnDestroy(): void {
     this.isChauffeursSub$.unsubscribe();
+    this.saveSub$.unsubscribe();
+  }
+
+  editChauffeur(chauffeur: Chauffeur): void {
+    this.transportCompanyService.isEditChauffeur = true;
+    this.transportCompanyService.chauffeurEditSubs.emit(chauffeur);
+    this.transportCompanyService.showModalNewChauffeur = true;
+  }
+
+  private refreshCompanyList(): void {
+    if (!this.transportCompany) return;
+    this.transportCompanyService.getAllAndSearch(1, 1000, true).subscribe({
+      next: (response) => {
+        const refreshed = response.trasport_company.data.find((company) => company.id === this.transportCompany?.id);
+        if (!refreshed) return;
+        this.transportCompany = refreshed;
+        this.chauffeurs.set({ data: refreshed.chauffeurs, status: true });
+        refreshed.chauffeurs.forEach((chauffeur) => {
+          chauffeur.options = [
+            { label:'Editar', icon:'fa-solid fa-pen-to-square', tooltip:'Editar conductor', disabled: !this.validatorsService.withPermission('COMP. TRASPORTE','update'), class:'p-button-rounded p-button-warning p-button-sm', eventClick: () => this.editChauffeur(chauffeur) },
+            { label:'Eliminar', icon:'fa-solid fa-trash-can', tooltip:'Eliminar', disabled: !this.validatorsService.withPermission('COMP. TRASPORTE','delete'), class:'p-button-rounded p-button-danger p-button-sm ms-1', eventClick: () => this.deleteChauffeurs(chauffeur) },
+          ];
+        });
+      },
+    });
   }
 
   deleteChauffeurs(chauffeur: Chauffeur) {

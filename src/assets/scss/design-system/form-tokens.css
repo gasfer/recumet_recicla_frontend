@@ -13,7 +13,9 @@
   --color-primary-rgb:   0 169 107;
   --color-primary-hover-rgb: 0 140 89;
   --color-primary-hover: #008c59;  /* Verde RECUMET al pasar el cursor */
+  --color-primary-active: #00764d;
   --color-primary-light: #ecfdf5;  /* Emerald 50 */
+  --color-primary-on: #00311f;
   --color-field-filled: #f3fbf7;
   --color-field-filled-border: #a7dfc5;
 
@@ -21,13 +23,13 @@
   --color-surface:       #ffffff;
   --color-bg:            #F3F7FB;
   --color-sidebar:       #080F1D;
-  --color-header-modal:  #00A96B;
-  --color-header-modal-text: #FFFFFF;
+  --color-header-modal:  var(--color-primary);
+  --color-header-modal-text: var(--color-primary-on);
 
   /* Bordes */
   --color-border:        #E2E8F0;  /* Slate 200 */
   --color-border-subtle: #F1F5F9;  /* Slate 100 — bordes muy sutiles */
-  --color-border-focus:  #008C59;
+  --color-border-focus:  var(--color-primary-hover);
 
   /* Texto */
   --color-text:          #1E293B;  /* Slate 800 */
@@ -46,7 +48,7 @@
 
   /* Tipografía */
   --font-family-base:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-size-base:      14px;
+  --font-size-base:      16px;
   --font-size-sm:        12px;
   --font-size-lg:        16px;
   --font-size-heading:   18px;
@@ -56,10 +58,10 @@
 
   /* Espaciado */
   --spacing-xs:  4px;
-  --spacing-sm:  8px;
-  --spacing-md:  12px;
-  --spacing-lg:  16px;
-  --spacing-xl:  24px;
+  --spacing-sm:  6px;
+  --spacing-md:  8px;
+  --spacing-lg:  12px;
+  --spacing-xl:  16px;
 
   /* Bordes y sombras */
   --radius-sm:   4px;
@@ -73,8 +75,11 @@
   --shadow-lg:   0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
 
   /* Campo de formulario */
-  --field-height: 32px;
+  --field-height: 38px;
+  --field-height-compact: 34px;
   --field-height-sm: 32px;
+  --button-height: 36px;
+  --button-height-sm: 32px;
   --erp-shell-sidebar: #080f1d;
   --erp-shell-sidebar-hover: #101a2d;
   --erp-shell-sidebar-active: #00b87a;
@@ -82,13 +87,15 @@
   --erp-shell-topbar-height: 52px;
   --erp-shell-sidebar-width: 226px;
   --erp-shell-sidebar-collapsed-width: 70px;
-  --erp-font-metadata: 11px;
+  --erp-font-metadata: 12px;
   --erp-font-label: 12px;
-  --erp-font-body: 12px;
-  --erp-font-section: 14px;
+  --erp-font-body: 14px;
+  --erp-font-section: 16px;
   --erp-control-compact: 32px;
-  --erp-surface-gap: 12px;
+  --erp-surface-gap: 10px;
 }
+
+html { font-size: 16px; }
 
 .erp-density-compact { font-family:var(--font-family-base); font-size:var(--erp-font-body); }
 .erp-density-compact .erp-section-title { color:var(--color-text); font-size:var(--erp-font-section); font-weight:700; line-height:1.25; }
@@ -194,7 +201,7 @@ body .p-tag.p-tag-danger { border-color:#fecaca!important; background:#fef2f2!im
   background-color: var(--color-header-modal);
   color: var(--color-header-modal-text);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-lg);
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
@@ -232,7 +239,7 @@ body .p-tag.p-tag-danger { border-color:#fecaca!important; background:#fef2f2!im
 .erp-input .p-dropdown-label {
   height: var(--field-height) !important;
   min-height: var(--field-height) !important;
-  font-size: var(--font-size-base) !important;
+  font-size: var(--erp-font-body, 14px) !important;
   font-family: var(--font-family-base) !important;
   border: 1px solid var(--color-border) !important;
   border-radius: var(--radius-md) !important;
@@ -274,17 +281,6 @@ body :is(.erp-items-header, .erp-card-header, .p-dialog .p-dialog-header, .modal
 body :is(.erp-items-header, .erp-card-header, .p-dialog .p-dialog-header, .modal-header) :is(span, i, strong, h1, h2, h3, .p-dialog-title, .btn-close) {
   color: inherit !important;
 }
-body :is(.p-datatable .p-datatable-thead > tr > th, table thead th, .erp-table-header th) {
-  background: var(--color-primary) !important;
-  color: var(--color-header-modal-text) !important;
-  border-color: var(--color-primary-hover) !important;
-  font-size: var(--erp-font-label, 12px) !important;
-  font-weight: 700 !important;
-  letter-spacing: .02em;
-  padding: .55rem .7rem !important;
-}
-body :is(.p-datatable .p-datatable-thead > tr > th, table thead th, .erp-table-header th) * { color: var(--color-header-modal-text) !important; }
-
 .erp-input.p-dropdown {
   display: flex !important;
   align-items: center !important;
@@ -334,7 +330,7 @@ p-autocomplete.erp-input .p-inputtext {
 .erp-form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.65rem;
+  gap: 8px 10px;
   width: 100%;
 }
 
@@ -359,20 +355,20 @@ p-autocomplete.erp-input .p-inputtext {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.65rem;
+  padding: 10px 12px;
+  margin-bottom: var(--spacing-md);
 }
 
 .erp-section-title {
-  font-size: 0.72rem;
+  font-size: var(--erp-font-label, 12px);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-text-muted);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 4px;
 }
 
 .erp-toggle-pill {
@@ -432,18 +428,6 @@ p-autocomplete.erp-input .p-inputtext {
 /* ----------------------------------------------------------
    7. TABLAS
    ---------------------------------------------------------- */
-.erp-table-header th,
-.erp-table-header .p-column-header-content {
-  background-color: var(--color-header-modal) !important;
-  color: var(--color-header-modal-text) !important;
-  font-size: var(--font-size-sm) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  border-bottom: 1px solid var(--color-primary-hover) !important;
-  padding: var(--spacing-sm) var(--spacing-md) !important;
-}
-
 .erp-table-row td {
   font-size: var(--font-size-sm) !important;
   color: var(--color-text) !important;

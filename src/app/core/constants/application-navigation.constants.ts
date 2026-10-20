@@ -96,7 +96,7 @@ export const NAVIGATION_DESTINATIONS = {
   company: destination('/managements/company', 'Empresa', 'EMPRESA'),
   branches: destination('/managements/sucursales', 'Sucursales', 'SUCURSALES'),
   storages: destination('/managements/storages', 'Almacenes', 'ALMACENES'),
-  transportCompanies: destination('/managements/trasport_company', 'Compañías de transporte', 'COMP. TRASPORTE'),
+  transportCompanies: destination('/managements/trasport_company', 'Gestión de transportes', 'COMP. TRASPORTE'),
   managementReport: destination('/reports/management', 'Reporte gerencial', 'REPORTE GERENCIA', 'reports'),
   accountingReport: destination('/reports/accounting', 'Reporte de contabilidad', 'REPORTE CONTABILIDAD', 'reports'),
 } as const satisfies Record<string, NavigationDestination>;

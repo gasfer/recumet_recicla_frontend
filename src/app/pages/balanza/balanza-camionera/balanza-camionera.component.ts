@@ -4,6 +4,10 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { TruckScaleReaderService } from '../services/truck-scale-reader.service';
+import { environment } from 'src/environments/environment';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // INTERFACES
@@ -119,13 +123,13 @@ const MOCK_PESAJES: PesajeCamionera[] = [
 @Component({
   selector: 'app-balanza-camionera',
   templateUrl: './balanza-camionera.component.html',
-  styleUrls: ['./balanza-camionera.component.scss'],
 })
 export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
 
   private fb             = inject(FormBuilder);
   private msgService     = inject(MessageService);
   private confirmService = inject(ConfirmationService);
+  private truckScaleReader = inject(TruckScaleReaderService);
 
   // ── Permisos (mock — conectar con tu AuthService / ValidatorsService) ─────
   readonly isAdmin        = signal<boolean>(true);    // cambiar con tu servicio
@@ -143,8 +147,12 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
   // ── Peso en tiempo real desde la balanza ──────────────────────────────────
   pesoActual       = signal<number | null>(null);
   conectandoBalanza = signal<boolean>(false);
-  private pesoInterval: any;
-  readonly BALANZA_URL = 'http://192.168.0.240:8000';
+  mensajeBalanza   = signal('Listo para leer desde el servidor');
+  estadoBalanza    = signal<'idle' | 'success' | 'error'>('idle');
+  private pesoInterval: ReturnType<typeof setTimeout> | null = null;
+  private ventanaPeso: Window | null = null;
+  private canalPantallaPeso: BroadcastChannel | null = null;
+  private readonly canalPantallaPesoNombre = 'recumet-balanza-peso';
 
   // ── Filtros ───────────────────────────────────────────────────────────────
   filtroTipo       = signal<'dia' | 'mes' | 'anio'>('dia');
@@ -230,6 +238,9 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.detenerLecturaPeso();
+    this.canalPantallaPeso?.postMessage({ type: 'close' });
+    this.canalPantallaPeso?.close();
+    this.ventanaPeso = null;
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -287,51 +298,104 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // PESO DESDE BALANZA (API REST)
+  // PESO DESDE BALANZA (API del backend con lectura TCP)
   // ─────────────────────────────────────────────────────────────────────────
 
   async leerPesoBalanza(): Promise<void> {
+    if (this.conectandoBalanza()) return;
     this.conectandoBalanza.set(true);
     try {
-      const resp = await fetch(`${this.BALANZA_URL}/peso`, { signal: AbortSignal.timeout(3000) });
-      if (!resp.ok) throw new Error('Sin respuesta');
-      const data = await resp.json();
-      const peso = parseFloat(data.peso ?? data.weight ?? data.value ?? 0);
+      const data = await firstValueFrom(this.truckScaleReader.readWeight());
+      const peso = Number(data.peso);
+      if (!Number.isFinite(peso) || peso < 0) throw new Error('El servidor devolvió un peso no válido.');
       this.pesoActual.set(peso);
+      this.estadoBalanza.set('success');
+      this.mensajeBalanza.set(`Peso capturado: ${peso.toLocaleString('es-BO')} kg`);
+      this.publicarPesoEnPantalla();
       // Setear en el campo activo según modo
       if (this.modoDialog() === 'PRIMER_PESO') {
         this.formPrimer.patchValue({ pesoCapturado: peso, tara: peso });
       } else if (this.modoDialog() === 'SEGUNDO_PESO') {
         this.formSegundo.patchValue({ bruto: peso });
       }
-    } catch {
-      // Simulación offline para demo
-      const pesoSim = Math.floor(Math.random() * 5000) + 25000;
-      this.pesoActual.set(pesoSim);
-      if (this.modoDialog() === 'PRIMER_PESO') {
-        this.formPrimer.patchValue({ pesoCapturado: pesoSim, tara: pesoSim });
-      } else {
-        this.formSegundo.patchValue({ bruto: pesoSim });
-      }
-      this.msgService.add({ severity: 'warn', summary: 'Balanza offline',
-        detail: 'Usando peso simulado. Conectar balanza en 192.168.0.240:8000' });
+    } catch (error) {
+      const backendMessage = error instanceof HttpErrorResponse
+        ? error.error?.errors?.[0]?.msg
+        : undefined;
+      const localAgentUnavailable = environment.truckScaleReaderMode === 'local-agent'
+        ? 'Inicie el agente local RECUMET y permita el acceso a la red local en el navegador.'
+        : 'Verifique que el backend local esté activo y conectado con la balanza.';
+      const detail = backendMessage || (
+        error instanceof HttpErrorResponse && error.status === 0
+          ? localAgentUnavailable
+          : error instanceof Error
+            ? error.message
+            : 'Verifique la conexión y la configuración de la balanza.'
+      );
+      this.estadoBalanza.set('error');
+      this.mensajeBalanza.set(detail);
+      this.msgService.add({ severity: 'error', summary: 'No se pudo leer la balanza', detail });
     } finally {
       this.conectandoBalanza.set(false);
+      this.programarSiguienteLectura();
     }
   }
 
   iniciarLecturaAutomatica(): void {
     this.detenerLecturaPeso();
-    this.pesoInterval = setInterval(() => this.leerPesoBalanza(), 3000);
+    void this.leerPesoBalanza();
   }
 
   detenerLecturaPeso(): void {
-    if (this.pesoInterval) { clearInterval(this.pesoInterval); this.pesoInterval = null; }
+    if (this.pesoInterval !== null) {
+      clearTimeout(this.pesoInterval);
+      this.pesoInterval = null;
+    }
   }
 
   abrirPantallaCompleta(): void {
-    const url = `/balanzas/pantalla-peso?ip=${this.BALANZA_URL}`;
-    window.open(url, '_blank', 'fullscreen=yes,width=1920,height=1080');
+    this.canalPantallaPeso ??= new BroadcastChannel(this.canalPantallaPesoNombre);
+    this.canalPantallaPeso.onmessage = ({ data }) => {
+      if (data?.type === 'ready') this.publicarPesoEnPantalla();
+      if (data?.type === 'closed') {
+        this.ventanaPeso = null;
+        this.programarSiguienteLectura();
+      }
+    };
+
+    const displayWindow = window.open(
+      `${window.location.origin}/scale-display`,
+      'recumet-scale-weight-display',
+      'popup=yes,width=1280,height=800,resizable=yes,scrollbars=no',
+    );
+
+    if (!displayWindow) {
+      this.msgService.add({ severity: 'warn', summary: 'Ventana bloqueada',
+        detail: 'Permita las ventanas emergentes de RECUMET para mostrar el pesaje.' });
+      return;
+    }
+
+    this.ventanaPeso = displayWindow;
+    this.publicarPesoEnPantalla();
+    this.iniciarLecturaAutomatica();
+  }
+
+  private publicarPesoEnPantalla(): void {
+    this.canalPantallaPeso?.postMessage({ type: 'weight', peso: this.pesoActual() ?? 0 });
+  }
+
+  private programarSiguienteLectura(): void {
+    this.detenerLecturaPeso();
+    const peso = this.pesoActual();
+    const hayVistaActiva = this.dialogVisible() || this.dialogSegundo()
+      || (this.ventanaPeso !== null && !this.ventanaPeso.closed);
+
+    if (peso === null || peso <= 0 || !hayVistaActiva) return;
+
+    this.pesoInterval = setTimeout(() => {
+      this.pesoInterval = null;
+      void this.leerPesoBalanza();
+    }, 2000);
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -451,6 +515,8 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
       horaPrimerPeso  : this.horaActual(),
     });
     this.pesoActual.set(null);
+    this.estadoBalanza.set('idle');
+    this.mensajeBalanza.set('Listo para leer desde el servidor');
     this.dialogVisible.set(true);
   }
 
@@ -458,6 +524,8 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
     this.modoDialog.set('SEGUNDO_PESO');
     this.buildFormSegundo();
     this.pesoActual.set(null);
+    this.estadoBalanza.set('idle');
+    this.mensajeBalanza.set('Listo para leer desde el servidor');
     this.dialogSegundo.set(true);
   }
 
@@ -499,9 +567,9 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
     this.dialogVisible.set(true);
   }
 
-  closeDialog():  void { this.dialogVisible.set(false);  this.detenerLecturaPeso(); }
-  onDialogHide(): void { this.dialogVisible.set(false);  this.detenerLecturaPeso(); }
-  closeSegundo(): void { this.dialogSegundo.set(false);  this.detenerLecturaPeso(); }
+  closeDialog():  void { this.dialogVisible.set(false);  this.programarSiguienteLectura(); }
+  onDialogHide(): void { this.dialogVisible.set(false);  this.programarSiguienteLectura(); }
+  closeSegundo(): void { this.dialogSegundo.set(false);  this.programarSiguienteLectura(); }
   closeVer():     void { this.dialogVer.set(false); }
 
   // ─────────────────────────────────────────────────────────────────────────

@@ -1,10 +1,14 @@
 <p-dialog [header]="'Tipo de Cambio Dólar a Bolivianos'" [(visible)]="componentsService.setShowModalBsSus" [modal]="true" [draggable]="false"
-    [resizable]="false" (onShow)="focusOnInput()" [dismissableMask]="true" styleClass="app-dialog--sm">
+    [resizable]="false" (onShow)="focusOnInput()" [dismissableMask]="true"
+    [breakpoints]="{'640px': '94vw'}" [style]="{width: 'min(34rem, calc(100vw - 2rem))'}"
+    [contentStyle]="{maxHeight: 'calc(100dvh - 9rem)', overflow: 'auto'}"
+    styleClass="app-dialog--sm erp-operational-dialog exchange-rate-dialog">
     <form [formGroup]="updateBsForm">
         <div class="erp-form-grid mb-3">
             <div class="erp-field">
-                <label class="erp-label">Cambio actual (Bs. / $)</label>
+                <label class="erp-label" for="exchange-rate-current">Cambio actual (Bs. / $)</label>
                 <p-inputNumber
+                    inputId="exchange-rate-current"
                     formControlName="actual_cambio"
                     [size]="5"
                     locale="en-US"
@@ -20,8 +24,8 @@
                 </p-inputNumber>
             </div>
             <div class="erp-field">
-                <label class="erp-label required">Nuevo Tipo de Cambio ($)</label>
-                <p-inputNumber #txtInputCambio locale="en-US" mode="decimal" inputId="locale-us"
+                <label class="erp-label required" for="exchange-rate-new">Nuevo tipo de cambio ($)</label>
+                <p-inputNumber #txtInputCambio locale="en-US" mode="decimal" inputId="exchange-rate-new"
                     formControlName="cambio"
                     [minFractionDigits]="decimalLength()"
                     [maxFractionDigits]="decimalLength()"
@@ -35,15 +39,15 @@
                 </p-inputNumber>
             </div>
         </div>
-        <div class="erp-toggle-pill justify-between bg-slate-50 border border-slate-200 p-3 mb-2">
-            <span class="text-xs font-semibold text-slate-600"><i class="fa-solid fa-arrow-right-arrow-left mr-1"></i>Conversión Vista Previa:</span>
-            <span class="font-extrabold text-base text-emerald-600">{{ previewCambio() | number: decimal() }} Bs.</span>
+        <div class="erp-toggle-pill exchange-rate-preview">
+            <span class="exchange-rate-preview__label"><i class="fa-solid fa-arrow-right-arrow-left" aria-hidden="true"></i>Conversión vista previa</span>
+            <span class="exchange-rate-preview__value">{{ previewCambio() | number: decimal() }} Bs.</span>
         </div>
     </form>
     <ng-template pTemplate="footer">
-        <p-button (click)="updateBsSus()" styleClass="p-button-sm p-button-rounded" label="Guardar"
+        <p-button type="button" (click)="updateBsSus()" styleClass="p-button-sm p-button-rounded" label="Guardar"
             icon="fa-solid fa-floppy-disk"></p-button>
-        <p-button (click)="componentsService.setShowModalBsSus = false" label="Cancelar"
+        <p-button type="button" (click)="componentsService.setShowModalBsSus = false" label="Cancelar"
             styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
     </ng-template>
 </p-dialog>

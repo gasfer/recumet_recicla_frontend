@@ -16,13 +16,7 @@ import { ProductAccessContext } from 'src/app/core/constants/product-category-ac
 @Component({
   selector: 'app-output',
   templateUrl: './output.component.html',
-  styles: [`
-  .card {
-    border-radius: 20px;
-    box-sizing: border-box;
-  }
-`
-  ]
+  styleUrls: ['./output.component.scss']
 })
 export class OutputComponent implements OnInit {
   readonly productContext = ProductAccessContext.Sales;

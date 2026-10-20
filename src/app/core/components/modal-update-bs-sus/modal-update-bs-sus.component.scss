@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.exchange-rate-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-secondary);
+}
+
+.exchange-rate-preview__label,
+.exchange-rate-preview__value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.exchange-rate-preview__label {
+  color: var(--color-text-secondary, var(--color-text-muted));
+  font-weight: var(--font-weight-medium);
+}
+
+.exchange-rate-preview__value {
+  color: var(--color-primary-hover);
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+:host ::ng-deep .exchange-rate-dialog .p-dialog-header,
+:host ::ng-deep .exchange-rate-dialog .p-dialog-content,
+:host ::ng-deep .exchange-rate-dialog .p-dialog-footer {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+:host ::ng-deep .exchange-rate-dialog .p-dialog-content {
+  overflow: auto;
+}
+
+@media (max-width: 639px) {
+  .exchange-rate-preview {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

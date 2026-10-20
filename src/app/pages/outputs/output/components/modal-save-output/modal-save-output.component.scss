@@ -1,0 +1,120 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+:host ::ng-deep .sales-save-dialog .p-dialog-content,
+:host ::ng-deep .sales-save-dialog .p-dialog-footer,
+:host ::ng-deep .sales-save-dialog .p-dialog-header {
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+:host ::ng-deep .sales-save-dialog .p-dialog-content {
+  overflow: auto;
+}
+
+:host ::ng-deep .sales-save-dialog .erp-section {
+  min-width: 0;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.sales-transport-control-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.sales-transport-control-row > p-dropdown,
+.sales-transport-control-row > p-button {
+  min-width: 0;
+}
+
+.sales-transport-control-row > p-dropdown {
+  flex: 1 1 auto;
+}
+
+.sales-transport-hint {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+:host ::ng-deep .sales-quick-transport-dialog .p-dialog-header,
+:host ::ng-deep .sales-quick-transport-dialog .p-dialog-content,
+:host ::ng-deep .sales-quick-transport-dialog .p-dialog-footer {
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+:host ::ng-deep .sales-quick-transport-dialog .p-dialog-content {
+  overflow: auto;
+  max-height: calc(100dvh - 9rem);
+}
+
+:host ::ng-deep .sales-save-dialog .erp-toggle-pill {
+  min-width: 0;
+  min-height: var(--field-height);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-secondary);
+  color: var(--color-text);
+}
+
+:host ::ng-deep .sales-save-dialog .sales-total-pill {
+  border-color: var(--color-primary);
+  background: var(--color-success-light);
+}
+
+:host ::ng-deep .sales-save-dialog .erp-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text);
+}
+
+:host ::ng-deep .sales-save-dialog textarea.erp-input {
+  min-height: 5rem;
+  height: auto;
+}
+
+:host ::ng-deep .sales-save-dialog .erp-form-grid.cols-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+:host ::ng-deep .sales-save-dialog .erp-form-grid.cols-3 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 767px) {
+  :host ::ng-deep .sales-save-dialog .erp-section {
+    padding: var(--spacing-sm);
+  }
+
+  :host ::ng-deep .sales-save-dialog .erp-form-grid,
+  :host ::ng-deep .sales-save-dialog .erp-form-grid.cols-3,
+  :host ::ng-deep .sales-save-dialog .erp-form-grid.cols-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  :host ::ng-deep .sales-save-dialog .erp-form-grid.cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  :host ::ng-deep .sales-save-dialog .erp-form-grid.cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
