@@ -15,9 +15,9 @@
         <button aria-label="Mostrar u ocultar filtros" pButton icon="fa-solid fa-filter" [label]="mostrarFiltros() ? 'Ocultar filtros' : 'Mostrar filtros'"
                 class="p-button-sm p-button-outlined" (click)="toggleFiltros()"></button>
         <button pButton icon="fa-solid fa-plus" label="1° Peso"
-                class="p-button-sm" (click)="openNuevoPrimer()"></button>
+                class="p-button-sm" [disabled]="loading()" (click)="openNuevoPrimer()"></button>
         <button pButton icon="fa-solid fa-circle-plus" label="2° Peso"
-                class="p-button-sm p-button-warning" (click)="openSegundoPeso()"></button>
+                class="p-button-sm p-button-warning" [disabled]="loading()" (click)="openSegundoPeso()"></button>
       </div>
     </div>
   </div>
@@ -173,8 +173,8 @@
               <th class="app-u-min-width-100px-e79a03c">Fecha</th>
               <th class="app-u-min-width-80px-c3c7cd9">Hora 1°</th>
               <th class="app-u-min-width-80px-c3c7cd9">Hora 2°</th>
-              <th class="app-u-min-width-100px-e79a03c text-right">Tara (kg)</th>
-              <th class="app-u-min-width-100px-e79a03c text-right">Bruto (kg)</th>
+              <th class="app-u-min-width-100px-e79a03c text-right">1° Peso (kg)</th>
+              <th class="app-u-min-width-100px-e79a03c text-right">2° Peso (kg)</th>
               <th class="app-u-min-width-110px-365391b text-right">
                 <span class="text-erp-success font-bold">Neto (kg)</span>
               </th>
@@ -366,16 +366,14 @@
         <input pInputText formControlName="horaPrimerPeso" class="w-full" placeholder="HH:mm:ss" />
       </div>
 
-      <!-- ══ BLOQUE: TARA ══ -->
+      <!-- ══ BLOQUE: PRIMER PESO ══ -->
       <div class="w-[100%] px-2 min-w-0">
         <div class="bc-weight-field py-2 flex justify-between items-center mb-0">
           <div>
             <label class="font-bold mb-0 block">
-              <i class="fa-solid fa-weight-scale mr-1"></i>TARA (kg) — Peso camión + material *
+              <i class="fa-solid fa-weight-scale mr-1"></i>1° PESO (kg) *
             </label>
-            <small class="text-erp-text-muted">
-              Ingrese manualmente o use el botón "Leer Peso" para capturar desde la balanza
-            </small>
+            <small class="text-erp-text-muted">Primer peso del vehículo; puede llegar cargado o vacío.</small>
           </div>
           <p-inputNumber formControlName="tara" [min]="0" suffix=" kg"
                          [useGrouping]="true" styleClass="bc-peso-input"
@@ -574,6 +572,8 @@
             [attr.aria-label]="modoDialog() === 'EDITAR' ? 'Actualizar' : 'Registrar primer peso'"
             [label]="modoDialog() === 'EDITAR' ? 'Actualizar' : 'Registrar 1° Peso'"
             icon="fa-solid fa-check"
+            [loading]="loading()"
+            [disabled]="loading()"
             (click)="guardarPrimerPeso()"></button>
   </ng-template>
 </p-dialog>
@@ -664,7 +664,7 @@
                 <span>{{ formSegundo.get('producto')?.value }}</span>
               </div>
               <div class="md:w-[50%] px-2 min-w-0 w-full">
-                <small class="text-erp-text-muted block">TARA REGISTRADA</small>
+                <small class="text-erp-text-muted block">1° PESO REGISTRADO</small>
                 <span class="font-bold">{{ selectedPesaje()?.tara | number:'1.0-0' }} kg</span>
               </div>
             </div>
@@ -677,14 +677,14 @@
           <input pInputText formControlName="horaSegundoPeso" class="w-full" placeholder="HH:mm:ss" />
         </div>
 
-        <!-- Bruto -->
+        <!-- Segundo peso -->
         <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[58.333333333333336%] w-full">
           <div class="alert alert-warning py-2 flex justify-between items-center mb-0">
             <div>
               <label class="font-bold mb-0 block small">
-                BRUTO (kg) — Solo camión *
+                2° PESO (kg) *
               </label>
-              <small class="text-erp-text-muted">Peso del camión vacío</small>
+              <small class="text-erp-text-muted">Segundo peso del vehículo al regresar.</small>
             </div>
             <p-inputNumber formControlName="bruto" [min]="0" suffix=" kg"
                            [useGrouping]="true" styleClass="bc-peso-input"
@@ -700,7 +700,7 @@
               <i class="fa-solid fa-check-circle mr-1"></i>Peso Neto Calculado
             </span>
             <span class="font-bold text-xl">
-              {{ (selectedPesaje()!.tara - formSegundo.get('bruto')!.value) | number:'1.0-0' }} kg
+              {{ (Math.abs(selectedPesaje()!.tara - formSegundo.get('bruto')!.value)) | number:'1.0-0' }} kg
             </span>
           </div>
         </div>
@@ -713,7 +713,8 @@
     <button pButton label="Cancelar" icon="fa-solid fa-xmark"
             class="p-button-text" (click)="closeSegundo()"></button>
     <button pButton label="Registrar 2° Peso" icon="fa-solid fa-check"
-            [disabled]="!selectedPesaje()"
+            [disabled]="!selectedPesaje() || loading()"
+            [loading]="loading()"
             (click)="guardarSegundoPeso()"></button>
   </ng-template>
 </p-dialog>
@@ -762,13 +763,13 @@
     <div class="flex flex-wrap erp-layout-row gap-y-2 text-center mb-2">
       <div class="md:w-[33.33333333333333%] px-2 min-w-0 w-full">
         <div class="card border-secondary py-2">
-          <small class="text-erp-text-muted block">TARA (kg)</small>
+          <small class="text-erp-text-muted block">1° PESO (kg)</small>
           <span class="font-bold text-lg">{{ p.tara | number:'1.0-0' }}</span>
         </div>
       </div>
       <div class="md:w-[33.33333333333333%] px-2 min-w-0 w-full">
         <div class="card border-warning py-2">
-          <small class="text-erp-text-muted block">BRUTO (kg)</small>
+          <small class="text-erp-text-muted block">2° PESO (kg)</small>
           <span class="font-bold text-lg text-erp-warning">{{ p.bruto | number:'1.0-0' }}</span>
         </div>
       </div>

@@ -13,6 +13,18 @@ export class DecimalFormatService {
   get diagnosticDigitsInfo() { return '1.4-20'; }
   get inputOptions() { const places = this.decimals(); return { locale: this.locale, minFractionDigits: places, maxFractionDigits: places }; }
   get minimumQuantity() { return 1 / (10 ** this.decimals()); }
+  ceilToConfiguredDecimals(value: number | string | null | undefined): number {
+    const places = this.decimals();
+    const { units, scale } = this.scaled(value);
+    if (units < 0n) return Number(value);
+    const divisor = 10n ** BigInt(Math.max(0, scale - places));
+    const roundedUnits = scale <= places
+      ? units * (10n ** BigInt(places - scale))
+      : units / divisor + (units % divisor > 0n ? 1n : 0n);
+    const digits = roundedUnits.toString().padStart(places + 1, '0');
+    const formatted = places === 0 ? digits : `${digits.slice(0, -places)}.${digits.slice(-places)}`;
+    return Number(formatted);
+  }
   private scaled(value: number | string | null | undefined): { units: bigint; scale: number } {
     const raw = String(value ?? 0).trim().replace(',', '.');
     const match = /^(-?)(\d+)(?:\.(\d+))?$/.exec(raw);

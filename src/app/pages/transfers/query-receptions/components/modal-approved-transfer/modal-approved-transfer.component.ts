@@ -217,6 +217,7 @@ getTotalDiffClass(): string {
 }
 /******** */
   postApprovedTransfer() {
+    this.roundReceivedQuantitiesUp();
     this.approvedForm.markAllAsTouched();
     this.approvedForm.patchValue({id_transfer:this.id_transfer})
     this.checkObservationsRequirement();
@@ -230,7 +231,7 @@ getTotalDiffClass(): string {
     if (invalidDetail) {
       Swal.fire({
         title: 'Cantidad recibida inválida',
-        text: `Ingrese un número mayor o igual a cero, con hasta ${this.decimalFormat.decimals()} decimales según la configuración de la empresa.`,
+        text: 'Ingrese un número mayor o igual a cero, con hasta 4 decimales.',
         icon: 'warning',
         customClass: { container: 'swal-alert' },
       });
@@ -271,6 +272,17 @@ getTotalDiffClass(): string {
       },
     })
 
+  }
+
+  private roundReceivedQuantitiesUp(): void {
+    this.detailsFormArray.controls.forEach((group) => {
+      const control = group.get('quantity_received');
+      const value = control?.value;
+      if (value === null || value === undefined || value === '') return;
+      const quantity = Number(value);
+      if (!Number.isFinite(quantity) || quantity < 0) return;
+      control?.setValue(this.decimalFormat.ceilToConfiguredDecimals(quantity), { emitEvent: false });
+    });
   }
 
   resetModal() {

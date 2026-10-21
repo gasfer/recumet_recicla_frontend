@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TruckScaleReaderService } from '../services/truck-scale-reader.service';
+import { TruckScaleReaderService, TruckWeighingRecord } from '../services/truck-scale-reader.service';
 import { environment } from 'src/environments/environment';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -82,39 +82,7 @@ const MOCK_PRODUCTOS: Producto[] = [
   { id: 5, nombre: 'Papel',     unidad: 'kg' },
 ];
 
-const hoy = new Date();
-const MOCK_PESAJES: PesajeCamionera[] = [
-  {
-    id: 1, nroBoleta: 'BALC-CBBA-00001',
-    fechaRegistro: hoy, horaPrimerPeso: '08:32:15', horaSegundoPeso: '10:15:42',
-    tara: 28500, bruto: 8200, neto: 20300,
-    proveedorOrigen : MOCK_PROVEEDORES[0],
-    proveedorDestino: MOCK_PROVEEDORES[3],
-    transportista   : MOCK_TRANSPORTISTAS[0],
-    producto        : MOCK_PRODUCTOS[0],
-    esServicio: false, estado: 'COMPLETO',
-  },
-  {
-    id: 2, nroBoleta: 'BALC-CBBA-00002',
-    fechaRegistro: hoy, horaPrimerPeso: '09:10:00', horaSegundoPeso: '11:45:30',
-    tara: 32000, bruto: 8500, neto: 23500,
-    proveedorOrigen : MOCK_PROVEEDORES[1],
-    proveedorDestino: MOCK_PROVEEDORES[4],
-    transportista   : MOCK_TRANSPORTISTAS[1],
-    producto        : MOCK_PRODUCTOS[1],
-    esServicio: true, precioServicio: 150, estado: 'COMPLETO',
-  },
-  {
-    id: 3, nroBoleta: 'BALC-CBBA-00003',
-    fechaRegistro: hoy, horaPrimerPeso: '11:20:05',
-    tara: 25000, bruto: 0, neto: 0,
-    proveedorOrigen : MOCK_PROVEEDORES[2],
-    proveedorDestino: MOCK_PROVEEDORES[3],
-    transportista   : MOCK_TRANSPORTISTAS[2],
-    producto        : MOCK_PRODUCTOS[2],
-    esServicio: false, estado: 'PRIMER_PESO',
-  },
-];
+const MOCK_PESAJES: PesajeCamionera[] = [];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMPONENT
@@ -125,6 +93,8 @@ const MOCK_PESAJES: PesajeCamionera[] = [
   templateUrl: './balanza-camionera.component.html',
 })
 export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
+
+  readonly Math = Math;
 
   private fb             = inject(FormBuilder);
   private msgService     = inject(MessageService);
@@ -226,7 +196,10 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
 
   // ── Correlativo boleta ────────────────────────────────────────────────────
   private get siguienteBoleta(): string {
-    const num = this.pesajes().length + 1;
+    const num = this.pesajes().reduce((highest, item) => {
+      const sequence = Number(item.nroBoleta.match(/(\d+)$/)?.[1] || 0);
+      return Math.max(highest, sequence);
+    }, 0) + 1;
     return `BALC-CBBA-${String(num).padStart(5, '0')}`;
   }
 
@@ -234,6 +207,44 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.buildFormPrimer();
     this.buildFormSegundo();
+    void this.cargarPesajes();
+  }
+
+  private async cargarPesajes(): Promise<void> {
+    this.loading.set(true);
+    try {
+      const response = await firstValueFrom(this.truckScaleReader.listWeighings());
+      this.pesajes.set(response.weighings.map(record => this.mapearPesaje(record)));
+    } catch (error) {
+      const detail = error instanceof HttpErrorResponse
+        ? error.error?.errors?.[0]?.msg || 'No se pudieron cargar los pesajes guardados.'
+        : 'No se pudieron cargar los pesajes guardados.';
+      this.msgService.add({ severity: 'error', summary: 'Error al consultar', detail });
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  private mapearPesaje(record: TruckWeighingRecord): PesajeCamionera {
+    const details = record.details || {};
+    return {
+      id: record.id,
+      nroBoleta: record.ticket,
+      fechaRegistro: new Date(record.registered_at),
+      horaPrimerPeso: record.first_time,
+      horaSegundoPeso: record.second_time || undefined,
+      tara: Number(record.first_weight),
+      bruto: record.second_weight === null ? 0 : Number(record.second_weight),
+      neto: record.net === null ? 0 : Number(record.net),
+      proveedorOrigen: details['proveedorOrigen'] || { id: 0, ciNit: '', nombre: '—' },
+      proveedorDestino: details['proveedorDestino'] || { id: 0, ciNit: '', nombre: '—' },
+      transportista: details['transportista'] || { id: 0, ci: '', nombre: '—', placa: '—', marca: '', color: '', tipoCamion: '' },
+      producto: details['producto'] || { id: 0, nombre: '—', unidad: 'kg' },
+      esServicio: Boolean(details['esServicio']),
+      precioServicio: details['precioServicio'],
+      estado: record.state,
+      observacion: details['observacion'],
+    };
   }
 
   ngOnDestroy(): void {
@@ -508,6 +519,7 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
 
   openNuevoPrimer(): void {
     this.modoDialog.set('PRIMER_PESO');
+    this.selectedPesaje.set(null);
     this.buildFormPrimer();
     this.formPrimer.patchValue({
       nroBoleta       : this.siguienteBoleta,
@@ -522,6 +534,7 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
 
   openSegundoPeso(): void {
     this.modoDialog.set('SEGUNDO_PESO');
+    this.selectedPesaje.set(null);
     this.buildFormSegundo();
     this.pesoActual.set(null);
     this.estadoBalanza.set('idle');
@@ -576,63 +589,71 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
   // GUARDAR
   // ─────────────────────────────────────────────────────────────────────────
 
-  guardarPrimerPeso(): void {
+  async guardarPrimerPeso(): Promise<void> {
     if (this.formPrimer.invalid) { this.formPrimer.markAllAsTouched(); return; }
     const v = this.formPrimer.getRawValue();
-
-    const nuevo: PesajeCamionera = {
-      id             : Date.now(),
-      nroBoleta      : v.nroBoleta,
-      fechaRegistro  : v.fechaRegistro,
-      horaPrimerPeso : v.horaPrimerPeso,
-      tara           : v.tara,
-      bruto          : 0,
-      neto           : 0,
-      proveedorOrigen : { id: 0, ciNit: v.origenCiNit,   nombre: v.origenNombre  },
-      proveedorDestino: { id: 0, ciNit: v.destinoCiNit,  nombre: v.destinoNombre },
-      transportista   : {
-        id: 0, ci: v.transportistaCi, nombre: v.transportistaNombre,
-        placa: v.placa, marca: v.marca, color: v.color, tipoCamion: v.tipoCamion,
+    const payload = {
+      ticket: v.nroBoleta,
+      registered_at: new Date(v.fechaRegistro).toISOString(),
+      first_weight: Number(v.tara),
+      first_time: v.horaPrimerPeso,
+      details: {
+        proveedorOrigen: { id: 0, ciNit: v.origenCiNit, nombre: v.origenNombre },
+        proveedorDestino: { id: 0, ciNit: v.destinoCiNit, nombre: v.destinoNombre },
+        transportista: { id: 0, ci: v.transportistaCi, nombre: v.transportistaNombre, placa: v.placa, marca: v.marca, color: v.color, tipoCamion: v.tipoCamion },
+        producto: { id: v.productoId, nombre: v.productoNombre, unidad: v.productoUnidad },
+        esServicio: v.esServicio,
+        precioServicio: v.esServicio ? v.precioServicio : undefined,
+        observacion: v.observacion,
       },
-      producto        : { id: v.productoId, nombre: v.productoNombre, unidad: v.productoUnidad },
-      esServicio      : v.esServicio,
-      precioServicio  : v.esServicio ? v.precioServicio : undefined,
-      estado          : 'PRIMER_PESO',
-      observacion     : v.observacion,
     };
-
-    if (this.modoDialog() === 'EDITAR') {
-      this.pesajes.update(list =>
-        list.map(p => p.id === this.selectedPesaje()?.id ? { ...p, ...nuevo, id: p.id } : p)
-      );
-      this.msgService.add({ severity: 'success', summary: 'Actualizado', detail: 'Pesaje actualizado' });
-    } else {
-      this.pesajes.update(list => [...list, nuevo]);
-      this.msgService.add({ severity: 'success', summary: 'Registrado',
-        detail: `Primer peso registrado: ${nuevo.nroBoleta}` });
+    this.loading.set(true);
+    try {
+      const selected = this.selectedPesaje();
+      const response = await firstValueFrom(this.modoDialog() === 'EDITAR' && selected
+        ? this.truckScaleReader.updateFirstWeight(selected.id, payload)
+        : this.truckScaleReader.createFirstWeight(payload));
+      const nuevo = this.mapearPesaje(response.weighing);
+      this.pesajes.update(list => selected
+        ? list.map(item => item.id === nuevo.id ? nuevo : item)
+        : [nuevo, ...list]);
+      this.msgService.add({ severity: 'success', summary: selected ? 'Actualizado' : 'Registrado',
+        detail: selected ? 'Pesaje actualizado correctamente.' : `Primer peso registrado: ${nuevo.nroBoleta}` });
+      this.closeDialog();
+    } catch (error) {
+      const detail = error instanceof HttpErrorResponse
+        ? error.error?.errors?.[0]?.msg || 'No se pudo guardar el primer peso.'
+        : 'No se pudo guardar el primer peso.';
+      this.msgService.add({ severity: 'error', summary: 'Error al guardar', detail });
+    } finally {
+      this.loading.set(false);
     }
-    this.closeDialog();
   }
 
-  guardarSegundoPeso(): void {
+  async guardarSegundoPeso(): Promise<void> {
     if (this.formSegundo.invalid) { this.formSegundo.markAllAsTouched(); return; }
     const v = this.formSegundo.getRawValue();
     const original = this.selectedPesaje();
     if (!original) return;
 
-    const bruto = v.bruto;
-    const neto  = Math.max(0, original.tara - bruto);
-
-    this.pesajes.update(list =>
-      list.map(p =>
-        p.id === original.id
-          ? { ...p, bruto, neto, horaSegundoPeso: v.horaSegundoPeso, estado: 'COMPLETO' }
-          : p
-      )
-    );
-    this.msgService.add({ severity: 'success', summary: 'Completado',
-      detail: `Segundo peso registrado. Neto: ${neto.toLocaleString()} kg` });
-    this.closeSegundo();
+    this.loading.set(true);
+    try {
+      const response = await firstValueFrom(this.truckScaleReader.completeSecondWeight(original.id, {
+        second_weight: Number(v.bruto), second_time: v.horaSegundoPeso,
+      }));
+      const completed = this.mapearPesaje(response.weighing);
+      this.pesajes.update(list => list.map(p => p.id === completed.id ? completed : p));
+      this.msgService.add({ severity: 'success', summary: 'Completado',
+        detail: `Segundo peso registrado. Neto: ${completed.neto.toLocaleString('es-BO')} kg` });
+      this.closeSegundo();
+    } catch (error) {
+      const detail = error instanceof HttpErrorResponse
+        ? error.error?.errors?.[0]?.msg || 'No se pudo guardar el segundo peso.'
+        : 'No se pudo guardar el segundo peso.';
+      this.msgService.add({ severity: 'error', summary: 'Error al guardar', detail });
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -651,11 +672,22 @@ export class BalanzaCamioneraComponent implements OnInit, OnDestroy {
       icon    : 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept  : () => {
-        this.pesajes.update(list => list.filter(x => x.id !== p.id));
-        this.msgService.add({ severity: 'success', summary: 'Eliminado',
-          detail: `Registro ${p.nroBoleta} eliminado` });
+        void this.eliminarPesaje(p);
       },
     });
+  }
+
+  private async eliminarPesaje(p: PesajeCamionera): Promise<void> {
+    try {
+      await firstValueFrom(this.truckScaleReader.deleteWeighing(p.id));
+      this.pesajes.update(list => list.filter(item => item.id !== p.id));
+      this.msgService.add({ severity: 'success', summary: 'Eliminado', detail: `Registro ${p.nroBoleta} eliminado` });
+    } catch (error) {
+      const detail = error instanceof HttpErrorResponse
+        ? error.error?.errors?.[0]?.msg || 'No se pudo eliminar el pesaje.'
+        : 'No se pudo eliminar el pesaje.';
+      this.msgService.add({ severity: 'error', summary: 'Error al eliminar', detail });
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────────
