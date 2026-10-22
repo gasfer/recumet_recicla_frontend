@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { Provider } from '../interfaces/provider.interface';
 import { ProvidersService } from '../services/providers.service';
 import { ComponentsService } from 'src/app/core/services/components.service';
@@ -7,6 +7,8 @@ import { ProductsService } from '../../inventories/services/products.service';
 import { Product } from '../../inventories/interfaces/products.interface';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, catchError, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 
 import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
 
@@ -22,6 +24,8 @@ export class InputSmallComponent  {
   componentService = inject( ComponentsService );
   validatorsService = inject( ValidatorsService );
   fb                = inject( FormBuilder  );
+  private destroyRef = inject(DestroyRef);
+  private providerSearchRequests = new Subject<string>();
   readonly productContext = ProductAccessContext.Purchases;
   suggestedProviders    = signal<Provider[]>([]);
   suggestedProducts     = signal<Product[]>([]);
@@ -39,6 +43,23 @@ export class InputSmallComponent  {
   });
 
   ngOnInit(): void {
+    this.providerSearchRequests.pipe(
+      map(query => query.trim()),
+      distinctUntilChanged(),
+      tap(query => {
+        this.txtSearchProvider.set(query);
+        this.loadingSearchProvider.set(Boolean(query));
+        this.suggestedProviders.set([]);
+      }),
+      switchMap(query => query
+        ? this.providerService.getProvidersAutocomplete(query).pipe(catchError(() => of(null)))
+        : of(null)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(response => {
+      this.suggestedProviders.set(response?.providers || []);
+      this.loadingSearchProvider.set(false);
+    });
+
     this.formReport.patchValue({
       id_sucursal: this.validatorsService.id_sucursal(),
       id_storage: this.validatorsService.id_storage() || null
@@ -53,27 +74,11 @@ export class InputSmallComponent  {
   }
   
   suggestedProvider(txtSearchProvider: string){
-    if(txtSearchProvider.length==0) {
-      this.txtSearchProvider.set('');
-      this.suggestedProviders.set([]);
-      return;
-    }
-    this.loadingSearchProvider.set(true);
-    this.txtSearchProvider.set(txtSearchProvider);
-    this.suggestedProviders.set([]);
-    this.providerService.getProvidersAutocomplete(txtSearchProvider)
-        .subscribe({
-          next: (resp) => { 
-            this.suggestedProviders.set(resp.providers);
-            this.loadingSearchProvider.set(false);
-          },
-          error: (err) => {
-            this.loadingSearchProvider.set(false);
-          }
-        });    
+    this.providerSearchRequests.next(txtSearchProvider || '');
   }
 
   selectProvider(provider: Provider) {
+    this.providerSearchRequests.next('');
     this.suggestedProviders.set([]);
     this.txtSearchProvider.set('');
     this.componentService.clearInputSearch$.next(true);

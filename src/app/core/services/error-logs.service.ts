@@ -24,7 +24,7 @@ export class ErrorLogsService {
     if(e.status === 422) {
       this.notifications(
         e?.error?.errors[0]?.msg ? e?.error?.errors[0]?.msg : 'Los datos no son validos, Intenta nuevamente',
-        'warning','form');
+        'warning');
     } else if ( e.status === 401) {
       localStorage.removeItem('token');
       this.router.navigateByUrl('/auth');

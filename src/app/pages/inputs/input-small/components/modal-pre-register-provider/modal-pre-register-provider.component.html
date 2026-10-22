@@ -23,11 +23,12 @@
       </div>
     </div>
 
+    <p-message *ngIf="checkingDuplicate()" severity="info" styleClass="w-full mb-2" text="Verificando si el proveedor ya existe..."></p-message>
     <p-message *ngIf="duplicate()" severity="warn" styleClass="w-full mb-2" text="Ya existe un proveedor con este CI/NIT o celular."></p-message>
   </form>
   <ng-template pTemplate="footer">
     <p-button *ngIf="duplicate()" label="Seleccionar existente" icon="fa-solid fa-check" styleClass="p-button-outlined p-button-sm p-button-rounded" (click)="selectDuplicate()"></p-button>
-    <p-button label="Guardar y continuar" icon="fa-solid fa-floppy-disk" styleClass="p-button-sm p-button-rounded" [loading]="loading()" [disabled]="!!duplicate()" (click)="save()"></p-button>
+    <p-button label="Guardar y continuar" icon="fa-solid fa-floppy-disk" styleClass="p-button-sm p-button-rounded" [loading]="loading()" [disabled]="!!duplicate() || checkingDuplicate()" (click)="save()"></p-button>
     <p-button label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded" (click)="visible = false"></p-button>
   </ng-template>
 </p-dialog>

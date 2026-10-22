@@ -228,7 +228,7 @@
         <div class="erp-field">
           <label class="erp-label">Comprobante de Pago (Opcional)</label>
           <div class="flex items-center gap-2 mt-1 purchase-attachment">
-            <input type="file" #fileInput (change)="onVoucherFileChange($event)" accept="image/*,.pdf" class="hidden"/>
+            <input type="file" #fileInput (change)="onVoucherFileChange($event)" accept="image/png,image/jpeg,image/webp,.pdf" class="hidden"/>
             <button type="button" pButton (click)="fileInput.click()" label="Subir Archivo" icon="fa-solid fa-upload" class="p-button-sm p-button-outlined"></button>
             <span class="text-xs text-erp-text-muted" *ngIf="!voucherFile">Sin archivo adjunto</span>
             <div *ngIf="voucherFile" class="erp-badge erp-badge-success flex items-center gap-1">

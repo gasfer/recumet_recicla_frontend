@@ -65,6 +65,7 @@ export class ModalSaveInputComponent implements OnInit {
   blockedInputCredit = signal(false);
   loading = signal(false);
   voucherFile?: File;
+  private pendingVoucherUpload: { id_input: number; operation: 'create' | 'update' } | null = null;
   providerSelect = computed(() => this.inputsService.providerSelect());
   totalSummary = computed(() =>
     this.inputsService
@@ -116,6 +117,11 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   saveInput() {
+    if (this.pendingVoucherUpload) {
+      this.uploadPendingVoucher();
+      return;
+    }
+
     const hasZeroQuantity = this.inputsService.detailShopping().some(product => !product.quantity || Number(product.quantity) <= 0);
     if (hasZeroQuantity) {
       Swal.fire({
@@ -160,28 +166,18 @@ export class ModalSaveInputComponent implements OnInit {
       input_details: inputDetail,
     };
 
+    let voucherUploadStarted = false;
     this.inputsService.postNewInput(data).subscribe({
       next: (resp) => {
         if (this.voucherFile) {
-          this.inputsService.uploadVoucher(resp.id_input, this.voucherFile).subscribe({
-            next: () => {
-              this.afterSaveInput(resp.id_input);
-            },
-            error: () => {
-              Swal.fire({
-                title: 'Aviso',
-                text: 'La compra se registró pero no se pudo subir el comprobante de pago.',
-                icon: 'info',
-                customClass: { container: 'swal-alert' },
-              });
-              this.afterSaveInput(resp.id_input);
-            }
-          });
+          voucherUploadStarted = true;
+          this.pendingVoucherUpload = { id_input: resp.id_input, operation: 'create' };
+          this.uploadPendingVoucher();
         } else {
           this.afterSaveInput(resp.id_input);
         }
       },
-      complete: () => { this.loading.set(false); releaseWriteLoader(); },
+      complete: () => { if (!voucherUploadStarted) this.loading.set(false); releaseWriteLoader(); },
       error: (err) => { this.loading.set(false); releaseWriteLoader(); },
     });
   }
@@ -208,6 +204,11 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   editInput() {
+    if (this.pendingVoucherUpload) {
+      this.uploadPendingVoucher();
+      return;
+    }
+
     this.formInput.patchValue({
       id_provider: this.providerSelect()?.id,
       id_storage: this.id_storage,
@@ -260,30 +261,20 @@ export class ModalSaveInputComponent implements OnInit {
       input_details: inputDetail,
     };
 
+    let voucherUploadStarted = false;
     this.inputsService
       .putUpdateInput(this.inputsService.dataInputForEdit()!.id, data)
       .subscribe({
         next: (resp) => {
           if (this.voucherFile) {
-            this.inputsService.uploadVoucher(resp.id_input, this.voucherFile).subscribe({
-              next: () => {
-                this.afterEditInput(resp.id_input);
-              },
-              error: () => {
-                Swal.fire({
-                  title: 'Aviso',
-                  text: 'La compra se modificó pero no se pudo subir el comprobante de pago.',
-                  icon: 'info',
-                  customClass: { container: 'swal-alert' },
-                });
-                this.afterEditInput(resp.id_input);
-              }
-            });
+            voucherUploadStarted = true;
+            this.pendingVoucherUpload = { id_input: resp.id_input, operation: 'update' };
+            this.uploadPendingVoucher();
           } else {
             this.afterEditInput(resp.id_input);
           }
         },
-        complete: () => { this.loading.set(false); releaseWriteLoader(); },
+        complete: () => { if (!voucherUploadStarted) this.loading.set(false); releaseWriteLoader(); },
         error: (error) => {
           this.loading.set(false);
           releaseWriteLoader();
@@ -312,6 +303,40 @@ export class ModalSaveInputComponent implements OnInit {
     ) {
       this.inputsService.printPdfReport(id_input);
     }
+  }
+
+  private uploadPendingVoucher(): void {
+    const pending = this.pendingVoucherUpload;
+    if (!pending) return;
+    if (!this.voucherFile) {
+      void Swal.fire('Seleccione el comprobante', 'La compra ya se guardó. Seleccione el archivo para completar el adjunto.', 'info');
+      return;
+    }
+
+    this.loading.set(true);
+    const releaseWriteLoader = this.validatorsService.beginWriteLoading();
+    this.inputsService.uploadVoucher(pending.id_input, this.voucherFile).subscribe({
+      next: () => {
+        this.pendingVoucherUpload = null;
+        if (pending.operation === 'update') this.afterEditInput(pending.id_input);
+        else this.afterSaveInput(pending.id_input);
+      },
+      error: (error) => {
+        this.loading.set(false);
+        releaseWriteLoader();
+        const detail = error?.error?.errors?.[0]?.msg || error?.error?.msg;
+        void Swal.fire({
+          title: 'La compra se guardó; falta el comprobante',
+          text: `${detail ? `${detail}. ` : ''}Presione “Guardar y continuar” para reintentar el adjunto sin duplicar la compra.`,
+          icon: 'warning',
+          customClass: { container: 'swal-alert' },
+        });
+      },
+      complete: () => {
+        this.loading.set(false);
+        releaseWriteLoader();
+      },
+    });
   }
 
   canPrintAfterSave(): boolean {
@@ -444,6 +469,7 @@ export class ModalSaveInputComponent implements OnInit {
     }
   }
   resetModal() {
+    this.pendingVoucherUpload = null;
     this.policyRefreshEnabled = false;
     this.serverRequiresAuthorization = false;
     this.authorizersLoaded = false;
@@ -580,9 +606,22 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   onVoucherFileChange(event: any) {
-    if (event.target.files && event.target.files.length > 0) {
-      this.voucherFile = event.target.files[0];
+    const file: File | undefined = event.target.files?.[0];
+    if (!file) return;
+
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    if (!['png', 'jpg', 'jpeg', 'webp', 'pdf'].includes(extension || '')) {
+      void Swal.fire('Formato no permitido', 'Adjunte un archivo PNG, JPG, JPEG, WEBP o PDF.', 'warning');
+      event.target.value = '';
+      return;
     }
+    if (file.size > 8033987) {
+      void Swal.fire('Archivo muy grande', 'El comprobante no puede superar los 8 MB.', 'warning');
+      event.target.value = '';
+      return;
+    }
+
+    this.voucherFile = file;
   }
 
   removeVoucherFile() {

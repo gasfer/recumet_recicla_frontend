@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Subscription, debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs';
+import { Subscription, catchError, distinctUntilChanged, map, of, switchMap, timer } from 'rxjs';
 import { InputsService } from '../../../services/inputs.service';
 import { ProvidersService } from '../../../services/providers.service';
 import { Provider } from '../../../interfaces/provider.interface';
@@ -16,6 +16,7 @@ export class ModalPreRegisterProviderComponent implements OnInit, OnDestroy {
   private inputsService = inject(InputsService);
   private validatorsService = inject(ValidatorsService);
   loading = signal(false);
+  checkingDuplicate = signal(false);
   duplicate = signal<Provider | undefined>(undefined);
   private duplicateSubscription?: Subscription;
 
@@ -27,11 +28,29 @@ export class ModalPreRegisterProviderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.duplicateSubscription = this.form.valueChanges.pipe(
-      debounceTime(350),
+      map(value => ({
+        number_document: String(value.number_document || '').trim(),
+        cellphone: String(value.cellphone || '').trim(),
+      })),
       distinctUntilChanged((previous, current) => previous.number_document === current.number_document && previous.cellphone === current.cellphone),
-      filter((value) => Boolean(value.number_document || value.cellphone)),
-      switchMap((value) => this.providersService.checkDuplicate(value.number_document || undefined, value.cellphone || undefined)),
-    ).subscribe((response) => this.duplicate.set(response.provider));
+      switchMap((value) => {
+        if (!value.number_document && !value.cellphone) {
+          this.checkingDuplicate.set(false);
+          this.duplicate.set(undefined);
+          return of({ provider: undefined });
+        }
+
+        this.checkingDuplicate.set(true);
+        this.duplicate.set(undefined);
+        return timer(350).pipe(
+          switchMap(() => this.providersService.checkDuplicate(value.number_document || undefined, value.cellphone || undefined)),
+          catchError(() => of({ provider: undefined })),
+        );
+      }),
+    ).subscribe((response) => {
+      this.duplicate.set(response.provider);
+      this.checkingDuplicate.set(false);
+    });
   }
 
   ngOnDestroy() {
@@ -40,7 +59,7 @@ export class ModalPreRegisterProviderComponent implements OnInit, OnDestroy {
 
   save() {
     this.form.markAllAsTouched();
-    if (this.form.invalid || this.duplicate()) return;
+    if (this.form.invalid || this.duplicate() || this.checkingDuplicate()) return;
     this.loading.set(true);
     this.providersService.preRegister({
       ...this.form.getRawValue(),

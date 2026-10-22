@@ -1,6 +1,7 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { Subject, Subscription, debounceTime } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ComponentsService } from '../../services/components.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 
@@ -24,10 +25,11 @@ export class InputSearchComponent implements OnInit, OnDestroy {
   debounce: Subject<string> = new Subject();
   validatorsService = inject(ValidatorsService);
   componentsService = inject(ComponentsService);
+  private destroyRef = inject(DestroyRef);
   clearInputSearchSubs!: Subscription;
  
   ngOnInit() { 
-    this.debounce.pipe(debounceTime(500)).subscribe(valor => { 
+    this.debounce.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(valor => {
       this.onDebounce.emit(valor?.trim());
     });
     this.clearInputSearchSubs = this.componentsService.clearInputSearch$
@@ -52,6 +54,7 @@ export class InputSearchComponent implements OnInit, OnDestroy {
 
   clearInput(isReloadEmit:boolean = false) {
     this.termino.setValue('');
+    this.debounce.next('');
     this.txtTermino.nativeElement.focus();
     if(isReloadEmit){
       this.onEnters.emit('');
