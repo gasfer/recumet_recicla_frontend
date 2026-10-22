@@ -10,6 +10,8 @@ import { ScalesService } from 'src/app/pages/inventories/services/scales.service
 import { Scale } from 'src/app/pages/inventories/interfaces/scale.interface';
 import { InputsService } from 'src/app/pages/inputs/services/inputs.service';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
+import { RegistryNumberApiService } from 'src/app/core/services/registry-number-api.service';
+import { registryNumberAvailabilityValidator } from 'src/app/core/validators/registry-number-availability.validator';
 
 @Component({
   selector: 'app-modal-save-transfer',
@@ -26,6 +28,7 @@ export class ModalSaveTransferComponent {
   scalesService     = inject( ScalesService );
   fb                = inject( FormBuilder );
   decimalFormat     = inject( DecimalFormatService );
+  private registryNumberApi = inject(RegistryNumberApiService);
   loading           = signal(false);
   totalSummary      = computed(() => this.transfersService.detailTransfer().reduce( (sum, product) => Number(sum) + Number(product.import),0));
   totalSummaryItems = computed(() => this.transfersService.detailTransfer().reduce( (sum, product) => Number(sum) + Number(product.quantity),0));
@@ -49,6 +52,13 @@ export class ModalSaveTransferComponent {
   @Input({required: true}) id_storage_send : number | null = null;
 
   ngOnInit(): void {
+    this.formTransferData.get('registry_number')?.setAsyncValidators(
+      registryNumberAvailabilityValidator(this.registryNumberApi, () => ({
+        operation: 'transfer',
+        branchId: Number(this.id_sucursal_send || this.formTransferData.get('id_sucursal_send')?.value),
+        typeRegistry: this.formTransferData.get('type_registry')?.value,
+      })),
+    );
     this.getAllSucursales();
     this.getAllScalas();
   }

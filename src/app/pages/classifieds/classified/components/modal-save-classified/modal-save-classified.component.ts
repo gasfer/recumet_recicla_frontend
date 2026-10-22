@@ -8,6 +8,8 @@ import { NewClassifiedForm } from '../../../interfaces/classified.interface';
 import Swal from 'sweetalert2';
 import { ComponentsService } from 'src/app/core/services/components.service';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
+import { RegistryNumberApiService } from 'src/app/core/services/registry-number-api.service';
+import { registryNumberAvailabilityValidator } from 'src/app/core/validators/registry-number-availability.validator';
 
 @Component({
   selector: 'app-modal-save-classified',
@@ -21,6 +23,7 @@ export class ModalSaveClassifiedComponent implements OnInit {
   validatorsService = inject( ValidatorsService );
   decimalFormat     = inject( DecimalFormatService );
   fb                = inject( FormBuilder );
+  private registryNumberApi = inject(RegistryNumberApiService);
   types_registry    = computed(() => this.classifiedService.types_registry());
   scales            = signal<Scale[]>([]);
   loading           = signal(false);
@@ -44,6 +47,13 @@ export class ModalSaveClassifiedComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.formClassified.get('number_registry')?.setAsyncValidators(
+      registryNumberAvailabilityValidator(this.registryNumberApi, () => ({
+        operation: 'classified',
+        branchId: Number(this.id_sucursal || this.formClassified.get('id_sucursal')?.value),
+        typeRegistry: this.formClassified.get('type_registry')?.value,
+      })),
+    );
     this.getAllScales();
   }
 

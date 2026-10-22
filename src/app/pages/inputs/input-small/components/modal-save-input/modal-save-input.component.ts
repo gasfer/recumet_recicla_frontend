@@ -28,6 +28,8 @@ import {
   resolvePurchasePricingDecision,
 } from 'src/app/core/utils/purchase-pricing-authorization';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
+import { RegistryNumberApiService } from 'src/app/core/services/registry-number-api.service';
+import { registryNumberAvailabilityValidator } from 'src/app/core/validators/registry-number-availability.validator';
 
 @Component({
   selector: 'app-modal-save-input',
@@ -46,6 +48,7 @@ export class ModalSaveInputComponent implements OnInit {
   private authorizationApi = inject(PurchaseTraceabilityApiService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private registryNumberApi = inject(RegistryNumberApiService);
   private policyRefreshEnabled = false;
   private authorizersLoaded = false;
   private serverRequiresAuthorization = false;
@@ -104,6 +107,17 @@ export class ModalSaveInputComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.formInput.get('registry_number')?.setAsyncValidators(
+      registryNumberAvailabilityValidator(this.registryNumberApi, () => ({
+        operation: 'input',
+        branchId: Number(this.formInput.get('id_sucursal')?.value || this.validatorsService.id_sucursal()),
+        typeRegistry: this.formInput.get('type_registry')?.value,
+        excludeId: this.inputsService.isEdit ? this.inputsService.dataInputForEdit()?.id : null,
+        originalNumber: this.inputsService.isEdit ? this.inputsService.dataInputForEdit()?.registry_number : null,
+        originalBranchId: this.inputsService.isEdit ? this.inputsService.dataInputForEdit()?.id_sucursal : null,
+        originalTypeRegistry: this.inputsService.isEdit ? this.inputsService.dataInputForEdit()?.type_registry : null,
+      })),
+    );
     this.getAllScalas();
     this.getAllBanks();
     this.onOldCustomerChange();

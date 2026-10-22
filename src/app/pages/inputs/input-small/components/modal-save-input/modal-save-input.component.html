@@ -101,6 +101,9 @@
             <small *ngIf="validatorsService.inputValid('registry_number',formInput)" class="erp-error-msg">
               {{ validatorsService.inputValidMessage("registry_number",formInput) }}
             </small>
+            <small *ngIf="formInput.get('registry_number')?.pending" class="erp-text-caption" aria-live="polite">Verificando número…</small>
+            <small *ngIf="formInput.get('registry_number')?.hasError('registryNumberTaken')" class="erp-error-msg" role="alert">Este número ya está registrado para este tipo de compra en la sucursal.</small>
+            <small *ngIf="formInput.get('registry_number')?.hasError('registryNumberCheckFailed')" class="erp-error-msg" role="alert">No se pudo verificar el número. Revise la conexión e inténtelo de nuevo.</small>
           } @else {
             <input type="text" pInputText class="erp-input w-full" [disabled]="true" placeholder="Automático" />
           }

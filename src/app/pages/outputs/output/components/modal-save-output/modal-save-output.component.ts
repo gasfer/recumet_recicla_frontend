@@ -24,6 +24,8 @@ import {
 } from 'src/app/pages/managements/interfaces/trasport_company.interfaces';
 import { ComponentsService } from 'src/app/core/services/components.service';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
+import { RegistryNumberApiService } from 'src/app/core/services/registry-number-api.service';
+import { registryNumberAvailabilityValidator } from 'src/app/core/validators/registry-number-availability.validator';
 
 @Component({
   selector: 'app-modal-save-output',
@@ -40,6 +42,7 @@ export class ModalSaveOutputComponent implements OnInit {
   authService = inject(AuthService);
   transportCompanyService = inject(TransportCompanyService);
   componentService = inject(ComponentsService);
+  private registryNumberApi = inject(RegistryNumberApiService);
   types_pay = signal([
     { name: 'EFECTIVO' },
     { name: 'CHEQUE' },
@@ -155,6 +158,17 @@ export class ModalSaveOutputComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.formOutput.get('output_data.number_registry')?.setAsyncValidators(
+      registryNumberAvailabilityValidator(this.registryNumberApi, () => ({
+        operation: 'output',
+        branchId: Number(this.id_sucursal || this.formOutput.get('output_data.id_sucursal')?.value),
+        typeRegistry: this.formOutput.get('output_data.type_registry')?.value,
+        excludeId: this.outputService.isEdit ? this.outputService.dataOutputForEdit()?.id : null,
+        originalNumber: this.outputService.isEdit ? this.outputService.dataOutputForEdit()?.number_registry : null,
+        originalBranchId: this.outputService.isEdit ? this.outputService.dataOutputForEdit()?.id_sucursal : null,
+        originalTypeRegistry: this.outputService.isEdit ? this.outputService.dataOutputForEdit()?.type_registry : null,
+      })),
+    );
     this.getAllScales();
     this.getAllBanks();
     this.getAllTrasportCompanies();

@@ -76,6 +76,9 @@
                         <small *ngIf="validatorsService.inputValid('registry_number',formTransferData)" class="erp-error-msg">
                             {{ validatorsService.inputValidMessage("registry_number",formTransferData) }}
                         </small>
+                        <small *ngIf="formTransferData.get('registry_number')?.pending" class="erp-text-caption" aria-live="polite">Verificando número…</small>
+                        <small *ngIf="formTransferData.get('registry_number')?.hasError('registryNumberTaken')" class="erp-error-msg" role="alert">Este número ya está registrado para este tipo de traslado en la sucursal de origen.</small>
+                        <small *ngIf="formTransferData.get('registry_number')?.hasError('registryNumberCheckFailed')" class="erp-error-msg" role="alert">No se pudo verificar el número. Revise la conexión e inténtelo de nuevo.</small>
                     </div>
                 } @else {
                     <div class="erp-field erp-col-full"><small class="erp-text-muted">

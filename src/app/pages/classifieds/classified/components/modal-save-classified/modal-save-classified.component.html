@@ -76,6 +76,9 @@
                 <small *ngIf="validatorsService.inputValid('number_registry',formClassified)" class="erp-error-msg">
                     {{ validatorsService.inputValidMessage("number_registry",formClassified) }}
                 </small>
+                <small *ngIf="formClassified.get('number_registry')?.pending" class="erp-text-caption" aria-live="polite">Verificando número…</small>
+                <small *ngIf="formClassified.get('number_registry')?.hasError('registryNumberTaken')" class="erp-error-msg" role="alert">Este número ya está registrado para este tipo de clasificación en la sucursal.</small>
+                <small *ngIf="formClassified.get('number_registry')?.hasError('registryNumberCheckFailed')" class="erp-error-msg" role="alert">No se pudo verificar el número. Revise la conexión e inténtelo de nuevo.</small>
             </div>
             } @else {
             <div class="erp-field flex justify-end">
