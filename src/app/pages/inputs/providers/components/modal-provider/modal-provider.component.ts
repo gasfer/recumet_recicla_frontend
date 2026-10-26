@@ -1,18 +1,17 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ElementRef, ViewChild } from '@angular/core';
-import { Observable, Subscription, switchMap, forkJoin, of, catchError, map } from 'rxjs';
+import { Observable, Subscription, switchMap, forkJoin, of, catchError, map, throwError } from 'rxjs';
 import { ValidatorsService } from 'src/app/services/validators.service';
-import { ProvidersService } from '../../../services/providers.service';
+import { ProviderPurchaseHistoryInput, ProvidersService } from '../../../services/providers.service';
+import { InputsService } from '../../../services/inputs.service';
 import Swal from 'sweetalert2';
 import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 import { CategoriesService } from 'src/app/pages/inventories/services/categories.service';
 import { ProductsService } from 'src/app/pages/inventories/services/products.service';
-import { ProductAccessContext } from 'src/app/core/constants/product-category-access.constants';
+import { ProductAccessContext, ProductCategoryType } from 'src/app/core/constants/product-category-access.constants';
 import { BOLIVIA_DEPARTMENTS } from 'src/app/core/constants/bolivia-geography.constants';
 import { SucursalesService } from 'src/app/pages/managements/services/sucursales.service';
-import { InputsService } from '../../../services/inputs.service';
-import { GetAllInputs, Input } from '../../../interfaces/input.interface';
 import * as L from 'leaflet';
 import { BankService } from 'src/app/pages/managements/services/bank.service';
 import { Bank } from 'src/app/pages/managements/interfaces/bank.interface';
@@ -28,92 +27,110 @@ import {
 } from '../../../interfaces/provider-commercial-profile.interface';
 
 type LocationSource = 'stored' | 'imported' | 'manual' | 'device';
-type MaterialFrequencySuggestion = { has_sufficient_history: boolean; frequency: string | null; average_days: number | null; total_deliveries: number; estimated_volume?: number | null };
+type MaterialFrequencySuggestion = { has_sufficient_history: boolean; frequency: string | null; average_days: number | null; total_deliveries: number; estimated_volume?: number | null; window_days?: number };
 type MapDraft = { values: Record<string, unknown>; center?: L.LatLng; zoom?: number };
 
 @Component({
   selector: 'app-modal-provider',
   templateUrl: './modal-provider.component.html',
   styles: [`
-    .provider-validation-summary { border:1px solid #fecdd3; background:#fff1f2; color:#9f1239; padding:.65rem .8rem; border-radius:7px; margin-bottom:.7rem; font-size:11px; }
+    .provider-validation-summary { border:1px solid var(--color-danger-border); background:var(--color-danger-light); color:var(--color-danger-text); padding:.65rem .8rem; border-radius:7px; margin-bottom:.7rem; font-size:11px; }
+    :host ::ng-deep .provider-fields input.ng-invalid.ng-touched,
+    :host ::ng-deep .provider-fields textarea.ng-invalid.ng-touched,
+    :host ::ng-deep .provider-fields .p-dropdown.ng-invalid.ng-touched,
+    :host ::ng-deep .provider-fields .p-multiselect.ng-invalid.ng-touched,
+    :host ::ng-deep .provider-fields .p-inputnumber.ng-invalid.ng-touched { border-color:var(--color-danger-border) !important; box-shadow:0 0 0 1px var(--color-danger-light); }
+    .provider-final-row { align-items:end; }
+    .smart-frequency-badge { display:inline-flex; align-items:center; gap:.35rem; width:max-content; max-width:100%; padding:.35rem .55rem; border:1px solid var(--color-success-light); border-radius:6px; background:var(--color-success-light); color:var(--color-primary); font-size:11px; font-weight:700; }
+    @media(max-width:700px) { .provider-final-row { grid-template-columns:1fr !important; } .provider-final-row .erp-col-3 { grid-column:1/-1; } }
     .provider-validation-summary ul { margin:.35rem 0 0; padding-left:1.2rem; }
     .provider-validation-summary button { border:0; background:transparent; color:inherit; text-align:left; padding:.15rem 0; text-decoration:underline; }
     :host ::ng-deep .provider-fields .p-multiselect-label { display:flex; flex-wrap:wrap; gap:.25rem; white-space:normal; }
-    :host ::ng-deep .provider-fields .p-multiselect-token { max-width:100%; font-size:11px; background:#ecfdf5; color:#065f46; }
+    :host ::ng-deep .provider-fields .p-multiselect-token { max-width:100%; font-size:11px; background:var(--color-success-light); color:var(--color-primary); }
     :host ::ng-deep .provider-fields .p-multiselect-token-label { white-space:normal; overflow-wrap:anywhere; }
-    .provider-type-theme { --provider-accent:#059669; --provider-tint:#ecfdf5; }
-    .provider-type-theme[data-provider-type="B"] { --provider-accent:#2563eb; --provider-tint:#eff6ff; }
-    .provider-type-theme[data-provider-type="C"] { --provider-accent:#d97706; --provider-tint:#fffbeb; }
-    .provider-type-theme[data-provider-type="D"] { --provider-accent:#ea580c; --provider-tint:#fff7ed; }
-    .provider-type-theme[data-provider-type="E"] { --provider-accent:#7c3aed; --provider-tint:#f5f3ff; }
-    .provider-type-theme[data-provider-type="F"] { --provider-accent:#e11d48; --provider-tint:#fff1f2; }
+    .provider-material-field { min-width:0; padding:.5rem; border:1px solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); }
+    .provider-material-field .erp-label { margin-bottom:.3rem; font-size:10px; line-height:1.3; }
+    :host ::ng-deep .provider-fields .provider-material-select { min-width:0; }
+    :host ::ng-deep .provider-fields .provider-material-select .p-multiselect-label { gap:.15rem; padding:.25rem .35rem; font-size:.7rem; }
+    :host ::ng-deep .provider-fields .provider-material-select .p-multiselect-token { max-width:100%; gap:.15rem; padding:.08rem .25rem; font-size:.62rem; line-height:1.2; border-radius:999px; }
+    :host ::ng-deep .provider-fields .provider-material-select .p-multiselect-token-label { white-space:normal; overflow-wrap:anywhere; }
+    :host ::ng-deep .provider-fields .provider-material-select .p-multiselect-token-icon { flex:0 0 auto; width:.8rem; height:.8rem; margin-left:.08rem; font-size:.58rem; cursor:pointer; }
+    .frequency-summary { display:inline-flex; align-items:flex-start; gap:.3rem; max-width:100%; border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:.3rem .45rem; font-size:.68rem; line-height:1.35; overflow-wrap:anywhere; }
+    .frequency-summary--success { background:var(--color-success-light); border-color:var(--color-success-border); color:var(--color-success-text); }
+    .frequency-summary--neutral { background:var(--color-surface-secondary); color:var(--color-text-muted); }
+    .provider-type-theme { --provider-accent:var(--color-primary); --provider-tint:var(--color-success-light); }
+    .provider-type-theme[data-provider-type="B"] { --provider-accent:var(--color-info-card); --provider-tint:var(--color-info-light); }
+    .provider-type-theme[data-provider-type="C"] { --provider-accent:var(--color-client-icon); --provider-tint:var(--color-warning-light); }
+    .provider-type-theme[data-provider-type="D"] { --provider-accent:var(--color-accent-orange); --provider-tint:var(--color-warning-light); }
+    .provider-type-theme[data-provider-type="E"] { --provider-accent:var(--color-accent-violet); --provider-tint:var(--color-accent-violet-light); }
+    .provider-type-theme[data-provider-type="F"] { --provider-accent:var(--color-danger); --provider-tint:var(--color-danger-light); }
     .provider-sheet-heading .provider-sheet-icon { background:var(--provider-accent); }
     .provider-heading-type { font-size:10px; padding:.2rem .45rem; border-radius:4px; background:var(--provider-tint); color:var(--provider-accent); font-weight:700; }
     :host ::ng-deep .provider-letter-dialog { width:min(96vw,850px) !important; }
-    :host ::ng-deep .provider-letter-dialog .p-dialog-header { border-bottom:3px solid #059669; }
-    :host ::ng-deep .provider-template-B .p-dialog-header { border-bottom-color:#2563eb; }
-    :host ::ng-deep .provider-template-C .p-dialog-header { border-bottom-color:#d97706; }
-    :host ::ng-deep .provider-template-D .p-dialog-header { border-bottom-color:#ea580c; }
-    :host ::ng-deep .provider-template-E .p-dialog-header { border-bottom-color:#7c3aed; }
-    :host ::ng-deep .provider-template-F .p-dialog-header { border-bottom-color:#e11d48; }
+    :host ::ng-deep .provider-letter-dialog .p-dialog-header { border-bottom:3px solid var(--color-primary); }
+    :host ::ng-deep .provider-template-B .p-dialog-header { border-bottom-color:var(--color-info-card); }
+    :host ::ng-deep .provider-template-C .p-dialog-header { border-bottom-color:var(--color-client-icon); }
+    :host ::ng-deep .provider-template-D .p-dialog-header { border-bottom-color:var(--color-accent-orange); }
+    :host ::ng-deep .provider-template-E .p-dialog-header { border-bottom-color:var(--color-accent-violet); }
+    :host ::ng-deep .provider-template-F .p-dialog-header { border-bottom-color:var(--color-danger); }
     .provider-readonly { max-width:816px; margin:auto; }
-    .provider-pdf-frame { display:block; width:100%; height:68vh; min-height:300px; border:1px solid #e2e8f0; border-radius:8px; background:#1e293b; }
+    .provider-pdf-frame { display:block; width:100%; height:68vh; min-height:300px; border:1px solid var(--color-border); border-radius:8px; background:var(--color-surface-secondary); }
     @media (max-width:600px) { .provider-pdf-frame { height:65dvh; min-height:240px; } }
     .provider-sheet-heading { display:flex; align-items:center; gap:.65rem; min-width:0; flex-wrap:wrap; }
     .provider-sheet-heading strong { font-size:14px; }
-    .provider-sheet-heading small { display:block; font-size:10px; color:#cbd5e1; margin-top:.2rem; }
+    .provider-sheet-heading small { display:block; font-size:10px; color:var(--color-border); margin-top:.2rem; }
     .provider-sheet-icon, .provider-avatar { display:flex; align-items:center; justify-content:center; background:var(--color-primary); color:white; flex-shrink:0; }
     .provider-sheet-icon { width:32px; height:32px; border-radius:8px; }
-    .provider-status { font-size:10px; border:1px solid #a7f3d0; background:#ecfdf5; color:#065f46; border-radius:20px; padding:.15rem .5rem; }
-    .provider-status-inactive { background:#fff1f2; border-color:#fecdd3; color:#9f1239; }
-    .provider-identity-card { display:flex; gap:.8rem; align-items:center; border:1px solid #e2e8f0; border-radius:10px; padding:1rem; margin-bottom:1rem; background:linear-gradient(110deg,#fff 75%,var(--color-primary-light)); }
+    .provider-status { font-size:10px; border:1px solid var(--color-success-light); background:var(--color-success-light); color:var(--color-primary); border-radius:20px; padding:.15rem .5rem; }
+    .provider-status-inactive { background:var(--color-danger-light); border-color:var(--color-danger-border); color:var(--color-danger-text); }
+    .provider-identity-card { display:flex; gap:.8rem; align-items:center; border:1px solid var(--color-border); border-radius:10px; padding:1rem; margin-bottom:1rem; background:linear-gradient(110deg,var(--color-surface) 75%,var(--color-primary-light)); }
     .provider-avatar { width:50px; height:50px; border-radius:12px; font-size:20px; font-weight:750; }
     .provider-identity-text { flex:1; min-width:0; }
-    .provider-identity-text h2 { font-size:18px; font-weight:750; margin:0 0 .3rem; color:#0f172a; overflow-wrap:anywhere; }
-    .provider-identity-text p { font-size:10px; color:#64748b; margin:.4rem 0 0; overflow-wrap:anywhere; }
-    .provider-type-badge { display:inline-block; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:4px; font-size:10px; padding:.15rem .4rem; }
-    .provider-readonly-label { font-size:10px; color:#64748b; white-space:nowrap; }
+    .provider-identity-text h2 { font-size:18px; font-weight:750; margin:0 0 .3rem; color:var(--color-text); overflow-wrap:anywhere; }
+    .provider-identity-text p { font-size:10px; color:var(--color-text-muted); margin:.4rem 0 0; overflow-wrap:anywhere; }
+    .provider-type-badge { display:inline-block; background:var(--color-success-light); color:var(--color-primary); border:1px solid var(--color-success-light); border-radius:4px; font-size:10px; padding:.15rem .4rem; }
+    .provider-readonly-label { font-size:10px; color:var(--color-text-muted); white-space:nowrap; }
     .provider-sheet-tabs { overflow-x:auto; border-radius:0 !important; padding:0 !important; gap:0 !important; }
-    .provider-sheet-tabs button { border:0; border-radius:0; min-width:max-content; padding:.75rem; border-bottom:2px solid transparent; background:transparent !important; color:#64748b !important; }
-    .provider-sheet-tabs button.btn-success { background:#fff !important; color:#065f46 !important; border-bottom-color:var(--color-primary); box-shadow:none; }
+    .provider-sheet-tabs button { border:0; border-radius:0; min-width:max-content; padding:.75rem; border-bottom:2px solid transparent; background:transparent !important; color:var(--color-text-muted) !important; }
+    .provider-sheet-tabs button.btn-success { background:var(--color-surface) !important; color:var(--color-primary) !important; border-bottom-color:var(--color-primary); box-shadow:none; }
     .provider-information { display:flex; flex-direction:column; gap:.45rem; }
-    .provider-information-section { --section-bg: #f1f5f9; --section-border: #cbd5e1; --section-ink: #334155; padding: .75rem; border: 1px solid var(--section-border); border-radius: 8px; background: var(--section-bg); }
-    .provider-information-section[data-tone="emerald"] { --section-bg: #ecfdf5; --section-border: #a7f3d0; --section-ink: #065f46; }
-    .provider-information-section[data-tone="blue"] { --section-bg: #eff6ff; --section-border: #bfdbfe; --section-ink: #1e40af; }
-    .provider-information-section[data-tone="amber"] { --section-bg: #fffbeb; --section-border: #fde68a; --section-ink: #92400e; }
-    .provider-information-section[data-tone="violet"] { --section-bg: #f5f3ff; --section-border: #ddd6fe; --section-ink: #5b21b6; }
-    .provider-information-section[data-tone="rose"] { --section-bg: #fff1f2; --section-border: #fecdd3; --section-ink: #9f1239; }
-    .provider-information-section[data-tone="cyan"] { --section-bg: #ecfeff; --section-border: #a5f3fc; --section-ink: #155e75; }
-    .provider-information-section { background:#fff; border-color:#e2e8f0; box-shadow:0 1px 2px #0f172a08; overflow:hidden; }
+    .provider-information-section { --section-bg: var(--color-surface-secondary); --section-border: var(--color-border); --section-ink: var(--color-text); padding: .75rem; border: 1px solid var(--section-border); border-radius: 8px; background: var(--section-bg); }
+    .provider-information-section[data-tone="emerald"] { --section-bg: var(--color-success-light); --section-border: var(--color-success-light); --section-ink: var(--color-primary); }
+    .provider-information-section[data-tone="blue"] { --section-bg: var(--color-info-light); --section-border: var(--color-info-border); --section-ink: var(--color-info-text); }
+    .provider-information-section[data-tone="amber"] { --section-bg: var(--color-warning-light); --section-border: var(--color-warning-border); --section-ink: var(--color-warning-text); }
+    .provider-information-section[data-tone="violet"] { --section-bg: var(--color-accent-violet-light); --section-border: var(--color-border); --section-ink: var(--color-accent-violet-text); }
+    .provider-information-section[data-tone="rose"] { --section-bg: var(--color-danger-light); --section-border: var(--color-danger-border); --section-ink: var(--color-danger-text); }
+    .provider-information-section[data-tone="cyan"] { --section-bg: var(--color-accent-cyan-light); --section-border: var(--color-info-border); --section-ink: var(--color-accent-teal-text); }
+    .provider-information-section { background:var(--color-surface); border-color:var(--color-border); box-shadow:0 1px 2px color-mix(in srgb, var(--color-text) 3%, transparent); overflow:hidden; }
     .provider-information-section h3 { margin: -.75rem -.75rem .75rem; padding:.75rem; border-bottom:1px solid var(--section-border); background:var(--section-bg); font-size: 11px; font-weight: 750; text-transform: uppercase; color: var(--section-ink); display: flex; align-items: center; gap: .4rem; }
     .provider-information-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem .8rem; margin: 0; }
-    .provider-information-grid dt { font-size: 11px; font-weight: 650; color: #475569; margin-bottom: .25rem; }
-    .provider-information-grid dd { margin: 0; padding: .5rem .65rem; min-height: 34px; border: 1px solid #e2e8f0; border-radius: 6px; background: #ffffff; color: #0f172a; font-size: 11.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .provider-information-grid dt { font-size: 11px; font-weight: 650; color: var(--color-text-muted); margin-bottom: .25rem; }
+    .provider-information-grid dd { margin: 0; padding: .5rem .65rem; min-height: 34px; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-surface); color: var(--color-text); font-size: 11.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
     .information-full { grid-column: 1 / -1; }
-    .provider-information-grid dd.information-empty, .information-empty { color: #64748b; font-weight: 400; }
-    .provider-information-record, .provider-information-map { padding: .65rem; border: 1px solid var(--section-border); border-radius: 7px; background: #ffffff; margin-top: .65rem; }
+    .provider-information-grid dd.information-empty, .information-empty { color: var(--color-text-muted); font-weight: 400; }
+    .provider-information-record, .provider-information-map { padding: .65rem; border: 1px solid var(--section-border); border-radius: 7px; background: var(--color-surface); margin-top: .65rem; }
     .provider-information-record h4, .provider-information-map h4 { font-size: 11px; font-weight: 700; color: var(--section-ink); margin: 0 0 .55rem; }
     @media (max-width: 850px) { .provider-information { grid-template-columns:minmax(0,1fr); } }
     @media (max-width: 600px) { .provider-information-grid { grid-template-columns: minmax(0, 1fr); } .provider-identity-card { flex-wrap:wrap; padding:.75rem; } .provider-readonly-label { margin-left:auto; } .provider-identity-text h2 { font-size:15px; } }
-    .provider-readonly .provider-identity-card { padding:1rem; margin-bottom:1rem; background:linear-gradient(115deg,#fff 75%,var(--provider-tint)); gap:.8rem; border-color:#e2e8f0; box-shadow:0 1px 3px #0f172a06; }
-    .provider-readonly .provider-avatar { width:50px; height:50px; font-size:19px; background:var(--provider-accent); border-radius:12px; box-shadow:0 4px 8px #0f172a12; }
+    .provider-readonly .provider-identity-card { padding:1rem; margin-bottom:1rem; background:linear-gradient(115deg,var(--color-surface) 75%,var(--provider-tint)); gap:.8rem; border-color:var(--color-border); box-shadow:0 1px 3px color-mix(in srgb, var(--color-text) 2.5%, transparent); }
+    .provider-readonly .provider-avatar { width:50px; height:50px; font-size:19px; background:var(--provider-accent); border-radius:12px; box-shadow:0 4px 8px color-mix(in srgb, var(--color-text) 7%, transparent); }
     .provider-readonly .provider-identity-text h2 { font-size:17px; margin:0 0 .25rem; }
     .provider-readonly .provider-type-badge { color:var(--provider-accent); background:white; border-color:var(--provider-accent); font-size:9px; }
     .provider-summary-metrics { display:flex; gap:.5rem; flex-shrink:0; }
-    .provider-summary-metrics div { padding:.65rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:7px; min-width:85px; }
-    .provider-summary-metrics small { display:block; font-size:8px; text-transform:uppercase; font-weight:700; color:#94a3b8; margin-bottom:.25rem; }
-    .provider-summary-metrics strong { font-size:11px; color:#0f172a; }
+    .provider-summary-metrics div { padding:.65rem; background:var(--color-surface-secondary); border:1px solid var(--color-border); border-radius:7px; min-width:85px; }
+    .provider-summary-metrics small { display:block; font-size:8px; text-transform:uppercase; font-weight:700; color:var(--color-text-muted); margin-bottom:.25rem; }
+    .provider-summary-metrics strong { font-size:11px; color:var(--color-text); }
     .provider-readonly .provider-information { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; align-items:start; }
     .provider-information-column { display:flex; flex-direction:column; gap:1rem; min-width:0; }
-    .provider-readonly .provider-information-section { padding:1rem; border-radius:10px; box-shadow:0 1px 2px #0f172a08; }
-    .provider-readonly .provider-information-section h3 { margin:-1rem -1rem 1rem; padding:.65rem 1rem; font-size:10px; background:#f8fafc; border-color:#e2e8f0; color:#334155; font-weight:600; }
+    .provider-readonly .provider-information-section { padding:1rem; border-radius:10px; box-shadow:0 1px 2px color-mix(in srgb, var(--color-text) 3%, transparent); }
+    .provider-readonly .provider-information-section h3 { margin:-1rem -1rem 1rem; padding:.65rem 1rem; font-size:10px; background:var(--color-surface-secondary); border-color:var(--color-border); color:var(--color-text); font-weight:600; }
     .provider-section-number { display:inline-flex; justify-content:center; align-items:center; height:20px; width:20px; border-radius:5px; background:var(--section-bg); color:var(--section-ink); font-weight:750; flex-shrink:0; }
     .provider-readonly .provider-information-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }
-    .provider-readonly .provider-information-grid > div { padding:.6rem; border:1px solid #e8edf4; background:#f8fafc; border-radius:7px; min-width:0; }
-    .provider-readonly .provider-information-grid dt { font-size:8px; text-transform:uppercase; font-weight:700; color:#94a3b8; margin:0 0 .3rem; line-height:1.35; }
+    .provider-readonly .provider-information-grid > div { padding:.6rem; border:1px solid var(--color-border-subtle); background:var(--color-surface-secondary); border-radius:7px; min-width:0; }
+    .provider-readonly .provider-information-grid dt { font-size:8px; text-transform:uppercase; font-weight:700; color:var(--color-text-muted); margin:0 0 .3rem; line-height:1.35; }
     .provider-readonly .provider-information-grid dd { padding:0; min-height:0; border:0; background:transparent; font-size:11px; font-weight:600; line-height:1.5; }
     .provider-readonly .information-full { grid-column:1 / -1; }
-    .provider-readonly .provider-information-record { padding:.65rem; margin-top:.65rem; border-color:#e2e8f0; }
+    .provider-readonly .provider-information-record { padding:.65rem; margin-top:.65rem; border-color:var(--color-border); }
     .provider-readonly .provider-information-record h4 { font-size:10px; margin-bottom:.5rem; }
     .provider-readonly .provider-information-map { padding:.6rem; margin-top:.75rem; background:var(--section-bg); }
     .provider-readonly .provider-information-map h4 { font-size:10px; }
@@ -126,37 +143,37 @@ type MapDraft = { values: Record<string, unknown>; center?: L.LatLng; zoom?: num
     :host ::ng-deep .type-a-provider-dialog { width: min(1400px, 96vw); }
     :host ::ng-deep .type-a-provider-dialog .p-dialog-content { max-height: 78vh; overflow-y: auto; padding: 1.25rem 1.75rem; }
     .type-a-profile { margin-top: 1.25rem; }
-    .type-a-profile h6 { margin: 1.1rem 0 .7rem; padding: .7rem .9rem; border-radius: .55rem; background: linear-gradient(90deg, #e8f1ff, #f8fbff); border-left: 4px solid #2f80ed; color: #164f96; font-size: .82rem; font-weight: 800; letter-spacing: .03em; }
-    .type-a-profile h6::before { content: '✓ '; color: #16803c; }
-    .type-a-profile small.text-muted { display: block; padding: .7rem .85rem; border-radius: .45rem; background: #fff8e6; color: #6c5412 !important; border: 1px solid #f5df9c; }
-    .type-a-profile hr { border-color: #dce7f5; margin: 1.15rem 0 .2rem; }
-    .provider-profile { background:#f8fafc; padding:.25rem; }
-    .profile-note { background:#e9f5ff; color:#165d91; padding:.7rem .9rem; border-radius:.4rem; margin-bottom:.7rem; font-size:.82rem; }
-    .profile-steps { display:flex; gap:1rem; overflow:auto; white-space:nowrap; padding:.55rem; font-size:.73rem; color:#64748b; border-bottom:1px solid #dce7f5; }
-    .profile-card { background:#fff; border:1px solid #dfe7f1; border-radius:.55rem; padding:1rem; margin:.85rem 0; }
-    .profile-card:nth-of-type(1) { border-top:4px solid #2563eb; } .profile-card:nth-of-type(2) { border-top:4px solid #0891b2; } .profile-card:nth-of-type(3) { border-top:4px solid #7c3aed; } .profile-card:nth-of-type(4) { border-top:4px solid #16a34a; } .profile-card:nth-of-type(5) { border-top:4px solid #d97706; } .profile-card:nth-of-type(6) { border-top:4px solid #db2777; } .profile-card:nth-of-type(7) { border-top:4px solid #0284c7; } .profile-card:nth-of-type(8) { border-top:4px solid #64748b; }
-    .profile-card h6 { display:flex; align-items:center; gap:.55rem; margin:0 0 .85rem; padding-bottom:.65rem; border-bottom:1px solid #e6edf5; color:#26374d; font-weight:800; }
-    .profile-card h6 b { background:#dbeafe; color:#2563eb; padding:.2rem .45rem; border-radius:.35rem; } .profile-card h6 small { margin-left:auto; color:#94a3b8; font-weight:400; }
-    .profile-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; } .profile-grid label,.wide { display:flex; flex-direction:column; gap:.3rem; font-size:.76rem; font-weight:700; color:#475569; } .wide{grid-column:1/-1;} @media(max-width:768px){.profile-grid{grid-template-columns:1fr;}.wide{grid-column:auto;}}
-    .branch-management { background:linear-gradient(90deg,#f5f3ff,#fff); } .assigned-branches { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.85rem; } .assigned-branch { background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; border-radius:999px; padding:.3rem .65rem; font-size:.76rem; } .assigned-branch i { margin-right:.35rem; }
+    .type-a-profile h6 { margin: 1.1rem 0 .7rem; padding: .7rem .9rem; border-radius: .55rem; background: linear-gradient(90deg, var(--color-info-light), var(--color-surface-secondary)); border-left: 4px solid var(--color-info); color: var(--color-info-text); font-size: .82rem; font-weight: 800; letter-spacing: .03em; }
+    .type-a-profile h6::before { content: '✓ '; color: var(--color-primary); }
+    .type-a-profile small.text-muted { display: block; padding: .7rem .85rem; border-radius: .45rem; background: var(--color-warning-light); color: var(--color-warning-text) !important; border: 1px solid var(--color-warning-border); }
+    .type-a-profile hr { border-color: var(--color-border); margin: 1.15rem 0 .2rem; }
+    .provider-profile { background:var(--color-surface-secondary); padding:.25rem; }
+    .profile-note { background:var(--color-info-light); color:var(--color-info-text); padding:.7rem .9rem; border-radius:.4rem; margin-bottom:.7rem; font-size:.82rem; }
+    .profile-steps { display:flex; gap:1rem; overflow:auto; white-space:nowrap; padding:.55rem; font-size:.73rem; color:var(--color-text-muted); border-bottom:1px solid var(--color-border); }
+    .profile-card { background:var(--color-surface); border:1px solid var(--color-border); border-radius:.55rem; padding:1rem; margin:.85rem 0; }
+    .profile-card:nth-of-type(1) { border-top:4px solid var(--color-info-card); } .profile-card:nth-of-type(2) { border-top:4px solid var(--color-accent-teal); } .profile-card:nth-of-type(3) { border-top:4px solid var(--color-accent-violet); } .profile-card:nth-of-type(4) { border-top:4px solid var(--color-primary); } .profile-card:nth-of-type(5) { border-top:4px solid var(--color-client-icon); } .profile-card:nth-of-type(6) { border-top:4px solid var(--color-accent-violet); } .profile-card:nth-of-type(7) { border-top:4px solid var(--color-accent-cyan); } .profile-card:nth-of-type(8) { border-top:4px solid var(--color-text-muted); }
+    .profile-card h6 { display:flex; align-items:center; gap:.55rem; margin:0 0 .85rem; padding-bottom:.65rem; border-bottom:1px solid var(--color-border-subtle); color:var(--color-text); font-weight:800; }
+    .profile-card h6 b { background:var(--color-info-card-light); color:var(--color-info-card); padding:.2rem .45rem; border-radius:.35rem; } .profile-card h6 small { margin-left:auto; color:var(--color-text-muted); font-weight:400; }
+    .profile-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; } .profile-grid label,.wide { display:flex; flex-direction:column; gap:.3rem; font-size:.76rem; font-weight:700; color:var(--color-text-muted); } .wide{grid-column:1/-1;} @media(max-width:768px){.profile-grid{grid-template-columns:1fr;}.wide{grid-column:auto;}}
+    .branch-management { background:linear-gradient(90deg,var(--color-accent-violet-light),var(--color-surface)); } .assigned-branches { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.85rem; } .assigned-branch { background:var(--color-sale-operation-light); color:var(--color-accent-violet-text); border:1px solid var(--color-border); border-radius:999px; padding:.3rem .65rem; font-size:.76rem; } .assigned-branch i { margin-right:.35rem; }
     .type-a-profile .row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-left: 0; margin-right: 0; }
     .type-a-profile .row > [class*='col-'] { width: auto; max-width: none; padding-left: 0; padding-right: 0; }
     .type-a-profile .row:has(textarea) { grid-template-columns: 1fr; }
     @media (max-width: 768px) { :host ::ng-deep .type-a-provider-dialog { width: 98vw; } :host ::ng-deep .type-a-provider-dialog .p-dialog-content { max-height: 68vh; padding: 1rem; } }
-     :host ::ng-deep .supplier-editor-dialog .p-dialog-header { background:#0f172a; color:#fff; padding:.85rem 1.1rem; } :host ::ng-deep .supplier-editor-dialog .p-dialog-header-icons button { color:#fff; } :host ::ng-deep .supplier-editor-dialog .p-dialog-content { padding:0; background:#f8fafc; max-height:72vh; overflow:auto; } :host ::ng-deep .supplier-editor-dialog .p-dialog-footer { padding:0; border:0; }
-    .location-editor{border:1px solid #a7f3d0;background:#fff;border-radius:.65rem;padding:.75rem}.location-toolbar{display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem}.location-toolbar>div{flex:1}.location-toolbar b,.location-toolbar small{display:block;font-size:.72rem}.location-toolbar b{color:#065f46}.location-toolbar small{color:#64748b;margin-top:.15rem}.location-map{width:100%;height:210px;border:1px solid #dbe4ee;border-radius:.55rem;margin-top:.65rem}.location-map-empty{height:120px;border:1px dashed #94a3b8;border-radius:.55rem;background:#f8fafc;color:#64748b;display:flex;align-items:center;justify-content:center;gap:.6rem;font-size:.75rem}.location-map-empty i{font-size:1.25rem;color:#10b981}
-    :host ::ng-deep .provider-map-pin{background:transparent;border:0}:host ::ng-deep .provider-map-pin__body{position:relative;display:block;width:34px;height:42px}:host ::ng-deep .provider-map-pin__body i{font-size:2.55rem;color:#059669;filter:drop-shadow(0 3px 3px #0f172a55)}:host ::ng-deep .provider-map-pin__body b{position:absolute;left:0;top:7px;width:34px;text-align:center;color:#fff;font-size:.61rem;line-height:1;font-weight:900}:host ::ng-deep .provider-map-pin--b i{color:#2563eb}:host ::ng-deep .provider-map-pin--c i{color:#d97706}:host ::ng-deep .provider-map-pin--d i{color:#ea580c}:host ::ng-deep .provider-map-pin--e i{color:#7c3aed}:host ::ng-deep .provider-map-pin--f i{color:#e11d48}.google-map-search{border-top:1px solid #e2e8f0;padding-top:.65rem}.location-map-help{display:flex;align-items:center;justify-content:space-between;gap:.65rem;flex-wrap:wrap;margin:.55rem 0 .15rem;color:#64748b;font-size:.68rem}.location-map-help span{display:inline-flex;align-items:center;gap:.35rem}.location-map-help .pin-legend{border:1px solid #a7f3d0;background:#ecfdf5;color:#047857;border-radius:999px;padding:.22rem .5rem}.location-map-help .pin-legend i{color:#059669}.location-map-help .pin-legend--b{border-color:#bfdbfe;background:#eff6ff;color:#1d4ed8}.location-map-help .pin-legend--b i{color:#2563eb}.location-map-help .pin-legend--c{border-color:#fde68a;background:#fffbeb;color:#92400e}.location-map-help .pin-legend--c i{color:#d97706}.location-map-help .pin-legend--d{border-color:#fed7aa;background:#fff7ed;color:#9a3412}.location-map-help .pin-legend--d i{color:#ea580c}.location-map-help .pin-legend--e{border-color:#ddd6fe;background:#f5f3ff;color:#6d28d9}.location-map-help .pin-legend--e i{color:#7c3aed}.location-map-help .pin-legend--f{border-color:#fecdd3;background:#fff1f2;color:#be123c}.location-map-help .pin-legend--f i{color:#e11d48}.location-status{color:#047857!important;font-weight:700}
-    .supplier-header{display:flex;align-items:center;gap:.8rem;}.supplier-header>i{background:#064e3b;border:1px solid #10b981;padding:.65rem;border-radius:.55rem;color:#6ee7b7}.supplier-header b,.supplier-header small{display:block}.supplier-header b{font-size:.98rem}.supplier-header small{font-size:.72rem;color:#bfdbfe;margin-top:.2rem}.supplier-header span{margin-left:auto;border:1px solid #10b981;background:#064e3b;color:#a7f3d0;border-radius:999px;padding:.25rem .55rem;font-size:.68rem}.supplier-tabs{display:flex;background:#fff;border-bottom:1px solid #e2e8f0;overflow:auto}.supplier-tabs button{border:0;border-bottom:2px solid transparent;background:#fff;padding:.85rem 1.05rem;color:#64748b;font-size:.74rem;font-weight:700;white-space:nowrap}.supplier-tabs button.active{border-color:#059669;background:#ecfdf5;color:#047857}.supplier-tabs b{background:#059669;color:white;border-radius:999px;padding:.1rem .35rem;margin-left:.25rem}.supplier-body{padding:1.25rem;max-width:1450px;margin:auto}.supplier-notice,.branch-notice{border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;border-radius:.6rem;padding:.75rem 1rem;font-size:.75rem;margin-bottom:1rem}.branch-notice{background:#ecfdf5;border-color:#a7f3d0;color:#047857}.supplier-card{background:#fff;border:1px solid #e2e8f0;border-radius:.7rem;padding:1rem;margin-bottom:1rem}.supplier-card h6{font-size:.73rem;font-weight:800;color:#0f172a;border-bottom:1px solid #f1f5f9;padding-bottom:.7rem;margin:0 0 .9rem}.supplier-card h6 b{background:#d1fae5;color:#047857;padding:.25rem .45rem;border-radius:.35rem;margin-right:.45rem}.supplier-card h6 small{float:right;color:#64748b;font-weight:500}.supplier-card h6 .green{color:#059669}.supplier-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}.supplier-grid label{display:flex;flex-direction:column;gap:.3rem;font-size:.7rem;font-weight:700;color:#334155}.span-2{grid-column:span 2}.span-3{grid-column:1/-1}.compliance{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}.compliance div{border:1px solid #e2e8f0;background:#f8fafc;padding:.75rem;border-radius:.5rem;position:relative}.compliance strong,.compliance span{display:block;font-size:.7rem}.compliance span{color:#64748b;margin-top:.25rem}.compliance p-tag{position:absolute;right:.6rem;top:.6rem}.branch-layout{display:grid;grid-template-columns:290px 1fr;gap:1rem}.branch-layout aside>b{font-size:.72rem;color:#0f172a;margin-bottom:.5rem;display:block}.branch-layout aside button{width:100%;border:1px solid #e2e8f0;background:#fff;border-radius:.55rem;padding:.75rem;margin-bottom:.6rem;display:flex;gap:.55rem;text-align:left;font-size:.72rem;color:#334155}.branch-layout aside button.active{border-color:#10b981;box-shadow:0 2px 6px #10b98130}.branch-layout aside strong{background:#d1fae5;color:#047857;padding:.25rem;border-radius:.3rem}.branch-layout aside span{flex:1}.branch-layout aside small{display:block;color:#64748b;margin-top:.2rem}.branch-layout aside button> :last-child{color:#10b981}.summary-banner{background:#0f172a;color:#fff;border-radius:.7rem;padding:1rem;display:flex;gap:.8rem;align-items:center}.summary-banner i{color:#6ee7b7;font-size:1.3rem}.summary-banner b,.summary-banner small{display:block}.summary-banner small{color:#94a3b8;font-size:.72rem}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin:1rem 0}.kpis div{background:#fff;border:1px solid #e2e8f0;border-radius:.65rem;padding:.9rem}.kpis small,.kpis span{display:block;font-size:.68rem;color:#64748b}.kpis b{display:block;font-size:1.35rem;color:#047857;margin:.35rem 0}.supplier-card table{width:100%;border-collapse:collapse;font-size:.73rem}.supplier-card th,.supplier-card td{padding:.7rem;border-bottom:1px solid #e2e8f0;text-align:left}.supplier-card th{color:#64748b;font-size:.65rem}.supplier-footer{background:#fff;border-top:1px solid #e2e8f0;padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:#64748b}.supplier-footer div{display:flex;gap:.5rem}@media(max-width:800px){.supplier-grid,.kpis,.compliance,.branch-layout{grid-template-columns:1fr}.span-2,.span-3{grid-column:auto}.supplier-header span{display:none}.supplier-footer{flex-direction:column;align-items:stretch}.supplier-footer div{justify-content:flex-end}}
+     :host ::ng-deep .supplier-editor-dialog .p-dialog-header { background:var(--color-table-header); color:var(--color-text-inverse); padding:.85rem 1.1rem; } :host ::ng-deep .supplier-editor-dialog .p-dialog-header-icons button { color:var(--color-text-inverse); } :host ::ng-deep .supplier-editor-dialog .p-dialog-content { padding:0; background:var(--color-surface-secondary); max-height:72vh; overflow:auto; } :host ::ng-deep .supplier-editor-dialog .p-dialog-footer { padding:0; border:0; }
+    .location-editor{border:1px solid var(--color-success-light);background:var(--color-surface);border-radius:.65rem;padding:.75rem}.location-toolbar{display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem}.location-toolbar>div{flex:1}.location-toolbar b,.location-toolbar small{display:block;font-size:.72rem}.location-toolbar b{color:var(--color-primary)}.location-toolbar small{color:var(--color-text-muted);margin-top:.15rem}.location-map{width:100%;height:210px;border:1px solid var(--color-border);border-radius:.55rem;margin-top:.65rem}.location-map-empty{height:120px;border:1px dashed var(--color-text-muted);border-radius:.55rem;background:var(--color-surface-secondary);color:var(--color-text-muted);display:flex;align-items:center;justify-content:center;gap:.6rem;font-size:.75rem}.location-map-empty i{font-size:1.25rem;color:var(--color-primary)}
+    :host ::ng-deep .provider-map-pin{background:transparent;border:0}:host ::ng-deep .provider-map-pin__body{position:relative;display:block;width:34px;height:42px}:host ::ng-deep .provider-map-pin__body i{font-size:2.55rem;color:var(--color-primary);filter:drop-shadow(0 3px 3px color-mix(in srgb, var(--color-text) 33%, transparent))}:host ::ng-deep .provider-map-pin__body b{position:absolute;left:0;top:7px;width:34px;text-align:center;color:var(--color-text-inverse);font-size:.61rem;line-height:1;font-weight:900}:host ::ng-deep .provider-map-pin--b i{color:var(--color-info-card)}:host ::ng-deep .provider-map-pin--c i{color:var(--color-client-icon)}:host ::ng-deep .provider-map-pin--d i{color:var(--color-accent-orange)}:host ::ng-deep .provider-map-pin--e i{color:var(--color-accent-violet)}:host ::ng-deep .provider-map-pin--f i{color:var(--color-danger)}.google-map-search{border-top:1px solid var(--color-border);padding-top:.65rem}.location-map-help{display:flex;align-items:center;justify-content:space-between;gap:.65rem;flex-wrap:wrap;margin:.55rem 0 .15rem;color:var(--color-text-muted);font-size:.68rem}.location-map-help span{display:inline-flex;align-items:center;gap:.35rem}.location-map-help .pin-legend{border:1px solid var(--color-success-light);background:var(--color-success-light);color:var(--color-primary);border-radius:999px;padding:.22rem .5rem}.location-map-help .pin-legend i{color:var(--color-primary)}.location-map-help .pin-legend--b{border-color:var(--color-info-border);background:var(--color-info-light);color:var(--color-info-text)}.location-map-help .pin-legend--b i{color:var(--color-info-card)}.location-map-help .pin-legend--c{border-color:var(--color-warning-border);background:var(--color-warning-light);color:var(--color-warning-text)}.location-map-help .pin-legend--c i{color:var(--color-client-icon)}.location-map-help .pin-legend--d{border-color:var(--color-warning-border);background:var(--color-warning-light);color:var(--color-warning-text)}.location-map-help .pin-legend--d i{color:var(--color-accent-orange)}.location-map-help .pin-legend--e{border-color:var(--color-border);background:var(--color-accent-violet-light);color:var(--color-sale-operation-text)}.location-map-help .pin-legend--e i{color:var(--color-accent-violet)}.location-map-help .pin-legend--f{border-color:var(--color-danger-border);background:var(--color-danger-light);color:var(--color-danger-text)}.location-map-help .pin-legend--f i{color:var(--color-danger)}.location-status{color:var(--color-primary)!important;font-weight:700}
+    .supplier-header{display:flex;align-items:center;gap:.8rem;}.supplier-header>i{background:var(--color-primary);border:1px solid var(--color-primary);padding:.65rem;border-radius:.55rem;color:var(--color-success-light)}.supplier-header b,.supplier-header small{display:block}.supplier-header b{font-size:.98rem}.supplier-header small{font-size:.72rem;color:var(--color-info-border);margin-top:.2rem}.supplier-header span{margin-left:auto;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-success-light);border-radius:999px;padding:.25rem .55rem;font-size:.68rem}.supplier-tabs{display:flex;background:var(--color-surface);border-bottom:1px solid var(--color-border);overflow:auto}.supplier-tabs button{border:0;border-bottom:2px solid transparent;background:var(--color-surface);padding:.85rem 1.05rem;color:var(--color-text-muted);font-size:.74rem;font-weight:700;white-space:nowrap}.supplier-tabs button.active{border-color:var(--color-primary);background:var(--color-success-light);color:var(--color-primary)}.supplier-tabs b{background:var(--color-primary);color:white;border-radius:999px;padding:.1rem .35rem;margin-left:.25rem}.supplier-body{padding:1.25rem;max-width:1450px;margin:auto}.supplier-notice,.branch-notice{border:1px solid var(--color-info-border);background:var(--color-info-light);color:var(--color-info-text);border-radius:.6rem;padding:.75rem 1rem;font-size:.75rem;margin-bottom:1rem}.branch-notice{background:var(--color-success-light);border-color:var(--color-success-light);color:var(--color-primary)}.supplier-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:.7rem;padding:1rem;margin-bottom:1rem}.supplier-card h6{font-size:.73rem;font-weight:800;color:var(--color-text);border-bottom:1px solid var(--color-surface-secondary);padding-bottom:.7rem;margin:0 0 .9rem}.supplier-card h6 b{background:var(--color-success-light);color:var(--color-primary);padding:.25rem .45rem;border-radius:.35rem;margin-right:.45rem}.supplier-card h6 small{float:right;color:var(--color-text-muted);font-weight:500}.supplier-card h6 .green{color:var(--color-primary)}.supplier-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}.supplier-grid label{display:flex;flex-direction:column;gap:.3rem;font-size:.7rem;font-weight:700;color:var(--color-text)}.span-2{grid-column:span 2}.span-3{grid-column:1/-1}.compliance{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}.compliance div{border:1px solid var(--color-border);background:var(--color-surface-secondary);padding:.75rem;border-radius:.5rem;position:relative}.compliance strong,.compliance span{display:block;font-size:.7rem}.compliance span{color:var(--color-text-muted);margin-top:.25rem}.compliance p-tag{position:absolute;right:.6rem;top:.6rem}.branch-layout{display:grid;grid-template-columns:290px 1fr;gap:1rem}.branch-layout aside>b{font-size:.72rem;color:var(--color-text);margin-bottom:.5rem;display:block}.branch-layout aside button{width:100%;border:1px solid var(--color-border);background:var(--color-surface);border-radius:.55rem;padding:.75rem;margin-bottom:.6rem;display:flex;gap:.55rem;text-align:left;font-size:.72rem;color:var(--color-text)}.branch-layout aside button.active{border-color:var(--color-primary);box-shadow:0 2px 6px color-mix(in srgb, var(--color-primary) 19%, transparent)}.branch-layout aside strong{background:var(--color-success-light);color:var(--color-primary);padding:.25rem;border-radius:.3rem}.branch-layout aside span{flex:1}.branch-layout aside small{display:block;color:var(--color-text-muted);margin-top:.2rem}.branch-layout aside button> :last-child{color:var(--color-primary)}.summary-banner{background:var(--color-table-header);color:var(--color-text-inverse);border-radius:.7rem;padding:1rem;display:flex;gap:.8rem;align-items:center}.summary-banner i{color:var(--color-success-light);font-size:1.3rem}.summary-banner b,.summary-banner small{display:block}.summary-banner small{color:var(--color-text-muted);font-size:.72rem}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin:1rem 0}.kpis div{background:var(--color-surface);border:1px solid var(--color-border);border-radius:.65rem;padding:.9rem}.kpis small,.kpis span{display:block;font-size:.68rem;color:var(--color-text-muted)}.kpis b{display:block;font-size:1.35rem;color:var(--color-primary);margin:.35rem 0}.supplier-card table{width:100%;border-collapse:collapse;font-size:.73rem}.supplier-card th,.supplier-card td{padding:.7rem;border-bottom:1px solid var(--color-border);text-align:left}.supplier-card th{color:var(--color-text-muted);font-size:.65rem}.supplier-footer{background:var(--color-surface);border-top:1px solid var(--color-border);padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:var(--color-text-muted)}.supplier-footer div{display:flex;gap:.5rem}@media(max-width:800px){.supplier-grid,.kpis,.compliance,.branch-layout{grid-template-columns:1fr}.span-2,.span-3{grid-column:auto}.supplier-header span{display:none}.supplier-footer{flex-direction:column;align-items:stretch}.supplier-footer div{justify-content:flex-end}}
   `]
 })
 
 export class ModalProviderComponent implements OnInit, OnDestroy {
   validatorsService = inject( ValidatorsService );
   providersService  = inject( ProvidersService );
+  private inputsService = inject(InputsService);
   categoriesService = inject( CategoriesService );
   productsService = inject(ProductsService);
   sucursalesService = inject(SucursalesService);
-  inputsService     = inject(InputsService);
   bankService       = inject(BankService);
   fb                = inject( FormBuilder );
   loading           = signal(false);
@@ -177,12 +194,12 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   products = signal<{name:string,code:string,categoryName:string}[]>([]);
   sectors = signal<{name:string,code:string}[]>([]);
   departments = BOLIVIA_DEPARTMENTS.map(item => ({ name: item.name, code: item.name }));
-  provinces = signal<{ name: string; code: string }[]>([]);
-  commercialUsers = signal<{ id: number; full_names: string }[]>([]);
+  commercialUsers = signal<{ id: number; full_names: string; role?: string }[]>([]);
   locating = signal(false);
   importingLocation = signal(false);
   locationStatus = signal('');
   banks = signal<Bank[]>([]);
+  availableSucursales = signal<Array<{ id: number; name: string; city?: string }>>([]);
   @ViewChild('locationMap') locationMap?: ElementRef<HTMLDivElement>;
   private map?: L.Map;
   private locationMarker?: L.Marker;
@@ -193,9 +210,10 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   registeredDocuments = signal<{ document_type: string; original_name: string }[]>([]);
   registeredCommercialUser = signal('');
   frequencies = signal(PROVIDER_FREQUENCIES.map(option => ({ name: option.label, code: option.value })));
-  frequencyMode = signal<'automatic' | 'manual'>('automatic');
+  frequencyMode = signal<'automatic'>('automatic');
   frequencyAnalysis = signal<{
     has_sufficient_history: boolean;
+    window_days?: number;
     total_deliveries: number;
     average_days: number | null;
     frequency: string | null;
@@ -215,11 +233,18 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   loadingFrequency = signal(false);
 
   // Historial compras
-  providerPurchases = signal<Input[]>([]);
+  providerPurchases = signal<ProviderPurchaseHistoryInput[]>([]);
   loadingPurchases = signal(false);
   totalPurchasesAmount = signal(0);
   totalPurchasesCount = signal(0);
   lastPurchaseDate = signal<string | null>(null);
+  purchaseHistoryPage = signal(1);
+  purchaseHistoryPageSize = 25;
+  purchaseHistoryError = signal('');
+  purchaseSummary = signal({ purchased_kg: 0, paid_amount: 0, pending_amount: 0, active_sites: 0 });
+  purchaseSites = signal<Array<{ id: number; name?: string; site_role?: string }>>([]);
+  selectedPurchaseSite = signal<number | null>(null);
+  exportingProfile = signal(false);
   entityTypes = PROVIDER_ENTITY_TYPES;
   serviceModes = PROVIDER_SERVICE_MODES;
   originChannels = PROVIDER_ORIGIN_CHANNELS;
@@ -239,6 +264,11 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     { label: 'En gestión', value: 'IN_PROGRESS' }, { label: 'Activo', value: 'ACTIVE' },
     { label: 'Sin movimiento', value: 'DORMANT' }, { label: 'Recuperación', value: 'TO_RECOVER' },
     { label: 'Perdido', value: 'LOST' },
+  ];
+  contactPriorities = [
+    { label: 'Alta', value: 'HIGH' },
+    { label: 'Media', value: 'MEDIUM' },
+    { label: 'Baja', value: 'LOW' },
   ];
   logisticsConditions = [
     { label: 'Entrega proveedor', value: 'SUPPLIER_DELIVERY' }, { label: 'Recojo Recumet', value: 'RECUMET_PICKUP' },
@@ -273,6 +303,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     id_category: [ ''],
     id_categories: [[]],
     id_sucursal: [ null],
+    enabled_sucursal_ids: [[]],
     companyContacts:[ '', [Validators.maxLength(254)]],
     commercial_name: ['', [Validators.maxLength(174)]],
     corporate_phone: ['', [Validators.maxLength(60)]], corporate_cellphone: ['', [Validators.maxLength(30)]],
@@ -280,12 +311,15 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     entity_type: ['PRIVATE', []],
     id_commercial_user: [null],
     has_branches: [false],
+    operating_departments: [[]],
     provider_ids: [[]],
     service_mode: ['BOTH', []],
     origin_channel: ['DIRECT_CONTACT', []],
     relationship_status: ['ACTIVE', []],
     negotiation_condition: ['', []],
     commercial_observations: ['', [Validators.maxLength(2000)]],
+    contact_priority: ['MEDIUM'],
+    contact_observations: ['', [Validators.maxLength(2000)]],
     usual_service_mode: [null], logistics_condition: ['RECUMET_PICKUP'], negotiation_mode: [null], price_policy: ['LIST_PRICE'],
     habitual_price_adjustment: ['', Validators.maxLength(500)],
     commercialized_materials: ['', Validators.maxLength(1000)],
@@ -294,9 +328,9 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     requires_certificate: [false, []],
     requires_traceability_report: [false, []],
     general_observations: ['', [Validators.maxLength(2000)]],
-    department: [''], province: [''], city: [''], zone: [''], latitude: [null], longitude: [null], geolocation_text: [''], google_maps_url: [''], contact_email: [''],
+    department: [''], city: [''], zone: [''], latitude: [null], longitude: [null], geolocation_text: [''], google_maps_url: [''], contact_email: [''],
     id_bank: [''], account_holder: [''], account_number: [''], account_type: [''], currency: ['BOB'],
-    frequency:[ 'MONTHLY', [Validators.maxLength(254)]],
+    frequency:[ 'UNDETERMINED', [Validators.maxLength(254)]],
     frequency_mode: ['automatic'],
     workAreaOrPositionOrUnit: ['', [Validators.maxLength(254)]],
     contacts: this.fb.array([]),
@@ -315,11 +349,11 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     mayorista: { label: '', view: true },
     name_contact: { label: '', view: true },
     cellphone_contact: { label: '', view: true },
-    id_category: { label: '', view: true },
+    id_category: { label: '', view: false },
     status: { label: '', view: true },
-    companyContacts: { label: '', view: true},
+    companyContacts: { label: '', view: false},
     frequency: { label: '', view: true},
-    workAreaOrPositionOrUnit: { label: '', view: true},
+    workAreaOrPositionOrUnit: { label: '', view: false},
   };
   ngOnInit(): void {
     this.getAllCategories();
@@ -331,6 +365,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.ensureCollectionRows();
     this.loadAvailableProviders(0);
     this.loadDefaultBranchCity();
+    this.loadSucursalOptions();
     this.isEditSub$ = this.providersService.editSubs.subscribe(resp => {
       this.loadProviderForm(resp);
       this.loadAvailableProviders(resp.id);
@@ -341,8 +376,10 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
             if (provider.company?.id) this.loadCompanySites(provider.company.id, provider.id); else this.restoreRegistrationDraft();
           }
         },
-        error: () => {
+        error: error => {
           this.restoreRegistrationDraft();
+          const message = error?.error?.errors?.[0]?.msg || error?.error?.message || 'No se pudieron cargar los datos comerciales del proveedor.';
+          Swal.fire({ icon: 'error', title: 'Error al cargar la edición', text: message });
         }
       });
     });
@@ -360,9 +397,10 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.contactRows.push(this.fb.group({
       id: [contact.id || null],
       full_name: [contact.full_name || '', [Validators.required, Validators.maxLength(174)]],
-      position_area: [contact.position_area || '', [...(this.supportsBranches() ? [Validators.required] : []), Validators.maxLength(254)]],
+      position_area: [contact.position_area || '', [Validators.maxLength(254)]],
       cellphone: [contact.cellphone || '', [...(this.supportsBranches() ? [Validators.required] : []), Validators.pattern(/^[67]\d{7}$/)]],
       email: [contact.email || '', Validators.email],
+      department: [contact.department || null], comments: [contact.comments || '', Validators.maxLength(500)],
       is_main_contact: [contact.is_main_contact ?? this.contactRows.length === 0],
       status: [contact.status !== false],
     }));
@@ -449,6 +487,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       this.registeredDocuments.set(company.documents || []);
       const sites = company.operatingProviders || [];
       this.companySites.set(sites);
+      this.purchaseSites.set(sites.filter(site => site.status !== false).map(site => ({ id: Number(site.id), name: site.full_names, site_role: site.site_role })));
       const selected = sites.find(site => site.id === selectedProviderId) || sites[0];
       if (selected) this.selectCompanySite(selected);
     });
@@ -461,16 +500,17 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     const location = site.location;
     this.providerForm.patchValue({
       id: site.id || null, site_name: site.full_names, cellphone: site.cellphone || null,
-      frequency: site.frequency, service_mode: site.service_mode, status: site.status,
+      frequency: 'UNDETERMINED', frequency_mode: 'automatic', service_mode: site.service_mode, status: site.status,
       id_sucursal: (site as ProviderSiteProfile & { id_sucursal?: number }).id_sucursal || this.validatorsService.id_sucursal(),
-      department: location?.department || '', province: location?.province || '', city: location?.city || '',
+      enabled_sucursal_ids: (site as ProviderSiteProfile & { enabled_sucursal_ids?: number[] }).enabled_sucursal_ids || [Number((site as ProviderSiteProfile & { id_sucursal?: number }).id_sucursal || this.validatorsService.id_sucursal())].filter(Boolean),
+      department: location?.department || '', city: location?.city || '',
       zone: location?.zone || '', direction: location?.address || '', latitude: location?.latitude || null,
       longitude: location?.longitude || null, geolocation_text: location?.geolocation_text || '', google_maps_url: location?.google_maps_url || '',
       material_ids: site.materials.filter(item => item.id_product).map(item => Number(item.id_product)),
     });
     this.loadCollections(site);
-    this.updateProvinceOptions(false);
     this.refreshMap('stored');
+    this.fetchFrequencyAnalysis();
     this.restoreRegistrationDraft();
     if (this.providersService.isInfo) this.providerForm.disable({ emitEvent: false });
   }
@@ -481,7 +521,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.selectedBranchId.set(null);
     this.providerForm.patchValue({
       id: null, site_name: '', cellphone: null, frequency: 'UNDETERMINED', service_mode: 'BOTH', status: true,
-      id_sucursal: this.validatorsService.id_sucursal(), department: '', province: '', city: '', zone: '', direction: '',
+      id_sucursal: this.validatorsService.id_sucursal(), department: '', city: '', zone: '', direction: '',
       latitude: null, longitude: null, geolocation_text: '', google_maps_url: '', material_ids: [],
       name_contact: '', workAreaOrPositionOrUnit: '', cellphone_contact: '', contact_email: '',
     });
@@ -529,7 +569,12 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     const corporate = resp.company || resp;
     this.registeredDocuments.set(corporate.documents || []);
     this.registeredCommercialUser.set(corporate.commercialUser?.full_names || resp.commercialUser?.full_names || '');
-    const typeCode = resp.type?.code || 'A';
+    const rawTypeId = resp.type?.id ?? resp.id_type_provider?.id ?? resp.id_type_provider;
+    const savedTypeId = String(rawTypeId ?? '');
+    const selectedProviderType = this.types().find(type => type.id === savedTypeId || (resp.type?.code && type.code === resp.type.code))
+      || (resp.type ? { name: String(resp.type.name || ''), id: savedTypeId, code: String(resp.type.code || '') } : null)
+      || (savedTypeId ? { name: '', id: savedTypeId, code: '' } : null);
+    const typeCode = selectedProviderType?.code || '';
     this.updateFormLabels(typeCode);
 
     const mainBranch = (resp.branches || []).find((item: any) => item.is_main) || {};
@@ -554,11 +599,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       number_document: corporate.number_document || resp.number_document || null,
       cellphone: resp.cellphone || null,
       direction: directionVal,
-      id_type_provider: resp.type ? {
-        name: resp.type.name?.toString() || '',
-        code: resp.type.code?.toString() || 'A',
-        id: resp.type.id?.toString() || '',
-      } : this.providerForm.get('id_type_provider')?.value,
+      id_type_provider: selectedProviderType || this.providerForm.get('id_type_provider')?.value || null,
       mayorista: resp.mayorista ?? false,
       name_contact: mainContact.full_name || resp.name_contact || null,
       companyContacts: resp.companyContacts || '',
@@ -569,14 +610,18 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       website: corporate.website || '',
       entity_type: corporate.entity_type || resp.entity_type || 'PRIVATE',
       operational_type: corporate.operational_type || resp.operational_type || 'RAW_MATERIAL',
-      id_commercial_user: corporate.id_commercial_user || resp.id_commercial_user || (this.providersService.isInfo ? null : this.validatorsService.user()?.id) || null,
-      has_branches: resp.company?.has_branches ?? false,
+      id_commercial_user: corporate.id_commercial_user || resp.id_commercial_user || (!this.providersService.isInfo && this.validatorsService.user()?.role === 'COMERCIAL' ? this.validatorsService.user()?.id : null) || null,
+      has_branches: resp.company?.has_branches ?? resp.has_branches ?? false,
+      operating_departments: resp.company?.operating_departments || resp.operating_departments || (resp.company?.has_branches ? [departmentVal].filter(Boolean) : []),
+      enabled_sucursal_ids: (resp.enabled_sucursal_ids || [resp.id_sucursal]).filter(Boolean).map(Number),
       provider_ids: companyProviders.filter((item: any) => item.id !== resp.id).map((item: any) => item.id),
       service_mode: resp.service_mode || (this.providersService.isInfo ? null : 'BOTH'),
       origin_channel: corporate.origin_channel || resp.origin_channel || (this.providersService.isInfo ? null : 'DIRECT_CONTACT'),
       relationship_status: corporate.relationship_status || resp.relationship_status || (this.providersService.isInfo ? null : 'ACTIVE'),
       negotiation_condition: corporate.negotiation_condition || resp.negotiation_condition || null,
       commercial_observations: corporate.commercial_observations || resp.commercial_observations || '',
+      contact_priority: corporate.contact_priority || resp.contact_priority || 'MEDIUM',
+      contact_observations: corporate.contact_observations || resp.contact_observations || '',
       usual_service_mode: resp.usual_service_mode || null,
       logistics_condition: resp.logistics_condition || (this.providersService.isInfo ? null : 'RECUMET_PICKUP'),
       negotiation_mode: resp.negotiation_mode || null,
@@ -588,7 +633,6 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       requires_traceability_report: corporate.requires_traceability_report ?? resp.requires_traceability_report ?? false,
       general_observations: corporate.general_observations || resp.general_observations || '',
       department: departmentVal,
-      province: mainBranch.province || resp.province || '',
       city: mainBranch.city || resp.city || '',
       zone: zoneVal,
       latitude: latVal,
@@ -602,7 +646,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       account_type: mainBank.account_type || resp.account_type || '',
       currency: mainBank.currency || resp.currency || 'BOB',
       frequency: resp.frequency || (this.providersService.isInfo ? null : 'MONTHLY'),
-      frequency_mode: String(resp.frequency_mode || '').toLowerCase() === 'manual' ? 'manual' : 'automatic',
+      frequency_mode: 'automatic',
       workAreaOrPositionOrUnit: mainContact.position_area || resp.workAreaOrPositionOrUnit || '',
       cellphone_contact: mainContact.cellphone || resp.cellphone_contact || null,
       id_category: resp.id_category?.toString() || '',
@@ -611,15 +655,20 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.selectedCompanyProviders.set(companyProviders.filter((item: any) => item.id !== resp.id));
     this.changeLabelAndForm();
     this.loadCollections(resp);
-    this.updateProvinceOptions(false);
     this.locationStatus.set(latVal ? 'Ubicación registrada cargada' : '');
     this.refreshMap('stored');
 
-    this.frequencyMode.set(String(resp.frequency_mode || '').toLowerCase() === 'manual' ? 'manual' : 'automatic');
+    this.frequencyMode.set('automatic');
     this.selectedBranchId.set(resp.id);
     this.activeTab.set('company');
     this.initializeLocationMap();
     this.fetchFrequencyAnalysis();
+    this.purchaseHistoryPage.set(1);
+    this.purchaseHistoryError.set('');
+    this.providerPurchases.set([]);
+    this.totalPurchasesAmount.set(0);
+    this.totalPurchasesCount.set(0);
+    this.lastPurchaseDate.set(null);
     this.loadPurchasesHistory(resp.id);
     if (this.providersService.isInfo) this.providerForm.disable({ emitEvent: false });
   }
@@ -659,8 +708,8 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.wholesaleMaterialRows.push(this.fb.group({
       id: [material.id || null], id_product: [Number(material.id_product)],
       estimated_volume: [material.estimated_volume == null ? null : Number(material.estimated_volume), Validators.min(0)],
-      frequency: [material.frequency || this.providerForm.get('frequency')?.value || 'UNDETERMINED'],
-      frequency_mode: [String(material.frequency_mode || '').toLowerCase() === 'manual' ? 'manual' : 'automatic'],
+      frequency: [material.frequency || 'UNDETERMINED'],
+      frequency_mode: ['automatic'],
     }));
   }
 
@@ -717,7 +766,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     const mainBank = value.bankAccounts.find((account: any) => account.is_main) || value.bankAccounts[0];
     const materials = wholesale_materials.map((material: any) => ({
       ...material, estimated_volume: material.estimated_volume === '' ? null : material.estimated_volume,
-      frequency_mode: this.frequencyMode() === 'automatic' && this.materialFrequencySuggestions()[material.id_product]?.has_sufficient_history ? 'automatic' : 'manual',
+      frequency_mode: 'automatic',
       service_mode: value.service_mode, status: true,
     }));
     return {
@@ -778,7 +827,8 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         this.changeLabelAndForm();
         this.loadCollections({ ...values, materials: values['wholesale_materials']?.length ? values['wholesale_materials'] : (values['material_ids'] || []).map((id: number) => ({ id_product: Number(id) })) });
         this.providerForm.patchValue(values, { emitEvent: false });
-        this.frequencyMode.set(values['frequency_mode'] === 'manual' ? 'manual' : 'automatic');
+        this.frequencyMode.set('automatic');
+        this.providerForm.patchValue({ frequency_mode: 'automatic' }, { emitEvent: false });
         this.filterProductsByCategories();
         this.draftNotice.set('Se recuperó su avance guardado. La ficha sigue editable y tiene datos pendientes de validar.');
         this.initializeLocationMap();
@@ -795,7 +845,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   validationMessages(requiredOnly = true): { path: string; message: string }[] {
     if (!this.validationAttempted()) return [];
-    const labels: Record<string, string> = { full_names: 'Nombre completo / Razón social', department: 'Departamento', id_type_provider: 'Tipo de proveedor', id_commercial_user: 'Responsable comercial', origin_channel: 'Canal de origen', relationship_status: 'Estado de relación', material_ids: 'Productos', id_categories: 'Categorías', full_name: 'Nombre del contacto', position_area: 'Área de trabajo o cargo', cellphone: 'Celular', account_holder: 'Titular de cuenta', account_number: 'Número de cuenta', id_bank: 'Banco', frequency: 'Frecuencia', service_mode: 'Modalidad de atención', price_policy: 'Nivel de precio', logistics_condition: 'Condición logística', latitude: 'Latitud del punto geográfico', longitude: 'Longitud del punto geográfico', site_name: 'Nombre de la sucursal' };
+    const labels: Record<string, string> = { full_names: 'Nombre completo / Razón social', department: 'Departamento', id_type_provider: 'Tipo de proveedor', id_commercial_user: 'Responsable comercial', origin_channel: 'Canal de origen', relationship_status: 'Estado de relación', material_ids: 'Productos', id_categories: 'Categorías', enabled_sucursal_ids: 'Sucursales RECUMET habilitadas', operating_departments: 'Departamentos donde opera', full_name: 'Nombre del contacto', position_area: 'Área de trabajo o cargo', cellphone: 'Celular', account_holder: 'Titular de cuenta', account_number: 'Número de cuenta', id_bank: 'Banco', frequency: 'Frecuencia', service_mode: 'Modalidad de atención', price_policy: 'Nivel de precio', logistics_condition: 'Condición logística', latitude: 'Latitud del punto geográfico', longitude: 'Longitud del punto geográfico', site_name: 'Nombre de la sucursal' };
     const errors: { path: string; message: string }[] = [];
     const visit = (control: AbstractControl, path: string) => {
       if (control.disabled) return;
@@ -883,13 +933,12 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       field('Tipo proveedor', value.id_type_provider?.name, true),
       field(branch ? 'Nombre de la sede / sucursal' : this.formP.full_names.label, branch ? value.site_name : value.full_names),
       field(this.formP.number_document.label, value.number_document),
+      ...(!branch && this.supportsBranches() ? [field('¿Tiene sucursales o presencia en otros departamentos?', value.has_branches), field('Departamentos donde opera', (value.operating_departments || []).map((code: string) => this.departments.find(item => item.code === code)?.name || code).join(', '), true)] : []),
+      ...(!branch && this.supportsBranches() ? [field('Sucursales RECUMET habilitadas', (value.enabled_sucursal_ids || []).map((id: number) => this.availableSucursales().find(item => item.id === Number(id))?.name || `Sucursal ${id}`).join(', '), true)] : []),
       ...(!branch && (this.isTypeA() || this.usesCommercialTerms()) ? [field(this.isTypeA() ? 'Nombre comercial' : 'Nombre comercial / Acopiadora', value.commercial_name, true)] : []),
       ...(!branch && this.isTypeA() ? [field('Tipo de entidad', option(this.entityTypes, value.entity_type)), field('Teléfono(s) empresa', value.corporate_phone), field('Celular corporativo', value.corporate_cellphone), field('Correo electrónico', value.corporate_email), field('Página web', value.website, true)] : []),
     ])];
     sections.push(section(2, 'Sector & Ubicación Geográfica', 'emerald', 'fa-map-location-dot', [
-      ...(!branch && !this.supportsBranches() && !this.isTypeD() ? [
-        ...(this.formP.companyContacts.view ? [field('Contactos / teléfonos de la empresa', value.companyContacts)] : []), field('Celular principal', value.cellphone),
-      ] : []),
       field('Departamento', value.department), field(this.isTypeB() ? 'Zona / Sector' : 'Zona / Barrio', value.zone),
       field('Dirección empresa', value.direction, true), field('Latitud', value.latitude), field('Longitud', value.longitude),
       field('Referencia geográfica', value.geolocation_text, true),
@@ -897,29 +946,27 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     {
       const repeated = branch || this.supportsMultipleContacts();
       const contactFields = repeated ? [] : [field('Nombre persona de contacto', value.name_contact), field('Celular persona de contacto', value.cellphone_contact),
-        ...(this.formP.id_category.view ? [field('Categoría principal', option(this.categories(), value.id_category))] : []),
-        ...(this.formP.workAreaOrPositionOrUnit.view ? [field(this.formP.workAreaOrPositionOrUnit.label, value.workAreaOrPositionOrUnit)] : []),
+        ...(!this.isTypeA() && this.formP.id_category.view ? [field('Categoría principal', option(this.categories(), value.id_category))] : []),
+        ...(!this.isTypeA() && this.formP.workAreaOrPositionOrUnit.view ? [field(this.formP.workAreaOrPositionOrUnit.label, value.workAreaOrPositionOrUnit)] : []),
         field('Frecuencia', this.getFrequencyLabel(value.frequency)), ...(this.formP.companyContacts.view ? [field('Contactos empresa', value.companyContacts)] : []),
       ];
       if (repeated && !this.supportsBranches()) {
-        if (this.formP.id_category.view) contactFields.push(field('Categoría principal', option(this.categories(), value.id_category)));
-        if (this.formP.workAreaOrPositionOrUnit.view) contactFields.push(field(this.formP.workAreaOrPositionOrUnit.label, value.workAreaOrPositionOrUnit));
+        if (!this.isTypeA() && this.formP.id_category.view) contactFields.push(field('Categoría principal', option(this.categories(), value.id_category)));
+        if (!this.isTypeA() && this.formP.workAreaOrPositionOrUnit.view) contactFields.push(field(this.formP.workAreaOrPositionOrUnit.label, value.workAreaOrPositionOrUnit));
         contactFields.push(field('Frecuencia', this.getFrequencyLabel(value.frequency)));
         if (this.formP.companyContacts.view) contactFields.push(field('Contactos empresa', value.companyContacts));
       }
-      contactFields.push(field('Estado', value.status === false ? 'Inactivo' : 'Activo'));
       sections.push(section(3, 'Contacto Comercial', 'blue', 'fa-user-tie', contactFields,
-        repeated ? (value.contacts || []).filter((contact: any) => contact.status !== false && contact.full_name).map((contact: any, index: number) => ({
+        repeated ? (value.contacts || []).filter((contact: any) => contact.full_name).map((contact: any, index: number) => ({
           title: `Contacto ${index + 1}${contact.is_main_contact ? ' · Principal' : ''}`,
-          fields: [field('Nombre completo', contact.full_name), field('Área de trabajo o cargo', contact.position_area), field('Celular', contact.cellphone), field('Correo', contact.email)],
+          fields: [field('Nombre completo', contact.full_name), field('Celular', contact.cellphone), field('Correo', contact.email), ...(this.supportsBranches() ? [field('Sucursal / departamento habilitado', contact.department)] : []), field('Comentarios', contact.comments, true)],
         })) : []));
     }
     sections.push(section(4, 'Modalidad de Operación y Material', 'amber', 'fa-boxes-stacked', [
       field('Categoría(s) de material entregado', (value.id_categories || []).map((id: string) => option(this.categories(), id)).join(', ')),
       field('Producto(s) según categoría seleccionada', (value.material_ids || []).map((id: number) => this.materialName(id)).join(', ')),
-      field('Frecuencia de venta', this.getFrequencyLabel(value.frequency)), field('Modo de frecuencia', value.frequency_mode === 'manual' ? 'Manual' : 'Automático'),
+      field('Frecuencia de venta', this.getFrequencyLabel(value.frequency)), field('Modo de frecuencia', 'Automático'),
       field('Modalidad de atención', option(this.serviceModes, value.service_mode)),
-      ...(this.isTypeB() ? [field('Modalidad habitual', option(this.serviceModes, value.usual_service_mode))] : []),
     ], this.isTypeB() ? (value.wholesale_materials || []).map((material: any) => ({
       title: this.materialName(material.id_product),
       fields: [field('Volumen estimado (kg)', material.estimated_volume), field('Frecuencia por producto', this.getFrequencyLabel(material.frequency))],
@@ -930,22 +977,22 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         field('Canal de origen', option(this.isTypeB() ? this.wholesaleOriginChannels : this.originChannels, value.origin_channel)),
         field('Estado de relación', option(this.isTypeB() ? this.wholesaleRelationshipStatuses : this.relationshipStatuses, value.relationship_status)),
         field('Condición de negociación', option(this.negotiationConditions, value.negotiation_condition)),
-        ...(this.isTypeB() ? [field('Modalidad de negociación', option(this.negotiationModes, value.negotiation_mode))] : []),
+        ...(this.isTypeA() ? [field('Prioridad de contacto', this.contactPriorities.find(item => item.value === value.contact_priority)?.label || value.contact_priority)] : []),
         ...(this.usesCommercialTerms() ? [field('Condición logística', option(this.logisticsConditions, value.logistics_condition)), field('Nivel de precio', option(this.priceLevels, value.price_policy)), field('Ajuste habitual', value.habitual_price_adjustment)] : []),
-        field('Instrucciones de manejo comercial', value.commercial_observations, true),
+        field('Instrucciones de manejo comercial', value.commercial_observations),
+        ...(this.isTypeA() ? [field('Observaciones de contacto', value.contact_observations, true)] : []),
       ]));
-      if (!this.isTypeC() && !this.isTypeD()) sections.push(section(6, 'Requerimientos Documentales', 'rose', 'fa-file-shield', [
+      if (!this.isTypeA()) sections.push(section(6, 'Requerimientos Documentales', 'rose', 'fa-file-shield', [
         field('¿Requiere certificado?', value.requires_certificate),
-        ...(value.requires_certificate ? [field('Certificado registrado', this.registeredDocuments().filter(document => document.document_type === 'CERTIFICATE').map(document => document.original_name).join(', ') || this.storedCertificate())] : []),
-        ...(!this.isTypeB() ? [field('¿Requiere informe de trazabilidad?', value.requires_traceability_report), ...(value.requires_traceability_report ? [field('Informe registrado', this.registeredDocuments().filter(document => document.document_type === 'TRACEABILITY_REPORT').map(document => document.original_name).join(', '))] : [])] : []),
+        field('¿Requiere informe de trazabilidad?', value.requires_traceability_report),
       ]));
     }
-    sections.push(section(7, 'Información bancaria de la sede', 'cyan', 'fa-building-columns', [],
+    sections.push(section(this.isTypeA() ? 6 : 7, 'Información bancaria de la sede', 'cyan', 'fa-building-columns', [],
       (value.bankAccounts || []).filter((account: any) => account.status !== false).map((account: any, index: number) => ({
         title: `Cuenta ${index + 1}${account.is_main ? ' · Principal' : ''}`,
         fields: [field('Banco', this.banks().find(bank => Number(bank.id) === Number(account.id_bank))?.name), field('Titular de cuenta', account.account_holder), field('N.º de cuenta', account.account_number), field('Tipo de cuenta', option(this.accountTypes, account.account_type)), field('Moneda', account.currency)],
       }))));
-    sections.push(section(8, 'Observaciones Generales', 'slate', 'fa-note-sticky', [field('Observaciones generales', value.general_observations, true)]));
+    sections.push(section(this.isTypeA() ? 7 : 8, 'Observaciones Generales y Estado del Proveedor', 'slate', 'fa-note-sticky', [field('Observaciones generales', value.general_observations, true), field('Estado del proveedor', value.status === false ? 'Inactivo' : 'Activo')]));
     return sections;
   }
   exportingSheet = signal(false);
@@ -983,13 +1030,6 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   }
   supportsMultipleContacts() { return true; }
 
-  updateProvinceOptions(clearProvince = true) {
-    const department = this.providerForm.get('department')?.value;
-    const item = BOLIVIA_DEPARTMENTS.find(entry => entry.name === department);
-    this.provinces.set((item?.provinces || []).map(name => ({ name, code: name })));
-    if (clearProvince) this.providerForm.patchValue({ province: '' });
-  }
-
   captureCurrentLocation() {
     if (!navigator.geolocation) {
       Swal.fire({ icon: 'warning', title: 'Geolocalización no disponible' });
@@ -1003,7 +1043,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       this.locating.set(false);
     }, () => {
       this.locating.set(false);
-      Swal.fire({ icon: 'warning', title: 'No se pudo obtener la ubicación', text: 'Permita el acceso o registre las coordenadas manualmente.' });
+      Swal.fire({ icon: 'warning', title: 'No se pudo obtener la ubicación', text: 'Permita el acceso al dispositivo o seleccione el punto directamente en el mapa.' });
     }, { enableHighAccuracy: true, timeout: 12000 });
   }
 
@@ -1077,6 +1117,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   private setMapLocation(latitude: number, longitude: number, center = true, source: LocationSource = 'manual') {
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return;
+    if (this.providersService.isInfo && source !== 'stored') return;
     const lat = Number(latitude.toFixed(7));
     const lng = Number(longitude.toFixed(7));
     const currentReference = String(this.providerForm.get('geolocation_text')?.value || '').trim();
@@ -1156,6 +1197,52 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     });
   }
 
+  private loadSucursalOptions() {
+    this.sucursalesService.getAllAndSearch(1, 500, true).subscribe(({ sucursales }) => {
+      const branches = (sucursales?.data || []).filter((branch: any) => branch.status !== false)
+        .map((branch: any) => ({ id: Number(branch.id), name: String(branch.name || `Sucursal ${branch.id}`), city: branch.city }));
+      this.availableSucursales.set(branches);
+      const current = Number(this.validatorsService.id_sucursal());
+      if (!this.providerForm.get('id')?.value && !this.providerForm.get('enabled_sucursal_ids')?.value?.length && current) {
+        this.providerForm.patchValue({ enabled_sucursal_ids: [current] }, { emitEvent: false });
+      }
+    });
+  }
+
+  toggleEnabledBranch(event: Event, branchId: number) {
+    const checked = (event.target as HTMLInputElement).checked;
+    const ids = new Set<number>((this.providerForm.get('enabled_sucursal_ids')?.value || []).map(Number));
+    checked ? ids.add(Number(branchId)) : ids.delete(Number(branchId));
+    this.providerForm.patchValue({ enabled_sucursal_ids: [...ids] });
+  }
+
+  contactDepartmentOptions() {
+    const selected = new Set<string>((this.providerForm.get('operating_departments')?.value || []).map(String));
+    const primaryDepartment = String(this.providerForm.get('department')?.value || '');
+    if (!selected.size && primaryDepartment) selected.add(primaryDepartment);
+    return this.departments.filter(department => selected.has(department.code));
+  }
+
+  hasBranchesChanged(hasBranches: boolean) {
+    const departments = this.providerForm.get('operating_departments');
+    if (!hasBranches) {
+      this.providerForm.patchValue({ operating_departments: [] }, { emitEvent: false });
+      this.contactRows.controls.forEach(contact => contact.patchValue({ department: null }, { emitEvent: false }));
+      departments?.clearValidators();
+    } else {
+      departments?.setValidators(Validators.required);
+    }
+    departments?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  operatingDepartmentsChanged(departmentCodes: string[]) {
+    const selected = new Set((departmentCodes || []).map(String));
+    this.contactRows.controls.forEach(contact => {
+      const department = String(contact.get('department')?.value || '');
+      if (department && !selected.has(department)) contact.patchValue({ department: null }, { emitEvent: false });
+    });
+  }
+
   onBranchSelectionChange(providerIds: number[]) {
     const selectedIds = new Set(providerIds || []);
     this.selectedCompanyProviders.set(this.availableProviders().filter(provider => selectedIds.has(provider.id)));
@@ -1166,7 +1253,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     if (tab === this.activeTab()) return;
     const previousTab = this.activeTab();
     if (previousTab !== 'summary') {
-      const fields = ['department', 'province', 'city', 'zone', 'direction', 'latitude', 'longitude', 'geolocation_text', 'google_maps_url'];
+      const fields = ['department', 'city', 'zone', 'direction', 'latitude', 'longitude', 'geolocation_text', 'google_maps_url'];
       this.mapDrafts[previousTab] = {
         values: Object.fromEntries(fields.map(field => [field, this.providerForm.get(field)?.value])),
         center: this.map?.getCenter(), zoom: this.map?.getZoom(),
@@ -1210,12 +1297,17 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   getAllCategories() {
     this.categories.set([]);
-    this.categoriesService.getAllAndSearch(1,1000,true,'','', '', 'id', 'DESC', this.productContext).subscribe(resp => {
-      const formattedCategory = resp.categories.data.map(category => ({
+    this.categoriesService.getAllAndSearch(1,1000,true,'','', ProductCategoryType.RawMaterial, 'id', 'DESC', this.productContext).subscribe(resp => {
+      const formattedCategory = resp.categories.data.filter(category => category.type === ProductCategoryType.RawMaterial).map(category => ({
         name: category.name,
         code: category.id!.toString()
       }));
       this.categories.set(formattedCategory);
+      if (!this.providerForm.get('id')?.value && !this.providerForm.get('id_categories')?.value?.length) {
+        const defaults = formattedCategory.map(category => category.code);
+        this.providerForm.patchValue({ id_categories: defaults }, { emitEvent: false });
+        this.filterProductsByCategories(defaults);
+      }
     });
   }
 
@@ -1239,7 +1331,12 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         code: type.code,
       }));
       this.types.set(formattedType);
-      if(formattedType.length > 0 && !this.providerForm.get('id')?.value) {
+      const selectedTypeId = String(this.providerForm.get('id_type_provider')?.value?.id || '');
+      const selectedType = formattedType.find(type => type.id === selectedTypeId);
+      if (this.providerForm.get('id')?.value && selectedType) {
+        this.providerForm.get('id_type_provider')?.setValue(selectedType, { emitEvent: false });
+        this.changeLabelAndForm();
+      } else if(formattedType.length > 0 && !this.providerForm.get('id')?.value) {
         this.providerForm.get('id_type_provider')?.setValue({
           name: formattedType[0].name,
           id: formattedType[0].id!.toString(),
@@ -1260,16 +1357,10 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     const formProvider = this.buildProviderPayload();
     const request$ = id_type_provider?.code === 'A'
-      ? this.providersService.createCommercialCompany({ company: this.buildCompanyProfile(id_type_provider), headquarters: this.buildSiteProfile(id_type_provider, 'HEADQUARTERS') })
+      ? this.createCompanyWithDocuments(id_type_provider)
       : this.providersService.postNew({ ...formProvider, id_type_provider: Number(id_type_provider.id) });
     request$.pipe(switchMap(response => this.uploadTypeBCertificate(response))).subscribe({
-      next: (response) => {
-        const company = id_type_provider?.code === 'A' && 'company' in response ? response.company : null;
-        const companyId = company && typeof company === 'object' && 'id' in company
-          ? Number(company.id)
-          : null;
-        if (companyId) this.uploadPendingDocuments(companyId);
-      },
+      next: () => {},
       complete: () => {
         this.removeRegistrationDraft(draftKey);
         this.providersService.save$.next(true);
@@ -1287,6 +1378,21 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     });
   }
 
+  private createCompanyWithDocuments(providerType: { id: string }): Observable<any> {
+    const company = this.buildCompanyProfile(providerType);
+    const stagedCompany = { ...company, requires_certificate: false, requires_traceability_report: false };
+    return this.providersService.createCommercialCompany({
+      company: stagedCompany,
+      headquarters: this.buildSiteProfile(providerType, 'HEADQUARTERS'),
+    }).pipe(switchMap(response => {
+      const companyId = Number(response.company?.id);
+      if (!companyId) return throwError(() => new Error('No se recibió el identificador de la empresa matriz.'));
+      return this.uploadPendingDocuments(companyId).pipe(
+        switchMap(() => this.providersService.updateCommercialCompany(companyId, { company })),
+      );
+    }));
+  }
+
   editProvider() {
     if (this.providersService.isInfo) return;
     this.serverErrors.set({});
@@ -1297,12 +1403,12 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     const formProvider = this.buildProviderPayload();
     const request$ = id_type_provider?.code === 'A' && formProvider.company_id
-      ? this.providersService.updateCommercialCompany(Number(formProvider.company_id), { company: this.buildCompanyProfile(id_type_provider), headquarters: this.buildSiteProfile(id_type_provider, 'HEADQUARTERS') })
+      ? this.uploadPendingDocuments(Number(formProvider.company_id)).pipe(switchMap(() => this.providersService.updateCommercialCompany(Number(formProvider.company_id), { company: this.buildCompanyProfile(id_type_provider), headquarters: this.buildSiteProfile(id_type_provider, 'HEADQUARTERS') })))
       : this.providersService.putUpdate({ ...formProvider, id_type_provider: Number(id_type_provider.id) });
-    request$.pipe(switchMap(response => this.uploadTypeBCertificate(response))).subscribe({
-      next: () => {
-        if (id_type_provider?.code === 'A' && formProvider.company_id) this.uploadPendingDocuments(Number(formProvider.company_id));
-      },
+    request$.pipe(
+      switchMap(response => this.uploadTypeBCertificate(response)),
+    ).subscribe({
+      next: () => {},
       complete: () => {
         this.removeRegistrationDraft(draftKey);
         this.providersService.save$.next(true);
@@ -1321,7 +1427,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   }
 
   getAllProducts() {
-    this.productsService.getAllAndSearch(1, 2000, true, '', '', false, '', '', 'name', 'ASC', false, '', this.productContext)
+    this.productsService.getAllAndSearch(1, 2000, true, '', '', false, '', '', 'name', 'ASC', false, ProductCategoryType.RawMaterial, this.productContext)
       .subscribe({
         next: response => {
           const list = (response.products?.data || []).map((product: any) => ({
@@ -1344,7 +1450,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   loadCommercialUsers() {
     this.providersService.getManagementCatalogs().subscribe({
-      next: ({ catalogs }) => this.commercialUsers.set(catalogs.users || []),
+      next: ({ catalogs }) => this.commercialUsers.set((catalogs.users || []).filter(user => String(user.role || '').trim().toUpperCase() === 'COMERCIAL')),
       error: () => this.commercialUsers.set([])
     });
   }
@@ -1381,16 +1487,14 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.fetchFrequencyAnalysis();
   }
 
-  setFrequencyMode(mode: 'automatic' | 'manual') {
-    this.frequencyMode.set(mode);
-    this.providerForm.patchValue({ frequency_mode: mode });
-    if (mode === 'automatic') {
-      this.fetchFrequencyAnalysis();
-      this.applyMaterialFrequencySuggestions();
-      const analysis = this.frequencyAnalysis();
-      if (analysis?.has_sufficient_history && analysis.frequency) {
-        this.providerForm.patchValue({ frequency: analysis.frequency });
-      }
+  setFrequencyMode(_mode: 'automatic' | 'manual' = 'automatic') {
+    this.frequencyMode.set('automatic');
+    this.providerForm.patchValue({ frequency_mode: 'automatic' });
+    this.fetchFrequencyAnalysis();
+    this.applyMaterialFrequencySuggestions();
+    const analysis = this.frequencyAnalysis();
+    if (analysis?.has_sufficient_history && analysis.frequency) {
+      this.providerForm.patchValue({ frequency: analysis.frequency });
     }
   }
 
@@ -1414,6 +1518,8 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
           this.frequencyAnalysis.set(res.analysis);
           if (!this.providersService.isInfo && this.frequencyMode() === 'automatic' && res.analysis.has_sufficient_history && res.analysis.frequency) {
             this.providerForm.patchValue({ frequency: res.analysis.frequency });
+          } else if (!this.providersService.isInfo && !res.analysis.has_sufficient_history) {
+            this.providerForm.patchValue({ frequency: 'UNDETERMINED' });
           }
         }
       },
@@ -1455,6 +1561,8 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       if (suggestion?.estimated_volume != null) row.patchValue({ estimated_volume: suggestion.estimated_volume });
       if (suggestion?.has_sufficient_history && suggestion.frequency) {
         row.patchValue({ frequency: suggestion.frequency, frequency_mode: 'automatic' });
+      } else {
+        row.patchValue({ frequency: 'UNDETERMINED', frequency_mode: 'automatic' });
       }
     });
     const first = this.frequencyAnalysis();
@@ -1467,37 +1575,88 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     return found ? found.label : freq;
   }
 
-  loadPurchasesHistory(providerId?: number, branchId?: number) {
+  loadPurchasesHistory(providerId?: number, page = this.purchaseHistoryPage()) {
     const id = providerId || this.providerForm.get('id')?.value;
     if (!id) {
       this.providerPurchases.set([]);
       this.totalPurchasesAmount.set(0);
       this.totalPurchasesCount.set(0);
       this.lastPurchaseDate.set(null);
+      this.purchaseHistoryError.set('');
       return;
     }
-    const sucursalId = branchId || Number(this.providerForm.get('id_sucursal')?.value || this.validatorsService.id_sucursal()) || undefined;
+    this.purchaseHistoryPage.set(page);
+    this.purchaseHistoryError.set('');
     this.loadingPurchases.set(true);
-    const searchParams: any = {
-      id_provider: Number(id),
-      id_sucursal: sucursalId,
-      status: 'ACTIVE'
-    };
-    this.inputsService.getAllAndSearchInputs(1, 50, searchParams).subscribe({
-      next: (res: GetAllInputs) => {
+    this.providersService.getPurchaseHistory(Number(id), page, this.purchaseHistoryPageSize, this.selectedPurchaseSite() || undefined).subscribe({
+      next: ({ purchases }) => {
         this.loadingPurchases.set(false);
-        const data: Input[] = res.inputs?.data || [];
-        this.providerPurchases.set(data);
-        const total = data.reduce((acc: number, item: Input) => acc + (Number(item.total) || 0), 0);
-        this.totalPurchasesAmount.set(total);
-        this.totalPurchasesCount.set(res.inputs?.total || data.length);
-        this.lastPurchaseDate.set(data.length > 0 ? (data[0].date_voucher || data[0].createdAt) : null);
+        this.providerPurchases.set(purchases.data || []);
+        this.totalPurchasesAmount.set(Number(purchases.summary?.total_amount) || 0);
+        this.totalPurchasesCount.set(Number(purchases.summary?.total_count) || 0);
+        this.lastPurchaseDate.set(purchases.summary?.last_purchase_date || null);
+        this.purchaseSummary.set({
+          purchased_kg: Number(purchases.summary?.purchased_kg) || 0,
+          paid_amount: Number(purchases.summary?.paid_amount) || 0,
+          pending_amount: Number(purchases.summary?.pending_amount) || 0,
+          active_sites: Number(purchases.summary?.active_sites) || 0,
+        });
+        if (!this.purchaseSites().length) this.purchaseSites.set(purchases.sites || []);
       },
-      error: () => {
+      error: error => {
         this.loadingPurchases.set(false);
         this.providerPurchases.set([]);
+        this.purchaseHistoryError.set(error?.error?.msg || error?.error?.errors?.[0]?.msg || 'No se pudo cargar el historial de compras.');
       }
     });
+  }
+
+  selectPurchaseSite(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.selectedPurchaseSite.set(value ? Number(value) : null);
+    this.loadPurchasesHistory(undefined, 1);
+  }
+
+  printProviderProfile(): void {
+    const companyId = Number(this.providerForm.get('company_id')?.value);
+    if (!companyId || this.exportingProfile()) return;
+    this.exportingProfile.set(true);
+    this.pdfActions.prepareRequest(this.providersService.getPrintableCommercialProfile(companyId)).subscribe({
+      next: blob => {
+        this.pdfActions.show(blob, `ficha-proveedor-${companyId}.pdf`, 'Ficha corporativa de proveedor');
+        this.exportingProfile.set(false);
+      },
+      error: () => {
+        this.exportingProfile.set(false);
+        void Swal.fire('No se pudo generar la ficha', 'Intente nuevamente imprimir la ficha del proveedor.', 'error');
+      },
+    });
+  }
+
+  changePurchasesPage(page: number) {
+    const totalPages = Math.ceil(this.totalPurchasesCount() / this.purchaseHistoryPageSize);
+    if (page < 1 || page > totalPages || page === this.purchaseHistoryPage()) return;
+    this.loadPurchasesHistory(undefined, page);
+  }
+
+  purchaseHistoryTotalPages(): number {
+    return Math.max(1, Math.ceil(this.totalPurchasesCount() / this.purchaseHistoryPageSize));
+  }
+
+  viewPurchaseDetails(purchase: ProviderPurchaseHistoryInput): void {
+    this.inputsService.getInputById(String(purchase.id)).subscribe({
+      next: ({ input }) => {
+        this.inputsService.detailsSubs$.emit(input);
+        this.inputsService.showModalDetailsInput = true;
+      },
+      error: error => {
+        void Swal.fire('No se pudo abrir la compra', error?.error?.msg || 'Intente nuevamente.', 'error');
+      },
+    });
+  }
+
+  printPurchase(purchase: ProviderPurchaseHistoryInput): void {
+    this.inputsService.printPdfReport(purchase.id);
   }
 
   isRawMaterialProvider(): boolean {
@@ -1512,15 +1671,19 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       corporate_phone: value.corporate_phone || null, corporate_cellphone: value.corporate_cellphone || null,
       corporate_email: value.corporate_email || null, website: value.website || null,
       number_document: String(value.number_document || '').trim(), entity_type: value.entity_type as ProviderEntityType,
-      id_type_provider: Number(providerType.id), id_commercial_user: Number(value.id_commercial_user || this.validatorsService.user()?.id) || null,
+      id_type_provider: Number(providerType.id), id_commercial_user: Number(value.id_commercial_user || (this.validatorsService.user()?.role === 'COMERCIAL' ? this.validatorsService.user()?.id : null)) || null,
       origin_channel: value.origin_channel as ProviderOriginChannel,
       relationship_status: value.relationship_status as ProviderRelationshipStatus,
+      has_branches: Boolean(value.has_branches),
       negotiation_condition: (value.negotiation_condition || null) as ProviderNegotiationCondition | null,
       commercial_observations: value.commercial_observations || null,
+      contact_priority: value.contact_priority || 'MEDIUM',
+      contact_observations: value.contact_observations || null,
       requires_certificate: Boolean(value.requires_certificate),
       requires_traceability_report: Boolean(value.requires_traceability_report),
       general_observations: value.general_observations || null,
       operational_type: value.operational_type as ProviderOperationalType,
+      operating_departments: value.operating_departments || [],
       status: value.status !== false,
     };
   }
@@ -1537,19 +1700,20 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     return {
       id: value.id || undefined, id_provider_company: value.company_id || null, site_role: role,
       id_sucursal: Number(value.id_sucursal || this.validatorsService.id_sucursal()) || null,
+      enabled_sucursal_ids: (value.enabled_sucursal_ids || []).map(Number),
       full_names: String(value.site_name || value.full_names || '').trim(), number_document: String(value.number_document || '').trim(),
       cellphone: value.cellphone ? String(value.cellphone) : null,
-      frequency: value.frequency as ProviderFrequency, frequency_mode: value.frequency_mode, service_mode: value.service_mode as ProviderServiceMode,
+      frequency: value.frequency as ProviderFrequency, frequency_mode: 'automatic', service_mode: value.service_mode as ProviderServiceMode,
       status: value.status !== false,
       location: {
-        branch_name: value.site_name || value.full_names || 'SEDE PRINCIPAL', department: value.department, province: value.province || null,
+        branch_name: value.site_name || value.full_names || 'SEDE PRINCIPAL', department: value.department,
         city: value.city, zone: value.zone || null, address: value.direction,
         latitude: value.latitude === null ? null : Number(value.latitude), longitude: value.longitude === null ? null : Number(value.longitude),
         geolocation_text: value.geolocation_text || null, google_maps_url: value.google_maps_url || null,
         is_main: true, status: true,
       },
       contacts,
-      materials: materialIds.map((id: string | number) => ({ id_product: Number(id), frequency: value.frequency as ProviderFrequency, frequency_mode: value.frequency_mode, service_mode: value.service_mode as ProviderServiceMode, status: true })),
+      materials: materialIds.map((id: string | number) => ({ id_product: Number(id), frequency: value.frequency as ProviderFrequency, frequency_mode: 'automatic', service_mode: value.service_mode as ProviderServiceMode, status: true })),
       bankAccounts: value.bankAccounts,
     };
   }
@@ -1611,10 +1775,8 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     const missingFields = [
       ['full_names', 'la razón social'],
       ['number_document', 'el NIT / documento'],
+      ['department', 'el departamento de la sede'],
     ].filter(([field]) => !String(this.providerForm.get(field)?.value || '').trim());
-    const selectedDocuments = this.documentFiles();
-    if (this.providerForm.get('requires_certificate')?.value && !this.providerForm.get('company_id')?.value && !selectedDocuments.CERTIFICATE) missingFields.push(['certificate', 'el certificado PDF']);
-    if (this.providerForm.get('requires_traceability_report')?.value && !this.providerForm.get('company_id')?.value && !selectedDocuments.TRACEABILITY_REPORT) missingFields.push(['traceability', 'el informe de trazabilidad PDF']);
     if (!missingFields.length) return true;
     this.saveRegistrationDraft(false);
     missingFields.forEach(([field]) => this.providerForm.get(field)?.setErrors({ required: true }));
@@ -1657,13 +1819,17 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.selectDocument(type, { target: { files: [file] } } as unknown as Event);
   }
 
-  private uploadPendingDocuments(companyId: number) {
-    Object.entries(this.documentFiles()).forEach(([type, file]) => {
-      if (!file) return;
-      this.providersService.uploadCommercialCompanyDocument(companyId, type as 'CERTIFICATE' | 'TRACEABILITY_REPORT', file).subscribe({
-        error: () => Swal.fire('Documento pendiente', 'La empresa fue guardada, pero no se pudo cargar uno de sus documentos.', 'warning'),
-      });
+  private uploadPendingDocuments(companyId: number): Observable<unknown> {
+    const uploads = Object.entries(this.documentFiles()).flatMap(([type, file]) => {
+      if (!file) return [];
+      const documentType = type as 'CERTIFICATE' | 'TRACEABILITY_REPORT';
+      return [this.providersService.uploadCommercialCompanyDocument(companyId, documentType, file).pipe(map(result => {
+        this.registeredDocuments.update(documents => [...documents.filter(document => document.document_type !== documentType), result.document]);
+        this.removeDocument(documentType);
+        return result;
+      }))];
     });
+    return uploads.length ? forkJoin(uploads) : of([]);
   }
 
   resetModal() {
@@ -1677,6 +1843,15 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.registeredDocuments.set([]);
     this.registeredCommercialUser.set('');
     this.documentFiles.set({});
+    this.purchaseSites.set([]);
+    this.selectedPurchaseSite.set(null);
+    this.purchaseSummary.set({ purchased_kg: 0, paid_amount: 0, pending_amount: 0, active_sites: 0 });
+    this.providerPurchases.set([]);
+    this.totalPurchasesAmount.set(0);
+    this.totalPurchasesCount.set(0);
+    this.lastPurchaseDate.set(null);
+    this.purchaseHistoryError.set('');
+    this.exportingProfile.set(false);
     this.activeTab.set('company');
     this.map?.remove();
     this.map = undefined;
@@ -1714,25 +1889,26 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       companyContacts: '',
       company_id: null,
       has_branches: false,
+      operating_departments: [], enabled_sucursal_ids: [Number(this.validatorsService.id_sucursal())].filter(Boolean),
       provider_ids: [],
-      commercial_name: '', entity_type: 'PRIVATE', id_commercial_user: this.validatorsService.user()?.id || null,
+      commercial_name: '', entity_type: 'PRIVATE', id_commercial_user: this.validatorsService.user()?.role === 'COMERCIAL' ? this.validatorsService.user()?.id || null : null,
       service_mode: 'BOTH', origin_channel: 'DIRECT_CONTACT', relationship_status: 'ACTIVE',
-      negotiation_condition: '', commercial_observations: '', requires_certificate: false,
+      negotiation_condition: '', commercial_observations: '', contact_priority: 'MEDIUM', contact_observations: '', requires_certificate: false,
       usual_service_mode: null, logistics_condition: 'RECUMET_PICKUP', negotiation_mode: null, price_policy: 'LIST_PRICE',
       habitual_price_adjustment: '', commercialized_materials: '', id_categories: [],
       contact_frequency: 'MONTHLY',
       requires_traceability_report: false, general_observations: '',
-      department: '', province: '', city: '', zone: '', latitude: null, longitude: null, geolocation_text: '', google_maps_url: '',
+      department: '', city: '', zone: '', latitude: null, longitude: null, geolocation_text: '', google_maps_url: '',
       frequency: 'MONTHLY', material_ids: [], operational_type: 'RAW_MATERIAL',
       workAreaOrPositionOrUnit: '',
       status: true,
     });
-    this.provinces.set([]);
     this.contactRows.clear();
     this.bankAccountRows.clear();
     this.wholesaleMaterialRows.clear();
     this.ensureCollectionRows();
     this.loadDefaultBranchCity();
+    this.loadSucursalOptions();
   }
 
   updateFormLabels(typeCode?: string) {
@@ -1814,6 +1990,13 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         this.formP = { ...defaultFormConfig };
         break;
     }
+    // Se capturan en las secciones de materiales/contactos; se conservan en el modelo por compatibilidad.
+    this.formP = {
+      ...this.formP,
+      id_category: { ...this.formP.id_category, view: false },
+      workAreaOrPositionOrUnit: { ...this.formP.workAreaOrPositionOrUnit, view: false },
+      companyContacts: { ...this.formP.companyContacts, view: false },
+    };
   }
 
   changeLabelAndForm() {
@@ -1830,7 +2013,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     if (this.supportsMultipleContacts()) contacts?.enable({ emitEvent: false });
     else contacts?.disable({ emitEvent: false });
     this.contactRows.controls.forEach(row => {
-      for (const field of ['position_area', 'cellphone']) {
+      for (const field of ['cellphone']) {
         const control = row.get(field);
         if (this.supportsBranches()) control?.addValidators(Validators.required);
         else control?.removeValidators(Validators.required);
@@ -1843,10 +2026,14 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       if (!control.hasValidator(Validators.required)) control.addValidators(Validators.required);
       control.updateValueAndValidity({ emitEvent: false });
     }
+    const enabledBranches = this.providerForm.get('enabled_sucursal_ids');
+    if (this.supportsBranches()) enabledBranches?.setValidators(Validators.required);
+    else enabledBranches?.clearValidators();
+    enabledBranches?.updateValueAndValidity({ emitEvent: false });
     for (const field of ['id_categories', 'latitude', 'longitude']) {
       const control = this.providerForm.get(field);
       if (!control) continue;
-      if (this.providersService?.isEdit && !this.providersService?.isInfo) control.addValidators(Validators.required);
+      if (field === 'id_categories' && this.providersService?.isEdit && !this.providersService?.isInfo) control.addValidators(Validators.required);
       else control.removeValidators(Validators.required);
       if (field === 'latitude') control.addValidators([Validators.min(-90), Validators.max(90)]);
       if (field === 'longitude') control.addValidators([Validators.min(-180), Validators.max(180)]);
@@ -1862,6 +2049,9 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     else primaryContact?.addValidators(Validators.required);
     primaryContact?.updateValueAndValidity({ emitEvent: false });
     const requiredTerms = this.usesCommercialTerms();
+    const operatingDepartments = this.providerForm.get('operating_departments');
+    operatingDepartments?.setValidators(this.supportsBranches() && this.providerForm.get('has_branches')?.value ? Validators.required : []);
+    operatingDepartments?.updateValueAndValidity({ emitEvent: false });
     this.providerForm.get('price_policy')?.setValidators(requiredTerms ? [
       Validators.required,
       control => !control.value || this.priceLevels.some(option => option.value === control.value) ? null : { invalidOption: true },

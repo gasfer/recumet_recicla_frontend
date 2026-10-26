@@ -12,7 +12,7 @@ describe('sucursal-badge.util', () => {
     expect(themeMatriz.color).toBe('#0369a1');
 
     const themeOruro = getSucursalTheme('SUCURSAL ORURO');
-    expect(themeOruro.color).toBe('#15803d');
+    expect(themeOruro.color).toBe('var(--color-primary)');
 
     const themeCbba = getSucursalTheme('SUCURSAL CBBA-REPUBLICA');
     expect(themeCbba.color).toBe('#854d0e');

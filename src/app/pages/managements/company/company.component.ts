@@ -14,7 +14,7 @@ type PrintFormat = 'HALF_PAGE' | 'ROLL';
   selector: 'app-company',
   templateUrl: './company.component.html',
   styles: [`
-    .company-preview { background: #f8fafc; min-height: 100%; }
+    .company-preview { background: var(--color-surface-secondary); min-height: 100%; }
     .company-logo { height: 112px; max-width: 180px; object-fit: contain; }
     .print-format-option { min-height: 116px; text-align: left; }
     .print-format-option.selected { border: 2px solid var(--primary-color); background: color-mix(in srgb, var(--primary-color) 8%, white); }

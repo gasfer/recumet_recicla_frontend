@@ -40,7 +40,7 @@ export class QueryInputsComponent implements OnInit {
     {
       label: 'Reporte Compras',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => { this.printExcelReport(); }
     },
     {
@@ -57,7 +57,7 @@ export class QueryInputsComponent implements OnInit {
     {
       label: 'Resumen producto',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => { this.printExcelDetailsReport(); }
     },
   ];
@@ -84,7 +84,7 @@ export class QueryInputsComponent implements OnInit {
     },
     {
       label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => {
         this.cols()[0].isLink = true;
         this.cols()[0].link = '/accounts/accounts-payable?c=${value}';

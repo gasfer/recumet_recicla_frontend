@@ -19,43 +19,7 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
 @Component({
   selector: 'app-query-inputs',
   templateUrl: './query-inputs.component.html',
-  styles: [`
-    :host { display:block; min-width:0; }
-    .purchase-management-card { margin-bottom:.75rem; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 1px 3px rgba(15,23,42,.06); }
-    .purchase-management-title { margin:0; color:#0b1324; font-size:1rem; font-weight:700; letter-spacing:.01em; }
-    .purchase-management-card ::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link { padding:.55rem .75rem; background:#f8fafc; border-color:#e2e8f0; color:#334155; font-size:.8rem; font-weight:700; }
-    .purchase-management-card ::ng-deep .p-accordion .p-accordion-content { padding:.75rem; border-color:#e2e8f0; }
-    .purchase-management-card ::ng-deep .purchase-filter-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start; gap:.65rem .75rem; margin:0; }
-    .purchase-management-card ::ng-deep .purchase-filter-field { display:flex; flex-direction:column; min-width:0; margin:0; }
-    .purchase-management-card ::ng-deep .purchase-filter-field > .row { display:contents; }
-    .purchase-management-card ::ng-deep .purchase-filter-field > .row > [class*="col-"] { width:auto; max-width:none; flex:none; padding:0; }
-    .purchase-management-card ::ng-deep .purchase-filter-field > label { display:block; margin:0 0 .25rem; color:#475569; font-size:.72rem; font-weight:650; }
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-dropdown,
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-multiselect,
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-calendar,
-    .purchase-management-card ::ng-deep .purchase-filter-field .erp-input { width:100%; min-width:0; }
-    .purchase-management-card ::ng-deep .purchase-filter-field app-input-search { display:block; width:100%; min-width:0; }
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-dropdown,
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-multiselect,
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-inputtext { min-height:32px; height:32px; font-size:.78rem; }
-    .purchase-management-card ::ng-deep .purchase-filter-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.5rem; padding-top:.65rem; border-top:1px solid #e2e8f0; }
-    .purchase-management-card ::ng-deep .purchase-filter-field > label { overflow-wrap:anywhere; }
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-dropdown,
-    .purchase-management-card ::ng-deep .purchase-filter-field .p-calendar { display:flex; }
-    .purchase-management-card ::ng-deep .purchase-filter-storage { align-items:flex-start; gap:.25rem; }
-    .purchase-management-card ::ng-deep .purchase-filter-storage small { font-size:.68rem; line-height:1.25; }
-    .purchase-management-card ::ng-deep .purchase-provider-selection { display:flex; align-items:flex-start; gap:.35rem; min-width:0; }
-    .purchase-management-card ::ng-deep .purchase-clear-provider { width:28px; height:28px; flex:0 0 28px; border:1px solid #fecdd3; border-radius:50%; background:#fff1f2; color:#be123c; }
-    .purchase-management-card ::ng-deep .purchase-filter-selected-provider p-tag { display:flex; width:fit-content; max-width:100%; white-space:normal; }
-    .purchase-management-card ::ng-deep .purchase-filter-selected-provider .p-tag-value { white-space:normal; overflow-wrap:anywhere; }
-    .purchase-management-card ::ng-deep .purchase-filter-provider { position:relative; }
-    .purchase-management-card ::ng-deep .purchase-filter-provider > div.position-absolute { top:100%; left:0; right:0; width:100%; z-index:20; }
-    .purchase-management-card ::ng-deep .purchase-filter-provider ul { max-height:220px; overflow:auto; margin:0; }
-    .purchase-management-card ::ng-deep .purchase-filter-actions { grid-column:1/-1; }
-    @media(max-width:1050px) { .purchase-management-card ::ng-deep .purchase-filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
-    @media(max-width:760px) { .purchase-management-card ::ng-deep .purchase-filter-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    @media(max-width:520px) { .purchase-management-card ::ng-deep .purchase-filter-grid { grid-template-columns:minmax(0,1fr); } .purchase-management-card ::ng-deep .purchase-filter-actions > * { flex:1 1 100%; } }
-  `]
+  styleUrls: ['./query-inputs.component.scss']
 })
 export class QueryInputsComponent implements OnInit {
   readonly exporting = signal(false);
@@ -117,7 +81,7 @@ export class QueryInputsComponent implements OnInit {
   searchItems = signal<MenuItem[]>([
     {
       label: 'Todos', icon: 'fas fa-list',
-      iconStyle: { 'color': '#f59e0b'},
+      iconStyle: { 'color': 'var(--color-warning)'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
@@ -127,7 +91,7 @@ export class QueryInputsComponent implements OnInit {
     },
     {
       label: 'Al Contado', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3b82f6'},
+      iconStyle: { 'color': 'var(--color-info)'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = 'CONTADO';
@@ -137,7 +101,7 @@ export class QueryInputsComponent implements OnInit {
     },
     {
       label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left',
-      iconStyle: { 'color': '#10b981'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => {
         this.cols()[0].isLink = true;
         this.cols()[0].link = '/accounts/accounts-payable?c=${value}';
@@ -150,7 +114,7 @@ export class QueryInputsComponent implements OnInit {
     },
     {
       label: 'Anulados', icon: 'fa-solid fa-trash-can',
-      iconStyle: { 'color': '#ef4444'},
+      iconStyle: { 'color': 'var(--color-danger)'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
@@ -491,8 +455,8 @@ export class QueryInputsComponent implements OnInit {
       showLoaderOnConfirm: true,
       showCancelButton: true,
       backdrop:true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: 'var(--color-action-primary)',
+      cancelButtonColor: 'var(--color-action-secondary)',
       cancelButtonText: 'Cancelar',
       customClass: { container: 'sweetalert2'},
       preConfirm: async (reason) => {

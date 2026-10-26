@@ -18,41 +18,41 @@ export class HomeComponent implements OnInit {
   searchTerm = '';
   cardsRequest = signal([
     {
-      class: 'card r-card', icon: 'fa-solid fa-tags',
+      class: 'card r-card module-products', icon: 'fa-solid fa-tags',
       view: this.validatorsService.withPermission('PRODUCTOS','view'),
       title: 'PRODUCTOS', subtitle: 'Catálogo y precios', linkRedirect: '/inventories/products',
     },
     {
-      class: 'card bookp-card', icon: 'fa-solid fa-truck',
+      class: 'card bookp-card module-purchases', icon: 'fa-solid fa-truck',
       view: this.validatorsService.withPermission('COMPRAS','create'),
       title: 'COMPRAS', subtitle: 'Ingreso por báscula', linkRedirect: '/inputs/input-small',
     }, {
-      class: 'card revenue-card', icon: 'fa-solid fa-boxes-stacked',
+      class: 'card revenue-card module-classifieds', icon: 'fa-solid fa-boxes-stacked',
       view: this.validatorsService.withPermission('CLASIFICADOS','create'),
       title: 'CLASIFICADOS', subtitle: 'Tipos de material', linkRedirect: '/classifieds/classified',
     },
     {
-      class: 'card o-card', icon: 'fa-solid fa-users',
+      class: 'card o-card module-clients', icon: 'fa-solid fa-users',
       view: this.validatorsService.withPermission('CLIENTES','view'),
       title: 'CLIENTES', subtitle: 'Compradores finales', linkRedirect: '/outputs/clients',
     },
     {
-      class: 'card b-card', icon: 'fa-solid fa-cart-plus',
+      class: 'card b-card module-sales', icon: 'fa-solid fa-cart-plus',
       view: this.validatorsService.withPermission('VENTAS','create'),
       title: 'VENTAS', subtitle: 'Despacho de material', linkRedirect: '/outputs/output',
     },
     {
-      class: 'card p-card', icon: 'fa-solid fa-signs-post',
+      class: 'card p-card module-transfers', icon: 'fa-solid fa-signs-post',
       view: this.validatorsService.withPermission('TRASLADOS','create'),
       title: 'TRASLADOS', subtitle: 'Entre sucursales', linkRedirect: '/transfers/transfer',
     },
     {
-      class: 'card o-card', icon: 'fa-solid fa-cash-register',
+      class: 'card o-card module-cash', icon: 'fa-solid fa-cash-register',
       view: this.validatorsService.withPermission('CAJA','view'),
       title: 'CAJA', subtitle: 'Flujo de efectivo', linkRedirect: '/caja/adm-caja',
     },
     {
-      class: 'card p-card', icon: 'fas fa-clipboard-list',
+      class: 'card p-card module-inventory', icon: 'fas fa-clipboard-list',
       view: this.validatorsService.withPermission('KARDEX-FIS','view'),
       title: 'INVENTARIO', subtitle: 'Stock en patios', linkRedirect: '/inventories/kardex-fisico/mp',
     },
@@ -98,6 +98,7 @@ export class HomeComponent implements OnInit {
   operationClass(type?: string): string {
     const label = (type ?? '').toLocaleLowerCase();
     if (label.includes('compra')) return 'is-purchase';
+    if (label.includes('abono')) return 'is-payment';
     if (label.includes('venta')) return 'is-sale';
     return label.includes('edit') || label.includes('modific') ? 'is-edit' : '';
   }

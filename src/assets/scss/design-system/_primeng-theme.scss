@@ -84,7 +84,7 @@ body .p-datepicker .p-datepicker-header .p-link {
 
 body .p-datepicker table td > span.p-highlight {
   background-color: var(--color-primary) !important;
-  color: var(--color-primary-on, #00311f) !important;
+  color: var(--color-primary-on, var(--color-text)) !important;
   border-radius: var(--radius-md) !important;
 }
 
@@ -128,7 +128,7 @@ body .p-dialog .p-dialog-header .p-dialog-header-icons {
 
 body .p-dialog .p-dialog-header .p-dialog-header-icon {
   color: var(--color-header-modal-text) !important;
-  background-color: rgb(18 53 43 / .12) !important;
+  background-color: color-mix(in srgb, var(--color-primary) 16%, var(--color-table-header)) !important;
   border-radius: 9999px !important;
   width: 2rem !important;
   height: 2rem !important;
@@ -164,7 +164,7 @@ body .p-dialog .p-dialog-footer {
 }
 
 /* Modal operativo compacto: cabecera, contenido desplazable y acciones persistentes */
-body .p-dialog.erp-operational-dialog { max-height:calc(100dvh - 24px)!important; border:1px solid #dbe4ed!important; border-radius:10px!important; box-shadow:0 18px 48px rgba(11,19,36,.18)!important; }
+body .p-dialog.erp-operational-dialog { max-height:calc(100dvh - 24px)!important; border:1px solid var(--color-border)!important; border-radius:10px!important; box-shadow:var(--shadow-lg)!important; }
 body .p-dialog.erp-operational-dialog .p-dialog-header { min-height:44px; padding:.55rem .85rem!important; background:var(--color-header-modal)!important; color:var(--color-header-modal-text)!important; border-radius:9px 9px 0 0!important; }
 body .p-dialog.erp-operational-dialog .p-dialog-title { color:var(--color-header-modal-text)!important; font-size:13px!important; font-weight:700!important; }
 body .p-dialog.erp-operational-dialog .p-dialog-header-icon { color:var(--color-header-modal-text)!important; }
@@ -203,7 +203,7 @@ body .p-inputnumber-input {
 
 body .p-inputnumber-input:focus {
   border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 15%, transparent) !important;
   outline: none !important;
 }
 
@@ -266,26 +266,26 @@ body .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
    ---------------------------------------------------------- */
 i.text-danger, .text-danger i,
 i.fa-trash, i.fa-trash-can, i.fa-circle-xmark, i.fa-ban, i.fa-times {
-  color: #EF4444 !important;
+  color: var(--color-danger) !important;
 }
 
 i.text-success, .text-success i,
 i.fa-check, i.fa-circle-check {
-  color: #10B981 !important;
+  color: var(--color-primary) !important;
 }
 
 i.text-warning, .text-warning i,
 i.fa-triangle-exclamation, i.fa-exclamation, i.fa-clock {
-  color: #F59E0B !important;
+  color: var(--color-warning) !important;
 }
 
 i.text-info, .text-info i,
 i.fa-circle-info, i.fa-info {
-  color: #2563EB !important;
+  color: var(--color-info) !important;
 }
 
 i.text-primary, .text-primary i {
-  color: #059669 !important;
+  color: var(--color-primary) !important;
 }
 
 /* Iconos dentro de addons de input-group: mantener color neutro/sutil */

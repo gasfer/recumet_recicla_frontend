@@ -2,18 +2,19 @@
     margin-bottom: 15px;
     border: none;
     border-radius: 20px;
-    box-shadow: 0.1px 0 30px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
   }
 
   .card:hover h5 {
-    color: #ffffff;
+    color: var(--color-text-inverse);
     font-weight: bold;
   }
 
   .card:hover {
-    background-color: rgba(79, 185, 168, 1);
-    color: #ffffff;
-    transform: translateY(-7px);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
   }
 
 
@@ -21,7 +22,7 @@
     padding: 10px 0 10px 0;
     font-size: 15px;
     font-weight: 500;
-    color: #012970;
+    color: var(--color-text);
   }
 
 
@@ -40,39 +41,48 @@
   }
 
   .b-card .card-icon {
-    color: #4154f1;
-    background: #d2e6ff;
+    color: var(--color-info);
+    background: var(--color-info-light);
   }
 
   .bookp-card .card-icon {
-    color: #6D56A0;
-    background: #f6f6fe;
+    color: var(--color-accent-violet-text);
+    background: var(--color-accent-violet-light);
   }
 
   .revenue-card .card-icon {
-    color: #2eca6a;
-    background: #e0f8e9;
+    color: var(--color-primary);
+    background: var(--color-success-light);
   }
 
   .o-card .card-icon {
-    color: #ff771d;
-    background: #ffecdf;
+    color: var(--color-accent-orange-text);
+    background: var(--color-accent-orange-light);
   }
 
   .t-card .card-icon {
-    color: #00ACD8;
-    background: #d2f6ff;
+    color: var(--color-info-text);
+    background: var(--color-info-light);
   }
 
   .p-card .card-icon {
-    color: rgba(79, 185, 168, 1);
-    background: #d2f6ff;
+    color: var(--color-accent-teal-text);
+    background: var(--color-accent-teal-light);
   }
 
   .r-card .card-icon {
-    color: rgb(181, 27, 27);
-    background: #ffdec8;
+    color: var(--color-danger-text);
+    background: var(--color-danger-light);
   }
+
+  .module-products .card-icon { color: var(--color-danger); background: var(--color-danger-light); }
+  .module-purchases .card-icon { color: var(--color-accent-violet); background: var(--color-accent-violet-light); }
+  .module-classifieds .card-icon { color: var(--color-classified-icon); background: var(--color-success-light); }
+  .module-clients .card-icon { color: var(--color-client-icon); background: var(--color-warning-light); }
+  .module-sales .card-icon { color: var(--color-info-card); background: var(--color-info-card-light); }
+  .module-transfers .card-icon { color: var(--color-accent-teal); background: var(--color-accent-teal-light); }
+  .module-cash .card-icon { color: var(--color-accent-orange); background: var(--color-accent-orange-light); }
+  .module-inventory .card-icon { color: var(--color-accent-cyan); background: var(--color-accent-cyan-light); }
 
 
 
@@ -80,8 +90,8 @@
     padding: 20px;
     position: relative;
     overflow: hidden;
-    background: #fff;
-    box-shadow: 0 0 29px 0 rgba(68, 88, 144, 0.12);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-md);
     transition: all 0.3s ease-in-out;
     z-index: 1;
     border-radius: 20px;
@@ -90,7 +100,7 @@
   .icon-box::before {
     content: "";
     position: absolute;
-    background: #00B04E;
+    background: var(--color-primary);
     right: -60px;
     top: -40px;
     width: 100px;
@@ -101,9 +111,8 @@
   }
 
   .icon-box:hover::before {
-    background: linear-gradient(60deg, #00B04E 0%, #00B04E 100% );
+    background: var(--color-primary);
 
-   /* background: linear-gradient(60deg, rgb(58, 183, 141) 0%, rgba(0,172,193,1) 100%); */
     right: 0;
     top: 0;
     width: 100%;

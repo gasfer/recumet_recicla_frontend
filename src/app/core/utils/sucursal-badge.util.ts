@@ -6,22 +6,22 @@ export interface SucursalTheme {
 
 const FALLBACK_PALETTES: SucursalTheme[] = [
   { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' }, // Sky
-  { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0' }, // Mint
+  { bg: 'var(--color-success-light)', color: 'var(--color-primary)', border: 'var(--color-success-light)' }, // Mint
   { bg: '#f3e8ff', color: '#7e22ce', border: '#e9d5ff' }, // Lavender
   { bg: '#ffedd5', color: '#c2410c', border: '#fed7aa' }, // Peach
   { bg: '#fce7f3', color: '#be185d', border: '#fbcfe8' }, // Rose
-  { bg: '#ccfbf1', color: '#0f766e', border: '#99f6e4' }, // Teal
+  { bg: '#ccfbf1', color: '#0f766e', border: 'var(--color-success-light)' }, // Teal
   { bg: '#e0e7ff', color: '#4338ca', border: '#c7d2fe' }, // Indigo
   { bg: '#fef9c3', color: '#854d0e', border: '#fef08a' }, // Amber
 ];
 
 const KNOWN_SUCURSAL_MAP: Record<string, SucursalTheme> = {
   'casa matriz': { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' },
-  'sucursal oruro': { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0' },
+  'sucursal oruro': { bg: 'var(--color-success-light)', color: 'var(--color-primary)', border: 'var(--color-success-light)' },
   'sucursal vip': { bg: '#f3e8ff', color: '#7e22ce', border: '#e9d5ff' },
   'sucursal cgt': { bg: '#ffedd5', color: '#c2410c', border: '#fed7aa' },
   'sucursal prodmetal cgs': { bg: '#fce7f3', color: '#be185d', border: '#fbcfe8' },
-  'sucursal santa cruz sur': { bg: '#ccfbf1', color: '#0f766e', border: '#99f6e4' },
+  'sucursal santa cruz sur': { bg: '#ccfbf1', color: '#0f766e', border: 'var(--color-success-light)' },
   'sucursal santa cruz norte': { bg: '#e0e7ff', color: '#4338ca', border: '#c7d2fe' },
   'sucursal cbba-republica': { bg: '#fef9c3', color: '#854d0e', border: '#fef08a' },
   'cbba republica': { bg: '#fef9c3', color: '#854d0e', border: '#fef08a' },

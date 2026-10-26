@@ -12,9 +12,9 @@
       <svg class="recumet-svg-reverse" viewBox="0 0 100 100" aria-hidden="true">
         <defs>
           <linearGradient [id]="reverseGradientId" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#10B981" stop-opacity="0.6"></stop>
-            <stop offset="50%" stop-color="#059669" stop-opacity="0.1"></stop>
-            <stop offset="100%" stop-color="#047857" stop-opacity="0"></stop>
+            <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.6"></stop>
+            <stop offset="50%" stop-color="var(--color-primary)" stop-opacity="0.1"></stop>
+            <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0"></stop>
           </linearGradient>
         </defs>
         <circle cx="50" cy="50" fill="none" r="46" [attr.stroke]="'url(#' + reverseGradientId + ')'" stroke-dasharray="60 120" stroke-linecap="round" stroke-width="1.5"></circle>
@@ -24,9 +24,9 @@
       <svg class="recumet-svg-primary" viewBox="0 0 100 100" aria-hidden="true">
         <defs>
           <linearGradient [id]="primaryGradientId" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#10B981"></stop>
-            <stop offset="60%" stop-color="#059669"></stop>
-            <stop offset="100%" stop-color="#047857" stop-opacity="0.05"></stop>
+            <stop offset="0%" stop-color="var(--color-primary)"></stop>
+            <stop offset="60%" stop-color="var(--color-primary)"></stop>
+            <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0.05"></stop>
           </linearGradient>
         </defs>
         <!-- Base faint guidance track -->

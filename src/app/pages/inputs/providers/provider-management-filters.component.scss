@@ -1,7 +1,7 @@
 :host { display: block; min-width: 0; }
 .provider-filter-panel {
-  background: var(--color-success-light);
-  border: 1px solid var(--color-success);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 .provider-filter-heading {
   margin: -.875rem -.875rem 0;
@@ -29,7 +29,7 @@
   }
   .p-dropdown.p-focus, .p-multiselect.p-focus, input:focus {
     border-color: var(--color-success);
-    box-shadow: 0 0 0 2px rgba(5, 150, 105, .12);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 12%, transparent);
   }
   .p-multiselect .p-multiselect-token {
     background: var(--color-success-light);

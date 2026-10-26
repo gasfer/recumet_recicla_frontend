@@ -1,4 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+const paletteShades = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'];
+const tintOpacity = { 50: '0.06', 100: '0.12', 200: '0.24', 300: '0.4', 400: '0.65' };
+const semanticScale = (rgbToken, textToken) => Object.fromEntries(paletteShades.map(shade => {
+  if (Number(shade) >= 600) return [shade, `var(--${textToken})`];
+  const alpha = tintOpacity[shade] ? `calc(<alpha-value> * ${tintOpacity[shade]})` : '<alpha-value>';
+  return [shade, `rgb(var(--${rgbToken}) / ${alpha})`];
+}));
+
 module.exports = {
   content: [
     './src/**/*.{html,ts}'
@@ -11,6 +19,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        green: semanticScale('color-primary-rgb', 'color-success-text'),
+        emerald: semanticScale('color-primary-rgb', 'color-success-text'),
+        blue: semanticScale('color-info-rgb', 'color-info-text'),
+        amber: semanticScale('color-warning-rgb', 'color-warning-text'),
+        yellow: semanticScale('color-warning-rgb', 'color-warning-text'),
+        red: semanticScale('color-danger-rgb', 'color-danger-text'),
+        rose: semanticScale('color-danger-rgb', 'color-danger-text'),
+        violet: semanticScale('color-accent-violet-rgb', 'color-accent-violet-text'),
+        purple: semanticScale('color-accent-violet-rgb', 'color-accent-violet-text'),
+        indigo: semanticScale('color-accent-violet-rgb', 'color-accent-violet-text'),
+        teal: semanticScale('color-accent-teal-rgb', 'color-accent-teal-text'),
+        cyan: semanticScale('color-accent-cyan-rgb', 'color-accent-cyan-text'),
+        orange: semanticScale('color-accent-orange-rgb', 'color-accent-orange-text'),
         'erp-header': 'var(--color-header-modal)',
         'erp-success-soft': 'rgb(var(--color-success-soft-rgb) / <alpha-value>)',
         'erp-info-soft': 'rgb(var(--color-info-soft-rgb) / <alpha-value>)',
@@ -24,12 +45,14 @@ module.exports = {
         'erp-action-hover': 'var(--color-action-primary-hover)',
         'erp-action-secondary': 'var(--color-action-secondary)',
         'erp-surface': 'rgb(var(--color-surface-rgb) / <alpha-value>)',
+        'erp-surface-secondary': 'rgb(var(--color-surface-secondary-rgb) / <alpha-value>)',
         'erp-bg': 'rgb(var(--color-bg-rgb) / <alpha-value>)',
         'erp-border': 'rgb(var(--color-border-rgb) / <alpha-value>)',
         'erp-border-subtle': 'rgb(var(--color-border-subtle-rgb, 241 245 249) / <alpha-value>)',
         'erp-sidebar': 'rgb(var(--color-sidebar-rgb) / <alpha-value>)',
         'erp-text': 'rgb(var(--color-text-rgb) / <alpha-value>)',
         'erp-text-muted': 'rgb(var(--color-text-muted-rgb) / <alpha-value>)',
+        'erp-focus': 'var(--color-focus)',
         'erp-danger': 'rgb(var(--color-danger-rgb) / <alpha-value>)',
         'erp-warning': 'rgb(var(--color-warning-rgb) / <alpha-value>)',
         'erp-success':      'rgb(var(--color-success-rgb) / <alpha-value>)',

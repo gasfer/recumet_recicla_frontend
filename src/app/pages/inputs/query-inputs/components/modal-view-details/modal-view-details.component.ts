@@ -10,17 +10,17 @@ import Swal from 'sweetalert2';
   selector: 'app-modal-view-details-input',
   templateUrl: './modal-view-details.component.html',
   styles: [`
-    :host ::ng-deep .purchase-detail-dialog .p-dialog-header { background:#0b1324; color:#fff; padding:.7rem 1rem; }
+    :host ::ng-deep .purchase-detail-dialog .p-dialog-header { background:var(--color-table-header); color:var(--color-text-inverse); padding:.7rem 1rem; }
     :host ::ng-deep .purchase-detail-dialog .p-dialog-title { font-size:.9rem; font-weight:700; }
     :host ::ng-deep .purchase-detail-dialog .p-dialog-content { padding:.85rem; }
     :host ::ng-deep .purchase-detail-dialog .p-dialog-footer { padding:.55rem .85rem; }
-    .purchase-detail-table { width:100%; border-collapse:collapse; font-size:.76rem; color:#334155; }
-    .purchase-detail-table th,.purchase-detail-table td { padding:.4rem .5rem; border:1px solid #e2e8f0; vertical-align:top; }
-    .purchase-detail-table th { width:20%; background:#f1f5f9; color:#334155; font-size:.68rem; text-align:left; white-space:nowrap; }
-    .purchase-detail-lines th { background:#0b1324; color:#fff; text-transform:uppercase; font-size:.67rem; }
-    .purchase-detail-lines tfoot th { background:#f1f5f9; color:#334155; }
-    .purchase-detail-lines .purchase-total-label { color:#065f46; background:#ecfdf5; }
-    .purchase-detail-lines .purchase-total-value { color:#047857; background:#ecfdf5; font-weight:700; }
+    .purchase-detail-table { width:100%; border-collapse:collapse; font-size:.76rem; color:var(--color-text); }
+    .purchase-detail-table th,.purchase-detail-table td { padding:.4rem .5rem; border:1px solid var(--color-border); vertical-align:top; }
+    .purchase-detail-table th { width:20%; background:var(--color-surface-secondary); color:var(--color-text); font-size:.68rem; text-align:left; white-space:nowrap; }
+    .purchase-detail-lines th { background:var(--color-table-header); color:var(--color-text-inverse); text-transform:uppercase; font-size:.67rem; }
+    .purchase-detail-lines tfoot th { background:var(--color-surface-secondary); color:var(--color-text); }
+    .purchase-detail-lines .purchase-total-label { color:var(--color-primary); background:var(--color-success-light); }
+    .purchase-detail-lines .purchase-total-value { color:var(--color-primary); background:var(--color-success-light); font-weight:700; }
     @media(max-width:600px) { .purchase-detail-table th,.purchase-detail-table td { padding:.35rem; font-size:.7rem; } .purchase-detail-table th { white-space:normal; } }
   `]
 })

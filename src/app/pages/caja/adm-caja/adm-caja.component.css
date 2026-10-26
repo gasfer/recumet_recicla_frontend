@@ -447,7 +447,7 @@
   width: 20px; height: 20px; border-radius: 6px;
   font-size: 13px; font-weight: 800; flex-shrink: 0; line-height: 1;
 }
-.cst-badge--plus  { background: var(--income-bg);  color: var(--income-txt);  border: 1px solid var(--income,  #16a34a); }
+.cst-badge--plus  { background: var(--income-bg);  color: var(--income-txt);  border: 1px solid var(--income,  var(--color-primary)); }
 .cst-badge--minus { background: var(--expense-bg); color: var(--expense-txt); border: 1px solid var(--expense, #dc2626); }
 
 .cst-row--cierre {

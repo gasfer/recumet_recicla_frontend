@@ -45,26 +45,26 @@ export class QueryClassifiedsComponent implements OnInit {
     {
       label: 'Reporte clasificados (Excel)',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => { this.printExcelReport(); }
     },
     {
       label: 'Detalle por producto (PDF)',
       icon: 'fas fa-print',
-      iconStyle: { 'color': '#DC4C64'},
+      iconStyle: { 'color': 'var(--color-danger)'},
       command: () => { this.printPdfDetailsReport(); }
     },
     {
       label: 'Detalle por producto (Excel)',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => { this.printExcelDetailsReport(); }
     },
   ];
   searchItems = signal<MenuItem[]>([
     {
       label: 'Clasificados', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA'},
+      iconStyle: { 'color': 'var(--color-info)'},
       command: () => {
         this.paramsSearch().status = 'ACTIVE';
         this.getAllAndSearchClassifieds(1,this.rows());
@@ -72,7 +72,7 @@ export class QueryClassifiedsComponent implements OnInit {
     },
     {
       label: 'Anulados', icon: 'fa-solid fa-trash-can',
-      iconStyle: { 'color': '#DC4C64'},
+      iconStyle: { 'color': 'var(--color-danger)'},
       command: () => {
         this.paramsSearch().status = 'INACTIVE';
         this.getAllAndSearchClassifieds(1,this.rows());
@@ -265,8 +265,8 @@ export class QueryClassifiedsComponent implements OnInit {
       showLoaderOnConfirm: true,
       showCancelButton: true,
       backdrop:true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: 'var(--color-action-primary)',
+      cancelButtonColor: 'var(--color-action-secondary)',
       cancelButtonText: 'Cancelar',
       customClass: { container: 'sweetalert2'},
       preConfirm: () => {

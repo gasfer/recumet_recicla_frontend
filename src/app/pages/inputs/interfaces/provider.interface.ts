@@ -61,7 +61,7 @@ export interface Provider {
     frequency_mode?: string;
     id_commercial_user?: number;
     company?: { id: number; has_branches?: boolean; operatingProviders?: Provider[] };
-    branches?: Array<{ id: number; name?: string; department?: string; province?: string; city?: string; zone?: string; address?: string; latitude?: number; longitude?: number; geolocation_text?: string; google_maps_url?: string; is_main?: boolean }>;
+    branches?: Array<{ id: number; name?: string; department?: string; city?: string; zone?: string; address?: string; latitude?: number; longitude?: number; geolocation_text?: string; google_maps_url?: string; is_main?: boolean }>;
     contacts?: Array<{ id: number; full_name?: string; phone?: string; email?: string; position?: string; position_area?: string; cellphone?: string | number; is_main_contact?: boolean }>;
     bankAccounts?: Array<{ id: number; account_holder?: string; account_number?: string; account_type?: string; currency?: string; is_main?: boolean; bank?: { name: string } }>;
     materials?: Array<{ id: number; product?: { name: string; cod?: string }; category?: { name: string } }>;

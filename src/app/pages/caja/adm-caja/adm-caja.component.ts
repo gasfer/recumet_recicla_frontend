@@ -231,12 +231,13 @@ export class AdmCajaComponent implements OnInit, OnDestroy {
 
   // ── Métodos privados ──────────────────────────────────────
   private _buildCharts(m: GetAllTotalesMovements): void {
+    const primaryGreen = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
     this.dataEfectivo = {
       labels: ['Monto Inicial', 'Ingresos', 'Gastos'],
       datasets: [{
         data: [m.monto_apertura ?? 0, m.total_ingresos ?? 0, m.total_gastos ?? 0],
-        backgroundColor:      ['#93c5fd', '#86efac', '#fca5a5'],
-        hoverBackgroundColor: ['#60a5fa', '#4ade80', '#f87171'],
+        backgroundColor:      ['#93c5fd', primaryGreen, '#fca5a5'],
+        hoverBackgroundColor: ['#60a5fa', primaryGreen, '#f87171'],
         borderWidth: 2,
         borderColor: '#ffffff',
         hoverOffset: 6
@@ -247,8 +248,8 @@ export class AdmCajaComponent implements OnInit, OnDestroy {
       labels: ['Ingresos Transf.', 'Gastos Transf.'],
       datasets: [{
         data: [any.total_ingresos_transferencia ?? 0, any.total_gastos_transferencia ?? 0],
-        backgroundColor:      ['#6ee7b7', '#fdba74'],
-        hoverBackgroundColor: ['#34d399', '#fb923c'],
+        backgroundColor:      [primaryGreen, '#fdba74'],
+        hoverBackgroundColor: [primaryGreen, '#fb923c'],
         borderWidth: 2,
         borderColor: '#ffffff',
         hoverOffset: 6
@@ -257,13 +258,14 @@ export class AdmCajaComponent implements OnInit, OnDestroy {
   }
 
   private _resetCharts(): void {
+    const primaryGreen = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
     this.dataEfectivo = {
       labels: ['Monto Inicial', 'Ingresos', 'Gastos'],
-      datasets: [{ data: [0, 0, 0], backgroundColor: ['#93c5fd', '#86efac', '#fca5a5'] }]
+      datasets: [{ data: [0, 0, 0], backgroundColor: ['#93c5fd', primaryGreen, '#fca5a5'] }]
     };
     this.dataBanco = {
       labels: ['Ingresos Transf.', 'Gastos Transf.'],
-      datasets: [{ data: [0, 0], backgroundColor: ['#6ee7b7', '#fdba74'] }]
+      datasets: [{ data: [0, 0], backgroundColor: [primaryGreen, '#fdba74'] }]
     };
   }
 

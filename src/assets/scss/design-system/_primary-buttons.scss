@@ -26,8 +26,8 @@ body :is(.erp-btn, .btn, .p-button):not(.btn-link):not(.header-item):not(#vertic
 
 body :is(.erp-btn, .btn):not(.btn-link):not(.header-item):not(#vertical-menu-btn):not(.noti-icon):not(#page-header-user-dropdown):not(#{$table-action-selectors} *):not(.p-inputnumber-button) {
   background-color: var(--color-action-secondary);
-  border-color: var(--color-action-secondary);
-  color: var(--color-text-inverse);
+  border-color: var(--color-border);
+  color: var(--color-action-secondary-text);
 }
 
 body :is(.erp-btn-sm, .btn-sm, .btn-xs, .p-button-sm):not(.header-item):not(#vertical-menu-btn):not(#{$table-action-selectors} *) {
@@ -83,46 +83,47 @@ body .p-button.p-button-success:not(#{$table-action-selectors} *).p-highlight {
 
 body :is(#{$secondary-actions}):not(#{$table-action-selectors} *):not(.header-item) {
   background-color: var(--color-action-secondary) !important;
-  border-color: var(--color-action-secondary) !important;
-  color: var(--color-text-inverse) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-action-secondary-text) !important;
 }
-body :is(#{$secondary-actions}):not(#{$table-action-selectors} *):not(.header-item) :is(i, span, .p-button-label, .p-button-icon) { color: var(--color-text-inverse) !important; }
+body :is(#{$secondary-actions}):not(#{$table-action-selectors} *):not(.header-item) :is(i, span, .p-button-label, .p-button-icon) { color: var(--color-action-secondary-text) !important; }
 body :is(#{$secondary-actions}):not(:disabled):not(.disabled):not(#{$table-action-selectors} *):not(.header-item):hover,
 body .p-button.p-button-secondary:not(#{$table-action-selectors} *):enabled:hover {
   background-color: var(--color-action-secondary-hover) !important;
-  border-color: var(--color-action-secondary-hover) !important;
-  color: var(--color-text-inverse) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-action-secondary-text) !important;
 }
 body :is(#{$secondary-actions}):not(#{$table-action-selectors} *):active,
 body :is(#{$secondary-actions}):not(#{$table-action-selectors} *).active,
 body :is(#{$secondary-actions}):not(#{$table-action-selectors} *)[aria-pressed='true'] {
   background-color: var(--color-action-secondary-active) !important;
   border-color: var(--color-action-secondary-active) !important;
-  color: var(--color-text-inverse) !important;
+  color: var(--color-action-secondary-text) !important;
 }
 
 @each $role in danger, warning, info {
   $fill: var(--color-action-#{$role});
   $fill-hover: var(--color-action-#{$role}-hover);
   $fill-active: var(--color-action-#{$role}-active);
+  $text: var(--color-action-#{$role}-text);
 
   /* Botones sólidos con fondo lleno */
   body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *) {
     background-color: $fill !important;
     border-color: $fill !important;
-    color: var(--color-text-inverse) !important;
+    color: $text !important;
   }
-  body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *) :is(i, span, .p-button-label, .p-button-icon) { color: var(--color-text-inverse) !important; }
+  body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *) :is(i, span, .p-button-label, .p-button-icon) { color: $text !important; }
   body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover {
     background-color: $fill-hover !important;
     border-color: $fill-hover !important;
-    color: var(--color-text-inverse) !important;
+    color: $text !important;
   }
   body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *):active,
   body :is(.btn-#{$role}, .erp-btn-#{$role}, .p-button.p-button-#{$role}):not(.btn-outline-#{$role}):not(.erp-btn-outline-#{$role}):not(.p-button-outlined):not(.p-button-text):not(#{$table-action-selectors} *).active {
     background-color: $fill-active !important;
     border-color: $fill-active !important;
-    color: var(--color-text-inverse) !important;
+    color: $text !important;
   }
 
   /* Botones outlined/ghost: fondo transparente, borde y texto coloreados */
@@ -130,16 +131,16 @@ body :is(#{$secondary-actions}):not(#{$table-action-selectors} *)[aria-pressed='
     background: transparent !important;
     background-color: transparent !important;
     border-color: $fill !important;
-    color: $fill !important;
+    color: var(--color-#{$role}-text) !important;
   }
-  body :is(.btn-outline-#{$role}, .erp-btn-outline-#{$role}, .p-button.p-button-#{$role}.p-button-outlined, .p-button.p-button-#{$role}.p-button-text):not(#{$table-action-selectors} *) :is(i, span, .p-button-label, .p-button-icon) { color: $fill !important; }
+  body :is(.btn-outline-#{$role}, .erp-btn-outline-#{$role}, .p-button.p-button-#{$role}.p-button-outlined, .p-button.p-button-#{$role}.p-button-text):not(#{$table-action-selectors} *) :is(i, span, .p-button-label, .p-button-icon) { color: var(--color-#{$role}-text) !important; }
   body :is(.btn-outline-#{$role}, .erp-btn-outline-#{$role}, .p-button.p-button-#{$role}.p-button-outlined, .p-button.p-button-#{$role}.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover {
     background-color: color-mix(in srgb, #{$fill} 10%, transparent) !important;
     border-color: $fill-hover !important;
-    color: $fill-hover !important;
+    color: var(--color-#{$role}-text) !important;
   }
   body :is(.btn-outline-#{$role}, .erp-btn-outline-#{$role}, .p-button.p-button-#{$role}.p-button-outlined, .p-button.p-button-#{$role}.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover :is(i, span, .p-button-label, .p-button-icon) {
-    color: $fill-hover !important;
+    color: var(--color-#{$role}-text) !important;
   }
 }
 
@@ -154,7 +155,7 @@ body :is(.erp-btn-outline-primary, .erp-btn-outline-success, .btn-outline-primar
   color: var(--color-action-primary) !important;
 }
 body :is(.erp-btn-outline-primary, .erp-btn-outline-success, .btn-outline-primary, .btn-outline-success, .p-button.p-button-success.p-button-outlined, .p-button.p-button-success.p-button-text):not(#{$table-action-selectors} *):not(:disabled):hover {
-  background-color: rgba(0, 169, 107, 0.10) !important;
+  background-color: color-mix(in srgb, var(--color-action-primary) 10%, transparent) !important;
   border-color: var(--color-action-primary-hover) !important;
   color: var(--color-action-primary-hover) !important;
 }
@@ -188,7 +189,7 @@ body .p-inputnumber .p-inputnumber-button .p-button-icon {
 }
 body .p-inputnumber-buttons-stacked .p-inputnumber-button:hover:not(:disabled),
 body .p-inputnumber .p-inputnumber-button:hover:not(:disabled) {
-  background-color: var(--color-success-light, #d1fae5) !important;
+  background-color: var(--color-success-light) !important;
   color: var(--color-primary) !important;
 }
 body .p-inputnumber-buttons-stacked .p-inputnumber-button:hover:not(:disabled) .p-button-icon,
@@ -197,13 +198,13 @@ body .p-inputnumber .p-inputnumber-button:hover:not(:disabled) .p-button-icon {
 }
 body[data-bs-theme='dark'] .p-inputnumber-buttons-stacked .p-inputnumber-button,
 body[data-bs-theme='dark'] .p-inputnumber .p-inputnumber-button {
-  background-color: #243449 !important;
+  background-color: var(--color-surface-secondary) !important;
   border-color: var(--color-border) !important;
   color: var(--color-text-muted) !important;
 }
 body[data-bs-theme='dark'] .p-inputnumber-buttons-stacked .p-inputnumber-button:hover:not(:disabled),
 body[data-bs-theme='dark'] .p-inputnumber .p-inputnumber-button:hover:not(:disabled) {
-  background-color: var(--color-success-soft-rgb, #18453b) !important;
+  background-color: var(--color-success-light) !important;
   color: var(--color-focus) !important;
 }
 
@@ -258,13 +259,13 @@ body :is(#{$table-action-selectors}) :is(.p-button.p-button-success, .btn-succes
   background: transparent !important;
   border-color: transparent !important;
   :is(i, span, .p-button-icon) {
-    color: #059669 !important;
+    color: var(--color-primary) !important;
   }
   &:hover:not(:disabled) {
-    background: rgba(5, 150, 105, 0.12) !important;
-    border-color: rgba(5, 150, 105, 0.28) !important;
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent) !important;
+      border-color: color-mix(in srgb, var(--color-primary) 28%, transparent) !important;
     :is(i, span, .p-button-icon) {
-      color: #047857 !important;
+      color: var(--color-primary) !important;
     }
   }
 }
@@ -274,13 +275,13 @@ body :is(#{$table-action-selectors}) :is(.p-button.p-button-info, .btn-info, .er
   background: transparent !important;
   border-color: transparent !important;
   :is(i, span, .p-button-icon) {
-    color: #2563eb !important;
+    color: var(--color-info-text) !important;
   }
   &:hover:not(:disabled) {
-    background: rgba(37, 99, 235, 0.12) !important;
-    border-color: rgba(37, 99, 235, 0.28) !important;
+    background: color-mix(in srgb, var(--color-info) 12%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-info) 28%, transparent) !important;
     :is(i, span, .p-button-icon) {
-      color: #1d4ed8 !important;
+      color: var(--color-info-text) !important;
     }
   }
 }
@@ -290,13 +291,13 @@ body :is(#{$table-action-selectors}) :is(.p-button.p-button-warning, .btn-warnin
   background: transparent !important;
   border-color: transparent !important;
   :is(i, span, .p-button-icon) {
-    color: #d97706 !important;
+    color: var(--color-warning-text) !important;
   }
   &:hover:not(:disabled) {
-    background: rgba(217, 119, 6, 0.12) !important;
-    border-color: rgba(217, 119, 6, 0.28) !important;
+    background: color-mix(in srgb, var(--color-warning) 12%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-warning) 28%, transparent) !important;
     :is(i, span, .p-button-icon) {
-      color: #b45309 !important;
+      color: var(--color-warning-text) !important;
     }
   }
 }
@@ -310,13 +311,13 @@ body :is(#{$table-action-selectors}) :is(
   background: transparent !important;
   border-color: transparent !important;
   :is(i, span, .p-button-icon) {
-    color: #0891b2 !important;
+    color: var(--color-action-secondary) !important;
   }
   &:hover:not(:disabled) {
-    background: rgba(8, 145, 178, 0.12) !important;
-    border-color: rgba(8, 145, 178, 0.28) !important;
+    background: color-mix(in srgb, var(--color-action-secondary) 12%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-action-secondary) 28%, transparent) !important;
     :is(i, span, .p-button-icon) {
-      color: #0e7490 !important;
+      color: var(--color-action-secondary-hover) !important;
     }
   }
 }
@@ -326,13 +327,13 @@ body :is(#{$table-action-selectors}) :is(.p-button.p-button-danger, .btn-danger,
   background: transparent !important;
   border-color: transparent !important;
   :is(i, span, .p-button-icon) {
-    color: #ef4444 !important;
+    color: var(--color-danger-text) !important;
   }
   &:hover:not(:disabled) {
-    background: rgba(239, 68, 68, 0.12) !important;
-    border-color: rgba(239, 68, 68, 0.28) !important;
+    background: color-mix(in srgb, var(--color-danger) 12%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-danger) 28%, transparent) !important;
     :is(i, span, .p-button-icon) {
-      color: #dc2626 !important;
+      color: var(--color-danger-text) !important;
     }
   }
 }
@@ -340,27 +341,27 @@ body :is(#{$table-action-selectors}) :is(.p-button.p-button-danger, .btn-danger,
 /* ── MODO OSCURO PARA ACCIONES EN TABLAS ── */
 body[data-bs-theme='dark'] :is(#{$table-action-selectors}) {
   :is(.p-button.p-button-success, .btn-success, .erp-btn-success) {
-    :is(i, span, .p-button-icon) { color: #34d399 !important; }
+    :is(i, span, .p-button-icon) { color: var(--color-primary) !important; }
     &:hover:not(:disabled) {
-      background: rgba(52, 211, 153, 0.16) !important;
-      border-color: rgba(52, 211, 153, 0.32) !important;
-      :is(i, span, .p-button-icon) { color: #6ee7b7 !important; }
+      background: color-mix(in srgb, var(--color-primary) 16%, transparent) !important;
+      border-color: color-mix(in srgb, var(--color-primary) 32%, transparent) !important;
+      :is(i, span, .p-button-icon) { color: var(--color-primary) !important; }
     }
   }
   :is(.p-button.p-button-info, .btn-info, .erp-btn-info) {
-    :is(i, span, .p-button-icon) { color: #60a5fa !important; }
+    :is(i, span, .p-button-icon) { color: var(--color-info-text) !important; }
     &:hover:not(:disabled) {
-      background: rgba(96, 165, 250, 0.16) !important;
-      border-color: rgba(96, 165, 250, 0.32) !important;
-      :is(i, span, .p-button-icon) { color: #93c5fd !important; }
+      background: color-mix(in srgb, var(--color-info) 16%, transparent) !important;
+      border-color: color-mix(in srgb, var(--color-info) 32%, transparent) !important;
+      :is(i, span, .p-button-icon) { color: var(--color-info-text) !important; }
     }
   }
   :is(.p-button.p-button-warning, .btn-warning, .erp-btn-warning) {
-    :is(i, span, .p-button-icon) { color: #fbbf24 !important; }
+    :is(i, span, .p-button-icon) { color: var(--color-warning-text) !important; }
     &:hover:not(:disabled) {
-      background: rgba(251, 191, 36, 0.16) !important;
-      border-color: rgba(251, 191, 36, 0.32) !important;
-      :is(i, span, .p-button-icon) { color: #fde68a !important; }
+      background: color-mix(in srgb, var(--color-warning) 16%, transparent) !important;
+      border-color: color-mix(in srgb, var(--color-warning) 32%, transparent) !important;
+      :is(i, span, .p-button-icon) { color: var(--color-warning-text) !important; }
     }
   }
   :is(
@@ -368,19 +369,19 @@ body[data-bs-theme='dark'] :is(#{$table-action-selectors}) {
     .p-button-secondary,
     .btn-secondary
   ) {
-    :is(i, span, .p-button-icon) { color: #22d3ee !important; }
+    :is(i, span, .p-button-icon) { color: var(--color-action-secondary) !important; }
     &:hover:not(:disabled) {
-      background: rgba(34, 211, 238, 0.16) !important;
-      border-color: rgba(34, 211, 238, 0.32) !important;
-      :is(i, span, .p-button-icon) { color: #67e8f9 !important; }
+      background: color-mix(in srgb, var(--color-action-secondary) 16%, transparent) !important;
+      border-color: color-mix(in srgb, var(--color-action-secondary) 32%, transparent) !important;
+      :is(i, span, .p-button-icon) { color: var(--color-action-secondary-hover) !important; }
     }
   }
   :is(.p-button.p-button-danger, .btn-danger, .erp-btn-danger) {
-    :is(i, span, .p-button-icon) { color: #f87171 !important; }
+    :is(i, span, .p-button-icon) { color: var(--color-danger-text) !important; }
     &:hover:not(:disabled) {
-      background: rgba(248, 113, 113, 0.16) !important;
-      border-color: rgba(248, 113, 113, 0.32) !important;
-      :is(i, span, .p-button-icon) { color: #fca5a5 !important; }
+      background: color-mix(in srgb, var(--color-danger) 16%, transparent) !important;
+      border-color: color-mix(in srgb, var(--color-danger) 32%, transparent) !important;
+      :is(i, span, .p-button-icon) { color: var(--color-danger-text) !important; }
     }
   }
 }

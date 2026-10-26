@@ -20,7 +20,7 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
       margin-bottom: 10px;
       border: none;
       border-radius: 15px;
-      box-shadow: 0.1px 0 30px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-md);
     }
   `]
 })
@@ -96,7 +96,7 @@ export class KardexComponent implements OnInit {
     {
       label: 'Excel',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { color: '#14A44D' },
+      iconStyle: { color: 'var(--color-primary)' },
       command: () => this.printExcelReport()
     },
   ];
@@ -105,7 +105,7 @@ export class KardexComponent implements OnInit {
     {
       label: 'ENTRADAS Y SALIDAS',
       icon: 'fa-solid fa-left-right',
-      iconStyle: { color: '#3B71CA' },
+      iconStyle: { color: 'var(--color-info)' },
       command: () => {
         this.paramsSearch().type_kardex = '';
         this.getAllAndSearchKardex(1, this.rows());
@@ -114,7 +114,7 @@ export class KardexComponent implements OnInit {
     {
       label: 'ENTRADAS',
       icon: 'fa-solid fa-arrow-left',
-      iconStyle: { color: '#14A44D' },
+      iconStyle: { color: 'var(--color-primary)' },
       command: () => {
         this.paramsSearch().type_kardex = 'INPUT';
         this.getAllAndSearchKardex(1, this.rows());
@@ -123,7 +123,7 @@ export class KardexComponent implements OnInit {
     {
       label: 'SALIDAS',
       icon: 'fa-solid fa-arrow-right',
-      iconStyle: { color: '#DC4C64' },
+      iconStyle: { color: 'var(--color-danger)' },
       command: () => {
         this.paramsSearch().type_kardex = 'OUTPUT';
         this.getAllAndSearchKardex(1, this.rows());

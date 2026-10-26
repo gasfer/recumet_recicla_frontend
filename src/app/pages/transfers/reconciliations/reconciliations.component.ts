@@ -187,7 +187,7 @@ export class ReconciliationsComponent implements OnInit, OnDestroy {
       showCancelButton: true,
       confirmButtonText,
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#b91c1c',
+      confirmButtonColor: 'var(--color-danger-text)',
       inputValidator: (value) => String(value || '').trim().length < 10 ? 'Ingrese un motivo de al menos 10 caracteres.' : undefined,
     });
     return result.isConfirmed ? String(result.value).trim() : null;

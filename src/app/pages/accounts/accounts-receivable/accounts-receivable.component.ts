@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ClientsService } from '../../outputs/services/clients.service';
@@ -128,7 +128,7 @@ export class AccountsReceivableComponent implements OnInit {
     },
     {
       label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left',
-      iconStyle: { 'color': '#14A44D' },
+      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => {
         this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PENDIENTE';
@@ -174,7 +174,7 @@ export class AccountsReceivableComponent implements OnInit {
     {
       label: 'Lista avanzada',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D' },
+      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => {
         if (this.isTableAbonos()) {
           this.printExcelReportAbonos();

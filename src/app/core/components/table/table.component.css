@@ -54,7 +54,7 @@
 }
 
 .p-datatable thead th{
-  background:var(--color-primary, #00a96b);
+  background:var(--color-primary, var(--color-primary));
   color:white;
   font-weight:600;
   font-size:11px;
@@ -67,7 +67,7 @@
 }
 
 .p-datatable tbody tr:hover{
-  background:var(--color-success-light, #ecfdf5);
+  background:var(--color-success-light, var(--color-success-light));
 }
 
 .p-datatable td{

@@ -52,7 +52,7 @@ export class InputSmallComponent  {
         this.suggestedProviders.set([]);
       }),
       switchMap(query => query
-        ? this.providerService.getProvidersAutocomplete(query).pipe(catchError(() => of(null)))
+        ? this.providerService.getProvidersAutocomplete(query, Number(this.formReport.get('id_sucursal')?.value)).pipe(catchError(() => of(null)))
         : of(null)),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(response => {

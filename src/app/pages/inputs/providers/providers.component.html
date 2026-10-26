@@ -128,6 +128,7 @@
   </main>
 </div>
 <app-modal-provider></app-modal-provider>
+<app-modal-view-details-input></app-modal-view-details-input>
 <app-purchase-traceability-timeline mode="provider" [data]="traceabilityData()" [visible]="traceabilityVisible()"
   (visibleChange)="traceabilityVisible.set($event)"></app-purchase-traceability-timeline>
 
@@ -180,7 +181,7 @@
 
   <div *ngIf="selectedProvider() as p" class="space-y-3">
     <!-- Header banner con resumen ejecutivo -->
-    <div class="p-3 rounded-lg bg-[#0b1324] text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
+    <div class="p-3 rounded-lg bg-[var(--color-table-header)] text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-erp-success-soft/30 border border-erp-border flex items-center justify-center text-erp-success text-lg">
           <i class="fa-solid fa-truck-moving"></i>
@@ -252,7 +253,7 @@
           </div>
           <div class="bg-erp-surface p-2 rounded border border-erp-border">
             <span class="text-erp-text-muted block text-[11px] font-bold">Teléfono empresa</span>
-            <span class="font-semibold text-erp-text">{{ selectedCompanyProfile()?.corporate_phone || p.companyContacts || '—' }}</span>
+            <span class="font-semibold text-erp-text">{{ selectedCompanyProfile()?.corporate_phone || '—' }}</span>
           </div>
           <div class="bg-erp-surface p-2 rounded border border-erp-border">
             <span class="text-erp-text-muted block text-[11px] font-bold">Celular corporativo</span>
@@ -313,14 +314,6 @@
             <span class="text-erp-text-muted block text-[11px] font-bold">Celular de contacto</span>
             <span class="font-bold text-erp-info">{{ p.cellphone_contact || '—' }}</span>
           </div>
-          <div class="bg-erp-surface p-2 rounded border border-erp-border">
-            <span class="text-erp-text-muted block text-[11px] font-bold">Área / Cargo</span>
-            <span class="font-semibold text-erp-text uppercase">{{ p.workAreaOrPositionOrUnit || '—' }}</span>
-          </div>
-          <div class="bg-erp-surface p-2 rounded border border-erp-border">
-            <span class="text-erp-text-muted block text-[11px] font-bold">Contactos empresa</span>
-            <span class="font-semibold text-erp-text">{{ p.companyContacts || '—' }}</span>
-          </div>
         </div>
         <!-- Contactos repetibles adicionales si existen -->
         <div *ngIf="p.contacts && p.contacts.length > 0" class="mt-2 pt-2 border-t border-erp-border">
@@ -329,7 +322,7 @@
             <div *ngFor="let c of p.contacts" class="bg-erp-surface p-2 rounded border border-erp-border flex items-center justify-between">
               <div>
                 <b class="text-erp-text uppercase">{{ c.full_name }}</b>
-                <small class="block text-erp-text-muted">{{ c.position_area }} · Cel: {{ c.cellphone }}</small>
+                <small class="block text-erp-text-muted">Cel: {{ c.cellphone }}</small>
               </div>
               <span *ngIf="c.is_main_contact" class="badge bg-erp-info-soft text-erp-info text-[10px] font-bold">Principal</span>
             </div>
@@ -381,7 +374,7 @@
         <div class="p-2.5 rounded-lg bg-erp-success-soft/80 border border-erp-border">
           <div class="flex items-center justify-between mb-1.5">
             <span class="badge bg-erp-success-soft text-white font-bold text-xs px-2 py-0.5 rounded">
-              🤖 Frecuencia Inteligente Histórica
+              🤖 Frecuencia reciente · últimos 90 días
             </span>
             <span class="text-xs font-extrabold text-erp-success">
               Frecuencia: <span class="uppercase text-erp-success underline">{{ getFrequencyLabel(infoFrequencyAnalysis()?.frequency || p.frequency) }}</span>
@@ -389,7 +382,7 @@
           </div>
           <div *ngIf="infoFrequencyAnalysis() as freq" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
             <div class="bg-erp-surface p-2 rounded border border-erp-border">
-              <span class="text-erp-text-muted block text-[10px] uppercase font-bold">Promedio:</span>
+              <span class="text-erp-text-muted block text-[10px] uppercase font-bold">Intervalo estimado:</span>
               <b class="text-erp-text">{{ freq.average_days ? (freq.average_days + ' días') : 'Sin promedio' }}</b>
             </div>
             <div class="bg-erp-surface p-2 rounded border border-erp-border">
@@ -412,44 +405,52 @@
       </section>
 
       <!-- SECCIÓN 5: Gestión Comercial -->
-      <section class="p-3 rounded-lg border border-violet-100 bg-violet-50/30">
-        <div class="text-xs font-bold text-violet-900 uppercase mb-2 flex items-center gap-1.5">
-          <i class="fa-solid fa-handshake text-violet-600"></i> 5. Gestión Comercial
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-info-soft/30">
+        <div class="text-xs font-bold text-erp-info uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-handshake text-erp-info"></i> 5. Gestión Comercial
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-          <div class="bg-erp-surface p-2 rounded border border-violet-200">
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
             <span class="text-erp-text-muted block text-[11px] font-bold">Responsable comercial</span>
-            <span class="font-bold text-violet-900">
+            <span class="font-bold text-erp-text">
               {{ getCommercialUserName(selectedCompanyProfile()?.id_commercial_user || p.id_commercial_user) }}
             </span>
           </div>
-          <div class="bg-erp-surface p-2 rounded border border-violet-200">
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
             <span class="text-erp-text-muted block text-[11px] font-bold">Canal de origen</span>
             <span class="font-semibold text-erp-text">
               {{ getOriginChannelLabel(selectedCompanyProfile()?.origin_channel || p.origin_channel) }}
             </span>
           </div>
-          <div class="bg-erp-surface p-2 rounded border border-violet-200">
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
             <span class="text-erp-text-muted block text-[11px] font-bold">Estado de relación</span>
             <span class="font-semibold text-erp-text">
               {{ getRelationshipStatusLabel(selectedCompanyProfile()?.relationship_status || p.relationship_status) }}
             </span>
           </div>
-          <div class="bg-erp-surface p-2 rounded border border-violet-200">
+          <div class="bg-erp-surface p-2 rounded border border-erp-border">
             <span class="text-erp-text-muted block text-[11px] font-bold">Condición de negociación</span>
             <span class="font-semibold text-erp-text">
               {{ selectedCompanyProfile()?.negotiation_condition || p.negotiation_condition || 'Estándar' }}
             </span>
           </div>
-          <div *ngIf="selectedCompanyProfile()?.commercial_observations || p.commercial_observations" class="bg-erp-surface p-2 rounded border border-violet-200 md:col-span-4">
+          <div *ngIf="isSelectedProviderTypeA()" class="bg-erp-surface p-2 rounded border border-erp-border">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Prioridad de contacto</span>
+            <span class="font-semibold text-erp-text">{{ selectedCompanyProfile()?.contact_priority || 'MEDIUM' }}</span>
+          </div>
+          <div *ngIf="selectedCompanyProfile()?.commercial_observations || p.commercial_observations" class="bg-erp-surface p-2 rounded border border-erp-border md:col-span-4">
             <span class="text-erp-text-muted block text-[11px] font-bold">Observaciones comerciales</span>
             <p class="mb-0 text-erp-text">{{ selectedCompanyProfile()?.commercial_observations || p.commercial_observations }}</p>
+          </div>
+          <div *ngIf="isSelectedProviderTypeA() && selectedCompanyProfile()?.contact_observations" class="bg-erp-surface p-2 rounded border border-erp-border md:col-span-4">
+            <span class="text-erp-text-muted block text-[11px] font-bold">Observaciones de contacto</span>
+            <p class="mb-0 text-erp-text">{{ selectedCompanyProfile()?.contact_observations }}</p>
           </div>
         </div>
       </section>
 
       <!-- SECCIÓN 6: Requerimientos Documentales -->
-      <section class="p-3 rounded-lg border border-erp-border bg-erp-danger-soft/30">
+      <section *ngIf="!isSelectedProviderTypeA()" class="p-3 rounded-lg border border-erp-border bg-erp-danger-soft/30">
         <div class="text-xs font-bold text-erp-danger uppercase mb-2 flex items-center gap-1.5">
           <i class="fa-solid fa-file-shield text-erp-danger"></i> 6. Requerimientos Documentales
         </div>
@@ -476,14 +477,14 @@
       </section>
 
       <!-- SECCIÓN 7: Información Bancaria -->
-      <section class="p-3 rounded-lg border border-cyan-100 bg-cyan-50/30">
-        <div class="text-xs font-bold text-cyan-900 uppercase mb-2 flex items-center gap-1.5">
-          <i class="fa-solid fa-building-columns text-cyan-600"></i> 7. Información Bancaria
+      <section class="p-3 rounded-lg border border-erp-border bg-erp-success-soft/30">
+        <div class="text-xs font-bold text-erp-success uppercase mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-building-columns text-erp-success"></i> {{ isSelectedProviderTypeA() ? 6 : 7 }}. Información Bancaria
         </div>
         <div *ngIf="p.bankAccounts && p.bankAccounts.length > 0; else noBanks" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div *ngFor="let b of p.bankAccounts" class="bg-erp-surface p-2.5 rounded border border-cyan-200">
+          <div *ngFor="let b of p.bankAccounts" class="bg-erp-surface p-2.5 rounded border border-erp-border">
             <div class="flex items-center justify-between mb-1">
-              <b class="text-cyan-900">{{ b.bank?.name || 'Banco' }}</b>
+              <b class="text-erp-text">{{ b.bank?.name || 'Banco' }}</b>
               <span *ngIf="b.is_main" class="badge bg-erp-success-soft text-erp-success text-[10px] font-bold">Principal</span>
             </div>
             <div class="text-erp-text">
@@ -494,7 +495,7 @@
           </div>
         </div>
         <ng-template #noBanks>
-          <div class="bg-erp-surface p-3 rounded border border-cyan-100 text-center text-xs text-erp-text-muted">
+          <div class="bg-erp-surface p-3 rounded border border-erp-border text-center text-xs text-erp-text-muted">
             Sin cuentas bancarias registradas para este proveedor.
           </div>
         </ng-template>
@@ -503,7 +504,7 @@
       <!-- SECCIÓN 8: Observaciones Generales -->
       <section class="p-3 rounded-lg border border-erp-border bg-erp-bg/70">
         <div class="text-xs font-bold text-erp-text uppercase mb-1.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-note-sticky text-erp-text-muted"></i> 8. Observaciones Generales
+          <i class="fa-solid fa-note-sticky text-erp-text-muted"></i> {{ isSelectedProviderTypeA() ? 7 : 8 }}. Observaciones Generales
         </div>
         <p class="text-xs mb-0 text-erp-text bg-erp-surface p-2 rounded border border-erp-border">
           {{ selectedCompanyProfile()?.general_observations || p.general_observations || 'Sin observaciones generales registradas.' }}
@@ -532,7 +533,7 @@
         <div class="bg-erp-surface border border-erp-border rounded p-3">
           <b class="text-erp-info"><i class="fa-solid fa-address-book mr-1"></i> Contactos</b>
           <div *ngFor="let contact of site.contacts" class="mt-1 border-b border-erp-border pb-1">
-            <strong>{{ contact.full_name }}</strong> · {{ contact.position_area }} · {{ contact.cellphone }}
+            <strong>{{ contact.full_name }}</strong> · {{ contact.cellphone }}
           </div>
         </div>
       </div>

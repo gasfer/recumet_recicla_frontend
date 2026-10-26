@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import * as moment from 'moment';
 import { Client } from '../interfaces/client.interface';
 import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
+import { downloadBlobFile } from 'src/app/core/helpers/download-blob-file';
 
 @Component({
   selector: 'app-query-outputs',
@@ -40,7 +41,9 @@ export class QueryOutputsComponent {
     status: 'ACTIVE',
     filterBy:'DAY',
     date1: '',
-    date2: ''
+    date2: '',
+    type: '',
+    query: ''
   });
   minDate!: Date;
   maxDate!: Date;
@@ -48,26 +51,26 @@ export class QueryOutputsComponent {
     {
       label: 'Excel',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => { this.printExcelReport(); }
     },
     {
       label: 'Pdf Detalle',
       icon: 'fas fa-print',
-      iconStyle: { 'color': '#DC4C64'},
+      iconStyle: { 'color': 'var(--color-danger)'},
       command: () => { this.printPdfDetailsReport(); }
     },
     {
       label: 'Excel Detalle',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => { this.printExcelDetailsReport(); }
     },
   ];
   searchItems = signal<MenuItem[]>([
     {
       label: 'Todos', icon: 'fas fa-list',
-      iconStyle: { 'color': '#FF851B'},
+      iconStyle: { 'color': 'var(--color-accent-orange)'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
@@ -77,7 +80,7 @@ export class QueryOutputsComponent {
     },
     {
       label: 'Al Contado', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA'},
+      iconStyle: { 'color': 'var(--color-info)'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = 'CONTADO';
@@ -87,7 +90,7 @@ export class QueryOutputsComponent {
     },
     {
       label: 'A Crédito', icon: 'fa-solid fa-clock-rotate-left',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => {
         this.cols()[0].isLink = true;
         this.cols()[0].link = '/accounts/accounts-receivable?v=${value}';
@@ -100,7 +103,7 @@ export class QueryOutputsComponent {
     },
     {
       label: 'Anulados', icon: 'fa-solid fa-trash-can',
-      iconStyle: { 'color': '#DC4C64'},
+      iconStyle: { 'color': 'var(--color-danger)'},
       command: () => {
         this.cols()[0].isLink = false;
         this.paramsSearch().type_pay = '';
@@ -115,7 +118,7 @@ export class QueryOutputsComponent {
     filterBy: ['MONTH'],
     dates: [new Date(), [Validators.required]],
     type_registry: [''],
-    type_output: [],
+    type_output: [''],
     id_sucursal: ['',[Validators.required]],
     id_storage: [''],
     id_client: [''],
@@ -192,7 +195,7 @@ export class QueryOutputsComponent {
   }
 
 
-  getAllAndSearchOutputs(page: number, limit: number,type: string = '', query: string = '') {
+  getAllAndSearchOutputs(page: number, limit: number,type: string = this.type(), query: string = this.query()) {
     this.formReport.patchValue({id_sucursal:this.validatorsService.id_sucursal()});
     this.formReport.markAllAsTouched();
     if(!this.formReport.valid) return;
@@ -297,8 +300,8 @@ export class QueryOutputsComponent {
       showLoaderOnConfirm: true,
       showCancelButton: true,
       backdrop:true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: 'var(--color-action-primary)',
+      cancelButtonColor: 'var(--color-action-secondary)',
       cancelButtonText: 'Cancelar',
       customClass: { container: 'sweetalert2'},
       preConfirm: () => {
@@ -344,6 +347,8 @@ export class QueryOutputsComponent {
         filterBy: filterBy,
         date1: filterBy == 'RANGE' ?  moment(dates[0]).format(formatDate1) : moment(dates).format(formatDate1),
         date2: filterBy == 'RANGE' ?  dates[1] ? moment(dates[1]).format(formatDate1) : '' : moment(dates).format(formatDate2),
+        type: this.type(),
+        query: this.query(),
       }
     });
   }
@@ -389,6 +394,15 @@ export class QueryOutputsComponent {
       type_pay: '',
       status: 'ACTIVE',
     });
+    this.clientSelect.set(undefined);
+    this.suggestedClient.set([]);
+    this.txtSearchClient.set('');
+    this.type.set('');
+    this.query.set('');
+    this.fieldSort.set('');
+    this.order.set('');
+    this.paramsSearch.update(params => ({ ...params, type_pay: '', status: 'ACTIVE' }));
+    this.getAllAndSearchOutputs(1, this.rows(), '', '');
   }
 
   printPdfReport() {
@@ -405,6 +419,7 @@ export class QueryOutputsComponent {
             next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_ventas.pdf', 'Reporte de ventas'); },
             error: (err) => {
               Swal.close();
+              this.showReportError();
             },
           });
         });
@@ -424,12 +439,12 @@ export class QueryOutputsComponent {
         new Promise((resolve, reject) => {
           this.outputService.getReportExcel(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
             next: (data) => {
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
+              downloadBlobFile(data, 'reporte_ventas.xlsx');
               Swal.close();
             },
             error: (err) => {
               Swal.close();
+              this.showReportError();
             },
           });
         });
@@ -452,6 +467,7 @@ export class QueryOutputsComponent {
             next: (data) => { Swal.close(); this.pdfActions.show(data, 'reporte_ventas_detalle.pdf', 'Detalle de ventas'); },
             error: (err) => {
               Swal.close();
+              this.showReportError();
             },
           });
         });
@@ -471,16 +487,25 @@ export class QueryOutputsComponent {
         new Promise((resolve, reject) => {
           this.outputService.getReportDetailsExcel(this.paramsSearch()).subscribe({
             next: (data) => {
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
+              downloadBlobFile(data, 'reporte_ventas_detalle.xlsx');
               Swal.close();
             },
             error: (err) => {
               Swal.close();
+              this.showReportError();
             },
           });
         });
       },
+    });
+  }
+
+  private showReportError() {
+    Swal.fire({
+      title: 'No se pudo generar el reporte',
+      text: 'Verifique los filtros e intente nuevamente.',
+      icon: 'error',
+      customClass: { container: 'sweetalert2' },
     });
   }
 

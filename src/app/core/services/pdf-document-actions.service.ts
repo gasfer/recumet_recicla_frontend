@@ -23,12 +23,12 @@ export class PdfDocumentActionsService implements OnDestroy {
         reservation.tab.document.title = 'Generando PDF…';
         const doc = reservation.tab.document;
         doc.body.replaceChildren();
-        doc.body.style.cssText = 'margin:0;min-height:100vh;display:grid;place-items:center;background:rgba(15,23,42,.08);font-family:Arial,sans-serif;color:#1e5b3a';
+        doc.body.style.cssText = 'margin:0;min-height:100vh;display:grid;place-items:center;background:rgba(15,23,42,.08);font-family:Arial,sans-serif;color:var(--color-primary)';
         const card = doc.createElement('main');
         card.setAttribute('role', 'status');
         card.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;padding:28px 36px;border:1px solid #d6e9dd;border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 18px 48px rgba(15,23,42,.14)';
         const spinner = doc.createElement('div');
-        spinner.style.cssText = 'width:72px;height:72px;border:4px solid #dff1e6;border-top-color:#00a96b;border-right-color:#1e5b3a;border-radius:50%;animation:recumet-preview-spin .9s linear infinite;display:grid;place-items:center';
+        spinner.style.cssText = 'width:72px;height:72px;border:4px solid var(--color-success-light);border-top-color:var(--color-primary);border-right-color:var(--color-primary);border-radius:50%;animation:recumet-preview-spin .9s linear infinite;display:grid;place-items:center';
         const emblem = doc.createElement('img');
         emblem.src = new URL('assets/recumet/recumet-emblem.png', doc.baseURI).toString();
         emblem.alt = 'RECUMET';
@@ -101,7 +101,7 @@ export class PdfDocumentActionsService implements OnDestroy {
         if (inline) {
           const close = doc.createElement('button');
           close.type = 'button'; close.textContent = 'Cerrar vista previa';
-          close.style.cssText = 'background:#00a96b;color:white;border:0;border-radius:6px;padding:8px 12px;cursor:pointer';
+          close.style.cssText = 'background:var(--color-primary);color:white;border:0;border-radius:6px;padding:8px 12px;cursor:pointer';
           close.addEventListener('click', () => this.release(id));
           toolbar.append(close);
         }

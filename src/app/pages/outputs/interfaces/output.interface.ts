@@ -71,6 +71,8 @@ export interface FormSearchOutputs {
     type_registry: string;
     type_output: string;
     id_client:   string;
+    type:        string;
+    query:       string;
 }
 
 //** GetAllOutputs */

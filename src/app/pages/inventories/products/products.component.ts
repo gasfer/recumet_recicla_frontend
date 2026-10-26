@@ -265,8 +265,8 @@ printPdfReport() {
       showLoaderOnConfirm: true,
       showCancelButton: true,
       backdrop: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: 'var(--color-action-primary)',
+      cancelButtonColor: 'var(--color-action-secondary)',
       cancelButtonText: 'Cancelar',
       customClass: { container: 'sweetalert2' },
       preConfirm: () => new Promise((resolve) => {

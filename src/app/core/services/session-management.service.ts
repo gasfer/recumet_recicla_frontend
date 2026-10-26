@@ -99,7 +99,7 @@ export class SessionManagementService {
         showCancelButton: true,
         confirmButtonText: '<i class="bx bx-check"></i> Mantener sesión activa',
         cancelButtonText: '<i class="bx bx-log-out"></i> Cerrar sesión ahora',
-        confirmButtonColor: '#34c38f',
+        confirmButtonColor: 'var(--color-primary)',
         cancelButtonColor: '#f46a6a',
         allowOutsideClick: false,
         allowEscapeKey: false,

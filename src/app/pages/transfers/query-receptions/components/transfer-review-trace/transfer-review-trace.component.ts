@@ -393,7 +393,7 @@ export class TransferReviewTraceComponent {
       showCancelButton: true,
       confirmButtonText: 'Sí, completar registro',
       cancelButtonText: 'Volver a revisar',
-      confirmButtonColor: '#166534',
+      confirmButtonColor: 'var(--color-primary)',
       allowOutsideClick: false,
     });
     if (!confirmation.isConfirmed) return;
@@ -609,7 +609,7 @@ export class TransferReviewTraceComponent {
           ? 'Sí, registrar y conciliar'
           : 'Sí, crear y conciliar',
       cancelButtonText: 'Volver a revisar',
-      confirmButtonColor: solution?.operation_type === 'CONFIRMATION' ? '#b45309' : '#166534',
+      confirmButtonColor: solution?.operation_type === 'CONFIRMATION' ? 'var(--color-warning-text)' : 'var(--color-primary)',
       customClass: { container: 'sweetalert2 reconciliation-confirmation' },
       allowOutsideClick: false,
       returnFocus: true,

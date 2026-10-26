@@ -53,20 +53,20 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   }
   searchItems = signal<MenuItem[]>([
     { label: 'Activos',   icon: 'fa-solid fa-circle-check' ,
-      iconStyle: { 'color': '#3B71CA'}, command: () => {
+      iconStyle: { 'color': 'var(--color-info)'}, command: () => {
       this.type.set('');
       this.estadoRegistro.set('');
       this.getAllAndSearchProviders(1,this.rows(),true);
     }},
     { label: 'Inactivos', icon: 'fa-solid fa-trash-can',
-      iconStyle: { 'color': '#DC4C64'},
+      iconStyle: { 'color': 'var(--color-danger)'},
       command: () => {
       this.type.set('');
       this.estadoRegistro.set('');
       this.getAllAndSearchProviders(1,this.rows(),false)
     } },
     { label: 'Pendientes de Validación Comercial', icon: 'fa-solid fa-clock',
-      iconStyle: { 'color': '#f57c00' }, command: () => {
+      iconStyle: { 'color': 'var(--color-accent-orange)' }, command: () => {
       this.type.set('');
       this.estadoRegistro.set('PENDIENTE');
       this.getAllAndSearchProviders(1, this.rows(), true);
@@ -272,6 +272,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   }
   infoSites(): ProviderSiteProfile[] { return this.selectedCompanyProfile()?.operatingProviders || []; }
 
+  isSelectedProviderTypeA(): boolean {
+    return this.selectedProvider()?.type?.code === 'A';
+  }
+
   selectedInfoSite(): ProviderSiteProfile | null {
     const sites = this.infoSites();
     return sites.find(site => site.id === this.selectedInfoSiteId()) || sites[0] || null;
@@ -471,12 +475,12 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         const totals = accountsPayable.totals;
         Swal.fire({
           title: '¿Dar de baja al proveedor?',
-          html: `<div style="text-align:left;font-size:.86rem"><b>${this.escapeHtml(provider.full_names)}</b><hr><p>Cuentas registradas: <b>${totals.total_accounts || 0}</b></p><p>Total comprado: <b>Bs. ${Number(totals.total_account || 0).toFixed(2)}</b></p><p>Total pagado: <b>Bs. ${Number(totals.total_abonados || 0).toFixed(2)}</b></p><p>Saldo pendiente: <b style="color:#b45309">Bs. ${Number(totals.total_restante || 0).toFixed(2)}</b></p><small>La baja no elimina compras, pagos ni deudas. El historial permanecerá disponible.</small></div>`,
+          html: `<div style="text-align:left;font-size:.86rem"><b>${this.escapeHtml(provider.full_names)}</b><hr><p>Cuentas registradas: <b>${totals.total_accounts || 0}</b></p><p>Total comprado: <b>Bs. ${Number(totals.total_account || 0).toFixed(2)}</b></p><p>Total pagado: <b>Bs. ${Number(totals.total_abonados || 0).toFixed(2)}</b></p><p>Saldo pendiente: <b style="color:var(--color-warning-text)">Bs. ${Number(totals.total_restante || 0).toFixed(2)}</b></p><small>La baja no elimina compras, pagos ni deudas. El historial permanecerá disponible.</small></div>`,
           icon: Number(totals.total_restante || 0) > 0 ? 'warning' : 'question',
           confirmButtonText: 'Sí, dar de baja',
           cancelButtonText: 'Cancelar',
           showCancelButton: true,
-          confirmButtonColor: '#dc2626',
+          confirmButtonColor: 'var(--color-danger)',
           customClass: { container: 'sweetalert2' },
         }).then(result => { if (result.isConfirmed) this.persistProviderStatus(provider, false); });
       },
@@ -494,8 +498,8 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       showLoaderOnConfirm: true,
       showCancelButton: true,
       backdrop:true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: 'var(--color-action-primary)',
+      cancelButtonColor: 'var(--color-action-secondary)',
       cancelButtonText: 'Cancelar',
       customClass: { container: 'sweetalert2'},
       preConfirm: () => {
@@ -638,7 +642,6 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         return [...columns,
           { field: 'number_document', header: 'NIT', style:'min-width:120px;max-width:120px;', tooltip: true, isText: true },
           { field: 'direction', header: 'DIRECCIÓN', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
-          { field: 'companyContacts', header: 'CONTACTO', style:'min-width:200px;max-width:200px;', tooltip: true, isText: true },
           { field: 'name_contact', header: 'PERSONA NOMBRE', style:'min-width:150px;max-width:200px;', tooltip: true, isText: true },
           { field: 'cellphone_contact', header: 'PERSONA CELULAR', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
          // { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style:'min-width:120px;max-width:150px;', tooltip: true, isText: true },
@@ -667,7 +670,6 @@ export class ProvidersComponent implements OnInit, OnDestroy {
           return [...columns,
             { field: 'number_document', header: 'CI / NIT', style: 'min-width:120px;max-width:120px;', tooltip: true, isText: true },
           //  { field: 'direction', header: 'DIRECCIÓN - ACOPIADORA', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
-            { field: 'companyContacts', header: 'CONTACTO', style: 'min-width:200px;max-width:200px;', tooltip: true, isText: true },
             { field: 'name_contact', header: 'PERSONA NOMBRE', style: 'min-width:150px;max-width:200px;', tooltip: true, isText: true },
             { field: 'cellphone_contact', header: 'PERSONA CELULAR', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },
            // { field: 'workAreaOrPositionOrUnit', header: 'AREA - UNIDAD', style: 'min-width:120px;max-width:150px;', tooltip: true, isText: true },

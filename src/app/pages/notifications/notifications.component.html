@@ -1,126 +1,91 @@
-<div class="container-fluid">
-  <!-- Title & Breadcrumb -->
-  <div class="row">
-    <div class="col-12">
-      <div class="page-title-box d-flex align-items-center justify-content-between">
-        <h4 class="mb-0 font-size-18">Historial de Notificaciones</h4>
-        <div class="page-title-right">
-          <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a routerLink="/">Inicio</a></li>
-            <li class="breadcrumb-item active">Notificaciones</li>
-          </ol>
+<section class="mx-auto flex w-full max-w-7xl flex-col gap-4 p-3 sm:p-4" aria-labelledby="notifications-title">
+  <header class="flex flex-col gap-2 border-b border-erp-border pb-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 id="notifications-title" class="erp-text-heading mb-0">Historial de Notificaciones</h1>
+      <p class="erp-text-caption mb-0 mt-1">Consulta y administra las alertas del sistema.</p>
+    </div>
+    <nav aria-label="Ruta de navegación" class="erp-text-caption flex items-center gap-2">
+      <a routerLink="/" class="text-erp-text-muted underline-offset-2 hover:underline">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page" class="font-semibold text-erp-text">Notificaciones</span>
+    </nav>
+  </header>
+
+  <div class="erp-card">
+    <form [formGroup]="filterForm" (ngSubmit)="onSearch()" class="flex flex-col gap-3">
+        <div class="erp-form-grid cols-3">
+        <div class="erp-field col-span-full sm:col-span-2">
+          <label for="notification-query" class="erp-label">Buscar por boleta o texto</label>
+          <input id="notification-query" type="search" formControlName="query" class="erp-input w-full"
+                 placeholder="Ej. #TRAS00005, discrepancia..." autocomplete="off">
+        </div>
+        <div class="erp-field col-span-full sm:col-span-1">
+          <label for="notification-level" class="erp-label">Nivel de alerta</label>
+          <p-dropdown inputId="notification-level" [options]="levelOptions" formControlName="level"
+                      optionLabel="label" optionValue="value" (onChange)="onSearch()"
+                      styleClass="erp-input w-full" appendTo="body">
+          </p-dropdown>
+        </div>
+        <div class="col-span-full flex items-end gap-2">
+          <button type="submit" class="erp-btn-primary flex-1">
+            <i class="bx bx-filter-alt me-1" aria-hidden="true"></i> Filtrar
+          </button>
+          <button type="button" (click)="onReset()" class="erp-btn-secondary flex-1">
+            <i class="bx bx-refresh me-1" aria-hidden="true"></i> Limpiar
+          </button>
         </div>
       </div>
-    </div>
+    </form>
   </div>
 
-  <!-- Filters Card -->
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <form [formGroup]="filterForm" (ngSubmit)="onSearch()">
-            <div class="row g-3 align-items-center">
-              <div class="col-md-5">
-                <label class="form-label font-size-13 fw-bold">Buscar por Boleta o Texto</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bx bx-search"></i></span>
-                  <input type="text" formControlName="query" class="form-control" placeholder="Ej. #TRAS00005, discrepancia...">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label font-size-13 fw-bold">Nivel de Alerta</label>
-                <p-dropdown [options]="levelOptions"
-                            formControlName="level"
-                            optionLabel="label"
-                            optionValue="value"
-
-                            (onChange)="onSearch()" class="app-u-width-100-0466783">
-                </p-dropdown>
-              </div>
-              <div class="col-md-3 d-flex align-items-end gap-2 mt-4">
-                <button type="submit" class="btn btn-primary w-50">
-                  <i class="bx bx-filter-alt me-1"></i> Filtrar
-                </button>
-                <button type="button" (click)="onReset()" class="btn btn-light w-50">
-                  <i class="bx bx-refresh me-1"></i> Limpiar
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
+  <section class="erp-card min-w-0" aria-labelledby="notification-records-title">
+    <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <h2 id="notification-records-title" class="erp-text-body mb-0 font-semibold">Registros de alerta</h2>
+      <button type="button" class="erp-btn-secondary self-start sm:self-auto"
+              (click)="markAllAsRead()" *ngIf="notifications().length > 0">
+        <i class="bx bx-check-double me-1" aria-hidden="true"></i> Marcar visibles como leídas
+      </button>
     </div>
-  </div>
 
-  <!-- Table Card -->
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title m-0">Registros de Alerta</h5>
-            <button class="btn btn-sm btn-outline-secondary" (click)="markAllAsRead()" *ngIf="notifications().length > 0">
-              <i class="bx bx-check-double me-1"></i> Marcar visibles como leídas
+    <p-table [value]="notifications()" [loading]="loading()" [lazy]="true" [paginator]="true"
+             [rows]="limit()" [totalRecords]="totalRecords()" (onPage)="onPageChange($event)"
+             styleClass="p-datatable-striped p-datatable-gridlines app-table-scroll" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr class="erp-table-header">
+          <th scope="col" class="min-w-36">Fecha y hora</th>
+          <th scope="col" class="min-w-32">Nivel</th>
+          <th scope="col" class="min-w-40">Título</th>
+          <th scope="col" class="min-w-56">Detalle</th>
+          <th scope="col" class="min-w-32 text-center">Estado</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr class="erp-table-row" [class.bg-erp-danger-soft]="item.level === 'DANGER' && !item.is_read">
+          <td class="whitespace-nowrap">
+            <span class="erp-text-caption"><i class="mdi mdi-clock-outline me-1" aria-hidden="true"></i>{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </td>
+          <td>
+            <span class="erp-badge" [ngClass]="item.level === 'DANGER' ? 'erp-badge-danger' : 'erp-badge-info'">
+              <i [ngClass]="item.level === 'DANGER' ? 'bx bx-error me-1' : 'bx bx-info-circle me-1'" aria-hidden="true"></i>
+              {{ item.level === 'DANGER' ? 'ALERTA ROJA' : 'INFORMACIÓN' }}
+            </span>
+          </td>
+          <td><strong [class.text-erp-danger]="item.level === 'DANGER'">{{ item.title }}</strong></td>
+          <td><span class="erp-text-caption">{{ item.message }}</span></td>
+          <td class="text-center">
+            <button *ngIf="!item.is_read" type="button" (click)="markAsRead(item)" class="erp-btn-secondary"
+                    [attr.aria-label]="'Marcar como leída: ' + item.title">
+              <i class="bx bx-check" aria-hidden="true"></i> Pendiente
             </button>
-          </div>
-
-          <p-table [value]="notifications()"
-                   [loading]="loading()"
-                   [lazy]="true"
-                   [paginator]="true"
-                   [rows]="limit()"
-                   [totalRecords]="totalRecords()"
-                   (onPage)="onPageChange($event)"
-                   styleClass="p-datatable-striped p-datatable-gridlines app-table-scroll" responsiveLayout="scroll">
-            <ng-template pTemplate="header">
-              <tr>
-                <th class="app-u-width-15-23984e7">Fecha y Hora</th>
-                <th class="app-u-width-15-23984e7">Nivel</th>
-                <th class="app-u-width-25-1ad9a81">Título</th>
-                <th class="app-u-width-35-6709852">Detalle</th>
-                <th class="text-center app-u-width-10-477d664">Estado</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-item>
-              <tr [ngClass]="{'table-danger bg-light-danger': item.level === 'DANGER' && !item.is_read}">
-                <td>
-                  <span class="font-size-13"><i class="mdi mdi-clock-outline me-1"></i>{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
-                </td>
-                <td>
-                  <span class="badge font-size-12 px-2 py-1"
-                        [ngClass]="item.level === 'DANGER' ? 'bg-danger text-white' : 'bg-info text-white'">
-                    <i [ngClass]="item.level === 'DANGER' ? 'bx bx-error me-1' : 'bx bx-info-circle me-1'"></i>
-                    {{ item.level === 'DANGER' ? 'ALERTA ROJA' : 'INFORMACIÓN' }}
-                  </span>
-                </td>
-                <td>
-                  <strong [ngClass]="{'text-danger': item.level === 'DANGER'}">{{ item.title }}</strong>
-                </td>
-                <td>
-                  <span class="text-muted font-size-13">{{ item.message }}</span>
-                </td>
-                <td class="text-center">
-                  <button *ngIf="!item.is_read"
-                          (click)="markAsRead(item)"
-                          class="btn btn-xs btn-outline-primary"
-                          title="Marcar como leída">
-                    <i class="bx bx-check"></i> Pendiente
-                  </button>
-                  <span *ngIf="item.is_read" class="badge bg-secondary text-white">Leída</span>
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="5" class="text-center p-4 text-muted">
-                  No se encontraron notificaciones registradas.
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+            <span *ngIf="item.is_read" class="erp-badge erp-badge-neutral">Leída</span>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="p-4 text-center erp-text-caption">No se encontraron notificaciones registradas.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+</section>

@@ -1,6 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable, inject } from '@angular/core';
 import { Observable, Subject, of, catchError } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
+import { Input } from '../interfaces/input.interface';
 import { GetAllProviders, GetAllTypesProvider, Provider } from '../interfaces/provider.interface';
 import { environment } from 'src/environments/environment';
 import { ProviderManagementCatalogs, ProviderManagementQuery } from '../interfaces/provider-management.interface';
@@ -17,11 +19,20 @@ import {
   ProviderSiteResponse,
 } from '../interfaces/provider-commercial-profile.interface';
 const base_url = environment.base_url;
+export type ProviderPurchaseHistoryInput = Omit<Input, 'user' | 'sucursal' | 'provider'> & {
+  user: Input['user'] | null;
+  sucursal: Input['sucursal'] | null;
+  total_kg: number;
+  cost: number;
+  average_cost_per_kg?: number;
+  provider?: { id: number; full_names?: string; site_role?: string } | null;
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProvidersService {
+  private authService = inject(AuthService);
   getRegistrationDraft(key: string) {
     return this.http.get<{ ok: boolean; draft: { values: Record<string, any>; updated_at: string } | null }>(`${base_url}/provider/drafts/${key}`);
   }
@@ -145,8 +156,9 @@ getAllAndSearch(
     return this.http.get<GetAllTypesProvider>(url);
   }
 
-  getProvidersAutocomplete(query: string = ''): Observable<{ ok: boolean, providers: Provider[] }> {
+  getProvidersAutocomplete(query: string = '', idSucursal?: number): Observable<{ ok: boolean, providers: Provider[] }> {
     let params = new HttpParams().set('query', query);
+    if (idSucursal) params = params.set('id_sucursal', String(idSucursal));
     return this.http.get<{ ok: boolean, providers: Provider[] }>(`${base_url}/provider/autocomplete`, { params });
   }
 
@@ -162,7 +174,36 @@ getAllAndSearch(
   }
 
   getCommercialDetails(id: number) {
-    return this.http.get<{ ok: boolean, provider: Provider }>(`${base_url}/provider/${id}/commercial-details`);
+    return this.http.get<{ ok: boolean, provider: Provider }>(
+      `${base_url}/provider/${id}/commercial-details`,
+      this.authService.headerToken
+    );
+  }
+
+  getPurchaseHistory(id: number, page = 1, limit = 25, siteId?: number) {
+    let params = new HttpParams().set('page', page).set('limit', limit);
+    if (siteId) params = params.set('site_id', siteId);
+    return this.http.get<{
+      ok: boolean;
+      purchases: {
+        data: ProviderPurchaseHistoryInput[];
+        total: number;
+        current_page: number;
+        per_page: number;
+        next_page: number | null;
+        previous_page: number | null;
+        summary: { total_count: number; total_amount: number; last_purchase_date: string | null; purchased_kg: number; purchased_amount: number; paid_amount: number; pending_amount: number; purchase_count: number; active_sites: number };
+        sites: Array<{ id: number; name?: string; site_role?: string }>;
+        selected_site_id: number | null;
+      };
+    }>(`${base_url}/provider/${id}/purchases`, {
+      ...this.authService.headerToken,
+      params,
+    });
+  }
+
+  getPrintableCommercialProfile(id: number): Observable<Blob> {
+    return this.http.get(`${base_url}/commercial_providers/${id}/printable-profile`, { responseType: 'blob' });
   }
 
   resolveGoogleMapsLink(url: string) {
@@ -178,6 +219,7 @@ getAllAndSearch(
       analysis: {
         has_sufficient_history: boolean;
         total_deliveries: number;
+        window_days?: number;
         average_days: number | null;
         frequency: string | null;
         frequency_mode: 'automatic' | 'manual';
@@ -222,7 +264,7 @@ getAllAndSearch(
   createCommercialCompany(body: ProviderCompanyProfile | { company: ProviderCompanyProfile; headquarters: ProviderSiteProfile }) {
     return this.http.post<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers`, body);
   }
-  updateCommercialCompany(id: number, body: ProviderCompanyProfile | { company: ProviderCompanyProfile; headquarters: ProviderSiteProfile }) {
+  updateCommercialCompany(id: number, body: ProviderCompanyProfile | { company: ProviderCompanyProfile; headquarters?: ProviderSiteProfile }) {
     return this.http.put<ProviderCommercialProfileResponse>(`${base_url}/commercial_providers/${id}`, body);
   }
   uploadCommercialCompanyDocument(id: number, type: 'CERTIFICATE' | 'TRACEABILITY_REPORT', file: File) {

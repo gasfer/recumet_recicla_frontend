@@ -14,9 +14,9 @@ const Dropzone = (dz as any).default || dz;
   templateUrl: './modal-product.component.html',
   styles: [
     `@import 'dropzone/dist/dropzone.css';`,
-    `.dropzone { border: 2px dashed #adb5bd; border-radius: 10px; background: #f8f9fa; padding: 30px; min-height: 150px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }`,
+    `.dropzone { border: 2px dashed var(--color-border-hover); border-radius: 10px; background: var(--color-surface-secondary); padding: 30px; min-height: 150px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }`,
     `.dropzone.dropzone--has-image { padding: 10px; }`,
-    `.dropzone:hover { border-color: var(--primary-color, #0d6efd); background: #f1f5f9; }`,
+    `.dropzone:hover { border-color: var(--primary-color, var(--color-action-primary)); background: var(--color-surface-secondary); }`,
     `.dropzone .dz-message { margin: 0; text-align: center; }`
   ]
 })

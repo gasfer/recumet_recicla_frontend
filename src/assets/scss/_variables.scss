@@ -106,16 +106,16 @@ $grays: (
 // fusv-enable
 
 // scss-docs-start color-variables
-$blue:    #556ee6;
-$indigo:  #564ab1;
-$purple:  #6f42c1;
+$blue:    #2196f3;
+$indigo:  #6f52d3;
+$purple:  #6f52d3;
 $pink:    #e83e8c;
-$red:     #f46a6a;
-$orange:  #f1734f;
-$yellow:  #f1b44c;
-$green:   #34c38f;
-$teal:    #050505;
-$cyan:    #50a5f1;
+$red:     #dc3545;
+$orange:  #de6930;
+$yellow:  #fbbf24;
+$green:   #00b04e; // Sass build bridge; runtime palette is centralized in form-tokens.css.
+$teal:    #0c8f94;
+$cyan:    #2196f3;
 // scss-docs-end color-variables
 
 // scss-docs-start colors-map
@@ -138,7 +138,7 @@ $colors: (
 // scss-docs-end colors-map
 
 // scss-docs-start theme-color-variables
-$primary:       $blue;
+$primary:       $green;
 $secondary:     $gray-600;
 $success:       $green;
 $info:          $cyan;

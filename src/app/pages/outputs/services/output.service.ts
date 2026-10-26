@@ -45,6 +45,7 @@ export class OutputService {
 
   getAllAndSearchOutputs(page: number, limit: number,params:FormSearchOutputs, type: string = '', query?: string, field_sort:string = 'id',order:string = 'DESC',): Observable<GetAllOutputs>{
     let url = '';
+    const filters = Object.fromEntries(Object.entries(params).filter(([key]) => key !== 'type' && key !== 'query'));
     if(type === ''){
       url = `${base_url}/output?page=${page}&limit=${limit}&field_sort=${field_sort}&order=${order}`;
     } else {
@@ -53,7 +54,7 @@ export class OutputService {
     return this.http.get<GetAllOutputs>(url, {
       params: new HttpParams({
         fromObject: {
-          ...params
+          ...filters
         }
       })
     });

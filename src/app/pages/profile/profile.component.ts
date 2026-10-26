@@ -127,7 +127,7 @@ export class ProfileComponent implements OnInit {
             title: '¡Perfil Actualizado!',
             text: resp.msg || 'Los datos de contacto y foto han sido guardados.',
             icon: 'success',
-            confirmButtonColor: '#34c38f'
+            confirmButtonColor: 'var(--color-primary)'
           });
         }
       },
@@ -166,7 +166,7 @@ export class ProfileComponent implements OnInit {
             title: '¡Contraseña Actualizada!',
             text: resp.msg || 'Tu contraseña ha sido modificada con éxito.',
             icon: 'success',
-            confirmButtonColor: '#34c38f'
+            confirmButtonColor: 'var(--color-primary)'
           });
         }
       },

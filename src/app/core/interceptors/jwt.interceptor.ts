@@ -25,14 +25,19 @@ export class JwtInterceptor implements HttpInterceptor {
   } 
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    if (req.context.get(NotUseJWT)) {
+      return next.handle(req);
+    }
+
     const encodedUrl = this.encodeUrlParams(req.url);
+    const token = this.token.trim();
+    const headers = token
+      ? req.headers.set('Authorization', token)
+      : req.headers;
     const reqClone = req.clone({
       url: encodedUrl,
-      headers: this.headerToken
+      headers
     });
-    if (req.context.get(NotUseJWT)) {
-      return next.handle(req)
-    }
     return next.handle( reqClone ).pipe(
       catchError((err) => {
         this.errorLogsService.logDeErrores(err);

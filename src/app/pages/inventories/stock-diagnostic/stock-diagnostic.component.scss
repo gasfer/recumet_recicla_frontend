@@ -3,7 +3,7 @@
 }
 
 .table-hover tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: var(--color-surface-hover);
 }
 
 .bg-danger-subtle {
@@ -34,7 +34,7 @@
 .stock-diagnostic-page__heading {
   border: 0;
   border-radius: .85rem;
-  box-shadow: 0 .25rem .8rem rgb(15 23 42 / 7%);
+  box-shadow: var(--shadow-md);
 }
 
 .stock-diagnostic-page__heading h3 {
@@ -45,7 +45,7 @@
 
 .stock-diagnostic-page__heading p { color: var(--color-text-muted); font-size: .95em; }
 .stock-diagnostic-page__button { border-radius: 999px; font-weight: 700; padding: .55rem 1rem; }
-.stock-diagnostic-page__alert { border: 1px solid var(--color-warning); border-radius: .55rem; background: var(--color-warning-light); color: var(--color-warning); font-size: .94em; }
+.stock-diagnostic-page__alert { border: 1px solid var(--color-warning-border); border-radius: .55rem; background: var(--color-warning-light); color: var(--color-warning-text); font-size: .94em; }
 .stock-diagnostic-page__table-card { overflow: hidden; border-radius: .8rem; }
 
 .stock-diagnostic-table thead th {

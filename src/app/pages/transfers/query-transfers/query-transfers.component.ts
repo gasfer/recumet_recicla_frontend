@@ -22,7 +22,7 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
     margin-bottom: 10px;
     border: none;
     border-radius: 15px;
-    box-shadow: 0.1px 0 30px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
   }
   ` ]
 })
@@ -61,7 +61,7 @@ export class QueryTransfersComponent implements OnInit {
   searchItems = signal<MenuItem[]>([
     { 
       label: 'Traslados Pendientes', icon: 'fa-solid fa-clock-rotate-left', 
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => {
         this.paramsSearch().status = 'PENDING';
         this.getAllAndSearchTransfers(1,this.rows());
@@ -69,7 +69,7 @@ export class QueryTransfersComponent implements OnInit {
     },
     { 
       label: 'Traslados Aprobados', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA'},
+      iconStyle: { 'color': 'var(--color-info)'},
       command: () => {
         this.paramsSearch().status = 'RECEIVED';
         this.getAllAndSearchTransfers(1,this.rows());
@@ -92,7 +92,7 @@ export class QueryTransfersComponent implements OnInit {
     {
       label: 'Excel',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D'},
+      iconStyle: { 'color': 'var(--color-primary)'},
       command: () => { this.printExcelReport(); }
     },
   ];
@@ -185,8 +185,8 @@ export class QueryTransfersComponent implements OnInit {
       showLoaderOnConfirm: true,
       showCancelButton: true,
       backdrop:true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: 'var(--color-action-primary)',
+      cancelButtonColor: 'var(--color-action-secondary)',
       cancelButtonText: 'Cancelar',
       customClass: { container: 'sweetalert2'},
       preConfirm: () => {

@@ -4,7 +4,7 @@
 .trace-summary small,.trace-count,.trace-role,time { color:#475569; }
 .trace-legend { display:flex; flex-wrap:wrap; gap:.6rem; margin:1rem 0; }
 .trace-badge { display:inline-block; border:1px solid var(--trace-border,#cbd5e1); border-radius:20px; padding:.25rem .7rem; background:var(--trace-background,#fff); color:var(--trace-text,#334155); font-weight:600; }
-.trace-success { --trace-background:#effaf3; --trace-border:#86c99e; --trace-text:#205b36; }
+.trace-success { --trace-background:#effaf3; --trace-border:var(--color-primary); --trace-text:var(--color-primary); }
 .trace-warning { --trace-background:#fff9e8; --trace-border:#dfbd61; --trace-text:#70500a; }
 .trace-danger { --trace-background:#fff1f2; --trace-border:#e8a1a7; --trace-text:#912c37; }
 .trace-filters { display:grid; grid-template-columns:2fr 1fr; gap:1rem; margin:1rem 0; }

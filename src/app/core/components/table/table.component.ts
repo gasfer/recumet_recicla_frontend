@@ -401,7 +401,7 @@ import { userRolePresentation } from '../../constants/user-role.constants';
       text-align: left; transition: transform .15s ease, box-shadow .15s ease;
     }
     .app-table-review-note:hover, .app-table-review-note:focus-visible { transform: translateY(-1px); box-shadow: 0 .2rem .45rem rgb(124 45 18 / 16%); outline: 2px solid #fb923c; outline-offset: 1px; }
-    .app-table-review-note--surplus { border-color: #bbf7d0; border-left-color: #16a34a; color: #166534; background: #f0fdf4; }
+    .app-table-review-note--surplus { border-color: var(--color-success-light); border-left-color: var(--color-primary); color: var(--color-primary); background: var(--color-success-light); }
     .app-table-review-note__header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; font-size: .88rem; }
     .app-table-review-note__header span { padding: .14rem .42rem; border-radius: 999px; color: inherit; background: rgb(255 255 255 / 65%); font-size: .72rem; font-weight: 700; }
     .app-table-review-note small { color: inherit; font-size: .75rem; font-weight: 700; opacity: .85; }
@@ -413,7 +413,7 @@ import { userRolePresentation } from '../../constants/user-role.constants';
     .app-table-info-stack__item small { color: #64748b; font-size: .74rem; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
     .app-table-info-stack__item span { color: #24364b; font-size: .88rem; line-height: 1.35; }
     .app-table-info-stack__item--primary > i { color: #2563eb; }
-    .app-table-info-stack__item--success > i { color: #16a34a; }
+    .app-table-info-stack__item--success > i { color: var(--color-primary); }
     .app-table-info-stack__item--warning > i { color: #d97706; }
     .app-table-info-stack__item--danger > i { color: #dc2626; }
     .sucursal-badge {

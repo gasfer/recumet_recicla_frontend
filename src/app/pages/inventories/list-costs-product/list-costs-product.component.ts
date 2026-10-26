@@ -54,7 +54,7 @@ private pdfSub?:   Subscription;
     {
       label: 'Exportar Excel',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': '#14A44D' },
+      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => { this.printExcelReport(); }
     }
   ];
@@ -63,7 +63,7 @@ private pdfSub?:   Subscription;
     {
       label: 'Productos precios',
       icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA' },
+      iconStyle: { 'color': 'var(--color-info)' },
       command: () => {}
     },
   ]);

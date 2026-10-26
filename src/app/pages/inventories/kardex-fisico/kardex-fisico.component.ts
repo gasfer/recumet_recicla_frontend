@@ -250,7 +250,7 @@ export class KardexFisicoComponent {
       this.activeView.set(this.PHYSICAL_SUMMARY);
       this.fieldSort.set('product.category.name');
       this.order.set('ASC');
-      const item: MenuItem = { label: 'ENTRADAS Y SALIDAS', icon: 'fa-solid fa-left-right', iconStyle: { color: '#3B71CA' } };
+      const item: MenuItem = { label: 'ENTRADAS Y SALIDAS', icon: 'fa-solid fa-left-right', iconStyle: { color: 'var(--color-info)' } };
       this.searchItems.set([item]);
       this.activeSearchItem.set(item);
       return;
@@ -260,7 +260,7 @@ export class KardexFisicoComponent {
     this.fieldSort.set('product.category.name');
     this.order.set('ASC');
     const summaryItem: MenuItem = {
-      label: 'RESUMEN FÍSICO', icon: 'fa-solid fa-boxes-stacked', iconStyle: { color: '#14A44D' },
+      label: 'RESUMEN FÍSICO', icon: 'fa-solid fa-boxes-stacked', iconStyle: { color: 'var(--color-primary)' },
       command: () => this.selectView(this.PHYSICAL_SUMMARY),
     };
     this.searchItems.set([summaryItem]);

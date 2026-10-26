@@ -32,12 +32,12 @@ export type ProviderNegotiationCondition = 'DIRECT' | 'QUOTATION' | 'TENDER' | '
 export type ProviderAccountType = 'CAJA_AHORRO' | 'CUENTA_CORRIENTE' | 'OTRA';
 export type ProviderCurrency = 'BOB' | 'USD';
 export type ProviderOperationalType = 'RAW_MATERIAL' | 'SERVICES' | 'SUPPLIES' | 'EQUIPMENT_ASSETS' | 'COMMERCIAL' | 'OTHER';
+export type ProviderContactPriority = 'HIGH' | 'MEDIUM' | 'LOW';
 
 export interface ProviderLocationProfile {
   id?: number;
   branch_name: string;
   department: string;
-  province?: string | null;
   city: string;
   zone?: string | null;
   address: string;
@@ -55,6 +55,8 @@ export interface ProviderContactProfile {
   position_area: string;
   cellphone: string;
   email?: string | null;
+  department?: string | null;
+  comments?: string | null;
   is_main_contact: boolean;
   status: boolean;
 }
@@ -86,6 +88,7 @@ export interface ProviderSiteProfile {
   id?: number;
   id_provider_company?: number | null;
   id_sucursal?: number | null;
+  enabled_sucursal_ids?: number[];
   site_role: ProviderSiteRole;
   full_names: string;
   number_document: string;
@@ -113,22 +116,20 @@ export interface ProviderCompanyProfile {
   entity_type: ProviderEntityType;
   id_type_provider: number;
   operational_type: ProviderOperationalType;
+  has_branches?: boolean;
+  operating_departments?: string[];
   id_commercial_user?: number | null;
   origin_channel: ProviderOriginChannel;
   relationship_status: ProviderRelationshipStatus;
   negotiation_condition?: ProviderNegotiationCondition | null;
   commercial_observations?: string | null;
+  contact_priority?: ProviderContactPriority;
+  contact_observations?: string | null;
   requires_certificate: boolean | null;
   requires_traceability_report: boolean | null;
   general_observations?: string | null;
   status: boolean;
   operatingProviders?: ProviderSiteProfile[];
-}
-
-export interface ProviderMunicipalityOption {
-  department: string;
-  province: string;
-  name: string;
 }
 
 export interface ProviderCompanyPurchaseSummary {

@@ -10,7 +10,7 @@
     background:var(--color-surface);
     border-radius:14px;
     overflow:hidden;
-    box-shadow:0 6px 18px rgba(0,0,0,0.1);
+    box-shadow:var(--shadow-md);
     transition: all .25s ease;
     display:flex;
     flex-direction:column;
@@ -18,7 +18,7 @@
 
 .product-card:hover{
     transform: translateY(-6px);
-    box-shadow:0 12px 26px rgba(0,0,0,0.18);
+    box-shadow:var(--shadow-lg);
 }
 
 .image-container{
