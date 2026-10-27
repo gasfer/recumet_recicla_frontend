@@ -29,6 +29,13 @@ describe('resolvePurchaseEditEligibility', () => {
     }));
   });
 
+  it('allows permitted non-weighing users to open an aged purchase for price correction', () => {
+    expect(resolvePurchaseEditEligibility(true, true, false, true)).toEqual(jasmine.objectContaining({
+      allowed: true,
+      reason: null,
+    }));
+  });
+
   it('allows editing when the user is an ADMINISTRADOR even if the deadline has expired', () => {
     expect(resolvePurchaseEditEligibility(true, true, true)).toEqual(jasmine.objectContaining({
       allowed: true,

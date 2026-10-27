@@ -22,7 +22,6 @@ import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-t
 import { Router } from '@angular/router';
 import { isPurchaseEditPermissionDenied } from 'src/app/core/utils/purchase-edit-access';
 import {
-  INITIAL_PRICING_GRACE_HOURS,
   isPurchaseEditAuthorizationRequired,
   purchaseEditAuthorizationMessage,
   resolvePurchasePricingDecision,
@@ -37,7 +36,6 @@ import { registryNumberAvailabilityValidator } from 'src/app/core/validators/reg
   styleUrls: ['./modal-save-input.component.scss'],
 })
 export class ModalSaveInputComponent implements OnInit {
-  readonly pricingGraceHours = INITIAL_PRICING_GRACE_HOURS;
   inputsService = inject(InputsService);
   bankService = inject(BankService);
   scalesService = inject(ScalesService);
@@ -52,10 +50,14 @@ export class ModalSaveInputComponent implements OnInit {
   private policyRefreshEnabled = false;
   private authorizersLoaded = false;
   private serverRequiresAuthorization = false;
+  private pendingCreateSubmission: { signature: string; key: string } | null = null;
+  private pendingUpdateSubmission: { signature: string; key: string } | null = null;
+  private editRegistrySnapshot: { type: string; number: string | null } | null = null;
   authorizers = signal<{ id: number; label: string }[]>([]);
   loadingAuthorizers = signal(false);
   authorizersError = signal('');
   editAuthorizationRequired = signal(false);
+  latePriceCorrection = signal(false);
   types_pay = signal([
     { name: 'EFECTIVO', code: 'EFECTIVO' },
     { name: 'CHEQUE', code: 'CHEQUE' },
@@ -155,6 +157,8 @@ export class ModalSaveInputComponent implements OnInit {
 
     this.formInput.markAllAsTouched();
     if (!this.formInput.valid) return;
+    this.updatePurchaseAmountValidators();
+    if (!this.formInput.valid) return;
 
     this.loading.set(true);
     const releaseWriteLoader = this.validatorsService.beginWriteLoading();
@@ -179,10 +183,15 @@ export class ModalSaveInputComponent implements OnInit {
       input_data: inputData,
       input_details: inputDetail,
     };
+    const signature = JSON.stringify(data);
+    if (!this.pendingCreateSubmission || this.pendingCreateSubmission.signature !== signature) {
+      this.pendingCreateSubmission = { signature, key: this.inputsService.createMutationKey() };
+    }
 
     let voucherUploadStarted = false;
-    this.inputsService.postNewInput(data).subscribe({
+    this.inputsService.postNewInput(data, this.pendingCreateSubmission.key).subscribe({
       next: (resp) => {
+        this.pendingCreateSubmission = null;
         if (this.voucherFile) {
           voucherUploadStarted = true;
           this.pendingVoucherUpload = { id_input: resp.id_input, operation: 'create' };
@@ -192,7 +201,12 @@ export class ModalSaveInputComponent implements OnInit {
         }
       },
       complete: () => { if (!voucherUploadStarted) this.loading.set(false); releaseWriteLoader(); },
-      error: (err) => { this.loading.set(false); releaseWriteLoader(); },
+      error: (err) => {
+        this.loading.set(false);
+        releaseWriteLoader();
+        if (err?.status > 0 && err.status < 500) this.pendingCreateSubmission = null;
+        this.showPurchaseSaveError(err);
+      },
     });
   }
 
@@ -274,12 +288,17 @@ export class ModalSaveInputComponent implements OnInit {
       input_data: inputData,
       input_details: inputDetail,
     };
+    const signature = JSON.stringify({ id_input: this.inputsService.dataInputForEdit()!.id, data });
+    if (!this.pendingUpdateSubmission || this.pendingUpdateSubmission.signature !== signature) {
+      this.pendingUpdateSubmission = { signature, key: this.inputsService.createMutationKey() };
+    }
 
     let voucherUploadStarted = false;
     this.inputsService
-      .putUpdateInput(this.inputsService.dataInputForEdit()!.id, data)
+      .putUpdateInput(this.inputsService.dataInputForEdit()!.id, data, this.pendingUpdateSubmission.key)
       .subscribe({
         next: (resp) => {
+          this.pendingUpdateSubmission = null;
           if (this.voucherFile) {
             voucherUploadStarted = true;
             this.pendingVoucherUpload = { id_input: resp.id_input, operation: 'update' };
@@ -294,6 +313,9 @@ export class ModalSaveInputComponent implements OnInit {
           releaseWriteLoader();
           if (isPurchaseEditAuthorizationRequired(error)) {
             this.handlePurchaseEditAuthorizationError(error);
+          } else {
+            if (error?.status > 0 && error.status < 500) this.pendingUpdateSubmission = null;
+            this.showPurchaseSaveError(error);
           }
         },
       });
@@ -422,16 +444,54 @@ export class ModalSaveInputComponent implements OnInit {
     if (on_account > total) {
       this.formInput.get('on_account')?.setValue(total);
     }
+    this.updatePurchaseAmountValidators();
+  }
+
+  private updatePurchaseAmountValidators(): void {
+    const subtotal = Number(this.formInput.get('sumas')?.value || 0);
+    const total = Number(this.formInput.get('total')?.value || 0);
+    this.formInput.get('discount')?.setValidators([Validators.required, Validators.min(0), Validators.max(subtotal)]);
+    this.formInput.get('on_account')?.setValidators([Validators.required, Validators.min(0), Validators.max(total)]);
+    this.formInput.get('discount')?.updateValueAndValidity({ emitEvent: false });
+    this.formInput.get('on_account')?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private showPurchaseSaveError(error: any): void {
+    const errors = error?.error?.errors || [];
+    for (const item of errors) {
+      const path = String(item.path || item.param || '').replace(/^input_data\./, '');
+      const control = this.formInput.get(path);
+      if (control) {
+        control.setErrors({ ...(control.errors || {}), server: true });
+        control.markAsTouched();
+      }
+    }
+    const message = errors.map((item: any) => item.msg).filter(Boolean).join('\n')
+      || error?.error?.msg
+      || 'No se pudo guardar la compra. Revise los datos e intente nuevamente.';
+    void Swal.fire({
+      title: error?.status === 0 || error?.status >= 500 ? 'No se confirmó la respuesta' : 'No se pudo guardar la compra',
+      text: error?.status === 0 || error?.status >= 500
+        ? `${message} Si vuelve a intentar con los mismos datos, se reutilizará la misma solicitud para evitar duplicados.`
+        : message,
+      icon: error?.status === 0 || error?.status >= 500 ? 'warning' : 'error',
+      customClass: { container: 'swal-alert' },
+    });
   }
 
   onShowModal() {
     Swal.close();
     this.policyRefreshEnabled = false;
+    const inputEdit = this.inputsService.isEdit ? this.inputsService.dataInputForEdit() : null;
+    this.editRegistrySnapshot = inputEdit ? {
+      type: String(inputEdit.type_registry || ''),
+      number: inputEdit.registry_number ? String(inputEdit.registry_number) : null,
+    } : null;
     this.formInput.patchValue({
       sumas: this.totalSummary(),
       total: this.totalSummary(),
     });
-    this.selectTypeRegistry();
+    this.updatePurchaseAmountValidators();
     if (this.inputsService.isEdit) {
       const input_edit = this.inputsService.dataInputForEdit();
       const on_account = input_edit?.accounts_payable?.monto_abonado;
@@ -466,13 +526,28 @@ export class ModalSaveInputComponent implements OnInit {
       this.onOldCustomerChange();
       this.updatePaymentValidators();
     }
+    this.selectTypeRegistry();
     this.policyRefreshEnabled = true;
     this.refreshEditAuthorizationPolicy();
   }
 
   selectTypeRegistry() {
     const typeRegistry = this.formInput.get('type_registry')?.value;
-    this.formInput.patchValue({ registry_number: '' });
+    const registryNumber = this.formInput.get('registry_number');
+
+    if (this.inputsService.isEdit && this.editRegistrySnapshot) {
+      if (typeRegistry === this.editRegistrySnapshot.type) {
+        registryNumber?.setValue(this.editRegistrySnapshot.number || '', { emitEvent: false });
+        registryNumber?.disable({ emitEvent: false });
+        return;
+      }
+      registryNumber?.setValue('', { emitEvent: false });
+      if (typeRegistry === 'SIN FICHA') registryNumber?.disable({ emitEvent: false });
+      else registryNumber?.enable({ emitEvent: false });
+      return;
+    }
+
+    this.formInput.patchValue({ registry_number: '' }, { emitEvent: false });
 
     if (typeRegistry === 'SIN FICHA') {
       // ✅ El backend genera el número → deshabilitar (no es necesario ingresarlo)
@@ -483,6 +558,7 @@ export class ModalSaveInputComponent implements OnInit {
     }
   }
   resetModal() {
+    this.editRegistrySnapshot = null;
     this.pendingVoucherUpload = null;
     this.policyRefreshEnabled = false;
     this.serverRequiresAuthorization = false;
@@ -545,6 +621,8 @@ export class ModalSaveInputComponent implements OnInit {
 
   refreshEditAuthorizationPolicy(): void {
     if (!this.inputsService.isEdit) {
+      for (const control of Object.values(this.formInput.controls)) control.enable({ emitEvent: false });
+      this.latePriceCorrection.set(false);
       this.configureAuthorizationFields(false);
       return;
     }
@@ -557,7 +635,19 @@ export class ModalSaveInputComponent implements OnInit {
       this.inputsService.dataInputForEdit(),
       currentInput,
       this.inputsService.detailShopping(),
+      this.validatorsService.user()?.role || '',
     );
+    if (this.validatorsService.user()?.role === 'OPERADOR_BALANZA') {
+      for (const control of Object.values(this.formInput.controls)) control.disable({ emitEvent: false });
+    }
+    if (decision.editWindowExpired && this.validatorsService.user()?.role !== 'OPERADOR_BALANZA' && !this.latePriceCorrection()) {
+      this.latePriceCorrection.set(true);
+      for (const [name, control] of Object.entries(this.formInput.controls)) {
+        if (name !== 'audit_reason' && name !== 'id_authorizer_user') control.disable({ emitEvent: false });
+      }
+      this.formInput.get('audit_reason')?.enable({ emitEvent: false });
+      this.formInput.get('id_authorizer_user')?.enable({ emitEvent: false });
+    }
     const required = this.serverRequiresAuthorization || decision.requiresAuthorization;
     this.configureAuthorizationFields(required);
     if (required) this.loadAuthorizers();

@@ -3,7 +3,7 @@
   [(visible)]="outputService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="!loading()"
   [breakpoints]="{'960px': '96vw', '640px': '98vw'}" [style]="{width: 'min(76rem, calc(100vw - 2rem))'}"
   [contentStyle]="{maxHeight: 'calc(100dvh - 8rem)', overflow: 'auto'}" (onShow)="onShowModal()"
-  (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog sales-save-dialog">
+  (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog sales-save-dialog" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
   <form [formGroup]="formOutput">
 
     <!-- Mensaje de edición -->
@@ -413,7 +413,7 @@
 <p-dialog header="Agregar empresa de transporte" [visible]="quickCompanyVisible()"
   (visibleChange)="quickCompanyVisible.set($event)" [modal]="true" [draggable]="false" [resizable]="false"
   [breakpoints]="{'640px': '94vw'}" [style]="{width: 'min(34rem, calc(100vw - 2rem))'}"
-  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog">
+  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
   <form [formGroup]="quickCompanyForm" class="erp-form-grid cols-2">
     <div class="erp-field erp-col-full">
       <label class="erp-label required" for="quick-transport-name">Nombre de empresa</label>
@@ -434,7 +434,7 @@
 <p-dialog header="Agregar conductor" [visible]="quickChauffeurVisible()"
   (visibleChange)="quickChauffeurVisible.set($event)" [modal]="true" [draggable]="false" [resizable]="false"
   [breakpoints]="{'640px': '94vw'}" [style]="{width: 'min(34rem, calc(100vw - 2rem))'}"
-  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog">
+  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
   <form [formGroup]="quickChauffeurForm" class="erp-form-grid cols-2">
     <div class="erp-field erp-col-full"><label class="erp-label required" for="quick-driver-name">Nombre completo</label><input id="quick-driver-name" pInputText class="erp-input" formControlName="full_names" /></div>
     <div class="erp-field erp-col-full"><label class="erp-label" for="quick-driver-document">CI / licencia</label><input id="quick-driver-document" pInputText class="erp-input" formControlName="number_document" /></div>
@@ -448,7 +448,7 @@
 <p-dialog header="Agregar camión" [visible]="quickTruckVisible()"
   (visibleChange)="quickTruckVisible.set($event)" [modal]="true" [draggable]="false" [resizable]="false"
   [breakpoints]="{'640px': '94vw'}" [style]="{width: 'min(30rem, calc(100vw - 2rem))'}"
-  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog">
+  styleClass="app-dialog--sm erp-operational-dialog sales-quick-transport-dialog" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
   <form [formGroup]="quickTruckForm" class="erp-form-grid">
     <div class="erp-field"><label class="erp-label required" for="quick-truck-plate">Placa</label><input id="quick-truck-plate" pInputText class="erp-input" formControlName="placa" /></div>
   </form>

@@ -21,8 +21,9 @@ import { ComponentsService } from 'src/app/core/services/components.service';
 import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
 import { Router } from '@angular/router';
 import { isPurchaseEditPermissionDenied } from 'src/app/core/utils/purchase-edit-access';
+import { RegistryNumberApiService } from 'src/app/core/services/registry-number-api.service';
+import { registryNumberAvailabilityValidator } from 'src/app/core/validators/registry-number-availability.validator';
 import {
-  INITIAL_PRICING_GRACE_HOURS,
   isPurchaseEditAuthorizationRequired,
   purchaseEditAuthorizationMessage,
   resolvePurchasePricingDecision,
@@ -34,7 +35,6 @@ import {
   styles: [],
 })
 export class ModalSaveInputComponent implements OnInit {
-  readonly pricingGraceHours = INITIAL_PRICING_GRACE_HOURS;
   inputsService = inject(InputsService);
   bankService = inject(BankService);
   scalesService = inject(ScalesService);
@@ -47,10 +47,13 @@ export class ModalSaveInputComponent implements OnInit {
   private policyRefreshEnabled = false;
   private authorizersLoaded = false;
   private serverRequiresAuthorization = false;
+  private registryNumberApi = inject(RegistryNumberApiService);
+  private editRegistrySnapshot: { type: string; number: string | null } | null = null;
   authorizers = signal<{ id: number; label: string }[]>([]);
   loadingAuthorizers = signal(false);
   authorizersError = signal('');
   editAuthorizationRequired = signal(false);
+  latePriceCorrection = signal(false);
   types_pay = signal([
     { name: 'EFECTIVO', code: 'EFECTIVO' },
     { name: 'CHEQUE', code: 'CHEQUE' },
@@ -100,6 +103,17 @@ export class ModalSaveInputComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.formInput.get('registry_number')?.setAsyncValidators(
+      registryNumberAvailabilityValidator(this.registryNumberApi, () => ({
+        operation: 'input',
+        branchId: Number(this.formInput.get('id_sucursal')?.value || this.validatorsService.id_sucursal()),
+        typeRegistry: this.formInput.get('type_registry')?.value,
+        excludeId: this.inputsService.isEdit ? this.inputsService.dataInputForEdit()?.id : null,
+        originalNumber: this.inputsService.isEdit ? this.inputsService.dataInputForEdit()?.registry_number : null,
+        originalBranchId: this.inputsService.isEdit ? this.inputsService.dataInputForEdit()?.id_sucursal : null,
+        originalTypeRegistry: this.inputsService.isEdit ? this.inputsService.dataInputForEdit()?.type_registry : null,
+      })),
+    );
     this.getAllScalas();
     this.getAllBanks();
     this.onOldCustomerChange();
@@ -304,11 +318,15 @@ export class ModalSaveInputComponent implements OnInit {
   onShowModal() {
     Swal.close();
     this.policyRefreshEnabled = false;
+    const inputEdit = this.inputsService.isEdit ? this.inputsService.dataInputForEdit() : null;
+    this.editRegistrySnapshot = inputEdit ? {
+      type: String(inputEdit.type_registry || ''),
+      number: inputEdit.registry_number ? String(inputEdit.registry_number) : null,
+    } : null;
     this.formInput.patchValue({
       sumas: this.totalSummary(),
       total: this.totalSummary(),
     });
-    this.selectTypeRegistry();
     if (this.inputsService.isEdit) {
       const input_edit = this.inputsService.dataInputForEdit();
       const on_account = input_edit?.accounts_payable?.monto_abonado;
@@ -341,13 +359,28 @@ export class ModalSaveInputComponent implements OnInit {
       this.onChangeDescuento();
       this.onOldCustomerChange();
     }
+    this.selectTypeRegistry();
     this.policyRefreshEnabled = true;
     this.refreshEditAuthorizationPolicy();
   }
 
   selectTypeRegistry() {
     const typeRegistry = this.formInput.get('type_registry')?.value;
-    this.formInput.patchValue({ registry_number: '' });
+    const registryNumber = this.formInput.get('registry_number');
+
+    if (this.inputsService.isEdit && this.editRegistrySnapshot) {
+      if (typeRegistry === this.editRegistrySnapshot.type) {
+        registryNumber?.setValue(this.editRegistrySnapshot.number || '', { emitEvent: false });
+        registryNumber?.disable({ emitEvent: false });
+        return;
+      }
+      registryNumber?.setValue('', { emitEvent: false });
+      if (typeRegistry === 'SIN FICHA') registryNumber?.disable({ emitEvent: false });
+      else registryNumber?.enable({ emitEvent: false });
+      return;
+    }
+
+    this.formInput.patchValue({ registry_number: '' }, { emitEvent: false });
 
     if (typeRegistry === 'SIN FICHA') {
       // ✅ El backend genera el número → deshabilitar (no es necesario ingresarlo)
@@ -358,6 +391,7 @@ export class ModalSaveInputComponent implements OnInit {
     }
   }
   resetModal() {
+    this.editRegistrySnapshot = null;
     this.policyRefreshEnabled = false;
     this.serverRequiresAuthorization = false;
     this.authorizersLoaded = false;
@@ -416,6 +450,8 @@ export class ModalSaveInputComponent implements OnInit {
 
   refreshEditAuthorizationPolicy(): void {
     if (!this.inputsService.isEdit) {
+      for (const control of Object.values(this.formInput.controls)) control.enable({ emitEvent: false });
+      this.latePriceCorrection.set(false);
       this.configureAuthorizationFields(false);
       return;
     }
@@ -428,7 +464,19 @@ export class ModalSaveInputComponent implements OnInit {
       this.inputsService.dataInputForEdit(),
       currentInput,
       this.inputsService.detailShopping(),
+      this.validatorsService.user()?.role || '',
     );
+    if (this.validatorsService.user()?.role === 'OPERADOR_BALANZA') {
+      for (const control of Object.values(this.formInput.controls)) control.disable({ emitEvent: false });
+    }
+    if (decision.editWindowExpired && this.validatorsService.user()?.role !== 'OPERADOR_BALANZA' && !this.latePriceCorrection()) {
+      this.latePriceCorrection.set(true);
+      for (const [name, control] of Object.entries(this.formInput.controls)) {
+        if (name !== 'audit_reason' && name !== 'id_authorizer_user') control.disable({ emitEvent: false });
+      }
+      this.formInput.get('audit_reason')?.enable({ emitEvent: false });
+      this.formInput.get('id_authorizer_user')?.enable({ emitEvent: false });
+    }
     const required = this.serverRequiresAuthorization || decision.requiresAuthorization;
     this.configureAuthorizationFields(required);
     if (required) this.loadAuthorizers();

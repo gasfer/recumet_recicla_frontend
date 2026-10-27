@@ -5,6 +5,8 @@ import { ValidatorsService } from 'src/app/services/validators.service';
 import { ComponentsService } from 'src/app/core/services/components.service';
 import Swal from 'sweetalert2';
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
+import { isPurchaseEditWindowExpired } from 'src/app/core/utils/purchase-edit-access';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-table-input-details',
@@ -16,8 +18,19 @@ export class TableInputDetailsComponent implements OnDestroy {
   validatorsService   = inject( ValidatorsService );
   componentsService   = inject( ComponentsService );
   decimalFormat       = inject( DecimalFormatService );
+  private router      = inject(Router);
   product_temp        = signal<Product|undefined>(undefined);
   totalSummary        = computed(() => this.inputsService.detailShopping().reduce( (sum, product) => Number(sum) + Number(product.import),0));
+  totalQuantitySummary = computed(() => this.inputsService.detailShopping().reduce((sum, product) => sum + Number(product.quantity || 0), 0));
+
+  isWeighingOperator(): boolean {
+    return this.validatorsService.user()?.role === 'OPERADOR_BALANZA';
+  }
+
+  isLatePriceCorrection(): boolean {
+    return this.inputsService.isEdit
+      && isPurchaseEditWindowExpired(this.inputsService.dataInputForEdit()?.date_voucher);
+  }
 
   ngOnDestroy(): void {
     if(this.inputsService.isEdit){
@@ -73,14 +86,44 @@ export class TableInputDetailsComponent implements OnDestroy {
     this.inputsService.updateDetailShopping(product, false);
   }
   
-  deleteProductForDetailShopping(idProduct: number) : void {
+  async deleteProductForDetailShopping(product: Product) : Promise<void> {
+    const confirmation = await Swal.fire({
+      title: '¿Quitar producto?',
+      text: `Se quitará ${product.name} de la lista de esta compra.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Quitar producto',
+      cancelButtonText: 'Mantener producto',
+      reverseButtons: true,
+      customClass: { container: 'swal-alert' }
+    });
+    if (!confirmation.isConfirmed) return;
+
     this.inputsService.detailShopping.update((details)=> {
-      const newProducts = details.filter(product => product.id !== idProduct);
+      const newProducts = details.filter(item => item.id !== product.id);
       return newProducts;
     }); 
   }
 
-  clearDetailShopping() : void {
+  async clearDetailShopping() : Promise<void> {
+    if (this.inputsService.isEdit) {
+      const confirmation = await Swal.fire({
+        title: '¿Descartar los cambios?',
+        text: 'La compra seguirá como estaba. Los cambios de esta edición no se guardarán.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Salir sin guardar',
+        cancelButtonText: 'Seguir editando',
+        reverseButtons: true,
+        customClass: { container: 'swal-alert' }
+      });
+      if (!confirmation.isConfirmed) return;
+      this.inputsService.isEdit = false;
+      this.inputsService.dataInputForEdit.set(undefined);
+      this.inputsService.resetInput();
+      await this.router.navigateByUrl('/inputs/query-inputs');
+      return;
+    }
     this.inputsService.resetInput();
   }
 

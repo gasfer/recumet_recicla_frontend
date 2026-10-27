@@ -1,5 +1,5 @@
 <p-dialog [header]="'Vista de sectores: '" [(visible)]="providersService.showModalSectors" [modal]="true" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--md">
+    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--md" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
     <div class="justify-between flex">
         <h3 class="text-erp-text-muted">Sectores</h3>
         <p-button icon="fa-solid fa-circle-plus" (click)="providersService.showModalNewSector = true" pTooltip="Añadir Nuevo" tooltipPosition="left"

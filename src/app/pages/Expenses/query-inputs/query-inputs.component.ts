@@ -12,7 +12,7 @@ import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { Provider } from '../interfaces/provider.interface';
 import { firstValueFrom } from 'rxjs';
-import { PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app/core/utils/purchase-edit-access';
+import { isPurchaseEditWindowExpired, PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app/core/utils/purchase-edit-access';
 import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 @Component({
   selector: 'app-query-inputs',
@@ -253,8 +253,9 @@ export class QueryInputsComponent implements OnInit {
     const isAdmin = this.validatorsService.user()?.role === 'ADMINISTRADOR';
     return resolvePurchaseEditEligibility(
       this.validatorsService.withPermission('COMPRAS', 'update'),
-      this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher, 30),
+      isPurchaseEditWindowExpired(input.date_voucher),
       isAdmin,
+      this.validatorsService.user()?.role !== 'OPERADOR_BALANZA',
     );
   }
 

@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 import { Provider } from '../interfaces/provider.interface';
 import { firstValueFrom } from 'rxjs';
 import { PROVIDER_ENTITY_TYPES } from 'src/app/core/constants/provider-commercial.constants';
-import { PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app/core/utils/purchase-edit-access';
+import { isPurchaseEditWindowExpired, PurchaseEditEligibility, resolvePurchaseEditEligibility } from 'src/app/core/utils/purchase-edit-access';
 import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
 @Component({
   selector: 'app-query-inputs',
@@ -290,8 +290,9 @@ export class QueryInputsComponent implements OnInit {
     const isAdmin = this.validatorsService.user()?.role === 'ADMINISTRADOR';
     return resolvePurchaseEditEligibility(
       this.validatorsService.withPermission('COMPRAS', 'update'),
-      this.validatorsService.hasDaysPassedSinceEdit(input.date_voucher, 30),
+      isPurchaseEditWindowExpired(input.date_voucher),
       isAdmin,
+      this.validatorsService.user()?.role !== 'OPERADOR_BALANZA',
     );
   }
 
@@ -378,7 +379,7 @@ export class QueryInputsComponent implements OnInit {
             {
               label:'',icon:'fas fa-print',
               tooltip: 'Imprimir',
-              class:'p-button-rounded p-button-sm ms-1',
+              class:'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.inputsService.printPdfReport(input.id);
               }

@@ -93,6 +93,7 @@
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 3%);
   --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 4%), 0 1px 2px -1px rgb(0 0 0 / 4%);
   --shadow-lg: 0 4px 10px -2px rgb(0 0 0 / 5%), 0 2px 4px -2px rgb(0 0 0 / 3%);
+  --shadow-control: 0 1px 2px rgb(15 23 42 / 7%);
   --field-height: 38px;
   --field-height-compact: 34px;
   --field-height-sm: 32px;
@@ -134,7 +135,7 @@ body[data-bs-theme='light'] {
   --color-border-hover: #9aa2b3;
   --color-sidebar-hover: #162238;
   --color-surface-hover: #f8fafc;
-  --color-sidebar-search: var(--color-sidebar-hover);
+  --color-sidebar-search: color-mix(in srgb, var(--color-sidebar) 92%, var(--color-text-inverse));
   --color-overlay-mask: rgb(15 23 42 / 45%);
   --color-surface: rgb(var(--color-surface-rgb));
   --color-surface-secondary: rgb(var(--color-surface-secondary-rgb));
@@ -177,6 +178,7 @@ body[data-bs-theme='light'] {
 
 body[data-bs-theme='dark'] {
   color-scheme: dark;
+  --shadow-control: 0 1px 2px rgb(0 0 0 / 18%);
   --color-surface-rgb: 22 34 56;
   --color-surface-secondary-rgb: 30 41 59;
   --color-bg-rgb: 11 21 40;
@@ -213,7 +215,7 @@ body[data-bs-theme='dark'] {
   --color-danger-soft-rgb: 127 29 29;
   --color-sidebar-hover: #162238;
   --color-surface-hover: color-mix(in srgb, var(--color-surface) 76%, var(--color-table-header));
-  --color-sidebar-search: #162238;
+  --color-sidebar-search: color-mix(in srgb, var(--color-sidebar) 92%, var(--color-text-inverse));
   --color-overlay-mask: rgb(22 27 39 / 68%);
   --color-surface: rgb(var(--color-surface-rgb));
   --color-surface-secondary: rgb(var(--color-surface-secondary-rgb));
@@ -535,6 +537,7 @@ body .p-tag.p-tag-danger { border-color:var(--color-danger-border)!important; ba
   padding: 0 var(--spacing-md) !important;
   color: var(--color-text) !important;
   background-color: var(--color-surface) !important;
+  box-shadow: var(--shadow-control);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   line-height: calc(var(--field-height) - 2px) !important;
 }
@@ -599,6 +602,7 @@ p-autocomplete.erp-input .p-inputtext {
   border: 1px solid var(--color-border) !important;
   border-radius: var(--radius-md) !important;
   background-color: var(--color-surface) !important;
+  box-shadow: var(--shadow-control);
 }
 
 /* Campo de error */
@@ -773,6 +777,18 @@ body :is(.erp-table-cell-action, .rc__actions, .gc-card__actions, .app-table-act
   border-color: var(--color-info-border) !important;
 }
 body :is(.erp-table-cell-action, .rc__actions, .gc-card__actions, .app-table-action-column) :is(button, .p-button).p-button-secondary { color: var(--color-text-muted) !important; }
+body :is(.erp-table-cell-action, .rc__actions, .gc-card__actions, .app-table-action-column) .p-button.p-button-info {
+  color: var(--color-info-text) !important;
+  background: var(--color-info-light) !important;
+  border-color: var(--color-info-border) !important;
+}
+body :is(.erp-table-cell-action, .rc__actions, .gc-card__actions, .app-table-action-column) .p-button.p-button-info :is(.p-button-icon, i) { color: var(--color-info-text) !important; }
+body :is(.erp-table-cell-action, .rc__actions, .gc-card__actions, .app-table-action-column) .p-button.p-button-info:hover {
+  color: var(--color-text-inverse) !important;
+  background: var(--color-info) !important;
+  border-color: var(--color-info) !important;
+}
+body :is(.erp-table-cell-action, .rc__actions, .gc-card__actions, .app-table-action-column) .p-button.p-button-info:hover :is(.p-button-icon, i) { color: var(--color-text-inverse) !important; }
 
 /* TabMenu global RECUMET: navegación a 36px, alegre y moderna */
 body .p-tabmenu {
@@ -824,6 +840,7 @@ body .p-tabmenu .p-tabmenuitem.p-highlight .p-menuitem-link {
   color: var(--color-primary) !important;
   border-bottom: 2px solid var(--color-primary) !important;
   font-weight: 700 !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 body[data-bs-theme='dark'] .p-tabmenu .p-tabmenuitem.p-highlight .p-menuitem-link {
   background: color-mix(in srgb, var(--color-primary) 12%, transparent) !important;

@@ -1,6 +1,6 @@
 <p-dialog [header]="'Configuración de compras'" [(visible)]="inputsService.showModalConfigInput"
     [modal]="true" [draggable]="false"
-    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--sm erp-operational-dialog purchase-config-dialog">
+    [resizable]="false" [dismissableMask]="true" styleClass="app-dialog--sm erp-operational-dialog purchase-config-dialog" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
     <app-alert-notify [subTitle]="'Configurar los aspectos del módulo de compras.'" [subTitle2]="'Por favor, tenga en cuenta que los casilleros de verificación se consideran como afirmativos.'" [required]="false"></app-alert-notify>
     <div [formGroup]="formConfig" class="purchase-config-options rounded-lg border border-erp-border bg-erp-bg/70">
         <div class="field-checkbox flex items-center gap-2 py-1">

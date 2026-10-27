@@ -12,7 +12,7 @@
         <tr>
             <th class="app-u-min-width-120px-651945a app-u-max-width-200px-a828909">Producto</th>
             <th class="text-center">Cantidad</th>
-            <th class="text-center">Costo</th>
+            <th *ngIf="!isWeighingOperator()" class="text-center">Costo</th>
             <th class="app-u-min-width-110px-365391b app-u-max-width-150px-7eba571">Importe</th>
             <th class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">Quitar</th>
         </tr>
@@ -24,9 +24,10 @@
                 <span class="badge-subtle-code mr-1">{{product.cod}}</span>
                 <small class="text-erp-text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
             </td>
-            <td class="text-center">
+            <td *ngIf="!isWeighingOperator()" class="text-center">
                 <p-inputNumber
                     [size]="5"
+                    [disabled]="isLatePriceCorrection()"
                     [locale]="decimalFormat.locale"
                     mode="decimal"
                     [minFractionDigits]="decimalFormat.decimals()" [maxFractionDigits]="decimalFormat.decimals()"
@@ -63,27 +64,30 @@
             <td class="app-u-min-width-110px-365391b app-u-max-width-150px-7eba571 font-bold text-erp-text">
                 {{ product.import | number:decimalFormat.digitsInfo}}
             </td>
-            <td class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
-                <button type="button" aria-label="Eliminar"
-                    (click)="deleteProductForDetailShopping(product.id)"
+            <td *ngIf="!isWeighingOperator() && !isLatePriceCorrection()" class="text-center app-u-min-width-60px-71f5ad8 app-u-max-width-60px-d4de838">
+                <button type="button" aria-label="Quitar producto"
+                    (click)="deleteProductForDetailShopping(product)"
                     class="erp-btn erp-btn-sm erp-btn-outline-danger rounded-full p-1 purchase-remove"
-                    pTooltip="Quitar de la lista" tooltipPosition="top">
-                    <i class="fa-regular fa-trash-can"></i>
+                    pTooltip="Quitar producto de la lista" tooltipPosition="top">
+                    <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
                 </button>
             </td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
+        <tr *ngIf="isWeighingOperator()">
+            <th [attr.colspan]="isWeighingOperator() ? 3 : 5" class="text-right text-erp-text py-2">PESO TOTAL: {{ totalQuantitySummary() | number:decimalFormat.digitsInfo }} kg</th>
+        </tr>
         <tr class="bg-erp-header text-white">
-            <th colspan="3" class="text-right text-white py-2">
+            <th [attr.colspan]="isWeighingOperator() ? 2 : 3" class="text-right text-white py-2">
                 <span class="text-base font-bold">TOTAL COMPRA:</span>
             </th>
-            <th colspan="2" class="text-left text-erp-success py-2">
+            <th [attr.colspan]="isWeighingOperator() ? 1 : 2" class="text-left text-erp-success py-2">
                 <span class="text-lg font-bold">{{ totalSummary() | number:decimalFormat.digitsInfo }}</span>
             </th>
         </tr>
         <tr>
-            <td colspan="5" class="text-right bg-erp-surface py-2">
+            <td [attr.colspan]="isWeighingOperator() ? 3 : 5" class="text-right bg-erp-surface py-2">
                 <div class="purchase-actions">
                 <p-button
                     (click)="clearDetailShopping()"
@@ -93,7 +97,7 @@
                 </p-button>
                 <p-button
                     styleClass="p-button-sm p-button-rounded p-button-success"
-                    label="Confirmar Compra"
+                    [label]="inputsService.isEdit ? 'Guardar cambios' : 'Confirmar Compra'"
                     (click)="confirmInput()"
                     icon="fa-solid fa-floppy-disk">
                 </p-button>

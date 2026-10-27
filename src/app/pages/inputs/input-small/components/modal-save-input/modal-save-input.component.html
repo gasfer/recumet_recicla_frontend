@@ -1,7 +1,7 @@
 <p-dialog
   [header]="inputsService.isEdit ? 'Editar compra: ' + inputsService.dataInputForEdit()?.cod : 'Registro de compra'"
   [(visible)]="inputsService.showModalSaveInput" [modal]="true" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onShow)="onShowModal()"
-  (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog purchase-save-dialog">
+  (onHide)="resetModal()" styleClass="app-dialog--xl erp-operational-dialog purchase-save-dialog" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
   <form [formGroup]="formInput" class="purchase-save-form">
     <div class="p-2.5 rounded-lg border border-erp-border bg-erp-info-soft text-erp-info text-xs flex items-center gap-2 mb-3">
       <i class="fa-solid fa-circle-info"></i>
@@ -104,6 +104,8 @@
             <small *ngIf="formInput.get('registry_number')?.pending" class="erp-text-caption" aria-live="polite">Verificando número…</small>
             <small *ngIf="formInput.get('registry_number')?.hasError('registryNumberTaken')" class="erp-error-msg" role="alert">Este número ya está registrado para este tipo de compra en la sucursal.</small>
             <small *ngIf="formInput.get('registry_number')?.hasError('registryNumberCheckFailed')" class="erp-error-msg" role="alert">No se pudo verificar el número. Revise la conexión e inténtelo de nuevo.</small>
+          } @else if (inputsService.isEdit) {
+            <input type="text" pInputText class="erp-input w-full" formControlName="registry_number" readonly aria-label="Número de pesaje registrado" />
           } @else {
             <input type="text" pInputText class="erp-input w-full" [disabled]="true" placeholder="Automático" />
           }
@@ -326,7 +328,7 @@
   </form>
   <ng-template pTemplate="footer">
     <p-button (click)="loading() ? null : this.inputsService.isEdit ? editInput() : saveInput()"
-      styleClass="p-button-sm p-button-rounded p-button-success" label="Guardar y continuar" icon="fa-solid fa-floppy-disk"
+      styleClass="p-button-sm p-button-rounded p-button-success" [label]="inputsService.isEdit ? 'Guardar cambios' : 'Guardar y continuar'" icon="fa-solid fa-floppy-disk"
       [loading]="loading()"></p-button>
     <p-button (click)="inputsService.showModalSaveInput = false" label="Cancelar"
       styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>

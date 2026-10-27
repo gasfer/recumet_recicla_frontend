@@ -15,6 +15,16 @@ export const PURCHASE_EDIT_PERMISSION_MESSAGE =
 export const PURCHASE_EDIT_DEADLINE_MESSAGE =
   'Esta compra ya no puede editarse porque superó el plazo máximo permitido de 30 días.';
 
+export const isPurchaseEditWindowExpired = (
+  date: unknown,
+  now: string | number | Date = new Date(),
+): boolean => {
+  const dateValue = date instanceof Date ? date.getTime() : new Date(date as string | number).getTime();
+  const nowValue = now instanceof Date ? now.getTime() : new Date(now).getTime();
+  return !Number.isFinite(dateValue) || !Number.isFinite(nowValue)
+    || dateValue > nowValue || nowValue - dateValue > 30 * 24 * 60 * 60 * 1000;
+};
+
 export const isPurchaseEditPermissionDenied = (error: unknown): boolean =>
   typeof error === 'object'
   && error !== null
@@ -25,8 +35,9 @@ export const resolvePurchaseEditEligibility = (
   canUpdatePurchases: boolean,
   editDeadlineExpired: boolean,
   isAdmin: boolean = false,
+  canCorrectLatePrice: boolean = false,
 ): PurchaseEditEligibility => {
-  if (!canUpdatePurchases) {
+  if (!isAdmin && !canUpdatePurchases) {
     return {
       allowed: false,
       reason: 'permission',
@@ -37,7 +48,7 @@ export const resolvePurchaseEditEligibility = (
     };
   }
 
-  if (editDeadlineExpired && !isAdmin) {
+  if (editDeadlineExpired && !isAdmin && !canCorrectLatePrice) {
     return {
       allowed: false,
       reason: 'deadline',

@@ -3,6 +3,7 @@ import { InputsService } from '../../../services/inputs.service';
 import { Product } from 'src/app/pages/inventories/interfaces/products.interface';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import { ComponentsService } from 'src/app/core/services/components.service';
+import { isPurchaseEditWindowExpired } from 'src/app/core/utils/purchase-edit-access';
 
 @Component({
   selector: 'app-table-input-details',
@@ -17,6 +18,16 @@ export class TableInputDetailsComponent implements OnDestroy {
   decimal             = signal(`1.${this.decimalLength()}-${this.decimalLength()}`);
   product_temp        = signal<Product|undefined>(undefined);
   totalSummary        = computed(() => this.inputsService.detailShopping().reduce( (sum, product) => Number(sum) + Number(product.import),0));
+  totalQuantitySummary = computed(() => this.inputsService.detailShopping().reduce((sum, product) => sum + Number(product.quantity || 0), 0));
+
+  isWeighingOperator(): boolean {
+    return this.validatorsService.user()?.role === 'OPERADOR_BALANZA';
+  }
+
+  isLatePriceCorrection(): boolean {
+    return this.inputsService.isEdit
+      && isPurchaseEditWindowExpired(this.inputsService.dataInputForEdit()?.date_voucher);
+  }
 
   ngOnDestroy(): void {
     if(this.inputsService.isEdit){

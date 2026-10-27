@@ -144,6 +144,24 @@ body .p-dialog .p-dialog-header .p-dialog-header-icon:hover {
   transform: scale(1.08);
 }
 
+body .p-dialog .p-dialog-header .p-dialog-header-close {
+  background-color: color-mix(in srgb, var(--color-danger) 16%, var(--color-table-header)) !important;
+  color: var(--color-header-modal-text) !important;
+  box-shadow: none !important;
+  transition: background-color var(--transition-fast), color var(--transition-fast), outline-color var(--transition-fast) !important;
+}
+
+body .p-dialog .p-dialog-header .p-dialog-header-close:hover {
+  background-color: var(--color-danger) !important;
+  color: var(--color-action-danger-text) !important;
+  transform: none !important;
+}
+
+body .p-dialog .p-dialog-header .p-dialog-header-close:focus-visible {
+  outline: 2px solid var(--color-header-modal-text) !important;
+  outline-offset: 2px;
+}
+
 body .p-dialog .p-dialog-content {
   background-color: var(--color-surface) !important;
   color: var(--color-text) !important;

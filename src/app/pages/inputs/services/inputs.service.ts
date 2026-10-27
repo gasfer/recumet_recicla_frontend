@@ -16,7 +16,12 @@ const base_url = environment.base_url;
 export class InputsService {
   private traceabilityApi = inject(PurchaseTraceabilityApiService);
   private pdfActions = inject(PdfDocumentActionsService);
-  private mutationOptions() { return { headers: new HttpHeaders({ 'Idempotency-Key': globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}` }) }; }
+  createMutationKey(): string {
+    return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+  }
+  private mutationOptions(idempotencyKey = this.createMutationKey()) {
+    return { headers: new HttpHeaders({ 'Idempotency-Key': idempotencyKey }) };
+  }
   detailShopping = signal<Product[]>([]);
   providerSelect = signal<Provider | undefined>(undefined);
   dataInputForEdit = signal<Input | undefined>(undefined);
@@ -77,14 +82,14 @@ export class InputsService {
     });
   }
 
-  postNewInput(data: NewInputForm): Observable<{ ok: string, msg: string, id_input: number }> {
+  postNewInput(data: NewInputForm, idempotencyKey?: string): Observable<{ ok: string, msg: string, id_input: number }> {
     const url = `${base_url}/input`;
-    return this.http.post<{ ok: string, msg: string, id_input: number }>(url, data, this.mutationOptions());
+    return this.http.post<{ ok: string, msg: string, id_input: number }>(url, data, this.mutationOptions(idempotencyKey));
   }
 
-  putUpdateInput(id_input: number, data: NewInputForm): Observable<{ ok: string, msg: string, id_input: number }> {
+  putUpdateInput(id_input: number, data: NewInputForm, idempotencyKey?: string): Observable<{ ok: string, msg: string, id_input: number }> {
     const url = `${base_url}/input/${id_input}`;
-    return this.http.put<{ ok: string, msg: string, id_input: number }>(url, data, this.mutationOptions());
+    return this.http.put<{ ok: string, msg: string, id_input: number }>(url, data, this.mutationOptions(idempotencyKey));
   }
 
   previewVoidInput(id_input: number): Observable<any> {

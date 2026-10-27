@@ -364,7 +364,30 @@ body[data-bs-theme='dark'] :is(.table, table) > :not(caption) > * > * {
   color: var(--color-text) !important;
   border-color: var(--color-border) !important;
 }
-body[data-bs-theme='dark'] .erp-edit-mode-banner { background: var(--color-warning-light) !important; color: var(--color-warning) !important; border-color: var(--color-warning) !important; }
+body[data-bs-theme='dark'] .erp-edit-mode-banner { background: var(--color-warning-light) !important; color: var(--color-warning-text) !important; border-color: var(--color-warning-border) !important; }
+body :is(.erp-edit-mode-banner, .erp-edit-mode-banner *) { color: var(--color-warning-text); }
+body .erp-edit-mode-banner .badge { background: var(--color-warning) !important; border: 1px solid var(--color-warning-border); color: var(--color-text-inverse) !important; }
+body[data-bs-theme='dark'] .erp-edit-mode-banner .badge { background: var(--color-warning-light) !important; color: var(--color-warning-text) !important; }
+body .purchase-workspace .erp-items-header .erp-counter-chip {
+  background: var(--color-info-light) !important;
+  border: 1px solid var(--color-info-border) !important;
+  color: var(--color-info-text) !important;
+  font-weight: 700;
+  box-shadow: none;
+}
+body .purchase-workspace .purchase-remove { width: 30px !important; min-width: 30px; padding: .25rem !important; }
+body[data-bs-theme] .vertical-menu .search-box-wrapper input.search-input-field,
+body[data-bs-theme] .vertical-menu .search-box-wrapper input.search-input-field:focus,
+body[data-bs-theme] .vertical-menu .search-box-wrapper input.search-input-field:active {
+  appearance: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--sidebar-text) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+body .vertical-menu .search-box-wrapper input.search-input-field::placeholder { color: var(--sidebar-muted) !important; opacity: 1; }
 body[data-bs-theme='dark'] .erp-soft-alert-empty { background: var(--color-surface-secondary) !important; color: var(--color-text-muted) !important; border-color: var(--color-border) !important; }
 body[data-bs-theme='dark'] .erp-soft-alert-empty h5 { color: var(--color-text) !important; }
 body[data-bs-theme='dark'] .p-skeleton { background: linear-gradient(90deg, var(--color-surface-secondary), var(--color-control-disabled), var(--color-surface-secondary)) !important; }
@@ -796,6 +819,13 @@ body .p-dialog.erp-operational-dialog :is(.erp-input, .p-inputtext, .p-dropdown)
 body .p-dialog.erp-operational-dialog textarea.p-inputtext { height: auto !important; min-height: calc(var(--field-height) * 2) !important; }
 body .p-dialog :is(.p-dropdown, .p-calendar, .p-inputnumber, .p-multiselect) { max-width: 100%; min-width: 0; }
 body :is(.p-dialog-mask, .p-component-overlay) { background-color: var(--color-overlay-mask); }
+@media (prefers-reduced-motion: reduce) {
+  body :is(.p-dialog, .p-dialog-mask, .p-dialog-header-icon, .p-dialog-content, .p-dialog-footer) {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 body .p-tooltip .p-tooltip-text { background: var(--color-header-modal); color: var(--color-header-modal-text); }
 body .p-datatable .p-datatable-tbody > tr > td { background: var(--color-surface); color: var(--color-text) !important; }
 body .p-datatable .p-datatable-tbody > tr:hover > td { background: var(--color-success-light) !important; }
@@ -827,6 +857,24 @@ body :is(.p-dropdown.ng-valid.ng-dirty, .p-dropdown.ng-valid.ng-touched, .p-mult
 body .p-button :is(.p-button-label, .p-button-icon, i) { color: inherit !important; }
 body .erp-btn :is(span, i) { color: inherit !important; }
 
+/* Elevación discreta compartida para acciones, áreas de texto y pestañas activas. */
+body :is(.erp-btn, .p-button, .btn):not(:disabled):not(.p-button-text):not(.p-button-link):not(.btn-link) {
+  box-shadow: var(--shadow-control);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+}
+body :is(.erp-btn, .p-button, .btn):not(:disabled):not(.p-button-text):not(.p-button-link):not(.btn-link):hover {
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+body :is(textarea, textarea.form-control, textarea.erp-input, textarea.p-inputtext) {
+  box-shadow: var(--shadow-control);
+}
+body :is(.p-tabview-nav-link, .p-tabmenu .p-menuitem-link, .nav-tabs .nav-link) {
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+body :is(.p-tabview-nav li.p-highlight .p-tabview-nav-link, .p-tabmenu .p-tabmenuitem.p-highlight .p-menuitem-link, .nav-tabs .nav-link.active) {
+  box-shadow: var(--shadow-control);
+}
+
 /* Controles compartidos: alineación consistente en formularios y diálogos. */
 body :is(.form-control, .form-select, .erp-input, .p-inputtext, .p-dropdown, .p-multiselect, .p-inputnumber-input, .p-calendar .p-inputtext, .p-autocomplete .p-inputtext):not(textarea) {
   box-sizing: border-box;
@@ -836,6 +884,7 @@ body :is(.form-control, .form-select, .erp-input, .p-inputtext, .p-dropdown, .p-
   font-family: var(--font-family-base);
   font-size: var(--erp-font-body);
   line-height: calc(var(--field-height) - 2px);
+  box-shadow: var(--shadow-control);
 }
 body .p-dropdown .p-dropdown-label {
   padding-top: 0 !important;
@@ -860,7 +909,11 @@ body .p-datatable .p-datatable-tbody > tr > td {
 }
 body :is(.p-calendar, .p-inputnumber, .p-autocomplete, .p-inputgroup) { min-width: 0; width: 100%; }
 body :is(.p-datepicker-trigger, .p-inputgroup-addon) { box-sizing: border-box; min-height: var(--field-height); height: var(--field-height); }
-body textarea.form-control, body textarea.erp-input, body textarea.p-inputtext { height: auto; min-height: calc(var(--field-height) * 2); }
+body textarea.form-control, body textarea.erp-input, body textarea.p-inputtext {
+  height: auto;
+  min-height: calc(var(--field-height) * 2);
+  box-shadow: var(--shadow-control);
+}
 body :is(.badge-subtle-cost, .badge-subtle-price, .badge-subtle-stock) { border-color: var(--color-border) !important; }
 body .badge-subtle-cost { background: var(--color-success-light) !important; color: var(--color-success) !important; }
 body :is(.badge-subtle-price, .badge-subtle-stock) { background: var(--color-info-light) !important; color: var(--color-info) !important; }
