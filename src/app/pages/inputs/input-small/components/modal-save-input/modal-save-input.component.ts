@@ -534,6 +534,12 @@ export class ModalSaveInputComponent implements OnInit {
   selectTypeRegistry() {
     const typeRegistry = this.formInput.get('type_registry')?.value;
     const registryNumber = this.formInput.get('registry_number');
+    if (typeRegistry === 'SIN FICHA') {
+      registryNumber?.removeValidators(Validators.required);
+    } else {
+      registryNumber?.addValidators(Validators.required);
+    }
+    registryNumber?.updateValueAndValidity({ emitEvent: false });
 
     if (this.inputsService.isEdit && this.editRegistrySnapshot) {
       if (typeRegistry === this.editRegistrySnapshot.type) {

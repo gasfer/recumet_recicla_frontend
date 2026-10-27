@@ -92,7 +92,7 @@
 
         <!-- Nro. Pesaje -->
         <div class="erp-field">
-          <label class="erp-label">Nro. Pesaje</label>
+          <label class="erp-label" [class.required]="formInput.get('type_registry')?.value !== 'SIN FICHA'">Nro. Pesaje</label>
           @if (formInput.get('type_registry')?.value != 'SIN FICHA') {
             <input type="text" pInputText class="erp-input w-full uppercase"
               [pKeyFilter]="validatorsService.expRegValidInput" formControlName="registry_number"
