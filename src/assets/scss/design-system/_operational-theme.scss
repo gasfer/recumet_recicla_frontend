@@ -365,6 +365,116 @@ body[data-bs-theme='dark'] :is(.table, table) > :not(caption) > * > * {
   border-color: var(--color-border) !important;
 }
 body[data-bs-theme='dark'] .erp-edit-mode-banner { background: var(--color-warning-light) !important; color: var(--color-warning-text) !important; border-color: var(--color-warning-border) !important; }
+body .accounts-receivable-tabs .p-menuitem-icon { color: var(--color-info) !important; }
+body .accounts-receivable-tabs .p-tabmenuitem:nth-child(2) .p-menuitem-icon { color: var(--color-warning-text) !important; }
+body .accounts-receivable-tabs .p-tabmenuitem:nth-child(3) .p-menuitem-icon { color: var(--color-success-text) !important; }
+body .accounts-receivable-tabs .p-tabmenuitem:nth-child(4) .p-menuitem-icon { color: var(--color-primary) !important; }
+body .accounts-receivable-tabs .p-tabmenuitem.p-highlight .p-menuitem-icon { color: currentColor !important; }
+body .accounts-payable-tabs .p-menuitem-icon { color: var(--color-info) !important; }
+body .accounts-payable-tabs .p-tabmenuitem:nth-child(2) .p-menuitem-icon { color: var(--color-warning-text) !important; }
+body .accounts-payable-tabs .p-tabmenuitem:nth-child(3) .p-menuitem-icon { color: var(--color-success-text) !important; }
+body .accounts-payable-tabs .p-tabmenuitem:nth-child(4) .p-menuitem-icon { color: var(--color-primary) !important; }
+body .accounts-payable-tabs .p-tabmenuitem.p-highlight .p-menuitem-icon { color: currentColor !important; }
+body .accounts-payable-page {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+}
+body .accounts-payable-page h3 { color: var(--color-text); font-size: 1.15rem; line-height: 1.35; margin: 0; text-align: left; }
+body .accounts-payable-page .p-accordion .p-accordion-header-link {
+  background: var(--color-success-light) !important;
+  border-color: var(--color-success-border) !important;
+  color: var(--color-success-text) !important;
+}
+body .accounts-payable-filter-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .5rem; margin-top: .5rem; }
+body .accounts-payable-report .p-button { background: var(--color-info-light) !important; border-color: var(--color-info-border) !important; color: var(--color-info-text) !important; }
+body .accounts-payable-report .p-button :is(i, .p-button-icon, .p-button-label) { color: inherit !important; }
+body .accounts-payable-report .p-button:hover { background: var(--color-info) !important; border-color: var(--color-info) !important; color: var(--color-text-inverse) !important; }
+body .accounts-payable-dialog .p-dialog-content { background: var(--color-surface); color: var(--color-text); }
+body .accounts-payable-dialog .p-dialog-footer { background: var(--color-surface); border-top: 1px solid var(--color-border); }
+body .accounts-payable-dialog .erp-form-grid { gap: .65rem .75rem; }
+body .accounts-payable-dialog .table-responsive { max-width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+body .accounts-payable-dialog table { margin: 0; background: var(--color-surface); color: var(--color-text); }
+body .accounts-payable-dialog table tbody td { background: var(--color-surface); color: var(--color-text); border-color: var(--color-border); }
+body .accounts-payable-dialog table tbody td.bg-secondary-subtle { background: var(--color-surface-secondary) !important; color: var(--color-text-muted) !important; }
+body .accounts-payable-dialog table tfoot td { background: var(--color-surface-secondary); color: var(--color-text); border-color: var(--color-border); font-weight: 700; }
+body .accounts-payable-dialog table thead th { background: var(--color-header-modal); color: var(--color-header-modal-text); border-color: var(--color-border); }
+body .accounts-payable-dialog .p-inputnumber, body .accounts-payable-dialog .p-calendar,
+body .accounts-payable-dialog .p-dropdown { width: 100%; max-width: 100%; }
+body .p-dialog.accounts-payable-dialog--multiple {
+  width: min(96vw, 1480px) !important;
+  max-width: min(96vw, 1480px) !important;
+}
+body .p-dialog.accounts-payable-dialog--single {
+  width: min(88vw, 780px) !important;
+  max-width: min(88vw, 780px) !important;
+}
+body .accounts-payable-dialog--single .p-dialog-content { max-height: 76vh; overflow-y: auto; }
+body .accounts-payable-dialog--single .erp-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+body .accounts-payable-dialog--single .erp-field { min-width: 0; }
+body .accounts-payable-dialog--single textarea { min-height: 38px; }
+body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  min-width: 0;
+  min-height: 52px;
+  padding: .5rem .65rem;
+  border: 1px dashed var(--color-info-border);
+  border-radius: var(--radius-md);
+  background: var(--color-info-light);
+  color: var(--color-text);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-dropzone.is-drag-over {
+  border-color: var(--color-info);
+  border-style: solid;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-info) 20%, transparent);
+}
+body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-copy,
+body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-actions { display: flex; align-items: center; gap: .5rem; min-width: 0; }
+body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-copy { color: var(--color-info-text); font-size: .8rem; }
+body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-copy > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-name { font-weight: 700; }
+body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-actions { flex: 0 0 auto; }
+body .accounts-payable-dialog--multiple .payable-multiple-table-wrap { width: 100%; overflow: auto; }
+body .accounts-payable-dialog--multiple .payable-multiple-table-wrap { max-height: 58vh; }
+body .accounts-payable-dialog--multiple .payable-multiple-table { min-width: 680px; width: 100%; }
+body .accounts-payable-dialog--multiple .payable-multiple-table th,
+body .accounts-payable-dialog--multiple .payable-multiple-table td { white-space: nowrap; padding: .5rem .6rem; }
+body .accounts-payable-dialog--multiple .payable-multiple-table td:first-child { white-space: normal; }
+body .accounts-payable-dialog--multiple .payable-multiple-form-column { min-width: 0; }
+body .accounts-payable-dialog--multiple .payable-multiple-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem .75rem;
+  min-width: 0;
+}
+body .accounts-payable-dialog--multiple .payable-multiple-field { min-width: 0; }
+body .accounts-payable-dialog--multiple .payable-multiple-field :is(input, textarea, .p-dropdown, .p-calendar, .p-inputnumber) { width: 100%; max-width: 100%; }
+body .accounts-payable-dialog--multiple .payable-multiple-voucher-field { grid-column: 1 / -1; }
+@media (max-width: 767px) {
+  body .accounts-payable-filter-actions { justify-content: stretch; }
+  body .accounts-payable-filter-actions > * { flex: 1 1 100%; }
+  body .accounts-payable-page .card-body { padding: .75rem; }
+  body .p-dialog.accounts-payable-dialog--single { width: calc(100vw - 1rem) !important; max-width: calc(100vw - 1rem) !important; }
+  body .accounts-payable-dialog--single .erp-form-grid { grid-template-columns: minmax(0, 1fr); }
+  body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-dropzone { align-items: stretch; flex-direction: column; }
+  body :is(.accounts-payable-dialog--single, .accounts-payable-dialog--multiple) .payment-voucher-actions { justify-content: flex-end; }
+  body .p-dialog.accounts-payable-dialog--multiple { width: calc(100vw - 1rem) !important; max-width: calc(100vw - 1rem) !important; }
+  body .accounts-payable-dialog--multiple .payable-multiple-list-column,
+  body .accounts-payable-dialog--multiple .payable-multiple-form-column { width: 100% !important; }
+  body .accounts-payable-dialog--multiple .payable-multiple-field-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1099px) {
+  body .p-dialog.accounts-payable-dialog--multiple { width: min(96vw, 900px) !important; max-width: min(96vw, 900px) !important; }
+  body .accounts-payable-dialog--multiple .payable-multiple-list-column,
+  body .accounts-payable-dialog--multiple .payable-multiple-form-column { width: 100% !important; }
+  body .accounts-payable-dialog--multiple .payable-multiple-table-wrap { max-height: 42vh; }
+}
 body :is(.erp-edit-mode-banner, .erp-edit-mode-banner *) { color: var(--color-warning-text); }
 body .erp-edit-mode-banner .badge { background: var(--color-warning) !important; border: 1px solid var(--color-warning-border); color: var(--color-text-inverse) !important; }
 body[data-bs-theme='dark'] .erp-edit-mode-banner .badge { background: var(--color-warning-light) !important; color: var(--color-warning-text) !important; }

@@ -119,7 +119,6 @@ export class AccountsReceivableComponent implements OnInit {
   searchItems = signal<MenuItem[]>([
     {
       label: 'Todos', icon: 'fas fa-exchange-alt',
-      iconStyle: { 'color': '#FF851B' },
       command: () => {
         this.isTableAbonos.set(false);
         this.paramsSearch().status_account = '';
@@ -128,7 +127,6 @@ export class AccountsReceivableComponent implements OnInit {
     },
     {
       label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left',
-      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => {
         this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PENDIENTE';
@@ -137,7 +135,6 @@ export class AccountsReceivableComponent implements OnInit {
     },
     {
       label: 'Finalizados', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA' },
       command: () => {
         this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PAGADO';
@@ -146,7 +143,6 @@ export class AccountsReceivableComponent implements OnInit {
     },
     {
       label: 'Todos los pagos', icon: 'fas fa-cash-register',
-      iconStyle: { 'color': '#7D3C98' },
       command: () => {
         this.isTableAbonos.set(true);
         this.paramsSearch().status_account = '';
@@ -174,7 +170,6 @@ export class AccountsReceivableComponent implements OnInit {
     {
       label: 'Lista avanzada',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => {
         if (this.isTableAbonos()) {
           this.printExcelReportAbonos();
@@ -255,7 +250,7 @@ export class AccountsReceivableComponent implements OnInit {
             {
               label: '', icon: 'fa-solid fa-comment-dollar',
               tooltip: 'Abonar',
-              class: 'p-button-rounded  p-button-warning p-button-sm',
+              class: 'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
                 this.accountsReceivableService.detailsSubs$.next(accountReceivable);
                 this.accountsReceivableService.showModalNewAbono = true;
@@ -264,7 +259,7 @@ export class AccountsReceivableComponent implements OnInit {
             {
               label: '', icon: 'fa-solid fa-comments-dollar',
               tooltip: 'Abono multiple',
-              class: 'p-button-rounded  p-button-secondary p-button-sm  ms-1',
+              class: 'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.accountsReceivableService.detailsSubs$.next(accountReceivable);
                 this.accountsReceivableService.showModalAccountsClient = true;
@@ -283,7 +278,7 @@ export class AccountsReceivableComponent implements OnInit {
               label: '', icon: 'fas fa-print',
               tooltip: 'Estado de cuenta',
               disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR', 'reports'),
-              class: 'p-button-rounded p-button-sm ms-1',
+              class: 'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.accountsReceivableService.printAccountReceivablePdf(accountReceivable.id);
               }
@@ -302,7 +297,7 @@ export class AccountsReceivableComponent implements OnInit {
               label: '', icon: 'fas fa-print',
               tooltip: 'Estado de cuenta',
               disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR', 'reports'),
-              class: 'p-button-rounded p-button-sm ms-1',
+              class: 'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.accountsReceivableService.printAccountReceivablePdf(accountReceivable.id);
               }
@@ -344,7 +339,7 @@ export class AccountsReceivableComponent implements OnInit {
               label: '', icon: 'fas fa-print',
               tooltip: 'Comprobante',
               disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR', 'reports'),
-              class: 'p-button-rounded p-button-sm',
+              class: 'p-button-rounded p-button-info p-button-sm',
               eventClick: () => {
                 if (accountReceivable.from_pay_multiple) {
                   this.abonosAccountReceivableAllService.printAbonoMultipleAccountPayablePdf(accountReceivable.id);

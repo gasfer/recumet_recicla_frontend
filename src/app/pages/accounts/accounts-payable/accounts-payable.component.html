@@ -1,8 +1,8 @@
 <div [formGroup]="formReport">
-    <div class="card shadow mb-4 icon-box ">
+    <div class="card shadow mb-4 icon-box accounts-payable-page">
       <div class="card-body">
         <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
-          <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE CUENTAS POR PAGAR</b></h3>
+          <h3 class="app-u-color-bg-2665c-99da769"><i class="fa-solid fa-money-bill-transfer mr-2 text-erp-success" aria-hidden="true"></i><b>CONSULTA DE CUENTAS POR PAGAR</b></h3>
         </div>
         <p-accordion [activeIndex]="1">
           <p-accordionTab header="Filtros">
@@ -12,14 +12,13 @@
                   <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                     <div class="flex flex-wrap erp-layout-row gap-y-3">
                       <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                        <label class="block mb-1">Tipo Filtrado<span class="text-erp-danger">*</span></label>
+                        <label class="erp-label required">Tipo Filtrado</label>
                         <p-dropdown [options]="types_filtrado()" formControlName="filterBy" optionLabel="name"
                           optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()">
                         </p-dropdown>
                       </div>
                       <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                        <label class="block mb-1">Fecha<span class="text-erp-danger">*</span>
-                        </label>
+                        <label class="erp-label required">Fecha</label>
                         <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'" formControlName="dates"
                             view="month" dateFormat="mm/yy" [readonlyInput]="true" inputId="monthpicker" placeholder="MM/YYYY"
                             [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true">
@@ -45,7 +44,7 @@
                   <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
                     <div class="flex flex-wrap erp-layout-row gap-y-3">
                       <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                        <label class="block mb-1">Tipo Registro</label>
+                        <label class="erp-label">Tipo Registro</label>
                         <p-dropdown [options]="types_registry()"
                                     [showClear]="true"
                                     placeholder="Selecciona una opción"
@@ -57,7 +56,7 @@
                         ></p-dropdown>
                       </div>
                       <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                        <label class="block mb-1">Proveedor</label>
+                        <label class="erp-label">Proveedor</label>
                         <p-dropdown
                             [options]="providers()"
                             [showClear]="true"
@@ -78,15 +77,15 @@
                 </div>
               </div>
             </div>
-            <div class="text-right">
-              <p-button (click)="!loading() ? this.searchByFilters() : null" styleClass="p-button-rounded p-button-sm" label="Buscar"
+            <div class="accounts-payable-filter-actions">
+              <p-button (click)="!loading() ? this.searchByFilters() : null" styleClass="p-button-rounded p-button-sm p-button-info" label="Buscar"
                 icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
               <p-splitButton *ngIf="this.validatorsService.withPermission('CUENTAS POR PAGAR','reports')," icon="fas fa-file-pdf" label="Lista Pagos totalizados" [model]="this.buttonItems"
                 [menuStyle]="{'width':'20em'}"
                 [size]="'small'"
                 [rounded]="true"
-                [severity]="'danger'"
-                (onClick)="!loading() ? isTableAbonos() ? printPdfReportAbonos() :  printPdfReport() : null" styleClass="ml-1">
+                [severity]="'info'"
+                (onClick)="!loading() ? isTableAbonos() ? printPdfReportAbonos() :  printPdfReport() : null" styleClass="accounts-payable-report ml-1">
               </p-splitButton>
               <p-button (click)="clearInputs()" styleClass="p-button-rounded ml-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
                 icon="fas fa-broom" label="Limpiar" [pTooltip]="'Limpiar Campos'" [loading]="loading()">
@@ -95,7 +94,7 @@
           </p-accordionTab>
         </p-accordion>
       </div>
-      <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+      <p-tabMenu [model]="searchItems()" [styleClass]="'accounts-payable-tabs ' + (loading() ? 'p-disabled' : '')"
         [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
   </div>

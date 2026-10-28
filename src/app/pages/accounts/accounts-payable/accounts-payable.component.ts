@@ -121,7 +121,6 @@ export class AccountsPayableComponent implements OnInit {
   searchItems = signal<MenuItem[]>([
     {
       label: 'Todos', icon: 'fas fa-exchange-alt',
-      iconStyle: { 'color': '#FF851B' },
       command: () => {
         this.isTableAbonos.set(false);
         this.paramsSearch().status_account = '';
@@ -130,7 +129,6 @@ export class AccountsPayableComponent implements OnInit {
     },
     {
       label: 'Pendientes', icon: 'fa-solid fa-clock-rotate-left',
-      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => {
         this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PENDIENTE';
@@ -139,7 +137,6 @@ export class AccountsPayableComponent implements OnInit {
     },
     {
       label: 'Finalizados', icon: 'fa-solid fa-circle-check',
-      iconStyle: { 'color': '#3B71CA' },
       command: () => {
         this.isTableAbonos.set(false);
         this.paramsSearch().status_account = 'PAGADO';
@@ -148,7 +145,6 @@ export class AccountsPayableComponent implements OnInit {
     },
     {
       label: 'Todos los pagos', icon: 'fas fa-cash-register',
-      iconStyle: { 'color': '#7D3C98' },
       command: () => {
         this.isTableAbonos.set(true);
         this.paramsSearch().status_account = '';
@@ -176,7 +172,6 @@ export class AccountsPayableComponent implements OnInit {
     {
       label: 'Lista pagos detallado',
       icon: 'fa-regular fa-file-excel',
-      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => {
         if (this.isTableAbonos()) {
           this.printExcelReportAbonos();
@@ -261,7 +256,7 @@ export class AccountsPayableComponent implements OnInit {
             {
               label: '', icon: 'fa-solid fa-comment-dollar',
               tooltip: 'Abonar',
-              class: 'p-button-rounded  p-button-warning p-button-sm',
+              class: 'p-button-rounded p-button-success p-button-sm',
               eventClick: () => {
                 this.accountsPayableService.detailsSubs$.next(accountPayable);
                 this.accountsPayableService.showModalNewAbono = true;
@@ -270,7 +265,7 @@ export class AccountsPayableComponent implements OnInit {
             {
               label: '', icon: 'fa-solid fa-comments-dollar',
               tooltip: 'Abono multiple',
-              class: 'p-button-rounded  p-button-secondary p-button-sm  ms-1',
+              class: 'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.accountsPayableService.detailsSubs$.next(accountPayable);
                 this.accountsPayableService.showModalAccountsProvider = true;
@@ -289,7 +284,7 @@ export class AccountsPayableComponent implements OnInit {
               label: '', icon: 'fas fa-print',
               tooltip: 'Estado de cuenta',
               disabled: this.validatorsService.withPermission('CUENTAS POR PAGAR', 'reports'),
-              class: hasAbonoWithoutVoucher ? 'p-button-rounded p-button-warning p-button-sm ms-1' : 'p-button-rounded p-button-sm ms-1',
+              class: hasAbonoWithoutVoucher ? 'p-button-rounded p-button-warning p-button-sm ms-1' : 'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.accountsPayableService.printAccountPayablePdf(accountPayable.id);
               }
@@ -308,7 +303,7 @@ export class AccountsPayableComponent implements OnInit {
               label: '', icon: 'fas fa-print',
               tooltip: 'Estado de cuenta',
               disabled: this.validatorsService.withPermission('CUENTAS POR PAGAR', 'reports'),
-              class: hasAbonoWithoutVoucher ? 'p-button-rounded p-button-warning p-button-sm ms-1' : 'p-button-rounded p-button-sm ms-1',
+              class: hasAbonoWithoutVoucher ? 'p-button-rounded p-button-warning p-button-sm ms-1' : 'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.accountsPayableService.printAccountPayablePdf(accountPayable.id);
               }
@@ -355,7 +350,7 @@ export class AccountsPayableComponent implements OnInit {
               label: '', icon: 'fas fa-print',
               tooltip: 'Comprobante',
               disabled: this.validatorsService.withPermission('CUENTAS POR PAGAR', 'reports'),
-              class: 'p-button-rounded p-button-sm',
+              class: 'p-button-rounded p-button-info p-button-sm',
               eventClick: () => {
                 if (accountPayable.from_pay_multiple) {
                   this.abonosAccountPayableAllService.printAbonoMultipleAccountPayablePdf(accountPayable.id);
@@ -388,7 +383,7 @@ export class AccountsPayableComponent implements OnInit {
               label: '', icon: 'fa-solid fa-file-arrow-up',
               tooltip: 'Adjuntar comprobante',
               disabled: false,
-              class: 'p-button-rounded p-button-warning p-button-sm ms-1',
+              class: 'p-button-rounded p-button-success p-button-sm ms-1',
               eventClick: () => {
                 const idAbono = accountPayable.from_pay_multiple ? accountPayable.id : accountPayable.ids_abonos_payables[0];
                 this.triggerMainFileUpload(idAbono, !!accountPayable.from_pay_multiple);

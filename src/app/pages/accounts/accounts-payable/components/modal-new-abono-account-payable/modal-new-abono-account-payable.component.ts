@@ -26,6 +26,7 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
   banks                   = signal<Bank[]>([]);
   bankService             = inject( BankService );
   voucherFile?            : File;
+  isVoucherDragOver       = false;
   private releaseWriteLoader?: () => void;
 
   abonoForm: FormGroup = this.fb.group({
@@ -128,6 +129,7 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
       number_transaction: null
     });
     this.voucherFile = undefined;
+    this.isVoucherDragOver = false;
     this.clearPaymentValidators();
   }
 
@@ -175,12 +177,39 @@ export class ModalNewAbonoAccountPayableComponent implements OnInit {
   }
 
   onVoucherFileChange(event: any) {
-    if (event.target.files && event.target.files.length > 0) {
-      this.voucherFile = event.target.files[0];
+    const file = event.target.files?.[0];
+    if (file) this.setVoucherFile(file);
+    event.target.value = '';
+  }
+
+  onVoucherDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.isVoucherDragOver = true;
+  }
+
+  onVoucherDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.isVoucherDragOver = false;
+  }
+
+  onVoucherDrop(event: DragEvent) {
+    event.preventDefault();
+    this.isVoucherDragOver = false;
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.setVoucherFile(file);
+  }
+
+  private setVoucherFile(file: File) {
+    const validType = file.type.startsWith('image/') || file.type === 'application/pdf';
+    if (!validType) {
+      void Swal.fire({ title: 'Formato no permitido', text: 'Adjunte una imagen o un archivo PDF.', icon: 'warning', customClass: { container: 'swal-alert' } });
+      return;
     }
+    this.voucherFile = file;
   }
 
   removeVoucherFile() {
     this.voucherFile = undefined;
+    this.isVoucherDragOver = false;
   }
 }

@@ -80,40 +80,45 @@ export class PdfDocumentActionsService implements OnDestroy {
         const safeFilename = this.sanitizeFilename(filename);
         const pdf = new Blob([file], { type: 'application/pdf' });
         this.documentSubject.next({ id, blob: pdf, filename: safeFilename, title });
-        const previewWindow = tab && !tab.closed ? tab : window;
-        const inline = previewWindow === window;
+        const previewWindow = tab && !tab.closed ? tab : null;
         const url = URL.createObjectURL(pdf);
-        const doc = previewWindow.document;
-        const container = inline ? doc.createElement('section') : doc.body;
-        if (!inline) { doc.title = title || safeFilename; container.replaceChildren(); }
-        container.style.cssText = 'margin:0;height:100vh;display:flex;flex-direction:column;font-family:Arial,sans-serif;background:#f1f5f9';
-        if (inline) {
-          container.style.cssText += ';position:fixed;inset:0;z-index:2147483647';
-          container.setAttribute('aria-label', title);
-          doc.body.append(container);
+        if (previewWindow) {
+          // Let the browser's native PDF viewer own the tab. Embedding PDFs in
+          // an iframe can leave Edge showing a blank gray page even though the
+          // PDF response itself is valid.
+          previewWindow.opener = null;
+          previewWindow.location.replace(url);
+          const timer = window.setInterval(() => {
+            if (previewWindow.closed) this.release(id);
+          }, 1000);
+          this.resources.set(id, { tab: previewWindow, url, timer, resolvePreview: finishPreview });
+          return;
         }
+        const doc = window.document;
+        const container = doc.createElement('section');
+        container.style.cssText = 'margin:0;height:100vh;display:flex;flex-direction:column;font-family:Arial,sans-serif;background:#f1f5f9';
+        container.style.cssText += ';position:fixed;inset:0;z-index:2147483647';
+        container.setAttribute('aria-label', title);
+        doc.body.append(container);
         const toolbar = doc.createElement('header');
         toolbar.style.cssText = 'display:flex;gap:16px;align-items:center;padding:10px 16px;background:#0b1324;color:white';
         const label = doc.createElement('span'); label.textContent = title;
         const download = doc.createElement('a'); download.href = url; download.download = safeFilename; download.textContent = 'Descargar PDF'; download.style.cssText = 'color:white;margin-left:auto';
         const instruction = doc.createElement('span'); instruction.textContent = 'Imprima con el botón del visor PDF'; instruction.style.fontSize = '12px';
         toolbar.append(label, download, instruction);
-        if (inline) {
-          const close = doc.createElement('button');
-          close.type = 'button'; close.textContent = 'Cerrar vista previa';
-          close.style.cssText = 'background:var(--color-primary);color:white;border:0;border-radius:6px;padding:8px 12px;cursor:pointer';
-          close.addEventListener('click', () => this.release(id));
-          toolbar.append(close);
-        }
+        const close = doc.createElement('button');
+        close.type = 'button'; close.textContent = 'Cerrar vista previa';
+        close.style.cssText = 'background:var(--color-primary);color:white;border:0;border-radius:6px;padding:8px 12px;cursor:pointer';
+        close.addEventListener('click', () => this.release(id));
+        toolbar.append(close);
         const viewer = doc.createElement('iframe'); viewer.src = url; viewer.title = title; viewer.style.cssText = 'flex:1;width:100%;border:0';
         viewer.addEventListener('load', finishPreview, { once: true });
         viewer.addEventListener('error', finishPreview, { once: true });
         container.append(toolbar, viewer);
-        if (!inline) previewWindow.opener = null;
         const release = () => { this.release(id); finishPreview(); };
-        previewWindow.addEventListener('pagehide', release, { once: true });
-        const timer = window.setInterval(() => { if (previewWindow.closed) release(); }, 1000);
-        this.resources.set(id, { tab: previewWindow, url, timer, resolvePreview: finishPreview, overlay: inline ? container : undefined });
+        window.addEventListener('pagehide', release, { once: true });
+        const timer = window.setInterval(() => { if (window.closed) release(); }, 1000);
+        this.resources.set(id, { tab: window, url, timer, resolvePreview: finishPreview, overlay: container });
       }).catch(reject);
     });
   }

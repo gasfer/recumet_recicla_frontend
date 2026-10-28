@@ -84,7 +84,7 @@
                 [menuStyle]="{'width':'10em'}"
                 [size]="'small'"
                 [rounded]="true"
-                [severity]="'danger'"
+                [severity]="'info'"
                 (onClick)="!loading() ? isTableAbonos() ? printPdfReportAbonos() :  printPdfReport() : null" styleClass="ml-1">
               </p-splitButton>
               <p-button (click)="clearInputs()" styleClass="p-button-rounded ml-1 mt-2 mt-sm-0 mt-md-0 p-button-success p-button-sm"
@@ -94,7 +94,7 @@
           </p-accordionTab>
         </p-accordion>
       </div>
-      <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+      <p-tabMenu [model]="searchItems()" [styleClass]="'accounts-receivable-tabs ' + (loading() ? 'p-disabled' : '')"
         [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
   </div>

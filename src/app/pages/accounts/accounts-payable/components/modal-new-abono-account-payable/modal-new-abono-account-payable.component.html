@@ -1,7 +1,7 @@
 <p-dialog [header]="'Nuevo abono a ' + accountPayable()?.provider?.full_names" [(visible)]="accountsPayableService.showModalNewAbono"
     [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="resetModal()"
-    [dismissableMask]="true" styleClass="app-dialog--sm" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
+    [dismissableMask]="true" styleClass="app-dialog--sm erp-operational-dialog accounts-payable-dialog accounts-payable-dialog--single" transitionOptions="250ms cubic-bezier(0.2, 0, 0, 1)" closeIcon="fa-solid fa-xmark" closeAriaLabel="Cerrar modal">
     <form [formGroup]="abonoForm" (submit)="!loading() ? newAbono() : null">
         <app-alert-notify></app-alert-notify>
         <div class="mb-3">
@@ -162,24 +162,28 @@
                     {{ validatorsService.inputValidMessage("number_transaction",abonoForm) }}
                 </small>
             </div>
-            <div class="erp-field">
+            <div class="erp-field erp-col-full">
                 <label class="erp-label">Comprobante de Pago (Opcional)</label>
-                <div class="flex items-center gap-2 mt-1">
+                <div class="payment-voucher-dropzone" [class.is-drag-over]="isVoucherDragOver"
+                    (dragover)="onVoucherDragOver($event)" (dragleave)="onVoucherDragLeave($event)" (drop)="onVoucherDrop($event)">
                     <input type="file" #fileInput (change)="onVoucherFileChange($event)" accept="image/*,.pdf" class="hidden"/>
-                    <button type="button" pButton (click)="fileInput.click()" label="Subir Archivo" icon="fa-solid fa-upload" class="p-button-sm p-button-outlined"></button>
-                    <span class="text-xs text-erp-text-muted" *ngIf="!voucherFile">Sin archivo adjunto</span>
-                    <div *ngIf="voucherFile" class="erp-badge erp-badge-success flex items-center gap-1">
-                        <span>{{ voucherFile.name }}</span>
-                        <i class="fa-solid fa-circle-xmark text-erp-danger cursor-pointer ml-1" (click)="removeVoucherFile()" pTooltip="Eliminar"></i>
+                    <div class="payment-voucher-copy">
+                        <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+                        <span *ngIf="!voucherFile">Arrastre el comprobante aquí o selecciónelo</span>
+                        <span *ngIf="voucherFile" class="payment-voucher-name" [pTooltip]="voucherFile.name">{{ voucherFile.name }}</span>
+                    </div>
+                    <div class="payment-voucher-actions">
+                        <button type="button" pButton (click)="fileInput.click()" label="Seleccionar archivo" icon="fa-solid fa-folder-open" class="p-button-sm p-button-outlined p-button-info"></button>
+                        <button *ngIf="voucherFile" type="button" pButton (click)="removeVoucherFile()" aria-label="Quitar comprobante" pTooltip="Quitar comprobante" icon="fa-solid fa-trash-can" class="p-button-sm p-button-outlined p-button-danger"></button>
                     </div>
                 </div>
             </div>
         </div>
     </form>
     <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ? newAbono() : null" styleClass="p-button-sm p-button-rounded"
+        <p-button (click)="!loading() ? newAbono() : null" styleClass="p-button-sm p-button-rounded p-button-success"
             label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
-        <p-button (click)="accountsPayableService.showModalNewAbono = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+        <p-button (click)="accountsPayableService.showModalNewAbono = false" label="Cancelar" styleClass="p-button-outlined p-button-secondary p-button-sm p-button-rounded"></p-button>
     </ng-template>
 </p-dialog>
 

@@ -118,9 +118,9 @@
         </div>
     </form>
     <ng-template pTemplate="footer">
-        <p-button (click)="!loading() ? newAbono() : null" styleClass="p-button-sm p-button-rounded"
+        <p-button (click)="!loading() ? newAbono() : null" styleClass="p-button-sm p-button-rounded p-button-success"
             label="Guardar" icon="fa-solid fa-floppy-disk" [loading]="loading()"></p-button>
-        <p-button (click)="accountsReceivableService.showModalNewAbono = false" label="Cancelar" styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
+        <p-button (click)="accountsReceivableService.showModalNewAbono = false" label="Cancelar" styleClass="p-button-outlined p-button-secondary p-button-sm p-button-rounded"></p-button>
     </ng-template>
 </p-dialog>
 
