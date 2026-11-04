@@ -22,7 +22,7 @@
 
     <!-- Action Buttons -->
     <div class="flex flex-wrap items-center gap-2">
-      <p-splitButton *ngIf="validatorsService.withPermission('PROVEEDORES','reports')"
+      <p-splitButton *ngIf="!isProviderList() && validatorsService.withPermission('PROVEEDORES','reports')"
         (onClick)="exportProviderMasterReport()" [model]="providerReportItems"
         [disabled]="loading() || loadingReport()"
         [label]="loadingReport() ? 'Generando Excel…' : 'Exportar Excel'"
@@ -64,20 +64,64 @@
   </div>
 </div>
 
-  <!-- Basic Filter Toolbar for Provider List -->
-  <div *ngIf="isProviderList()" [formGroup]="formReport" class="bg-erp-surface p-3 rounded-lg border border-erp-border shadow-sm my-3 flex flex-wrap items-center justify-between gap-3">
-    <div class="flex items-center gap-2">
-      <label class="text-xs font-bold text-erp-text uppercase tracking-wider flex items-center gap-1.5">
-        <i class="fa-solid fa-filter text-erp-success"></i> Tipo Proveedor:
-      </label>
-      <p-dropdown [options]="types()" placeholder="Selecciona un tipo"
-        optionLabel="name" appendTo="body" formControlName="id_type_provider"
-        [disabled]="loading()"
-        (onChange)="!loading() ? getAllAndSearchProviders(1, rows(), status()) : null"
-        styleClass="text-xs min-w-[220px]">
-      </p-dropdown>
-    </div>
-  </div>
+  <form *ngIf="isProviderList()" [formGroup]="formReport" (ngSubmit)="applyProviderListFilters()">
+    <section class="provider-list-filter-card" aria-label="Filtros de proveedores">
+      <div class="provider-list-filter-body">
+        <p-accordion [activeIndex]="providerListFiltersOpen() ? 0 : -1"
+          (activeIndexChange)="setProviderListFiltersOpen($event === 0)">
+          <p-accordionTab>
+            <ng-template pTemplate="header">
+              <span class="provider-list-filter-heading"><i class="fa-solid fa-filter" aria-hidden="true"></i>Filtros de proveedores</span>
+            </ng-template>
+            <div class="provider-list-filter-grid">
+              <div class="erp-field provider-list-filter-field">
+                <label for="provider-list-type" class="erp-label">Tipo de proveedor</label>
+                <p-dropdown inputId="provider-list-type" [options]="types()" optionLabel="name"
+                  formControlName="id_type_provider" placeholder="Todos los tipos" appendTo="body"
+                  [disabled]="loading()"></p-dropdown>
+              </div>
+              <div class="erp-field provider-list-filter-field">
+                <label for="provider-list-search-field" class="erp-label">Buscar por</label>
+                <p-dropdown inputId="provider-list-search-field" [options]="providerListSearchFields"
+                  optionLabel="label" optionValue="value" formControlName="list_search_type" appendTo="body"></p-dropdown>
+              </div>
+              <div class="erp-field provider-list-filter-field">
+                <label for="provider-list-search-text" class="erp-label">Nombre, CI / NIT o celular</label>
+                <input id="provider-list-search-text" pInputText type="search" formControlName="list_search_text"
+                  placeholder="Escriba para buscar" />
+              </div>
+              <div class="erp-field provider-list-filter-field">
+                <label for="provider-list-department" class="erp-label">Departamento</label>
+                <p-dropdown inputId="provider-list-department" [options]="providerListDepartments()"
+                  optionLabel="name" optionValue="value" formControlName="list_department"
+                  [showClear]="true" placeholder="Todos los departamentos" appendTo="body"
+                  (onChange)="providerListDepartmentChanged()"></p-dropdown>
+              </div>
+              <div class="erp-field provider-list-filter-field">
+                <label for="provider-list-city" class="erp-label">Municipio</label>
+                <p-dropdown inputId="provider-list-city" [options]="providerListCityOptions()"
+                  optionLabel="name" optionValue="value" formControlName="list_city"
+                  [showClear]="true" placeholder="Todos los municipios" appendTo="body"></p-dropdown>
+              </div>
+            </div>
+            <div class="provider-list-filter-actions">
+              <p-button (click)="applyProviderListFilters()" styleClass="p-button-rounded p-button-sm p-button-info"
+                label="Buscar" icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
+              <p-button (click)="clearProviderListFilters()" styleClass="p-button-rounded p-button-success p-button-sm"
+                icon="fa-solid fa-broom" label="Limpiar" [disabled]="loading()"></p-button>
+              <p-splitButton *ngIf="validatorsService.withPermission('PROVEEDORES','reports')"
+                (onClick)="exportProviderMasterReport()" [model]="providerReportItems"
+                [disabled]="loading() || loadingReport()"
+                [label]="loadingReport() ? 'Generando Excel…' : 'Exportar Excel'"
+                icon="fa-solid fa-file-excel" severity="success" appendTo="body"
+                styleClass="provider-report-menu" [menuButtonProps]="{ ariaLabel: 'Seleccionar reporte Excel' }">
+              </p-splitButton>
+            </div>
+          </p-accordionTab>
+        </p-accordion>
+      </div>
+    </section>
+  </form>
 
   <!-- Main Management Layout (Filters Sidebar + Table Results) -->
   <div [class.management-grid]="!isProviderList()" [class.w-full]="isProviderList()">

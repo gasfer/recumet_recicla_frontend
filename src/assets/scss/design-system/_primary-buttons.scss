@@ -312,13 +312,13 @@ body :is(#{$table-action-selectors}) :is(
   background: transparent !important;
   border-color: transparent !important;
   :is(i, span, .p-button-icon) {
-    color: var(--color-action-secondary) !important;
+    color: var(--color-action-secondary-text) !important;
   }
   &:hover:not(:disabled) {
     background: color-mix(in srgb, var(--color-action-secondary) 12%, transparent) !important;
     border-color: color-mix(in srgb, var(--color-action-secondary) 28%, transparent) !important;
     :is(i, span, .p-button-icon) {
-      color: var(--color-action-secondary-hover) !important;
+      color: var(--color-action-secondary-text) !important;
     }
   }
 }
@@ -370,11 +370,11 @@ body[data-bs-theme='dark'] :is(#{$table-action-selectors}) {
     .p-button-secondary,
     .btn-secondary
   ) {
-    :is(i, span, .p-button-icon) { color: var(--color-action-secondary) !important; }
+    :is(i, span, .p-button-icon) { color: var(--color-action-secondary-text) !important; }
     &:hover:not(:disabled) {
       background: color-mix(in srgb, var(--color-action-secondary) 16%, transparent) !important;
       border-color: color-mix(in srgb, var(--color-action-secondary) 32%, transparent) !important;
-      :is(i, span, .p-button-icon) { color: var(--color-action-secondary-hover) !important; }
+      :is(i, span, .p-button-icon) { color: var(--color-action-secondary-text) !important; }
     }
   }
   :is(.p-button.p-button-danger, .btn-danger, .erp-btn-danger) {
@@ -385,6 +385,22 @@ body[data-bs-theme='dark'] :is(#{$table-action-selectors}) {
       :is(i, span, .p-button-icon) { color: var(--color-danger-text) !important; }
     }
   }
+}
+
+/* Acciones inactivas o bloqueadas por permisos usan el mismo icono gris en todas las tablas. */
+body :is(#{$table-action-selectors}) :is(
+  button:disabled,
+  button.disabled,
+  button.p-disabled,
+  button[aria-disabled='true']
+) {
+  background: color-mix(in srgb, var(--color-text-muted) 7%, var(--color-surface)) !important;
+  border-color: color-mix(in srgb, var(--color-text-muted) 24%, var(--color-border)) !important;
+  color: var(--color-text-muted) !important;
+  cursor: not-allowed !important;
+  filter: none !important;
+  opacity: .78 !important;
+  :is(i, span, .p-button-icon, .p-button-label) { color: var(--color-text-muted) !important; }
 }
 
 body :is(.erp-btn, .btn, .p-button):focus-visible { outline: 2px solid var(--color-focus) !important; outline-offset: 2px; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus) 20%, transparent) !important; }

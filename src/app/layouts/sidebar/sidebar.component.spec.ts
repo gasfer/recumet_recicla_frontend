@@ -160,6 +160,15 @@ describe('SidebarComponent permission filtering', () => {
     expect(sales?.subItems?.map(item => item.link)).toEqual(['/outputs/output']);
   });
 
+  it('shows authorized menu-only features without a route or operational content', () => {
+    const component = createComponent('OPERADOR', (name, action) => name === 'RECOJO' && action === 'create');
+    component.initialize();
+    const pickup = component.menuItems.find(item => item.menuOnly);
+    expect(pickup?.label).toBe('Agendar recojos');
+    expect(pickup?.link).toBeUndefined();
+    expect(pickup?.name).toBe('RECOJO');
+  });
+
   it('keeps clients only inside sales and dashboard and reports as direct links', () => {
     const component = createComponent('ADMINISTRADOR', () => true);
     component.initialize();

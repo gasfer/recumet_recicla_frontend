@@ -1496,3 +1496,28 @@ body .bc-truck-scale-table .p-datatable-thead > tr:nth-child(2) > th :is(input, 
   background: var(--color-surface) !important;
   color: var(--color-text) !important;
 }
+
+/* Align list tables with the padded filter cards above them. */
+.erp-filter-table-aligned {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding-inline: 1rem;
+}
+
+.erp-operational-list-panel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+.erp-operational-list-panel > form,
+.erp-operational-list-panel > div[formgroup] { margin: 0; }
+.erp-operational-list-panel > :is(form, div[formgroup]) .card { margin-bottom: .5rem; }
+.erp-operational-list-panel > app-table { margin-block: .25rem; }
+
+@media (max-width: 767px) {
+  .erp-filter-table-aligned { padding-inline: .75rem; }
+}

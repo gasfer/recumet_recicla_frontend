@@ -196,7 +196,7 @@
       </div>
 
       <!-- Fila Banco (si no es efectivo) -->
-      <div *ngIf="formInput.get('type_payment')?.value != 'EFECTIVO'" class="erp-form-grid animated fadeInDown mb-2">
+      <div *ngIf="shouldCollectPaymentDetails() && formInput.get('type_payment')?.value != 'EFECTIVO'" class="erp-form-grid animated fadeInDown mb-2">
         <div class="erp-field">
           <label class="erp-label required">Banco</label>
           <p-dropdown [options]="banks()" placeholder="Selecciona banco" optionLabel="name" optionValue="id"
@@ -219,7 +219,7 @@
       </div>
 
       <!-- Fila Transferencia / QR -->
-      <div *ngIf="formInput.get('type_payment')?.value == 'TRANSFERENCIA' || formInput.get('type_payment')?.value == 'QR'" class="erp-form-grid animated fadeInDown">
+      <div *ngIf="shouldCollectPaymentDetails() && (formInput.get('type_payment')?.value == 'TRANSFERENCIA' || formInput.get('type_payment')?.value == 'QR')" class="erp-form-grid animated fadeInDown">
         <div class="erp-field">
           <label class="erp-label required">Nro. de Transferencia</label>
           <input type="text" pInputText class="erp-input w-full uppercase"
@@ -329,7 +329,7 @@
   <ng-template pTemplate="footer">
     <p-button (click)="loading() ? null : this.inputsService.isEdit ? editInput() : saveInput()"
       styleClass="p-button-sm p-button-rounded p-button-success" [label]="inputsService.isEdit ? 'Guardar cambios' : 'Guardar y continuar'" icon="fa-solid fa-floppy-disk"
-      [loading]="loading()"></p-button>
+      [loading]="loading()" [disabled]="loading()"></p-button>
     <p-button (click)="inputsService.showModalSaveInput = false" label="Cancelar"
       styleClass="p-button-outlined p-button-sm p-button-rounded"></p-button>
   </ng-template>

@@ -47,6 +47,11 @@ export interface Kardex {
     registry_number: string;
     id_movement: string;
     type_movement: string;
+    source_type?: string | null;
+    source_id?: string | null;
+    source_detail_id?: string | null;
+    effect_type?: string | null;
+    source_transfer_id?: number | null;
     detail: string;
     sub_detail: string;
     quantity: string;

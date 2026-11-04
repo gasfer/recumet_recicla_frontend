@@ -1,10 +1,11 @@
+<section class="erp-operational-list-panel">
 <form [formGroup]="formReport">
     <div class="card shadow mb-4 icon-box sales-query-panel">
         <div class="card-body">
             <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
                 <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE VENTAS</b></h3>
             </div>
-            <p-accordion [activeIndex]="1">
+            <p-accordion [activeIndex]="-1">
                 <p-accordionTab header="Filtros">
                     <div class="erp-form-grid cols-4 erp-filter-grid sales-query-filter-grid">
                         <div class="erp-field">
@@ -113,8 +114,9 @@
             [activeItem]="searchItems()[0]"></p-tabMenu>
     </div>
 </form>
-<app-table responsiveStrategy="scroll" [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+<app-table class="erp-filter-table-aligned" responsiveStrategy="scroll" [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
     [data]="outputs()" [loading]="loading()" (customSort$)="customSort($event)">
 </app-table>
+</section>
 
 <app-modal-view-details-output></app-modal-view-details-output>

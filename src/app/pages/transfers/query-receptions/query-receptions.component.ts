@@ -453,7 +453,7 @@ export class QueryReceptionsComponent implements OnInit {
   private transferredWeight(transfer: Transfer): InfoStackItem[] {
     const kilograms = Number(transfer.total_quantity || 0) || transfer.detailsTransfers.reduce((total, detail) => total + Number(detail.quantity || 0), 0);
     const formatted = this.decimalFormat.format(kilograms) || '0';
-    return [{ icon: 'fa-solid fa-weight-hanging', label: 'Trasladado', value: kilograms >= 1000 ? `${formatted} kg · ${(kilograms / 1000).toFixed(2)} t` : `${formatted} kg`, tone: 'warning' }];
+    return [{ icon: 'fa-solid fa-weight-hanging', label: 'Trasladado', value: kilograms >= 1000 ? `${formatted} kg · ${this.decimalFormat.format(kilograms / 1000)} t` : `${formatted} kg`, tone: 'warning' }];
   }
 
   private reviewNoteCards(transfer: Transfer): NonNullable<Transfer['review_note_cards']> {

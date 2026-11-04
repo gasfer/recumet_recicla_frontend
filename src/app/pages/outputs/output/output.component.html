@@ -83,7 +83,7 @@
                     <i class="fa-solid fa-cart-arrow-down text-erp-success"></i>
                     <span>DETALLE DE ITEMS A VENDER</span>
                 </div>
-                <span class="erp-counter-chip">{{totalItems()}} items</span>
+                <span class="erp-counter-chip sales-counter-chip">{{totalItems()}} items</span>
             </div>
             <div class="p-2 border-b" *ngIf="!outputService._outputConfig.viewCardProducts">
                 <app-input-search (onEnters)="suggestedProduct($event)" (onDebounce)="suggestedProduct($event)"
@@ -117,6 +117,7 @@
     <div *ngIf="outputService._outputConfig.viewCardProducts" class="sales-workspace__catalog min-w-0">
         <app-dataview-products
             [prominentProductCode]="true"
+            [salesPalette]="true"
             [productContext]="productContext"
             [isViewQuantity]="true"
             [isViewPrice]="true"

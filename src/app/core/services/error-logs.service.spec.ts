@@ -62,6 +62,23 @@ describe('ErrorLogsService permission feedback', () => {
     expect(fire).toHaveBeenCalledTimes(1);
   });
 
+  it('muestra qué saldo previo de Stock y Kardex bloqueó un clasificado', () => {
+    service.logDeErrores({
+      status: 409,
+      error: {
+        code: 'STOCK_KARDEX_PARITY_VIOLATION',
+        errors: [{ msg: 'No se pudo confirmar el movimiento.' }],
+        details: [{ product_id: 81, inconsistent_before: true, stock_before: '12.0000', kardex_before: '10.0000', difference_before: '2.0000' }],
+      },
+    });
+
+    expect(fire).toHaveBeenCalledWith(jasmine.objectContaining({
+      title: 'No se guardó el movimiento',
+      text: 'No se pudo confirmar el movimiento.\nProducto #81: la diferencia ya existía antes del intento (Stock 12.0000, Kardex 10.0000, diferencia 2.0000).',
+      icon: 'error',
+    }));
+  });
+
   it('delega al modal el error de autorización de edición de compra', () => {
     const notifications = spyOn(service, 'notifications');
 

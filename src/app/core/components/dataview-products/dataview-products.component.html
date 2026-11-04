@@ -1,10 +1,10 @@
 <div class="card erp-card-container border-0 shadow-sm product-catalog-card">
-    <div class="erp-items-header">
+    <div class="erp-items-header" [class.sales-catalog-header]="salesPalette">
         <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-boxes-stacked text-emerald-400"></i>
             <span class="tracking-wide">CATÁLOGO DE PRODUCTOS</span>
         </div>
-        <span class="erp-counter-chip">{{ products().length }} de {{ total }}</span>
+        <span class="erp-counter-chip" [class.sales-counter-chip]="salesPalette">{{ products().length }} de {{ total }}</span>
     </div>
 
     <div class="card-body p-2 product-catalog-body">
@@ -89,7 +89,7 @@
                                     alt="{{product.name}}">
 
                                 <!-- BADGE CÓDIGO (superior izquierda) -->
-                                <div class="top-badges" [class.top-badges--prominent]="prominentProductCode">
+                                <div class="top-badges" [class.top-badges--prominent]="prominentProductCode" [class.top-badges--sales]="salesPalette">
                                     <span class="badge-code">{{ product.cod }}</span>
                                 </div>
 
@@ -163,6 +163,7 @@
                                         (keydown.space)="$event.preventDefault(); addListDetailPos(product)"
                                         *ngIf="isViewQuantity"
                                         class="badge-subtle-stock cursor-pointer"
+                                        [class.sales-stock-badge]="salesPalette"
                                         [class.stock-empty]="product.total_stock === 0">
                                         Stock: {{product.total_stock | number: decimal()}}
                                     </span>

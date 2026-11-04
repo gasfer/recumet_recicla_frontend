@@ -9,7 +9,7 @@ import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 @Component({
   selector: 'app-table-output-details',
   templateUrl: './table-output-details.component.html',
-  styles: []
+  styleUrls: ['./table-output-details.component.scss']
 })
 export class TableOutputDetailsComponent implements OnDestroy {
   outputService     = inject(OutputService);

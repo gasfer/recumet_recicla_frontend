@@ -83,10 +83,10 @@
         <th *ngFor="let col of columns" [style]="col.style"
             class="text-white background-primary"
             [class.app-table-action-column]="col.isButton"
-            [pSortableColumn]="(col.activeSortable ?? true) && !col.isButton ? col.field : ''">
+            [pSortableColumn]="(col.activeSortable ?? true) && !col.isButton && !col.isIndex ? col.field : ''">
           {{ col.header }}
           <p-sortIcon [field]="col.field"
-              *ngIf="(col.activeSortable ?? true) && !col.isButton"></p-sortIcon>
+              *ngIf="(col.activeSortable ?? true) && !col.isButton && !col.isIndex"></p-sortIcon>
         </th>
       </tr>
     </ng-template>
@@ -97,13 +97,17 @@
       </tr>
     </ng-template>
 
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
       <tr *ngIf="!loading" class="erp-table-row">
         <td *ngFor="let col of columns" ngClass="tdwith" [style]="col.style"
             [class.app-table-action-column]="col.isButton"
             [pTooltip]="col.tooltip ? (col.tooltipMsg ? col.tooltipMsg : formatTooltip(getRowData(rowData,col))) : null"
             tooltipPosition="top" class="text-start app-u-white-space-normal-f8f979b">
           <span class="p-column-title"><b>{{ col.header }}</b></span>
+
+          <div *ngIf="col.isIndex" class="text-center text-muted fw-semibold">
+            {{ getRowIndex(rowIndex) }}
+          </div>
 
           <div *ngIf="col.isArray">
             <button pButton label="Ver" (click)="op.toggle($event)" pRipple

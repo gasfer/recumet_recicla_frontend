@@ -1,4 +1,4 @@
-<div class="card shadow">
+<div class="erp-operational-list-panel card shadow">
   <p-toolbar>
     <div class="p-toolbar-group-left">
       <h4>LISTADO DE PRODUCTOS</h4>
@@ -22,6 +22,8 @@
 
   <app-modal-product></app-modal-product>
 
+  <p-accordion [activeIndex]="-1">
+  <p-accordionTab header="Filtros">
   <!-- FILA DE FILTROS -->
   <div class="grid p-3 pb-0 items-end">
     <!-- FILA DE FILTROS -->
@@ -54,17 +56,20 @@
 
   </div>
   <!-- FIN FILTROS-->
+  </p-accordionTab>
+  </p-accordion>
 
     <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''" [activeItem]="searchItems()[0]"></p-tabMenu>
 
 
-  <app-table responsiveStrategy="scroll" [showViewToggle]="true" *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  <app-table class="erp-filter-table-aligned" responsiveStrategy="scroll" [showViewToggle]="true" *ngIf="!status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
     (rows$)="paginate($event)" (search$)="search($event)" [data]="products()" [loading]="loading()">
   </app-table>
-  <app-table responsiveStrategy="scroll" [showViewToggle]="true" *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
+  <app-table class="erp-filter-table-aligned" responsiveStrategy="scroll" [showViewToggle]="true" *ngIf="status()" [cols]="cols()" (customSort$)="customSort($event)" [searchFor]="searchFor()"
     (rows$)="paginate($event)" (search$)="search($event)" [data]="products()" [loading]="loading()">
   </app-table>
 </div>
 <app-modal-prices></app-modal-prices>
 <app-modal-assign-sucursales-products></app-modal-assign-sucursales-products>
 <app-modal-providers-product></app-modal-providers-product>
+

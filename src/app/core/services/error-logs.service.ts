@@ -21,6 +21,26 @@ export class ErrorLogsService {
       this.handledErrors.add(e);
     }
 
+    if (e?.error?.code === 'STOCK_KARDEX_PARITY_VIOLATION') {
+      const diagnostics = Array.isArray(e.error.details) ? e.error.details : [];
+      const affectedProducts = diagnostics.map((item: any) => {
+        const product = `Producto #${item.product_id}`;
+        if (item.inconsistent_before) {
+          return `${product}: la diferencia ya existía antes del intento (Stock ${item.stock_before}, Kardex ${item.kardex_before}, diferencia ${item.difference_before}).`;
+        }
+        return `${product}: Stock ${item.stock}, Kardex ${item.kardex}, diferencia ${item.difference}.`;
+      });
+      const message = e?.error?.errors?.[0]?.msg || 'Stock y Kardex requieren revisión antes de confirmar el movimiento.';
+      Swal.fire({
+        title: 'No se guardó el movimiento',
+        text: [message, ...affectedProducts].join('\n'),
+        icon: 'error',
+        showClass: { popup: 'animated animate fadeInDown' },
+        customClass: { container: 'swal-alert' },
+      });
+      return;
+    }
+
     if(e.status === 422) {
       this.notifications(
         e?.error?.errors[0]?.msg ? e?.error?.errors[0]?.msg : 'Los datos no son validos, Intenta nuevamente',

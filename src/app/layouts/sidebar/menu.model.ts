@@ -7,6 +7,7 @@ export interface MenuItem {
     label?: string;
     icon?: string;
     link?: string;
+    menuOnly?: boolean;
     subItems?: MenuItem[];
     view?: boolean;
     isTitle?: boolean;

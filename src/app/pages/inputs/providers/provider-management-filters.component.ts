@@ -34,30 +34,9 @@ export class ProviderManagementFiltersComponent implements OnInit {
   applied: Array<{ key: string; label: string; value: string }> = [];
   private appliedQuery: ProviderManagementQuery = {};
   sections: FilterSection[] = [];
-  modes = [
-    { label: 'Todo el historial', value: 'ALL' },
-    { label: 'Día específico', value: 'DAY' },
-    { label: 'Este mes / Mes', value: 'MONTH' },
-    { label: 'Este año / Año', value: 'YEAR' },
-    { label: 'Rango personalizado', value: 'RANGE' }
-  ];
   readonly yesNo = [{ label: 'Sí', value: 'true' }, { label: 'No', value: 'false' }];
   readonly entityTypeOptions = PROVIDER_ENTITY_TYPES;
-  readonly activityOptions = [
-    { label: 'Todos', value: 'ALL' },
-    { label: 'Compras mayores a Bs 0', value: 'POSITIVE' },
-    { label: 'Con compras registradas', value: 'WITH' },
-    { label: 'Sin compras', value: 'WITHOUT' },
-  ];
-  private currentMonth(): string {
-    return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz', year: 'numeric', month: '2-digit' }).format(new Date()).slice(0, 7);
-  }
   form = this.fb.group<Record<string, any>>({
-    date_mode: 'MONTH',
-    date_basis: 'PURCHASES',
-    date: this.currentMonth(),
-    activity: 'ALL',
-    date_end: '',
     query: '',
     id_type_provider: null,
     estado_registro: null,
@@ -79,8 +58,7 @@ export class ProviderManagementFiltersComponent implements OnInit {
   productOptions: Array<{ id: number; name: string; cod: string; id_category?: number }> = [];
   departmentOptions: Array<{ label: string; value: string }> = [];
   cityOptions: Array<{ label: string; value: string; department?: string }> = [];
-  branchOptions: Array<{ id: number; name: string }> = [];
-  storageOptions: Array<{ id: number; name: string; id_sucursal: number }> = [];
+  branchOptions: Array<{ id: number; name: string; city?: string }> = [];
   userOptions: Array<{ label: string; value: number }> = [];
 
   readonly grades = [
@@ -107,9 +85,11 @@ export class ProviderManagementFiltersComponent implements OnInit {
           cod: p.code || (p as any).cod || '', id_category: p.id_category,
         }));
         this.departmentOptions = BOLIVIA_DEPARTMENTS.map(d => ({ label: d.name, value: d.name }));
-        this.cityOptions = (catalogs.cities || []).map(c => ({ label: c.name || '', value: c.value || c.name || '', department: c.department }));
-        this.branchOptions = (catalogs.branches || []).map(b => ({ id: b.id!, name: b.name || '' }));
-        this.storageOptions = (catalogs.storages || []).map(s => ({ id: s.id!, name: s.name || '', id_sucursal: Number(s.id_sucursal) }));
+        this.branchOptions = (catalogs.branches || []).map(b => ({ id: b.id!, name: b.name || '', city: b.city || undefined }));
+        this.cityOptions = [...new Map([
+          ...(catalogs.cities || []).map(c => ({ label: c.name || '', value: c.value || c.name || '', department: c.department })),
+          ...this.branchOptions.filter(b => b.city).map(b => ({ label: b.city!, value: b.city!, department: undefined })),
+        ].map(city => [JSON.stringify([city.value, city.department || null]), city])).values()];
         this.userOptions = (catalogs.users || []).map((u: any) => ({ label: u.full_names || u.name || '', value: u.id! }));
 
         this.buildSections(catalogs);
@@ -119,6 +99,7 @@ export class ProviderManagementFiltersComponent implements OnInit {
         this.form.patchValue({
           id_sucursal: defaultSucursalId ? [defaultSucursalId] : [],
           id_storage: defaultStorageId ? [defaultStorageId] : [],
+          department: null,
           city: null,
         });
         this.apply();
@@ -128,12 +109,6 @@ export class ProviderManagementFiltersComponent implements OnInit {
         this.error = 'No se pudieron cargar los filtros. Intenta nuevamente.';
       },
     });
-  }
-
-  filteredStorages(): Array<{ id: number; name: string; id_sucursal: number }> {
-    const selectedBranches = (this.form.get('id_sucursal')?.value as number[]) || [];
-    if (!selectedBranches.length) return this.storageOptions;
-    return this.storageOptions.filter(s => selectedBranches.includes(s.id_sucursal));
   }
 
   filteredCities() {
@@ -159,14 +134,6 @@ export class ProviderManagementFiltersComponent implements OnInit {
     this.apply();
   }
 
-  onBranchChange() {
-    const currentStorages = (this.form.get('id_storage')?.value as number[]) || [];
-    const validStorageIds = this.filteredStorages().map(s => s.id);
-    const updated = currentStorages.filter(id => validStorageIds.includes(id));
-    this.form.patchValue({ id_storage: updated });
-    this.apply();
-  }
-
   private buildSections(c: ProviderManagementCatalogs) {
     const options = (rows: Array<{id?: number; name?: string; full_names?: string; value?: string}>) => rows.map(row => ({label: row.name || row.full_names || '', value: row.value ?? row.id!}));
     const select = (key: string, label: string, opts: FilterField['options'], corporate = false): FilterField => ({key,label,kind:'select',options:opts,corporate});
@@ -174,9 +141,9 @@ export class ProviderManagementFiltersComponent implements OnInit {
     const number = (key: string, label: string): FilterField => ({key,label,kind:'number'});
     this.sections = [
       {title:'Identificación y ubicación', icon:'fa-id-card', fields:[text('query','Proveedor · nombre, CI o NIT'), select('id_type_provider','Tipo proveedor',options(c.types)), select('estado_registro','Registro',[{label:'Validado',value:'VALIDADO'},{label:'Pendiente',value:'PENDIENTE'}]), select('department','Departamento',options(c.departments)), select('city','Ciudad',options(c.cities))]},
-      {title:'Sucursal y compras',icon:'fa-cart-shopping',fields:[select('id_sucursal','Sucursal RECUMET',options(c.branches)),select('id_storage','Almacén RECUMET',options(c.storages)),select('type_registry','Tipo registro',['FICHA','BOLETA','SIN FICHA'].map(value=>({label:value,value}))),select('old_customer','¿Cliente antiguo?',this.yesNo),select('with_pickup','¿Con recojo?',this.yesNo)]},
+      {title:'Compras',icon:'fa-cart-shopping',fields:[select('type_registry','Tipo registro',['FICHA','BOLETA','SIN FICHA'].map(value=>({label:value,value}))),select('old_customer','¿Cliente antiguo?',this.yesNo),select('with_pickup','¿Con recojo?',this.yesNo)]},
       {title:'Relación comercial',icon:'fa-handshake',fields:[select('id_commercial_user','Responsable comercial',options(c.users)),select('origin_channel','¿Cómo nos conociste?',PROVIDER_ORIGIN_CHANNELS),select('relationship_status','Relación comercial',PROVIDER_RELATIONSHIP_STATUSES),select('service_mode','Modalidad de atención',PROVIDER_SERVICE_MODES)]},
-      {title:'Productos y actividad',icon:'fa-boxes-stacked',fields:[select('id_category','Categoría comprada',options(c.categories)),select('id_product','Producto comprado',options(c.products)),select('activity','Compras registradas',[{label:'Con compras',value:'WITH'},{label:'Sin compras',value:'WITHOUT'}]),select('frequency','Frecuencia calculada',PROVIDER_FREQUENCIES.filter(o=>o.value!=='EVENTUAL')),number('min_days','Días sin comprar · mín'),number('max_days','Días sin comprar · máx')]},
+      {title:'Productos y actividad',icon:'fa-boxes-stacked',fields:[select('id_category','Categoría comprada',options(c.categories)),select('id_product','Producto comprado',options(c.products)),select('frequency','Frecuencia calculada',PROVIDER_FREQUENCIES.filter(o=>o.value!=='EVENTUAL')),number('min_days','Días sin comprar · mín'),number('max_days','Días sin comprar · máx')]},
       {title:'Montos y documentación',icon:'fa-wallet',fields:[number('min_amount','Compras Bs · mín'),number('max_amount','Compras Bs · máx'),number('min_balance','Saldo actual Bs · mín'),number('max_balance','Saldo actual Bs · máx'),select('has_document','CI / NIT registrado',this.yesNo),select('has_bank_account','Cuenta bancaria registrada',this.yesNo)]},
     ];
     for (const section of this.sections) {
@@ -217,12 +184,6 @@ export class ProviderManagementFiltersComponent implements OnInit {
     if (!this.corporateVisible()) this.form.patchValue({ entity_type: null, main_contact: null, has_contact: null });
   }
 
-  dateModeChanged() {
-    const mode = this.form.get('date_mode')?.value;
-    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
-    this.form.patchValue({ date: mode === 'MONTH' ? today.slice(0, 7) : mode === 'YEAR' ? today.slice(0, 4) : mode === 'ALL' ? '' : today, date_end: mode === 'RANGE' ? today : '' });
-  }
-
   apply() {
     this.typeChanged();
     const q: ProviderManagementQuery = {};
@@ -237,26 +198,9 @@ export class ProviderManagementFiltersComponent implements OnInit {
         }
       }
     }
-    const mode = q['date_mode'];
-    if (mode !== 'ALL' && (!q['date'] || (mode === 'RANGE' && (!q['date_end'] || String(q['date']) > String(q['date_end']))))) {
-      this.error = 'Completa las fechas del período en orden.';
-      return;
-    }
     for (const name of ['amount', 'count', 'balance', 'days', 'average_days']) {
       if (q[`min_${name}`] != null && q[`max_${name}`] != null && Number(q[`min_${name}`]) > Number(q[`max_${name}`])) {
         this.error = 'El mínimo no puede superar al máximo.';
-        return;
-      }
-    }
-    const selectedBranches = (Array.isArray(q['id_sucursal']) ? q['id_sucursal'] : q['id_sucursal'] ? [Number(q['id_sucursal'])] : []) as number[];
-    const selectedStorages = (Array.isArray(q['id_storage']) ? q['id_storage'] : q['id_storage'] ? [Number(q['id_storage'])] : []) as number[];
-    if (selectedBranches.length > 0 && selectedStorages.length > 0) {
-      const invalid = selectedStorages.some(sId => {
-        const s = this.storageOptions.find(opt => opt.id === Number(sId));
-        return s && !selectedBranches.includes(s.id_sucursal);
-      });
-      if (invalid) {
-        this.error = 'Uno o más almacenes no pertenecen a las sucursales seleccionadas.';
         return;
       }
     }
@@ -270,11 +214,6 @@ export class ProviderManagementFiltersComponent implements OnInit {
     const defaultSucursalId = Number(this.context.id_sucursal());
     const defaultStorageId = Number(this.context.id_storage());
     this.form.reset({
-      date_mode: 'MONTH',
-      date_basis: 'PURCHASES',
-      date: this.currentMonth(),
-      activity: 'ALL',
-      date_end: '',
       query: '',
       id_type_provider: null,
       estado_registro: null,
@@ -295,19 +234,8 @@ export class ProviderManagementFiltersComponent implements OnInit {
   }
 
   remove(key: string) {
-    if (['date', 'date_end', 'date_mode'].includes(key)) {
-      delete this.appliedQuery['date'];
-      delete this.appliedQuery['date_end'];
-      this.appliedQuery['date_mode'] = 'ALL';
-      this.form.patchValue({ date_mode: 'ALL', date: '', date_end: '' });
-    } else {
-      delete this.appliedQuery[key];
-      if (['id_categories', 'id_products', 'id_sucursal', 'id_storage'].includes(key)) {
-        this.form.get(key)?.setValue([]);
-      } else {
-        this.form.get(key)?.setValue(null);
-      }
-    }
+    delete this.appliedQuery[key];
+    this.form.get(key)?.setValue(['id_categories', 'id_products'].includes(key) ? [] : null);
     if (key === 'id_categories') this.categoriesChanged();
     else this.apply();
   }
@@ -315,26 +243,8 @@ export class ProviderManagementFiltersComponent implements OnInit {
   private refreshChips() {
     const fields = this.sections.flatMap(s => s.fields);
     this.applied = Object.entries(this.appliedQuery)
-      .filter(([key, value]) => !['date_mode', 'date_basis'].includes(key) && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+      .filter(([key, value]) => !['date_mode', 'date_basis', 'id_sucursal', 'id_storage'].includes(key) && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
       .map(([key, value]) => {
-        if (key === 'id_sucursal') {
-          const ids = Array.isArray(value) ? value : String(value).split(',').map(Number);
-          const names = ids.map(id => this.branchOptions.find(o => o.id === Number(id))?.name).filter(Boolean);
-          return {
-            key,
-            label: 'Sucursales',
-            value: names.length <= 2 ? names.join(', ') : `${names.slice(0, 2).join(', ')} (+${names.length - 2})`
-          };
-        }
-        if (key === 'id_storage') {
-          const ids = Array.isArray(value) ? value : String(value).split(',').map(Number);
-          const names = ids.map(id => this.storageOptions.find(o => o.id === Number(id))?.name).filter(Boolean);
-          return {
-            key,
-            label: 'Almacenes',
-            value: names.length <= 2 ? names.join(', ') : `${names.slice(0, 2).join(', ')} (+${names.length - 2})`
-          };
-        }
         if (key === 'id_categories') {
           const ids = Array.isArray(value) ? value : String(value).split(',').map(Number);
           const names = ids.map(id => this.categoryOptions.find(o => o.id === Number(id))?.name).filter(Boolean);
@@ -353,7 +263,6 @@ export class ProviderManagementFiltersComponent implements OnInit {
             value: names.length <= 2 ? names.join(', ') : `${names.slice(0, 2).join(', ')} (+${names.length - 2})`
           };
         }
-        if (key === 'activity') return { key, label: 'Compras', value: this.activityOptions.find(o => o.value === value)?.label || String(value) };
         if (key === 'entity_type') return { key, label: 'Tipo de entidad', value: this.entityTypeOptions.find(o => o.value === value)?.label || String(value) };
         const field = fields.find(f => f.key === key);
         return {

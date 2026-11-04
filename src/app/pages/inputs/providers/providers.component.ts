@@ -16,6 +16,7 @@ import { AccountsPayableService } from '../../accounts/services/accounts-payable
 import { Account, AccountsPayableProvider } from '../../accounts/interfaces/accounts-payable-provider.interface';
 import { ProviderCompanyProfile, ProviderSiteProfile } from '../interfaces/provider-commercial-profile.interface';
 import { InputsService } from '../services/inputs.service';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 import { GetAllInputs, Input } from '../interfaces/input.interface';
 import {
   PROVIDER_ACCOUNT_TYPES, PROVIDER_CURRENCIES, PROVIDER_ENTITY_TYPES,
@@ -29,12 +30,21 @@ import {
   styleUrls: ['./providers.component.scss']
 })
 export class ProvidersComponent implements OnInit, OnDestroy {
+  private readonly decimalFormat = inject(DecimalFormatService);
   readonly providerReportItems: MenuItem[] = [
     { label: 'Exportar proveedores', icon: 'fa-solid fa-file-excel', command: () => this.exportProviderMasterReport() },
     { label: 'Proveedores por producto', icon: 'fa-solid fa-boxes-stacked', command: () => this.exportProviderMasterReport('products') },
   ];
   private managementQuery: ProviderManagementQuery = {};
   private managementReady = false;
+  readonly providerListFiltersOpen = signal(false);
+  readonly providerListSearchFields = [
+    { label: 'Nombre', value: 'full_names' },
+    { label: 'CI / NIT', value: 'number_document' },
+    { label: 'Celular', value: 'cellphone' },
+  ];
+  readonly providerListDepartments = signal<Array<{ name: string; value?: string }>>([]);
+  readonly providerListCities = signal<Array<{ name: string; value?: string; department?: string }>>([]);
   private listRequest?: Subscription;
   private exportRequest?: Subscription;
   applyManagementFilters(query: ProviderManagementQuery) {
@@ -234,9 +244,58 @@ export class ProvidersComponent implements OnInit, OnDestroy {
 
   loadCommercialUsers() {
     this.providersService.getManagementCatalogs().subscribe({
-      next: ({ catalogs }) => this.commercialUsers.set(catalogs.users || []),
+      next: ({ catalogs }) => {
+        this.commercialUsers.set(catalogs.users || []);
+        this.providerListDepartments.set(catalogs.departments || []);
+        this.providerListCities.set(catalogs.cities || []);
+      },
       error: () => this.commercialUsers.set([])
     });
+  }
+
+  providerListCityOptions() {
+    const department = String(this.formReport.get('list_department')?.value || '').trim().toLocaleUpperCase('es');
+    return this.providerListCities().filter(city => !department
+      || String(city.department || '').trim().toLocaleUpperCase('es') === department);
+  }
+
+  setProviderListFiltersOpen(open: boolean) {
+    this.providerListFiltersOpen.set(open);
+  }
+
+  providerListDepartmentChanged() {
+    this.formReport.patchValue({ list_city: null });
+  }
+
+  applyProviderListFilters() {
+    const value = this.formReport.getRawValue();
+    const searchText = String(value.list_search_text || '').trim();
+    const selectedType = value.id_type_provider;
+    const branchId = Number(this.validatorsService.id_sucursal());
+    const storageId = Number(this.validatorsService.id_storage());
+    this.managementQuery = {
+      ...(Number(selectedType?.id) > 0 ? { id_type_provider: Number(selectedType.id) } : {}),
+      ...(searchText ? { type: value.list_search_type || 'full_names', query: searchText } : {}),
+      ...(value.list_department ? { department: value.list_department } : {}),
+      ...(value.list_city ? { city: value.list_city } : {}),
+      ...(branchId > 0 ? { id_sucursal: [branchId] } : {}),
+      ...(storageId > 0 ? { id_storage: [storageId] } : {}),
+    };
+    this.query.set('');
+    this.type.set('');
+    this.page.set(1);
+    this.getAllAndSearchProviders(1, this.rows(), this.status());
+  }
+
+  clearProviderListFilters() {
+    this.formReport.patchValue({
+      id_type_provider: this.types().find(item => item.code === 'ALL') || null,
+      list_search_type: 'full_names',
+      list_search_text: '',
+      list_department: null,
+      list_city: null,
+    });
+    this.applyProviderListFilters();
   }
 
   loadInfoPurchases(providerId: number) {
@@ -319,6 +378,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   save$!: Subscription;
   formReport:UntypedFormGroup = this.fb.group({
     id_type_provider: [],
+    list_search_type: 'full_names',
+    list_search_text: '',
+    list_department: null,
+    list_city: null,
   });
   pipeNumber      = new DecimalPipe('en-US');
   decimalLength     = signal(this.validatorsService.decimalLength());
@@ -326,6 +389,14 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!this.isProviderList()) {
       document.body.classList.add('app-sidebar-hidden');
+    } else {
+      const branchId = Number(this.validatorsService.id_sucursal());
+      const storageId = Number(this.validatorsService.id_storage());
+      this.managementQuery = {
+        ...(branchId > 0 ? { id_sucursal: [branchId] } : {}),
+        ...(storageId > 0 ? { id_storage: [storageId] } : {}),
+      };
+      this.managementReady = true;
     }
     this.loadCommercialUsers();
     this.getAllTypes();
@@ -348,10 +419,18 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     if(!query) {this.loading.set(true);} //not loading in search
     this.status.set(status);
     this.cols.set(this.loadColsTableByType());
-    const id_type_provider = this.formReport.get('id_type_provider')?.value ?? '';
-    const request = this.isProviderList()
-      ? this.providersService.getAllAndSearch(page,limit,status,type,query,this.fieldSort(),this.order(),id_type_provider ? id_type_provider.id : '', this.estadoRegistro())
-      : this.providersService.getManagement({...this.managementQuery, page, limit, status, ...(query ? {type, query} : {}), field_sort:this.fieldSort(), order:this.order(), ...(this.estadoRegistro() ? {estado_registro:this.estadoRegistro()} : {})});
+    const selectedType = this.formReport.get('id_type_provider')?.value;
+    const request = this.providersService.getManagement({
+      ...this.managementQuery,
+      page,
+      limit,
+      status,
+      ...(this.isProviderList() && Number(selectedType?.id) > 0 ? { id_type_provider: Number(selectedType.id) } : {}),
+      ...(query ? { type, query } : {}),
+      field_sort: this.fieldSort(),
+      order: this.order(),
+      ...(this.estadoRegistro() ? { estado_registro: this.estadoRegistro() } : {}),
+    });
     this.listRequest = request.subscribe({
       next: (resp) => {
         this.providers.set(resp.providers);
@@ -364,23 +443,23 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               eventClick: () => this.showTraceability(provider),
             },
             {
-              label:'',icon:'fa-solid fa-comment-dollar',
+              label:'',icon:'fa-solid fa-file-invoice-dollar',
               tooltip: 'Cuentas por pagar',
               disabled: this.validatorsService.withPermission('CUENTAS POR COBRAR','view'),
-              class:'p-button-rounded  p-button-sm',
+              class:'p-button-rounded p-button-success p-button-sm',
               eventClick: () => this.showProviderAccounts(provider)
             },
                         {
               label: '',
               icon: 'fa-solid fa-circle-info',
               tooltip: 'Más información',
-              class: 'p-button-rounded p-button-info p-button-outlined p-button-sm ms-1',
+              class: 'p-button-rounded p-button-secondary p-button-outlined p-button-sm ms-1',
               eventClick: () => {
                 this.showProviderInfo(provider);
               }
             },
             {
-              label:'',icon:'fas fa-edit',
+              label:'',icon:'fa-solid fa-pen-to-square',
               tooltip: 'Editar',
               disabled: this.canProviderAction('update'),
               class:'p-button-rounded p-button-warning p-button-sm ms-1',
@@ -389,7 +468,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               }
             },
             {
-              label:'',icon:'fa-solid fa-trash-can',
+              label:'',icon:'fa-solid fa-user-slash',
               tooltip: 'Inactivar',
               disabled: this.canProviderAction('delete'),
               class:'p-button-rounded p-button-danger p-button-sm ms-1',
@@ -408,7 +487,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
               }
             },
             {
-              label:'',icon:'fa-solid fa-circle-check',
+              label:'',icon:'fa-solid fa-user-check',
               tooltip: 'Activar',
               disabled: this.canProviderAction('delete'),
               class:'p-button-rounded p-button-sm ms-1',
@@ -475,7 +554,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         const totals = accountsPayable.totals;
         Swal.fire({
           title: '¿Dar de baja al proveedor?',
-          html: `<div style="text-align:left;font-size:.86rem"><b>${this.escapeHtml(provider.full_names)}</b><hr><p>Cuentas registradas: <b>${totals.total_accounts || 0}</b></p><p>Total comprado: <b>Bs. ${Number(totals.total_account || 0).toFixed(2)}</b></p><p>Total pagado: <b>Bs. ${Number(totals.total_abonados || 0).toFixed(2)}</b></p><p>Saldo pendiente: <b style="color:var(--color-warning-text)">Bs. ${Number(totals.total_restante || 0).toFixed(2)}</b></p><small>La baja no elimina compras, pagos ni deudas. El historial permanecerá disponible.</small></div>`,
+          html: `<div style="text-align:left;font-size:.86rem"><b>${this.escapeHtml(provider.full_names)}</b><hr><p>Cuentas registradas: <b>${totals.total_accounts || 0}</b></p><p>Total comprado: <b>Bs. ${this.decimalFormat.format(totals.total_account || 0)}</b></p><p>Total pagado: <b>Bs. ${this.decimalFormat.format(totals.total_abonados || 0)}</b></p><p>Saldo pendiente: <b style="color:var(--color-warning-text)">Bs. ${this.decimalFormat.format(totals.total_restante || 0)}</b></p><small>La baja no elimina compras, pagos ni deudas. El historial permanecerá disponible.</small></div>`,
           icon: Number(totals.total_restante || 0) > 0 ? 'warning' : 'question',
           confirmButtonText: 'Sí, dar de baja',
           cancelButtonText: 'Cancelar',
@@ -611,6 +690,13 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   getDefaultColumns() {
     return [
       {
+        field: 'index',
+        header: 'N.º',
+        style: 'min-width:64px;max-width:64px;text-align:center;',
+        isIndex: true,
+        activeSortable: false,
+      },
+      {
         field: 'type.code',
         field2: 'full_names',
         header: 'PROVEEDOR',
@@ -685,7 +771,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     if (this.loading() || this.loadingReport()) return;
     this.loadingReport.set(true);
     const providerType = this.formReport.get('id_type_provider')?.value;
-    const filters = this.isProviderList() ? undefined : {
+    const filters = {
       ...this.managementQuery,
       ...(this.estadoRegistro() ? { estado_registro: this.estadoRegistro() } : {}),
     };

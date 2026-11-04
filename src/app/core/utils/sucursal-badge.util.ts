@@ -10,7 +10,7 @@ const FALLBACK_PALETTES: SucursalTheme[] = [
   { bg: '#f3e8ff', color: '#7e22ce', border: '#e9d5ff' }, // Lavender
   { bg: '#ffedd5', color: '#c2410c', border: '#fed7aa' }, // Peach
   { bg: '#fce7f3', color: '#be185d', border: '#fbcfe8' }, // Rose
-  { bg: '#ccfbf1', color: '#0f766e', border: 'var(--color-success-light)' }, // Teal
+  { bg: 'var(--color-success-light)', color: 'var(--color-success-text)', border: 'var(--color-success-light)' }, // Verde RECUMET
   { bg: '#e0e7ff', color: '#4338ca', border: '#c7d2fe' }, // Indigo
   { bg: '#fef9c3', color: '#854d0e', border: '#fef08a' }, // Amber
 ];
@@ -21,7 +21,7 @@ const KNOWN_SUCURSAL_MAP: Record<string, SucursalTheme> = {
   'sucursal vip': { bg: '#f3e8ff', color: '#7e22ce', border: '#e9d5ff' },
   'sucursal cgt': { bg: '#ffedd5', color: '#c2410c', border: '#fed7aa' },
   'sucursal prodmetal cgs': { bg: '#fce7f3', color: '#be185d', border: '#fbcfe8' },
-  'sucursal santa cruz sur': { bg: '#ccfbf1', color: '#0f766e', border: 'var(--color-success-light)' },
+  'sucursal santa cruz sur': { bg: 'var(--color-success-light)', color: 'var(--color-success-text)', border: 'var(--color-success-light)' },
   'sucursal santa cruz norte': { bg: '#e0e7ff', color: '#4338ca', border: '#c7d2fe' },
   'sucursal cbba-republica': { bg: '#fef9c3', color: '#854d0e', border: '#fef08a' },
   'cbba republica': { bg: '#fef9c3', color: '#854d0e', border: '#fef08a' },

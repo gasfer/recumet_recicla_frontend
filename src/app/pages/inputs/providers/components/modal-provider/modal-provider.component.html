@@ -147,8 +147,8 @@
               <p-multiSelect [options]="departments" optionLabel="name" optionValue="code" formControlName="operating_departments" display="chip" [filter]="true" [showClear]="true" defaultLabel="Seleccione uno o más departamentos" appendTo="body" class="w-full" (onChange)="operatingDepartmentsChanged($event.value)"></p-multiSelect>
             </div>
           </div>
-          <div *ngIf="supportsBranches()" class="erp-field mt-2">
-            <label class="erp-label required">Sucursales RECUMET donde puede entregar material</label>
+          <div *ngIf="supportsBranchAvailability()" class="erp-field mt-2">
+            <label class="erp-label">Sucursales RECUMET habilitadas para registrar compras</label>
             <div class="flex flex-wrap gap-x-4 gap-y-2 rounded border border-erp-border bg-erp-surface p-2">
               <label *ngFor="let branch of availableSucursales()" class="inline-flex items-center gap-1.5 text-xs cursor-pointer">
                 <input type="checkbox" [checked]="(providerForm.get('enabled_sucursal_ids')?.value || []).includes(branch.id)" [disabled]="providersService.isInfo" (change)="toggleEnabledBranch($event, branch.id)">
@@ -157,7 +157,6 @@
               <span *ngIf="!availableSucursales().length" class="text-xs text-erp-text-muted">No hay sucursales activas disponibles.</span>
             </div>
             <small class="text-erp-text-muted">El proveedor solo aparecerá para registrar compras en las sucursales marcadas.</small>
-            <small *ngIf="validationAttempted() && providerForm.get('enabled_sucursal_ids')?.hasError('required')" class="erp-error-msg block">Habilite al menos una sucursal RECUMET.</small>
           </div>
         </div>
         <small *ngFor="let error of serverErrorsFor('company')" class="erp-error-msg block mt-1">{{ error }}</small>

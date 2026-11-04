@@ -70,7 +70,10 @@ export class ModalPreRegisterProviderComponent implements OnInit, OnDestroy {
         this.providersService.showPreRegisterModal = false;
         this.reset();
       },
-      error: () => this.loading.set(false),
+      error: (error) => {
+        if (error?.status === 409 && error?.error?.provider) this.duplicate.set(error.error.provider as Provider);
+        this.loading.set(false);
+      },
       complete: () => this.loading.set(false),
     });
   }

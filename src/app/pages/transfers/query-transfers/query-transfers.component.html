@@ -1,62 +1,31 @@
+<section class="erp-operational-list-panel">
 <div [formGroup]="formReport">
   <div class="card shadow mb-4 icon-box ">
     <div class="card-body">
       <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
         <h3 class="app-u-color-bg-2665c-99da769"><b>CONSULTA DE TRASLADOS</b></h3>
       </div>
-      <p-accordion [activeIndex]="1">
+      <p-accordion [activeIndex]="-1">
         <p-accordionTab header="Filtros">
-          <div class="p-fluid erp-form-grid mb-2">
-            <div class="erp-field w-[100%] px-2 min-w-0">
-              <div class="flex flex-wrap erp-layout-row gap-y-3 mt-1">
-                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                  <div class="flex flex-wrap erp-layout-row gap-y-3">
-                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                      <label class="block mb-1">Tipo Filtrado<span class="text-erp-danger">*</span></label>
-                      <p-dropdown [options]="types_filtrado()" formControlName="filterBy" optionLabel="name"
-                        optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()">
-                      </p-dropdown>
-                    </div>
-                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                      <label class="block mb-1">Fecha<span class="text-erp-danger">*</span>
-                      </label>
-                      <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'" formControlName="dates" view="month"
-                        dateFormat="mm/yy" [readonlyInput]="true" inputId="monthpicker" placeholder="MM/YYYY"
-                        [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true">
-                      </p-calendar>
-                      <p-calendar *ngIf="formReport.get('filterBy')?.value == 'RANGE'" formControlName="dates"
-                        selectionMode="range" dateFormat="dd/mm/yy" [readonlyInput]="true" inputId="range"
-                        placeholder="DD/MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"
-                        [showIcon]="true">
-                      </p-calendar>
-                      <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" formControlName="dates" view="year"
-                        dateFormat="yy" inputId="yearpicker" [showIcon]="true" placeholder="YYYY"
-                        [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
-                      </p-calendar>
-                      <p-calendar *ngIf="formReport.get('filterBy')?.value == 'DAY'" formControlName="dates" inputId="basic"
-                        dateFormat="dd/mm/yy" [showIcon]="true" placeholder="DD/MM/YYYY"
-                        [class.ng-dirty]="validatorsService.inputValid('dates',formReport)">
-                      </p-calendar>
-                      <small *ngIf="validatorsService.inputValid('dates',formReport)" class="p-error block">
-                        {{ validatorsService.inputValidMessage("dates",formReport) }}
-                      </small>
-                    </div>
-                  </div>
-                </div>
-                <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                  <div class="flex flex-wrap erp-layout-row gap-y-3">
-                    <div class="w-[100%] px-2 min-w-0 min-[768px]:w-[50%] w-full">
-                      <label class="block mb-1">Sucursal destino</label>
-                      <p-dropdown [options]="sucursales()" optionLabel="name" optionValue="id" [showClear]="true"
-                        [virtualScrollItemSize]="38" [lazy]="true" formControlName="id_sucursal_received"
-                        placeholder="SELECCIONA SUCURSAL"></p-dropdown>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div class="erp-form-grid cols-3 erp-filter-grid transfer-query-filter-grid">
+            <div class="erp-field min-w-0">
+              <label class="erp-label required">Tipo filtrado</label>
+              <p-dropdown styleClass="w-full" [options]="types_filtrado()" formControlName="filterBy" optionLabel="name" optionValue="code" appendTo="body" (onChange)="onChangeTypesFilter()"></p-dropdown>
+            </div>
+            <div class="erp-field min-w-0">
+              <label class="erp-label required">Fecha</label>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value == 'MONTH'" styleClass="w-full" formControlName="dates" view="month" dateFormat="mm/yy" [readonlyInput]="true" inputId="monthpicker" placeholder="MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true"></p-calendar>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value == 'RANGE'" styleClass="w-full" formControlName="dates" selectionMode="range" dateFormat="dd/mm/yy" [readonlyInput]="true" inputId="range" placeholder="DD/MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)" [showIcon]="true"></p-calendar>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value == 'YEAR'" styleClass="w-full" formControlName="dates" view="year" dateFormat="yy" inputId="yearpicker" [showIcon]="true" placeholder="YYYY" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"></p-calendar>
+              <p-calendar *ngIf="formReport.get('filterBy')?.value == 'DAY'" styleClass="w-full" formControlName="dates" inputId="basic" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="DD/MM/YYYY" [class.ng-dirty]="validatorsService.inputValid('dates',formReport)"></p-calendar>
+              <small *ngIf="validatorsService.inputValid('dates',formReport)" class="erp-error-msg">{{ validatorsService.inputValidMessage("dates",formReport) }}</small>
+            </div>
+            <div class="erp-field min-w-0">
+              <label class="erp-label">Sucursal destino</label>
+              <p-dropdown styleClass="w-full" [options]="sucursales()" optionLabel="name" optionValue="id" [showClear]="true" [virtualScrollItemSize]="38" [lazy]="true" formControlName="id_sucursal_received" placeholder="Todas las sucursales" appendTo="body"></p-dropdown>
             </div>
           </div>
-          <div class="text-right">
+          <div class="erp-filter-actions">
             <p-button (click)="!loading() ? this.getAllAndSearchTransfers(1,rows()) : null"
               styleClass="p-button-rounded p-button-sm" label="Buscar" icon="fa-solid fa-magnifying-glass"
               [loading]="loading()"></p-button>
@@ -78,7 +47,8 @@
       [activeItem]="searchItems()[0]"></p-tabMenu>
   </div>
 </div>
-<app-table responsiveStrategy="scroll" [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
+<app-table class="erp-filter-table-aligned" responsiveStrategy="scroll" [cols]="cols()" [searchFor]="searchFor()" (rows$)="paginate($event)" (search$)="search($event)"
   [data]="transfers()" [loading]="loading()"  (customSort$)="customSort($event)">
 </app-table>
+</section>
 <app-modal-view-details-transfer></app-modal-view-details-transfer>

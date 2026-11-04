@@ -1,10 +1,11 @@
+<section class="erp-operational-list-panel kardex-fisico-workspace" [class.kardex-fisico-workspace--summary]="activeView() === PHYSICAL_SUMMARY">
 <form [formGroup]="formReport">
   <div class="card shadow mb-4 icon-box kardex-fisico-filter-card">
     <div class="card-body">
       <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
         <h3 class="app-u-color-bg-2665c-99da769"><b>{{ title() }}</b></h3>
       </div>
-      <p-accordion [activeIndex]="1" styleClass="kardex-stock-filter-accordion">
+      <p-accordion [activeIndex]="-1" styleClass="kardex-stock-filter-accordion">
         <p-accordionTab header="Filtros">
           <div class="p-fluid kardex-filters">
 
@@ -87,7 +88,9 @@
                   [ngModelOptions]="{standalone: true}"
                   (onChange)="onCategoryChange($event.value)" optionLabel="name" optionValue="id"
                   placeholder="Seleccione categorías..." appendTo="body" [filter]="true"
-                  filterBy="name" [loading]="loadingCategories()" [showClear]="true" display="chip" class="app-u-width-100-0466783">
+                  filterBy="name" [loading]="loadingCategories()" [showClear]="true" display="chip"
+                  [scrollHeight]="'520px'" [panelStyle]="{'min-width':'min(420px, 90vw)'}"
+                  class="app-u-width-100-0466783">
                 </p-multiSelect>
               </div>
 
@@ -102,7 +105,7 @@
 
                       placeholder="Busque un producto aquí..."
                       appendTo="body" optionLabel="name" optionValue="id"
-                      [scrollHeight]="'450px'" [panelStyle]="{'max-height': '500px', 'min-width': '450px'}" class="app-u-width-100-0466783">
+                      [scrollHeight]="'450px'" [panelStyle]="{'max-height': '500px', 'min-width': 'min(450px, 90vw)'}" class="app-u-width-100-0466783">
 
                       <ng-template pTemplate="selectedItem" let-product>
                         <div *ngIf="product" class="flex items-center gap-2">
@@ -183,10 +186,12 @@
         </p-accordionTab>
       </p-accordion>
     </div>
-    <p-tabMenu [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
-      [activeItem]="activeSearchItem()"></p-tabMenu>
   </div>
 </form>
+
+<p-tabMenu class="kardex-fisico-view-tabs"
+  [model]="searchItems()" [styleClass]="loading() ? 'p-disabled' : ''"
+  [activeItem]="activeSearchItem()"></p-tabMenu>
 
 <div *ngIf="isAllProductsRoute() && activeView() === ALL_HISTORY" class="alert alert-info py-2 mb-2" role="note">
   <i class="fa-solid fa-circle-info mr-2"></i>
@@ -264,7 +269,7 @@
     (onPageChange)="historyPageChange($event)"></p-paginator>
 </section>
 
-<app-table *ngIf="activeView() === PHYSICAL_SUMMARY" responsiveStrategy="scroll" [cols]="cols()" (customSort$)="customSort($event)"
+<app-table *ngIf="activeView() === PHYSICAL_SUMMARY" class="erp-filter-table-aligned kardex-physical-summary" responsiveStrategy="scroll" [cols]="cols()" (customSort$)="customSort($event)"
   [sortOrder]="'ASC'" [sortField]="'product.cod'" [includeSearch]="false" (rows$)="paginate($event)"
   (search$)="search($event)" [data]="kardexes()" [groupRowsBy]="'product.category.name'" [loading]="loading()">
   <tr *ngIf="activeView() === PHYSICAL_SUMMARY">
@@ -272,3 +277,5 @@
     <th colspan="3" class="text-white text-center background-primary">FÍSICO</th>
   </tr>
 </app-table>
+</section>
+

@@ -204,6 +204,31 @@
   }
 }
 
+.top-badges--sales .badge-code {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.sales-catalog-header .erp-counter-chip,
+.erp-items-header .sales-counter-chip {
+  border-color: var(--color-success);
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.badge-subtle-stock.sales-stock-badge {
+  border-color: var(--color-success) !important;
+  background: var(--color-success-light) !important;
+  color: var(--color-success) !important;
+}
+
+.badge-subtle-stock.sales-stock-badge.stock-empty {
+  border-color: var(--color-danger) !important;
+  background: var(--color-danger-light) !important;
+  color: var(--color-danger) !important;
+}
+
 /* =====================================================
    OVERLAY CON BOTÓN ABRIR
    ===================================================== */

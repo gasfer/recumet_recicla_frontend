@@ -99,6 +99,8 @@
 .nav-link-item-1:hover .nav-item-icon, .nav-link-item-2:hover .nav-item-icon { color: currentColor; }
 .nav-sub-list-2 { margin: .2rem 0 .3rem .75rem; padding-left: .35rem; border-left: 2px solid var(--sidebar-border); }
 .nav-link-item-2 { padding: .4rem; font-size: .74rem; }
+.menu-only-item { opacity: .72; cursor: default; }
+.menu-only-item .menu-only-hint { margin-left: auto; color: var(--color-text-muted); font-size: .62rem; white-space: nowrap; }
 .sub-toggle-chevron { margin-left: auto; font-size: .65rem; transition: transform 240ms ease; }
 .sub-toggle-chevron.is-open { transform: rotate(180deg); }
 .sidebar-footer-status { display: flex; align-items: center; justify-content: space-between; gap: .4rem; flex-shrink: 0; padding: .65rem .6rem; border-top: 1px solid var(--sidebar-border); background: var(--sidebar-bg); color: var(--sidebar-muted); font-size: .65rem; }
@@ -108,7 +110,8 @@
 .compact-label { display: none; }
 .sidebar-notification-badge { background: var(--color-danger-light); color: var(--color-danger-text); border: 1px solid var(--color-danger-border); border-radius: 99px; font-size: .65rem; padding: .05rem .25rem; }
 .is-condensed {
-  .sidebar-brand-wrapper { flex-direction: column; padding: .5rem .25rem; }
+  .sidebar-brand-wrapper { position: relative; flex-direction: column; padding: .5rem .25rem; gap: .4rem; }
+  .sidebar-toggle { width: 34px; height: 34px; flex: 0 0 34px; z-index: 2; }
   .brand-text-col, .group-title-text, .group-chevron-icon { display: none; }
   .sidebar-groups-wrapper { padding-inline: .25rem; }
   .group-accordion-card { border-color: transparent; background: transparent; }

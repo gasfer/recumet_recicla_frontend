@@ -8,6 +8,7 @@ import { Observable, timeout } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PurchaseTraceabilityApiService } from 'src/app/core/services/purchase-traceability-api.service';
 import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
+import { ValidatorsService } from 'src/app/services/validators.service';
 const base_url = environment.base_url;
 
 @Injectable({
@@ -16,6 +17,7 @@ const base_url = environment.base_url;
 export class InputsService {
   private traceabilityApi = inject(PurchaseTraceabilityApiService);
   private pdfActions = inject(PdfDocumentActionsService);
+  private validatorsService = inject(ValidatorsService);
   createMutationKey(): string {
     return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
   }
@@ -270,7 +272,7 @@ getPurchaseReportPdf(params: FormSearchInputs, field_sort: string = 'date_vouche
   //* IMPRIMIR BOLETA
   getPrintVoucherInput(id_input: Number) {
     let format = 'normal';
-    if (this._inputConfig.printRoll) {
+    if (this._inputConfig.printRoll && this.validatorsService.user()?.role === 'OPERADOR_BALANZA') {
       format = 'rollo';
     } else if (this._inputConfig.printHalfPage) {
       format = 'media';

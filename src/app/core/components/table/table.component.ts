@@ -560,6 +560,10 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
     this.rows$.emit({ rows, page: this.page });
   }
 
+  getRowIndex(rowIndex: number): number {
+    return (Number(this.data?.from) || 1) + rowIndex;
+  }
+
   getRowData(rowData: any, colField: any) {
     let valReturn = colField.field.split('.').reduce((o: any, x: any) =>
       (typeof o == 'undefined' || o === null) ? o : o[x], rowData);

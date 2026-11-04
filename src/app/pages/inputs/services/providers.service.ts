@@ -156,10 +156,14 @@ getAllAndSearch(
     return this.http.get<GetAllTypesProvider>(url);
   }
 
-  getProvidersAutocomplete(query: string = '', idSucursal?: number): Observable<{ ok: boolean, providers: Provider[] }> {
+  getProvidersAutocomplete(query: string = ''): Observable<{ ok: boolean, providers: Provider[] }> {
     let params = new HttpParams().set('query', query);
-    if (idSucursal) params = params.set('id_sucursal', String(idSucursal));
     return this.http.get<{ ok: boolean, providers: Provider[] }>(`${base_url}/provider/autocomplete`, { params });
+  }
+
+  getAvailableProvidersForPurchase(query: string, idSucursal: number): Observable<{ ok: boolean, providers: Provider[] }> {
+    const params = new HttpParams().set('query', query).set('id_sucursal', String(idSucursal));
+    return this.http.get<{ ok: boolean, providers: Provider[] }>(`${base_url}/provider/purchase-autocomplete`, { params });
   }
 
   preRegister(form: { full_names: string | null; number_document?: string | null; cellphone?: string | null; id_sucursal: number }) {

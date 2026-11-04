@@ -87,7 +87,7 @@ export class AdmCajaComponent implements OnInit, OnDestroy {
     {
       label: 'Ingresos',
       icon: 'fa-solid fa-cash-register',
-      iconStyle: { 'color': '#1e7e4e' },
+      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => this.movementsTable.set({ data: this.ingresos()! })
     },
     {
@@ -125,7 +125,7 @@ export class AdmCajaComponent implements OnInit, OnDestroy {
     {
       label: 'Cerrar Caja',
       icon: 'fa-solid fa-shop-lock',
-      iconStyle: { 'color': '#1e7e4e' },
+      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => {
         this.cajaService.showModalOpenCaja = true;
         this.cajaService.type_event = 'CLOSE_CAJA';
@@ -146,7 +146,7 @@ export class AdmCajaComponent implements OnInit, OnDestroy {
     {
       label: 'Nuevo Ingreso',
       icon: 'fa-solid fa-reply',
-      iconStyle: { 'color': '#1e7e4e' },
+      iconStyle: { 'color': 'var(--color-primary)' },
       command: () => {
         this.cajaService.showModalMovementCaja = true;
         this.cajaService.type_movement = 'INGRESO';

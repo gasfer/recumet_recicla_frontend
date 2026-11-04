@@ -21,10 +21,10 @@
         <tr>
             <td class="app-u-min-width-120px-651945a app-u-max-width-200px-a828909">
                 <span class="font-bold text-erp-text block">{{product.name}}</span>
-                <span class="badge-subtle-code mr-1">{{product.cod}}</span>
+                <span class="badge-subtle-code sales-product-code mr-1">{{product.cod}}</span>
                 <small class="text-erp-text-muted">{{product.category?.name}} / {{product.unit?.siglas || product.unit?.name}}</small>
                 <div class="mt-0.5">
-                    <span class="badge-subtle-stock" [class.stock-empty]="product.total_stock === 0">
+                    <span class="badge-subtle-stock sales-product-stock" [class.stock-empty]="product.total_stock === 0">
                         Stock: {{ product.total_stock | number:decimalFormat.digitsInfo }}
                     </span>
                 </div>

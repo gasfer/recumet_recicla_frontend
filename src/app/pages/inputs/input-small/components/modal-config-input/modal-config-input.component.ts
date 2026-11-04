@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { InputsService } from '../../../services/inputs.service';
 import { FormBuilder, UntypedFormGroup } from '@angular/forms';
+import { ValidatorsService } from 'src/app/services/validators.service';
 
 @Component({
   selector: 'app-modal-config-input',
@@ -16,6 +17,7 @@ import { FormBuilder, UntypedFormGroup } from '@angular/forms';
 })
 export class ModalConfigInputComponent implements OnInit {
   inputsService = inject( InputsService );
+  validatorsService = inject(ValidatorsService);
   fb            = inject( FormBuilder );
   formConfig: UntypedFormGroup  = this.fb.group({
     searchForCode: localStorage.getItem('searchForCode') === 'true' ? true : false,
@@ -37,6 +39,10 @@ export class ModalConfigInputComponent implements OnInit {
         this.formConfig.get('printRoll')?.setValue(false, { emitEvent: false });
       }
     });
+  }
+
+  isWeighingOperator(): boolean {
+    return this.validatorsService.user()?.role === 'OPERADOR_BALANZA';
   }
 
   saveConfig(): void {

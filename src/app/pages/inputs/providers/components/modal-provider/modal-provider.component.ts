@@ -934,7 +934,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       field(branch ? 'Nombre de la sede / sucursal' : this.formP.full_names.label, branch ? value.site_name : value.full_names),
       field(this.formP.number_document.label, value.number_document),
       ...(!branch && this.supportsBranches() ? [field('¿Tiene sucursales o presencia en otros departamentos?', value.has_branches), field('Departamentos donde opera', (value.operating_departments || []).map((code: string) => this.departments.find(item => item.code === code)?.name || code).join(', '), true)] : []),
-      ...(!branch && this.supportsBranches() ? [field('Sucursales RECUMET habilitadas', (value.enabled_sucursal_ids || []).map((id: number) => this.availableSucursales().find(item => item.id === Number(id))?.name || `Sucursal ${id}`).join(', '), true)] : []),
+      ...(!branch && this.supportsBranchAvailability() ? [field('Sucursales RECUMET habilitadas', (value.enabled_sucursal_ids || []).map((id: number) => this.availableSucursales().find(item => item.id === Number(id))?.name || `Sucursal ${id}`).join(', '), true)] : []),
       ...(!branch && (this.isTypeA() || this.usesCommercialTerms()) ? [field(this.isTypeA() ? 'Nombre comercial' : 'Nombre comercial / Acopiadora', value.commercial_name, true)] : []),
       ...(!branch && this.isTypeA() ? [field('Tipo de entidad', option(this.entityTypes, value.entity_type)), field('Teléfono(s) empresa', value.corporate_phone), field('Celular corporativo', value.corporate_cellphone), field('Correo electrónico', value.corporate_email), field('Página web', value.website, true)] : []),
     ])];
@@ -1028,6 +1028,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     const code = this.providerForm.get('id_type_provider')?.value?.code;
     return code === 'A' || code === 'B';
   }
+  supportsBranchAvailability() { return true; }
   supportsMultipleContacts() { return true; }
 
   captureCurrentLocation() {
@@ -1199,7 +1200,12 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   private loadSucursalOptions() {
     this.sucursalesService.getAllAndSearch(1, 500, true).subscribe(({ sucursales }) => {
-      const branches = (sucursales?.data || []).filter((branch: any) => branch.status !== false)
+      const currentUser = this.validatorsService.user();
+      const assignedIds = currentUser?.role === 'ADMINISTRADOR'
+        ? null
+        : new Set((currentUser?.assign_sucursales || []).map((item: any) => Number(item.id_sucursal)));
+      const branches = (sucursales?.data || []).filter((branch: any) => branch.status !== false
+        && (!assignedIds || assignedIds.has(Number(branch.id))))
         .map((branch: any) => ({ id: Number(branch.id), name: String(branch.name || `Sucursal ${branch.id}`), city: branch.city }));
       this.availableSucursales.set(branches);
       const current = Number(this.validatorsService.id_sucursal());
@@ -2027,8 +2033,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       control.updateValueAndValidity({ emitEvent: false });
     }
     const enabledBranches = this.providerForm.get('enabled_sucursal_ids');
-    if (this.supportsBranches()) enabledBranches?.setValidators(Validators.required);
-    else enabledBranches?.clearValidators();
+    enabledBranches?.clearValidators();
     enabledBranches?.updateValueAndValidity({ emitEvent: false });
     for (const field of ['id_categories', 'latitude', 'longitude']) {
       const control = this.providerForm.get(field);

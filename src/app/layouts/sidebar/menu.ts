@@ -1,6 +1,6 @@
 import { NAVIGATION_DESTINATIONS as R, NavigationDestination } from 'src/app/core/constants/application-navigation.constants';
 import { MenuItem } from './menu.model';
-const l=(id:number,label:string,r:NavigationDestination):MenuItem=>({id,label,icon:'fa-solid fa-angle-right',link:r.path,name:r.permission?.name,action:r.permission?.action});
+const l=(id:number,label:string,r:NavigationDestination):MenuItem=>({id,label,icon:'fa-solid fa-angle-right',link:r.menuOnly ? undefined : r.path,menuOnly:r.menuOnly,name:r.permission?.name,action:r.permission?.action});
 const g=(id:number,label:string,icon:string,subItems:MenuItem[]):MenuItem=>({id,label,icon,subItems}); const t=(id:number,label:string):MenuItem=>({id,label,isTitle:true});
 export const MENU: MenuItem[]=[
 {...l(2,'Dashboard',R.dashboard),icon:'fa-solid fa-chart-simple',isLayout:true},

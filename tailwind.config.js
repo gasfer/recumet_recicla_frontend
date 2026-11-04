@@ -29,7 +29,7 @@ module.exports = {
         violet: semanticScale('color-accent-violet-rgb', 'color-accent-violet-text'),
         purple: semanticScale('color-accent-violet-rgb', 'color-accent-violet-text'),
         indigo: semanticScale('color-accent-violet-rgb', 'color-accent-violet-text'),
-        teal: semanticScale('color-accent-teal-rgb', 'color-accent-teal-text'),
+        teal: semanticScale('color-primary-rgb', 'color-success-text'),
         cyan: semanticScale('color-accent-cyan-rgb', 'color-accent-cyan-text'),
         orange: semanticScale('color-accent-orange-rgb', 'color-accent-orange-text'),
         'erp-header': 'var(--color-header-modal)',

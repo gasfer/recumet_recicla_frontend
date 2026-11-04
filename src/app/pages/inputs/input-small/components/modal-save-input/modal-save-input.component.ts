@@ -29,6 +29,8 @@ import {
 import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 import { RegistryNumberApiService } from 'src/app/core/services/registry-number-api.service';
 import { registryNumberAvailabilityValidator } from 'src/app/core/validators/registry-number-availability.validator';
+import { filter, take } from 'rxjs';
+import { normalizePurchasePaymentData, resetPaymentFieldsForCondition } from '../../../utils/purchase-payment.util';
 
 @Component({
   selector: 'app-modal-save-input',
@@ -51,6 +53,7 @@ export class ModalSaveInputComponent implements OnInit {
   private authorizersLoaded = false;
   private serverRequiresAuthorization = false;
   private pendingCreateSubmission: { signature: string; key: string } | null = null;
+  private waitingForPurchaseValidation = false;
   private pendingUpdateSubmission: { signature: string; key: string } | null = null;
   private editRegistrySnapshot: { type: string; number: string | null } | null = null;
   authorizers = signal<{ id: number; label: string }[]>([]);
@@ -123,6 +126,12 @@ export class ModalSaveInputComponent implements OnInit {
     this.getAllScalas();
     this.getAllBanks();
     this.onOldCustomerChange();
+    this.formInput.get('pay_to_credit')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.onPaymentConditionChange());
+    this.formInput.get('on_account')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.updatePaymentValidators());
     this.formInput.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
@@ -133,6 +142,7 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   saveInput() {
+    if (this.loading()) return;
     if (this.pendingVoucherUpload) {
       this.uploadPendingVoucher();
       return;
@@ -155,9 +165,23 @@ export class ModalSaveInputComponent implements OnInit {
       id_storage: this.id_storage,
     });
 
-    this.formInput.markAllAsTouched();
-    if (!this.formInput.valid) return;
     this.updatePurchaseAmountValidators();
+    this.updatePaymentValidators();
+    this.formInput.markAllAsTouched();
+    if (this.formInput.pending) {
+      if (!this.waitingForPurchaseValidation) {
+        this.waitingForPurchaseValidation = true;
+        this.formInput.statusChanges.pipe(
+          filter(status => status !== 'PENDING'),
+          take(1),
+          takeUntilDestroyed(this.destroyRef),
+        ).subscribe(() => {
+          this.waitingForPurchaseValidation = false;
+          this.saveInput();
+        });
+      }
+      return;
+    }
     if (!this.formInput.valid) return;
 
     this.loading.set(true);
@@ -172,7 +196,7 @@ export class ModalSaveInputComponent implements OnInit {
     }));
 
     // ✅ Usar getRawValue() para incluir campos deshabilitados
-    const inputData = { ...this.formInput.getRawValue() };
+    const inputData = normalizePurchasePaymentData({ ...this.formInput.getRawValue() });
 
     // ✅ Solo eliminar registry_number si es SIN FICHA (el backend lo genera)
     if (inputData.type_registry === 'SIN FICHA') {
@@ -232,6 +256,7 @@ export class ModalSaveInputComponent implements OnInit {
   }
 
   editInput() {
+    if (this.loading()) return;
     if (this.pendingVoucherUpload) {
       this.uploadPendingVoucher();
       return;
@@ -279,7 +304,7 @@ export class ModalSaveInputComponent implements OnInit {
       id_product: prod.id,
       status: 'ACTIVE',
     }));
-    const inputData = { ...this.formInput.getRawValue() };
+    const inputData = normalizePurchasePaymentData({ ...this.formInput.getRawValue() });
     if (inputData.type_registry === 'SIN FICHA') {
       delete inputData.registry_number;
     }
@@ -395,9 +420,21 @@ export class ModalSaveInputComponent implements OnInit {
     this.updatePaymentValidators();
   }
 
+  private onPaymentConditionChange(): void {
+    this.formInput.patchValue(resetPaymentFieldsForCondition(), { emitEvent: false });
+    this.voucherFile = undefined;
+    this.updatePurchaseAmountValidators();
+    this.updatePaymentValidators();
+  }
+
+  shouldCollectPaymentDetails(): boolean {
+    return !this.formInput.get('pay_to_credit')?.value || Number(this.formInput.get('on_account')?.value || 0) > 0;
+  }
+
   updatePaymentValidators() {
     const type_pay = this.formInput.get('type_payment')?.value;
-    if (type_pay != 'EFECTIVO') {
+    const collectPaymentDetails = this.shouldCollectPaymentDetails();
+    if (collectPaymentDetails && type_pay != 'EFECTIVO') {
       this.formInput.get('account_input')?.setValidators([Validators.required]);
       this.formInput.get('id_bank')?.setValidators([Validators.required]);
     } else {
@@ -405,7 +442,7 @@ export class ModalSaveInputComponent implements OnInit {
       this.formInput.get('id_bank')?.clearValidators();
     }
 
-    if (type_pay == 'TRANSFERENCIA' || type_pay == 'QR') {
+    if (collectPaymentDetails && (type_pay == 'TRANSFERENCIA' || type_pay == 'QR')) {
       this.formInput.get('number_transaction')?.setValidators([Validators.required]);
     } else {
       this.formInput.get('number_transaction')?.clearValidators();
@@ -451,7 +488,13 @@ export class ModalSaveInputComponent implements OnInit {
     const subtotal = Number(this.formInput.get('sumas')?.value || 0);
     const total = Number(this.formInput.get('total')?.value || 0);
     this.formInput.get('discount')?.setValidators([Validators.required, Validators.min(0), Validators.max(subtotal)]);
-    this.formInput.get('on_account')?.setValidators([Validators.required, Validators.min(0), Validators.max(total)]);
+    const onAccount = this.formInput.get('on_account');
+    if (this.formInput.get('pay_to_credit')?.value) {
+      onAccount?.setValidators([Validators.required, Validators.min(0), Validators.max(total)]);
+    } else {
+      onAccount?.clearValidators();
+      onAccount?.setValue(0, { emitEvent: false });
+    }
     this.formInput.get('discount')?.updateValueAndValidity({ emitEvent: false });
     this.formInput.get('on_account')?.updateValueAndValidity({ emitEvent: false });
   }
@@ -520,11 +563,12 @@ export class ModalSaveInputComponent implements OnInit {
         referral_sources: input_edit?.referral_sources,
         old_customer: input_edit?.old_customer,
         with_pickup: input_edit?.with_pickup,
-      });
+      }, { emitEvent: false });
       //this.setStoragesBySucursal(input_edit?.id_storage);
       this.onChangeDescuento();
       this.onOldCustomerChange();
       this.updatePaymentValidators();
+      this.updatePurchaseAmountValidators();
     }
     this.selectTypeRegistry();
     this.policyRefreshEnabled = true;

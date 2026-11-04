@@ -106,6 +106,12 @@
   overflow: visible;
 }
 
+.sales-counter-chip {
+  border-color: var(--color-success);
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
 @media (max-width: 1199px) {
   .sales-workspace--with-catalog {
     grid-template-columns: minmax(0, 1fr);

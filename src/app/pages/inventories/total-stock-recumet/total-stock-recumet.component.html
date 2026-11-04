@@ -2,13 +2,14 @@
   [fullscreen]="true" [customClass]="exporting() ? 'recumet-loader--export-overlay' : ''"
   [text]="exporting() ? 'Generando reporte...' : 'Cargando stock RECUMET...'">
 </app-loading>
+<section class="erp-operational-list-panel stock-total-workspace">
 <form [formGroup]="formReport">
   <div class="card shadow mb-4 icon-box stock-total-filter-card">
     <div class="card-body">
       <div class="flex flex-wrap erp-layout-row gap-y-3 text-center">
         <h3 class="app-u-color-bg-2665c-99da769"><b>{{ title() }}</b></h3>
       </div>
-      <p-accordion [activeIndex]="0" styleClass="stock-filter-accordion">
+      <p-accordion [activeIndex]="-1" styleClass="stock-filter-accordion">
         <p-accordionTab header="Filtros">
           <div class="p-fluid stock-filters">
             <div class="flex flex-wrap erp-layout-row gap-y-3">
@@ -163,12 +164,12 @@
   </div>
 </form>
 
-<app-table responsiveStrategy="scroll" [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.cod'"
+<app-table class="erp-filter-table-aligned stock-total-table" responsiveStrategy="scroll" [cols]="cols()" (customSort$)="customSort($event)" [sortOrder]="'ASC'" [sortField]="'product.cod'"
   [includeSearch]="true" [searchFor]="[{name: 'Código o Detalle', code: 'query'}]" (rows$)="paginate($event)"
   (search$)="search($event)" [data]="kardexes()" [groupRowsBy]="'product.category.name'" [loading]="loading()">
 </app-table>
 
-<div class="card shadow border-0 mt-4 overflow-hidden animate__animated animate__fadeIn app-u-border-radius-12px-cc1df68 app-u-background-ffffff-60b34d4"
+<div class="card shadow border-0 mt-2 overflow-hidden animate__animated animate__fadeIn stock-branch-totals app-u-border-radius-12px-cc1df68 app-u-background-ffffff-60b34d4"
   *ngIf="kardexes()?.sucursalTotals && !loading()">
   <div class="table-responsive">
     <table class="table m-0 align-middle app-table-scroll app-u-font-size-0-95rem-b28f1d0 app-u-border-collapse-collapse-454826f" tabindex="0" aria-label="Tabla con desplazamiento horizontal">
@@ -228,3 +229,5 @@
     </table>
   </div>
 </div>
+</section>
+

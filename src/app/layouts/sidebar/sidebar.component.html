@@ -98,6 +98,12 @@
                   {{ item.badge.text | translate }}
                 </span>
               </a>
+              <span *ngIf="!hasItems(item) && item.menuOnly" class="nav-link-item-1 menu-only-item" aria-disabled="true"
+                [attr.title]="item.label + ' — disponible próximamente'">
+                <i [class]="getItemIcon(item)" class="nav-item-icon" aria-hidden="true"></i>
+                <span class="nav-item-label">{{ item.label ?? '' | translate }}</span>
+                <small class="menu-only-hint">Próximamente</small>
+              </span>
 
               <!-- Ítem Nivel 1 con Submenú (Menu 1 Padre) -->
               <div *ngIf="hasItems(item)" class="nav-sub-wrapper">
@@ -121,6 +127,7 @@
                 <ul [id]="'sidebar-submenu-' + item.id" class="nav-sub-list-2" *ngIf="isSubItemExpanded(item)">
                   <li *ngFor="let subitem of item.subItems; trackBy: trackBySubItem">
                     <a
+                      *ngIf="subitem.link"
                       [routerLink]="subitem.link"
                       routerLinkActive="active"
                       [routerLinkActiveOptions]="{ exact: false }"
@@ -132,6 +139,12 @@
                         {{ subitem.badge.text | translate }}
                       </span>
                     </a>
+                    <span *ngIf="subitem.menuOnly" class="nav-link-item-2 menu-only-item" aria-disabled="true"
+                      [attr.title]="subitem.label + ' — disponible próximamente'">
+                      <span class="sub-bullet-symbol">›</span>
+                      <span class="sub-label-text">{{ subitem.label ?? '' | translate }}</span>
+                      <small class="menu-only-hint">Próximamente</small>
+                    </span>
                   </li>
                 </ul>
               </div>

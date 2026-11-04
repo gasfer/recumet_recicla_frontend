@@ -1,7 +1,18 @@
 <div class="pagetitle">
     <nav>
         <ol class="breadcrumb">
-            <li *ngFor="let item of breadcrumbs" [class]="item.active ? 'breadcrumb-item text-black' : 'breadcrumb-item active' ">{{item.title}}</li>
+            <li *ngFor="let item of breadcrumbs" class="breadcrumb-item" [class.active]="item.active">
+                <a
+                    *ngIf="item.link && !item.active; else breadcrumbText"
+                    class="breadcrumb-link"
+                    [routerLink]="item.link"
+                    [attr.aria-label]="'Ir a ' + item.title">
+                    {{item.title}}
+                </a>
+                <ng-template #breadcrumbText>
+                    <span [attr.aria-current]="item.active ? 'page' : null">{{item.title}}</span>
+                </ng-template>
+            </li>
         </ol>
     </nav>
 </div>

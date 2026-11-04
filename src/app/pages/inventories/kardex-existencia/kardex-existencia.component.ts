@@ -17,6 +17,8 @@ import { OutputService } from '../../outputs/services/output.service';
 import { ClassifiedService } from '../../classifieds/services/classified.service';
 import { TransfersService } from '../../transfers/services/transfers.service';
 import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-actions.service';
+import { Observable } from 'rxjs';
+import { downloadBlobFile } from 'src/app/core/helpers/download-blob-file';
 
 @Component({
   selector: 'app-kardex-existencia',
@@ -27,6 +29,91 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
       border: none;
       border-radius: 15px;
       box-shadow: var(--shadow-md);
+    }
+
+    .kardex-detail-workspace {
+      margin-bottom: var(--spacing-xl);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kardex-detail-filter-card {
+      margin: 0 !important;
+      border: 0 !important;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .kardex-detail-filter-card .card-body { padding: var(--spacing-lg); }
+
+    :host ::ng-deep .kardex-detail-view-tabs {
+      margin: 0;
+      border-top: 1px solid var(--color-border-subtle);
+      border-bottom: 1px solid var(--color-border);
+      background: color-mix(in srgb, var(--color-primary) 4%, var(--color-surface));
+    }
+
+    :host ::ng-deep .kardex-detail-view-tabs .p-tabmenu-nav {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .kardex-detail-table { display: block; padding: 0 var(--spacing-sm) var(--spacing-sm); }
+
+    :host ::ng-deep app-table.kardex-detail-table .p-datatable-thead > tr > th {
+      border-color: var(--color-primary) !important;
+      background: var(--color-primary) !important;
+      color: var(--color-primary-on) !important;
+      font-weight: 700;
+    }
+
+    :host ::ng-deep app-table.kardex-detail-table .p-datatable-tbody > tr > td {
+      border-color: var(--color-border-subtle) !important;
+      background: var(--color-surface) !important;
+      color: var(--color-text);
+      transition: background-color var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    :host ::ng-deep app-table.kardex-detail-table .p-datatable-tbody > tr:nth-child(even) > td {
+      background: color-mix(in srgb, var(--color-primary) 2.5%, var(--color-surface)) !important;
+    }
+
+    :host ::ng-deep app-table.kardex-detail-table .p-datatable-tbody > tr:hover > td {
+      border-color: color-mix(in srgb, var(--color-primary) 22%, var(--color-border)) !important;
+      background: var(--color-surface-hover) !important;
+    }
+
+    :host ::ng-deep app-table.kardex-detail-table .p-datatable-tbody .badge.text-primary {
+      border: 1px solid var(--color-success-border) !important;
+      border-radius: var(--radius-md) !important;
+      background: var(--color-success-light) !important;
+      color: var(--color-success-text) !important;
+      font-weight: 700;
+      transition: background-color var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    :host ::ng-deep app-table.kardex-detail-table .p-datatable-tbody .badge.text-primary:hover,
+    :host ::ng-deep app-table.kardex-detail-table .p-datatable-tbody .badge.text-primary:focus-visible {
+      border-color: var(--color-primary) !important;
+      background: color-mix(in srgb, var(--color-primary) 16%, var(--color-surface)) !important;
+      color: var(--color-success-text) !important;
+      outline: 2px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+      outline-offset: 2px;
+    }
+
+    :host ::ng-deep app-table.kardex-detail-table .p-datatable-tfoot > tr > td {
+      border-color: color-mix(in srgb, var(--color-primary) 28%, var(--color-border)) !important;
+      background: color-mix(in srgb, var(--color-primary) 14%, var(--color-surface)) !important;
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+      .kardex-detail-table { padding: 0 0 var(--spacing-sm); }
     }
   `]
 })
@@ -86,11 +173,19 @@ export class KardexExistenciaComponent implements OnInit{
 
   buttonItems: MenuItem[] = [
     {
-      label: 'Excel',
+      label: 'KARDEX DE EXISTENCIAS (PDF)',
+      icon: 'fa-solid fa-file-pdf',
+      iconStyle: { color: 'var(--color-danger)' },
+      command: () => {
+        if (!this.loading()) this.printPdfReport();
+      }
+    },
+    {
+      label: 'KARDEX DE EXISTENCIAS (Excel)',
       icon: 'fa-regular fa-file-excel',
       iconStyle: { 'color': 'var(--color-primary)'},
       command: () => {
-        this.printExcelReport();
+        if (!this.loading()) this.printExcelReport();
       }
     },
   ];
@@ -297,70 +392,102 @@ export class KardexExistenciaComponent implements OnInit{
               label:'',icon:'fas fa-eye',
               tooltip: 'Ver',
               class:'p-button-rounded p-button-success p-button-sm',
-              eventClick: () => {
-                Swal.fire({
-                  title: 'Estamos cargando los datos',
-                  html: 'Un momento, por favor.',
-                  didOpen: () => {
-                    console.log(kardex);
-
-                    Swal.showLoading();
-                    new Promise((resolve, reject) => {
-                      switch (kardex.type_movement) {
-                        case 'INPUT':
-                            this.inputsService.getInputById(kardex.id_movement).subscribe({
-                              next: (resp) => {
-                                this.inputsService.detailsSubs$.next(resp.input);
-                                this.inputsService.showModalDetailsInput = true;
-                                Swal.close();
-                              },
-                              error: (err) => Swal.close()
-                            })
-                          break;
-                        case 'OUTPUT':
-                          this.outputService.getOutputById(kardex.id_movement).subscribe({
-                            next: (resp) => {
-                              this.outputService.detailsSubs$.next(resp.output);
-                              this.outputService.showModalDetailsInput = true;
-                              Swal.close();
-                            },
-                            error: (err) => Swal.close()
-                          });
-                          break;
-                        case 'CLASIFIED':
-                          this.classifiedService.getClassifiedById(kardex.id_movement).subscribe({
-                            next: (resp) => {
-                              this.classifiedService.detailsSubs$.next(resp.classified);
-                              this.classifiedService.showModalDetailsClassified = true;
-                              Swal.close();
-                            },
-                            error: (err) => Swal.close()
-                          });
-                          break;
-                        case 'TRANSFER':
-                          this.transfersService.getTransferById(kardex.id_movement).subscribe({
-                            next: (resp) => {
-                              this.transfersService.detailsSubs$.next(resp.transfer);
-                              this.transfersService.showModalDetailsTransfer = true;
-                              Swal.close();
-                            },
-                            error: (err) => Swal.close()
-                          });
-                          break;
-                        default:
-                          break;
-                      }
-                    });
-                  },
-                });
-
-              }
+              eventClick: () => this.openKardexMovement(kardex),
             }
           ]
         });
       },
       complete: () =>  this.loading.set(false),
       error: () => this.loading.set(false)
+    });
+  }
+
+  private openKardexMovement(kardex: Kardex): void {
+    switch (kardex.type_movement) {
+      case 'INPUT':
+        this.loadMovementDocument(this.inputsService.getInputById(kardex.id_movement), ({ input }) => {
+          this.inputsService.detailsSubs$.next(input);
+          this.inputsService.showModalDetailsInput = true;
+        });
+        return;
+      case 'OUTPUT':
+        this.loadMovementDocument(this.outputService.getOutputById(kardex.id_movement), ({ output }) => {
+          this.outputService.detailsSubs$.next(output);
+          this.outputService.showModalDetailsInput = true;
+        });
+        return;
+      case 'CLASIFIED':
+        this.loadMovementDocument(this.classifiedService.getClassifiedById(kardex.id_movement), ({ classified }) => {
+          this.classifiedService.detailsSubs$.next(classified);
+          this.classifiedService.showModalDetailsClassified = true;
+        });
+        return;
+      case 'TRANSFER':
+        this.openTransferDocument(kardex.id_movement);
+        return;
+      case 'KMOVEMENT': {
+        const transferId = this.getSourceTransferId(kardex);
+        if (transferId) {
+          this.openTransferDocument(transferId);
+          return;
+        }
+        void Swal.fire({
+          icon: 'info',
+          title: 'Movimiento de Kardex',
+          text: `Este movimiento no tiene una boleta asociada. Registro: ${kardex.registry_number || 'sin número'}.`,
+          confirmButtonText: 'Cerrar',
+        });
+        return;
+      }
+      default:
+        void Swal.fire({
+          icon: 'info',
+          title: 'Documento no disponible',
+          text: `No se reconoce el tipo de movimiento ${kardex.type_movement || 'sin tipo'}.`,
+          confirmButtonText: 'Cerrar',
+        });
+    }
+  }
+
+  private openTransferDocument(transferId: string | number): void {
+    this.loadMovementDocument(this.transfersService.getTransferById(String(transferId)), ({ transfer }) => {
+      this.transfersService.detailsSubs$.next(transfer);
+      this.transfersService.showModalDetailsTransfer = true;
+    });
+  }
+
+  private getSourceTransferId(kardex: Kardex): string | null {
+    if (kardex.source_transfer_id) return String(kardex.source_transfer_id);
+    const sourceType = kardex.source_type || '';
+    const sourceId = String(kardex.source_id || '');
+    if (['TRANSFER_RECEPTION', 'TRANSFER_RECEPTION_CANCELLATION', 'TRANSFER_CANCELLATION'].includes(sourceType)
+      && /^\d+$/.test(sourceId)) {
+      return sourceId;
+    }
+    const cancelledTransfer = sourceType === 'REVERSAL'
+      ? sourceId.match(/^TRANSFER_(?:CANCELLATION|RECEPTION_CANCELLATION):(\d+)$/)
+      : null;
+    return cancelledTransfer?.[1] || null;
+  }
+
+  private loadMovementDocument<T>(request: Observable<T>, onLoaded: (response: T) => void): void {
+    void Swal.fire({
+      title: 'Estamos cargando los datos',
+      html: 'Un momento, por favor.',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+    });
+    request.subscribe({
+      next: (response) => {
+        Swal.close();
+        onLoaded(response);
+      },
+      error: (error) => {
+        Swal.close();
+        const message = error?.error?.errors?.[0]?.msg || 'No se pudo abrir el comprobante del movimiento.';
+        void Swal.fire({ icon: 'error', title: 'No se pudo abrir la boleta', text: message, confirmButtonText: 'Cerrar' });
+      },
     });
   }
 
@@ -503,7 +630,7 @@ export class KardexExistenciaComponent implements OnInit{
         new Promise((resolve, reject) => {
           this.pdfActions.prepareRequest(this.kardexService.getReportPdfExistencia(this.paramsSearch(),this.fieldSort(),this.order())).subscribe({
             next: (data) => {
-              this.pdfActions.show(data, 'reporte_existencias.pdf', 'Reporte de existencias');
+              this.pdfActions.show(data, 'kardex-de-existencias.pdf', 'Kardex de existencias');
               Swal.close();
             },
             error: (err) => {
@@ -538,8 +665,7 @@ export class KardexExistenciaComponent implements OnInit{
         new Promise((resolve, reject) => {
           this.kardexService.getReportExcelExistencia(this.paramsSearch(),this.fieldSort(),this.order()).subscribe({
             next: (data) => {
-              const fileURL = window.URL.createObjectURL(data);
-              window.open(fileURL);
+              downloadBlobFile(data, 'KARDEX DE EXISTENCIAS.xlsx');
               Swal.close();
             },
             error: (err) => {

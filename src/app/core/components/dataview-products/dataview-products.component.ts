@@ -32,6 +32,7 @@ export class DataviewProductsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() categoryType : string = '';
   @Input() productContext: ProductAccessContext | '' = '';
   @Input() prominentProductCode: boolean = false;
+  @Input() salesPalette: boolean = false;
   products          = signal<Product[]>([]);
   categories        = signal<{name:string,code:string}[]>([]);
   productsService   = inject(ProductsService);
@@ -148,13 +149,17 @@ export class DataviewProductsComponent implements OnInit, OnChanges, OnDestroy {
 
   getAllCategories() {
     this.categories.set([]);
-    this.categoriesService.getAllAndSearch(1,10000,true,'','',this.categoryType,'id','DESC',this.productContext).subscribe(resp => {
-      const formattedCategory = resp.categories.data.map(category => ({
+    const branchId = Number(this.id_sucursal) || undefined;
+    this.categoriesService.getCategorySelect(this.categoryType, this.productContext, branchId).subscribe({
+      next: resp => {
+      const formattedCategory = (resp.categories || []).map((category: { id: number; name: string }) => ({
         name: category.name,
-        code: category.id!.toString()
+        code: String(category.id)
       }));
       this.categories.set(formattedCategory);
-    })
+      },
+      error: () => this.categories.set([]),
+    });
   }
 
   changeSearchProductBy(event: any): void {

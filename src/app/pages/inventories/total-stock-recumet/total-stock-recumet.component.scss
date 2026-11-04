@@ -45,6 +45,21 @@
   border: 1px solid var(--color-border) !important;
   box-shadow: var(--shadow-md) !important;
 }
+.stock-total-workspace {
+  margin-bottom: var(--spacing-xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+:host ::ng-deep .stock-total-workspace .stock-total-filter-card {
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+:host ::ng-deep .stock-total-workspace .stock-total-filter-card .card-body { padding: var(--spacing-lg); }
 :host ::ng-deep .stock-total-filter-card .stock-filter-accordion .p-accordion-tab {
   margin: 0;
   overflow: visible;
@@ -67,3 +82,83 @@
 }
 :host ::ng-deep .card-body { padding: .8rem; }
 :host h3 { font-size: 1.05rem; color: var(--color-text); margin-bottom: .75rem; }
+
+:host ::ng-deep .stock-filters .erp-layout-row { row-gap: .35rem; }
+:host ::ng-deep .stock-filters .erp-layout-row > div { padding-inline: .25rem; }
+:host ::ng-deep .stock-filters label { font-size: .76rem; margin-bottom: .2rem; }
+:host ::ng-deep .stock-filters .p-multiselect-label,
+:host ::ng-deep .stock-filters .p-dropdown-label,
+:host ::ng-deep .stock-filters .p-inputtext { padding: .35rem .55rem; }
+:host ::ng-deep .stock-filters .p-multiselect-token { padding: .08rem .3rem; font-size: .66rem; }
+
+:host ::ng-deep app-table.stock-total-table .p-datatable-thead > tr > th {
+  padding: .42rem .55rem !important;
+  border-color: var(--color-primary) !important;
+  background: var(--color-primary) !important;
+  color: var(--color-primary-on) !important;
+  line-height: 1.2;
+  font-weight: 700;
+}
+:host ::ng-deep app-table.stock-total-table .p-datatable-tbody > tr > td {
+  padding: .38rem .55rem !important;
+  border-color: var(--color-border-subtle) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text);
+  font-size: .82rem;
+  line-height: 1.25;
+  vertical-align: middle;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+:host ::ng-deep app-table.stock-total-table .p-datatable-tbody > tr:nth-child(even) > td {
+  background: color-mix(in srgb, var(--color-primary) 2.5%, var(--color-surface)) !important;
+}
+:host ::ng-deep app-table.stock-total-table .p-datatable-tbody > tr:hover > td {
+  border-color: color-mix(in srgb, var(--color-primary) 22%, var(--color-border)) !important;
+  background: var(--color-surface-hover) !important;
+}
+:host ::ng-deep app-table.stock-total-table .p-datatable-tbody .badge.text-primary {
+  border: 1px solid var(--color-success-border) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--color-success-light) !important;
+  color: var(--color-success-text) !important;
+  font-weight: 700;
+}
+:host ::ng-deep app-table.stock-total-table .p-datatable-tbody .badge.text-primary:hover,
+:host ::ng-deep app-table.stock-total-table .p-datatable-tbody .badge.text-primary:focus-visible {
+  border-color: var(--color-primary) !important;
+  background: color-mix(in srgb, var(--color-primary) 16%, var(--color-surface)) !important;
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+  outline-offset: 2px;
+}
+:host ::ng-deep app-table.stock-total-table .group-header-row > td {
+  padding: .36rem .55rem !important;
+  border-color: var(--color-success-border) !important;
+  background: color-mix(in srgb, var(--color-primary) 7%, var(--color-surface)) !important;
+  color: var(--color-success-text) !important;
+  font-weight: 700;
+}
+:host ::ng-deep app-table.stock-total-table .group-footer-row > td,
+:host ::ng-deep app-table.stock-total-table .app-table-group-total-cell {
+  padding: .38rem .55rem !important;
+  border-top: 1px solid color-mix(in srgb, var(--color-primary) 38%, var(--color-border)) !important;
+  background: color-mix(in srgb, var(--color-primary) 19%, var(--color-surface)) !important;
+  color: var(--color-text) !important;
+  font-weight: 700;
+}
+:host ::ng-deep app-table.stock-total-table .group-footer-row > td:first-child { color: var(--color-success-text) !important; }
+
+.stock-branch-totals { border: 1px solid var(--color-border) !important; border-radius: var(--radius-lg) !important; background: var(--color-surface) !important; }
+.stock-branch-totals .table { color: var(--color-text); }
+.stock-branch-totals .table > :not(caption) > * > * { padding: .4rem .6rem !important; border-color: var(--color-border-subtle) !important; }
+.stock-branch-totals .table thead tr { background: var(--color-primary) !important; color: var(--color-primary-on) !important; }
+.stock-branch-totals .table thead th { background: var(--color-primary) !important; color: var(--color-primary-on) !important; font-size: .74rem; }
+.stock-branch-totals .table tbody tr > * { background: var(--color-surface) !important; color: var(--color-text); transition: background-color var(--transition-fast); }
+.stock-branch-totals .table tbody tr:nth-child(even) > * { background: color-mix(in srgb, var(--color-primary) 2.5%, var(--color-surface)) !important; }
+.stock-branch-totals .table tbody tr:hover > * { background: var(--color-surface-hover) !important; }
+.stock-branch-totals .table tbody tr:last-child > * { padding-block: .42rem !important; background: color-mix(in srgb, var(--color-primary) 19%, var(--color-surface)) !important; color: var(--color-success-text) !important; font-size: .86rem !important; font-weight: 700; }
+.stock-branch-totals .table tbody tr:last-child td div { font-size: .86rem !important; }
+
+@media (max-width: 768px) {
+  .stock-total-workspace { border-radius: var(--radius-md); }
+  :host ::ng-deep .stock-total-workspace .stock-total-filter-card .card-body { padding: var(--spacing-sm); }
+}

@@ -74,57 +74,6 @@
           (onChange)="apply()" styleClass="w-full text-xs" appendTo="body"></p-dropdown>
       </div>
     </section>
-    <!-- 2. Sucursales y Almacenes -->
-    <div class="flex flex-col gap-2 pt-1 border-t border-erp-border">
-      <label class="text-[11px] uppercase font-bold tracking-wider text-erp-success flex items-center gap-1">
-        <i class="fa-solid fa-building text-erp-success"></i> Sucursales y Almacenes
-      </label>
-      <div class="flex flex-col gap-1.5">
-        <div>
-          <span class="text-[11px] text-erp-text-muted block mb-0.5">Sucursales<span class="text-erp-danger">*</span></span>
-          <p-multiSelect formControlName="id_sucursal" [options]="branchOptions" optionLabel="name" optionValue="id"
-            placeholder="Seleccione sucursales..." appendTo="body"
-            [filter]="true" filterBy="name" [showClear]="true" display="chip" styleClass="w-full text-xs"
-            (onChange)="onBranchChange()">
-          </p-multiSelect>
-        </div>
-        <div>
-          <span class="text-[11px] text-erp-text-muted block mb-0.5">Área / Almacén</span>
-          <p-multiSelect formControlName="id_storage" [options]="filteredStorages()" optionLabel="name" optionValue="id"
-            placeholder="Seleccione almacenes..." appendTo="body"
-            [filter]="true" filterBy="name" [showClear]="true" display="chip" styleClass="w-full text-xs"
-            (onChange)="apply()">
-          </p-multiSelect>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. Período Operativo -->
-    <div class="flex flex-col gap-2 pt-1 border-t border-erp-border">
-      <label class="text-[11px] uppercase font-bold tracking-wider text-erp-success flex items-center gap-1">
-        <i class="fa-solid fa-calendar-days text-erp-success"></i> Período Operativo
-      </label>
-      <div class="flex flex-col gap-1.5">
-        <div>
-          <span class="text-[11px] text-erp-text-muted block mb-0.5">Rango temporal</span>
-          <p-dropdown formControlName="date_mode" [options]="modes" optionLabel="label" optionValue="value"
-            (onChange)="dateModeChanged(); apply()" styleClass="w-full text-xs" appendTo="body"></p-dropdown>
-        </div>
-        <div *ngIf="form.get('date_mode')?.value !== 'ALL'" class="flex flex-col gap-2 mt-0.5">
-          <div>
-            <span class="text-[11px] text-erp-text-muted block mb-0.5">{{ form.get('date_mode')?.value === 'RANGE' ? 'Desde' : 'Fecha' }}</span>
-            <input formControlName="date" [type]="form.get('date_mode')?.value === 'MONTH' ? 'month' : form.get('date_mode')?.value === 'YEAR' ? 'number' : 'date'"
-              class="w-full h-8 px-2 text-xs bg-erp-bg border border-erp-border rounded text-erp-text focus:bg-white focus:border-emerald-500 focus:outline-none" />
-          </div>
-          <div *ngIf="form.get('date_mode')?.value === 'RANGE'">
-            <span class="text-[11px] text-erp-text-muted block mb-0.5">Hasta</span>
-            <input formControlName="date_end" type="date"
-              class="w-full h-8 px-2 text-xs bg-erp-bg border border-erp-border rounded text-erp-text focus:bg-white focus:border-emerald-500 focus:outline-none" />
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- 4. Clasificación Material & Ubicación -->
     <div class="flex flex-col gap-2 pt-1 border-t border-erp-border">
       <label class="text-[11px] uppercase font-bold tracking-wider text-erp-success flex items-center gap-1">
@@ -157,13 +106,6 @@
 
 
       </div>
-    </div>
-
-    <div class="flex flex-col gap-1.5 pt-2 border-t border-erp-border">
-      <label for="provider-purchase-activity" class="text-[11px] font-semibold text-erp-text-muted">Compras del período</label>
-      <p-dropdown inputId="provider-purchase-activity" formControlName="activity" [options]="activityOptions"
-        optionLabel="label" optionValue="value" placeholder="Todos"
-        (onChange)="apply()" styleClass="w-full text-xs" appendTo="body"></p-dropdown>
     </div>
 
     <!-- 5. Acción de Filtro -->

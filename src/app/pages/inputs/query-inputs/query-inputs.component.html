@@ -1,5 +1,6 @@
 <app-loading *ngIf="exporting()" [fullscreen]="true" theme="auto" customClass="recumet-loader--export-overlay"
   text="Generando reporte de compras…" [showLine]="false" [showText]="false"></app-loading>
+<section class="erp-operational-list-panel">
 <form [formGroup]="formReport">
   <section class="purchase-management-card" aria-labelledby="purchase-management-title">
     <div class="purchase-management-body">
@@ -7,7 +8,7 @@
         <i class="fa-solid fa-basket-shopping" aria-hidden="true"></i>
         <h3 id="purchase-management-title" class="purchase-management-title">Consulta de compras</h3>
       </div>
-      <p-accordion [activeIndex]="0">
+      <p-accordion [activeIndex]="-1">
         <p-accordionTab><ng-template pTemplate="header"><span class="purchase-filter-heading"><i class="fa-solid fa-filter" aria-hidden="true"></i>Filtros de compras</span></ng-template>
           <div class="purchase-filter-grid">
             <div class="erp-field purchase-filter-field">
@@ -125,7 +126,7 @@
   </section>
 </form>
 
-<app-table responsiveStrategy="scroll"
+<app-table class="erp-filter-table-aligned" responsiveStrategy="scroll"
   [cols]="cols()"
   (customSort$)="customSort($event)"
   [sortField]="'date_voucher'"
@@ -139,4 +140,5 @@
 </app-table>
 
 <app-modal-view-details-input></app-modal-view-details-input>
+</section>
 <app-purchase-traceability-timeline mode="purchase" [data]="traceabilityData()" [visible]="traceabilityVisible()" (visibleChange)="traceabilityVisible.set($event)"></app-purchase-traceability-timeline>

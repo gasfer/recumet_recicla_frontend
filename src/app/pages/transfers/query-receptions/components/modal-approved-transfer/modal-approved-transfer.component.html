@@ -138,7 +138,7 @@
                             </td>
                             <td class="text-center align-middle">
                                 <span [class]="getDiffClass(group)">
-                                    {{ getDiffPercentage(group) | number:'1.2-2' }}%
+                                    {{ getDiffPercentage(group) | number:decimalFormat.digitsInfo }}%
                                 </span>
                             </td>
                         </tr>
@@ -161,7 +161,7 @@
                             </td>
                             <td class="text-center">
                                 <span [class]="getTotalDiffClass()">
-                                    {{ getTotalDiffPercentage() | number:'1.2-2' }}%
+                                    {{ getTotalDiffPercentage() | number:decimalFormat.digitsInfo }}%
                                 </span>
                             </td>
                         </tr>

@@ -10,7 +10,6 @@ import { KardexExistenciaComponent } from './kardex-existencia/kardex-existencia
 import { ListCostsProductComponent } from './list-costs-product/list-costs-product.component';
 import { TotalStockRecumetComponent } from './total-stock-recumet/total-stock-recumet.component';
 import { StockDiagnosticComponent } from './stock-diagnostic/stock-diagnostic.component';
-import { FeatureInDevelopmentComponent } from 'src/app/core/components/feature-in-development/feature-in-development.component';
 import {
   NAVIGATION_DESTINATIONS as NAV,
   childPath,
@@ -18,8 +17,17 @@ import {
 } from 'src/app/core/constants/application-navigation.constants';
 
 const breadcrumb = (section: string, title: string) => [
-  { title: 'Administración' },
-  { title: section },
+  { title: 'Administración', link: NAV.dashboard.path },
+  {
+    title: section,
+    link: section === 'Inventario'
+      ? NAV.allProductKardex.path
+      : section === 'Almacén'
+        ? NAV.products.path
+        : section === 'Activo fijo'
+          ? NAV.fixedAssetSupplies.path
+          : undefined,
+  },
   { title, active: true },
 ];
 
@@ -84,7 +92,11 @@ export const INVENTORY_ROUTES: Routes = [
   {
     path: 'kardex-existencia',
     component: KardexExistenciaComponent,
-    data: { data: breadcrumb('Inventario', 'Kardex de Existencia'), name: 'KARDEX' },
+    data: routeData(
+      { path: '/inventories/kardex-existencia', title: 'Kardex de Existencia' },
+      breadcrumb('Inventario', 'Kardex de Existencia'),
+      { name: 'KARDEX' },
+    ),
   },
   {
     path: 'list-products-prices',
@@ -112,26 +124,6 @@ export const INVENTORY_ROUTES: Routes = [
     data: routeData(NAV.stockDiagnostic, breadcrumb('Inventario', 'Diagnóstico & Trazabilidad de Stock'), {
       title: 'Diagnóstico de Stock',
     }),
-  },
-  {
-    path: childPath(NAV.fixedAssetSupplies, '/inventories'),
-    component: FeatureInDevelopmentComponent,
-    data: routeData(NAV.fixedAssetSupplies, breadcrumb('Activo fijo', NAV.fixedAssetSupplies.title)),
-  },
-  {
-    path: childPath(NAV.fixedAssetMachinery, '/inventories'),
-    component: FeatureInDevelopmentComponent,
-    data: routeData(NAV.fixedAssetMachinery, breadcrumb('Activo fijo', NAV.fixedAssetMachinery.title)),
-  },
-  {
-    path: childPath(NAV.fixedAssetVehicles, '/inventories'),
-    component: FeatureInDevelopmentComponent,
-    data: routeData(NAV.fixedAssetVehicles, breadcrumb('Activo fijo', NAV.fixedAssetVehicles.title)),
-  },
-  {
-    path: childPath(NAV.fixedAssetFurniture, '/inventories'),
-    component: FeatureInDevelopmentComponent,
-    data: routeData(NAV.fixedAssetFurniture, breadcrumb('Activo fijo', NAV.fixedAssetFurniture.title)),
   },
   { path: '**', redirectTo: childPath(NAV.products, '/inventories') },
 ];

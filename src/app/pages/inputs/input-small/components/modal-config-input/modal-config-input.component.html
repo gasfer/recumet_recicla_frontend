@@ -19,7 +19,7 @@
             <p-checkbox [binary]="true" formControlName="printSale" inputId="ImprimirF"></p-checkbox>
             <label class="cursor-pointer m-0" for="ImprimirF">Imprimir al finalizar compra</label>
         </div>
-        <div class="field-checkbox flex items-center gap-2 py-1">
+        <div *ngIf="isWeighingOperator()" class="field-checkbox flex items-center gap-2 py-1">
             <p-checkbox [binary]="true" formControlName="printRoll" inputId="ImprimirR"></p-checkbox>
             <label class="cursor-pointer m-0" for="ImprimirR">Impresión en rollo (Ticket)</label>
         </div>

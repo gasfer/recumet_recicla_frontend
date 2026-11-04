@@ -176,14 +176,11 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges, OnDes
   }
 
   toggleGroup(group: MenuGroup, event?: Event): void {
-    if (this.isCondensed) {
-      this.toggleRequested.emit();
-      group.isOpen = false;
-    }
     const shouldOpen = !group.isOpen;
     for (const candidate of new Set([...this.menuGroups, ...this.filteredGroups])) {
       candidate.isOpen = shouldOpen && candidate.id === group.id;
     }
+    if (this.isCondensed) this.toggleRequested.emit();
   }
 
   toggleSubItem(item: MenuItem, event: Event): void {

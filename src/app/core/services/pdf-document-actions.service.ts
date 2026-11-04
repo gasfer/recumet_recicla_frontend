@@ -144,6 +144,35 @@ export class PdfDocumentActionsService implements OnDestroy {
     });
   }
 
+  async shareToWhatsApp(file: Blob, filename: string, title: string): Promise<void> {
+    const pdf = new File([file], this.sanitizeFilename(filename), { type: 'application/pdf' });
+    this.download(pdf, pdf.name);
+    const choice = await Swal.fire({
+      title: 'Boleta descargada',
+      text: `${pdf.name} está lista para compartir.`,
+      icon: 'success',
+      showCancelButton: true,
+      confirmButtonText: 'Compartir PDF',
+      cancelButtonText: 'Cerrar',
+      confirmButtonColor: 'var(--color-primary)',
+    });
+    if (!choice.isConfirmed) return;
+
+    if (!navigator.share || (navigator.canShare && !navigator.canShare({ files: [pdf] }))) {
+      window.open('https://web.whatsapp.com/', '_blank', 'noopener,noreferrer');
+      await Swal.fire('WhatsApp Web abierto', `El PDF ya está en Descargas. En WhatsApp, selecciona el contacto y adjunta ${pdf.name}.`, 'info');
+      return;
+    }
+    try {
+      await navigator.share({ title, files: [pdf] });
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === 'AbortError')) {
+        window.open('https://web.whatsapp.com/', '_blank', 'noopener,noreferrer');
+        await Swal.fire('WhatsApp Web abierto', `El PDF ya está en Descargas. En WhatsApp, selecciona el contacto y adjunta ${pdf.name}.`, 'info');
+      }
+    }
+  }
+
   ngOnDestroy(): void { for (const id of this.resources.keys()) this.release(id); }
   private release(id: number): void {
     const resource = this.resources.get(id);

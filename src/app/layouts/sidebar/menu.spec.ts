@@ -12,7 +12,6 @@ import { MANAGEMENT_ROUTES } from 'src/app/pages/managements/managements-routing
 import { OUTPUT_ROUTES } from 'src/app/pages/outputs/outputs-routing.module';
 import { PROVIDER_WORKFLOW_ROUTES } from 'src/app/pages/providers/providers-routing.module';
 import { TRANSFER_ROUTES } from 'src/app/pages/transfers/transfers-routing.module';
-import { FeatureInDevelopmentComponent } from 'src/app/core/components/feature-in-development/feature-in-development.component';
 import { BalanzaCamioneraComponent } from 'src/app/pages/balanza/balanza-camionera/balanza-camionera.component';
 import { InputSmallComponent } from 'src/app/pages/inputs/input-small/input-small.component';
 import { MenuItem } from './menu.model';
@@ -89,6 +88,12 @@ describe('Operational menu navigation contract', () => {
     expect(invalid).toEqual([]);
   });
 
+  it('keeps modules without content visible as non-navigable menu entries', () => {
+    const menuOnly = allMenuItems.filter(item => item.menuOnly);
+    expect(menuOnly.length).toBeGreaterThan(0);
+    expect(menuOnly.every(item => !item.link && item.name && item.action)).toBeTrue();
+  });
+
   it('lists commercial provider workflows directly without a provider submenu', () => {
     const commercialStart = MENU.findIndex((item) => item.id === 10);
     const nextSection = MENU.findIndex((item, index) => index > commercialStart && item.isTitle);
@@ -105,26 +110,10 @@ describe('Operational menu navigation contract', () => {
     expect(commercialItems.some((item) => item.label === 'Proveedores' && item.subItems)).toBeFalse();
   });
 
-  it('keeps conceptually different pending functions on different URLs', () => {
-    const pendingPaths = [
-      '/caja/expenses',
-      '/caja/major-transfers',
-      '/assets/inputs/purchase-request',
-      '/assets/inputs/purchase-order',
-      '/assets/inputs/purchase-management',
-      '/assets/outputs/consumables',
-      '/assets/outputs/tools',
-      '/assets/outputs/output-management',
-    ];
-
-    expect(new Set(pendingPaths).size).toBe(pendingPaths.length);
-    expect(pendingPaths.every((path) => routesByPath.has(path))).toBeTrue();
-  });
-
-  it('maps existing and pending destinations to the intended page type', () => {
+  it('maps implemented destinations to their functional page type', () => {
     expect(routesByPath.get('/inputs/input-small')?.component).toBe(InputSmallComponent);
     expect(routesByPath.get('/scale/truck-scale/register')?.component).toBe(BalanzaCamioneraComponent);
-    expect(routesByPath.get('/scale/drivers/register')?.component).toBe(FeatureInDevelopmentComponent);
-    expect(routesByPath.get('/providers/accounts')?.component).toBe(FeatureInDevelopmentComponent);
+    expect(routesByPath.has('/scale/drivers/register')).toBeFalse();
+    expect(routesByPath.has('/providers/accounts')).toBeFalse();
   });
 });

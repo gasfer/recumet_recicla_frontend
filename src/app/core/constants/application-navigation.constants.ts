@@ -11,6 +11,7 @@ export interface NavigationDestination {
   path: `/${string}`;
   title: string;
   permission?: NavigationPermission;
+  menuOnly?: boolean;
 }
 
 const destination = (
@@ -18,9 +19,11 @@ const destination = (
   title: string,
   name?: string,
   action: PermissionAction = 'view',
+  menuOnly = false,
 ): NavigationDestination => ({
   path,
   title,
+  ...(menuOnly ? { menuOnly: true } : {}),
   ...(name ? { permission: { name, action } } : {}),
 });
 
@@ -30,10 +33,10 @@ export const NAVIGATION_DESTINATIONS = {
 
   providers: destination('/inputs/providers', 'Proveedores', 'PROVEEDORES'),
   providerList: destination('/inputs/provider-list', 'Lista de proveedores', 'LISTA PROVEEDORES'),
-  providerPickup: destination('/providers/schedule-pickup', 'Agendar recojo', 'RECOJO', 'create'),
-  providerCertification: destination('/providers/certify', 'Certificar proveedor', 'CERTIFICAR', 'create'),
-  providerAccounts: destination('/providers/accounts', 'Cuentas de proveedor', 'CUENTAS PROVEEDOR'),
-  providerPurchases: destination('/providers/purchases', 'Compras por proveedor', 'COMPRAS PROVEEDOR'),
+  providerPickup: destination('/providers/schedule-pickup', 'Agendar recojo', 'RECOJO', 'create', true),
+  providerCertification: destination('/providers/certify', 'Certificar proveedor', 'CERTIFICAR', 'create', true),
+  providerAccounts: destination('/providers/accounts', 'Cuentas de proveedor', 'CUENTAS PROVEEDOR', 'view', true),
+  providerPurchases: destination('/providers/purchases', 'Compras por proveedor', 'COMPRAS PROVEEDOR', 'view', true),
   commercialReport: destination('/providers/commercial-report', 'Reporte comercial', 'REPORTE COMERCIAL', 'reports'),
   createPurchase: destination('/inputs/input-small', 'Realizar compras', 'COMPRAS', 'create'),
   queryPurchases: destination('/inputs/query-inputs', 'Consultar compras', 'CONSULTAR COMPRAS'),
@@ -47,10 +50,10 @@ export const NAVIGATION_DESTINATIONS = {
   manualScaleQuery: destination('/scale/manual-scale/query', 'Consultar pesajes manuales', 'CONSULTAR PESAJES MANUALES'),
   scaleServiceRegister: destination('/scale/service/register', 'Registrar servicio de balanza', 'REGISTRAR SERVICIO', 'create'),
   scaleServiceQuery: destination('/scale/service/query', 'Consultar servicios de balanza', 'CONSULTAR SERVICIOS'),
-  driverRegister: destination('/scale/drivers/register', 'Registrar transportista', 'REGISTRAR TRANSPORTISTA', 'create'),
-  driverQuery: destination('/scale/drivers/query', 'Consultar transportistas', 'CONSULTAR TRANSPORTISTAS'),
-  truckRegister: destination('/scale/trucks/register', 'Registrar camión', 'REGISTRAR CAMION', 'create'),
-  truckQuery: destination('/scale/trucks/query', 'Consultar camiones', 'CONSULTAR CAMIONES'),
+  driverRegister: destination('/scale/drivers/register', 'Registrar transportista', 'REGISTRAR TRANSPORTISTA', 'create', true),
+  driverQuery: destination('/scale/drivers/query', 'Consultar transportistas', 'CONSULTAR TRANSPORTISTAS', 'view', true),
+  truckRegister: destination('/scale/trucks/register', 'Registrar camión', 'REGISTRAR CAMION', 'create', true),
+  truckQuery: destination('/scale/trucks/query', 'Consultar camiones', 'CONSULTAR CAMIONES', 'view', true),
 
   clients: destination('/outputs/clients', 'Clientes', 'CLIENTES'),
   createSale: destination('/outputs/output', 'Realizar ventas', 'VENTAS', 'create'),
@@ -64,22 +67,22 @@ export const NAVIGATION_DESTINATIONS = {
 
   cashDashboard: destination('/caja/adm-caja', 'Dashboard de caja', 'CAJA', 'create'),
   cashQuery: destination('/caja/query-caja', 'Consultar caja', 'CONSULTAR CAJA'),
-  cashExpenses: destination('/caja/expenses', 'Gestión de gastos', 'GASTOS'),
-  cashMajorTransfers: destination('/caja/major-transfers', 'Transferencias (Mayor)', 'CAJA'),
+  cashExpenses: destination('/caja/expenses', 'Gestión de gastos', 'GASTOS', 'view', true),
+  cashMajorTransfers: destination('/caja/major-transfers', 'Transferencias (Mayor)', 'CAJA', 'view', true),
   financeReport: destination('/caja/finance-report', 'Reporte de finanzas', 'REPORTE FINANZAS', 'reports'),
-  assetPurchaseRequest: destination('/assets/inputs/purchase-request', 'Solicitud de compra', 'GASTOS'),
-  assetPurchaseOrder: destination('/assets/inputs/purchase-order', 'Orden de compra', 'PERSONAL GASTOS', 'create'),
-  assetPurchaseManagement: destination('/assets/inputs/purchase-management', 'Gestión de compra', 'PERSONAL GASTOS', 'create'),
-  assetConsumables: destination('/assets/outputs/consumables', 'Insumos consumibles', 'GASTOS'),
-  assetTools: destination('/assets/outputs/tools', 'Herramientas', 'PERSONAL GASTOS', 'create'),
-  assetOutputManagement: destination('/assets/outputs/output-management', 'Gestión de salidas', 'PERSONAL GASTOS', 'create'),
+  assetPurchaseRequest: destination('/assets/inputs/purchase-request', 'Solicitud de compra', 'GASTOS', 'view', true),
+  assetPurchaseOrder: destination('/assets/inputs/purchase-order', 'Orden de compra', 'PERSONAL GASTOS', 'create', true),
+  assetPurchaseManagement: destination('/assets/inputs/purchase-management', 'Gestión de compra', 'PERSONAL GASTOS', 'create', true),
+  assetConsumables: destination('/assets/outputs/consumables', 'Insumos consumibles', 'GASTOS', 'view', true),
+  assetTools: destination('/assets/outputs/tools', 'Herramientas', 'PERSONAL GASTOS', 'create', true),
+  assetOutputManagement: destination('/assets/outputs/output-management', 'Gestión de salidas', 'PERSONAL GASTOS', 'create', true),
   accountsPayable: destination('/accounts/accounts-payable', 'Cuentas por pagar', 'CUENTAS POR PAGAR'),
   accountsReceivable: destination('/accounts/accounts-receivable', 'Cuentas por cobrar', 'CUENTAS POR COBRAR'),
 
-  fixedAssetSupplies: destination('/inventories/fixed-assets/supplies', 'Insumos y consumibles', 'INSUMOS'),
-  fixedAssetMachinery: destination('/inventories/fixed-assets/machinery', 'Activo fijo - Maquinaria', 'AF MAQUINARIA'),
-  fixedAssetVehicles: destination('/inventories/fixed-assets/vehicles', 'Activo fijo - Vehículos', 'AF VEHICULOS'),
-  fixedAssetFurniture: destination('/inventories/fixed-assets/furniture-office', 'Activo fijo - Muebles y oficina', 'AF MUEBLES'),
+  fixedAssetSupplies: destination('/inventories/fixed-assets/supplies', 'Insumos y consumibles', 'INSUMOS', 'view', true),
+  fixedAssetMachinery: destination('/inventories/fixed-assets/machinery', 'Activo fijo - Maquinaria', 'AF MAQUINARIA', 'view', true),
+  fixedAssetVehicles: destination('/inventories/fixed-assets/vehicles', 'Activo fijo - Vehículos', 'AF VEHICULOS', 'view', true),
+  fixedAssetFurniture: destination('/inventories/fixed-assets/furniture-office', 'Activo fijo - Muebles y oficina', 'AF MUEBLES', 'view', true),
   rawMaterialKardex: destination('/inventories/kardex-fisico/mp', 'Kardex Materia Prima', 'KARDEX-FIS'),
   finishedProductKardex: destination('/inventories/kardex-fisico/pt', 'Kardex Productos Terminados', 'KARDEX-PT'),
   resaleItemKardex: destination('/inventories/kardex-fisico/ar', 'Kardex Artículos de Reventa', 'KARDEX-AR'),

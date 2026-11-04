@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { DecimalFormatService } from 'src/app/services/decimal-format.service';
 
 export interface PesajeManual {
   id?         : number;
@@ -75,6 +76,7 @@ export class BalanzaManualComponent implements OnInit {
     private fb             : FormBuilder,
     private msgService     : MessageService,
     private confirmService : ConfirmationService,
+    private decimalFormat  : DecimalFormatService,
   ) {}
 
   ngOnInit(): void { this.buildForm(); }
@@ -101,7 +103,7 @@ export class BalanzaManualComponent implements OnInit {
   get totalCalculado(): number {
     const peso   = this.form.get('peso')?.value   ?? 0;
     const precio = this.form.get('precio')?.value ?? 0;
-    return +(peso * precio).toFixed(2);
+    return this.decimalFormat.roundToConfiguredDecimals(peso * precio);
   }
 
   closeDialog(): void { this.dialogVisible.set(false); }
@@ -126,7 +128,7 @@ export class BalanzaManualComponent implements OnInit {
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     const val    = this.form.value;
-    const pesoKg = +this.toKg(val.peso, val.unidad).toFixed(3);
+    const pesoKg = this.decimalFormat.roundToConfiguredDecimals(this.toKg(val.peso, val.unidad));
     const total  = this.totalCalculado;
 
     if (this.isEditing()) {

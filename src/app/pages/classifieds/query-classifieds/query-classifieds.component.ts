@@ -21,6 +21,11 @@ import { PdfDocumentActionsService } from 'src/app/core/services/pdf-document-ac
   selector: 'app-query-classifieds',
   templateUrl: './query-classifieds.component.html',
   styles: [
+    `:host .classified-management-panel > form { margin: 0; }
+     :host .classified-management-panel .erp-card-header {
+       border-radius: var(--radius-md) var(--radius-md) 0 0;
+     }
+     :host .classified-management-panel > app-table { margin-top: .5rem; }`
   ]
 })
 export class QueryClassifiedsComponent implements OnInit {
@@ -153,9 +158,9 @@ export class QueryClassifiedsComponent implements OnInit {
   order     = signal('');
 
   ngOnInit(): void {
-    this.categoriesService.getAllAndSearch(1, 100000, true, '', '', '', 'name', 'ASC', ProductAccessContext.Classifieds)
+    this.categoriesService.getCategorySelect('', ProductAccessContext.Classifieds)
       .subscribe({
-        next: r => this.categories.set(r.categories.data.filter(c => c.id != null).map(c => ({ id: c.id!, name: c.name }))),
+        next: r => this.categories.set((r.categories || []).filter((c: { id?: number }) => c.id != null).map((c: { id: number; name: string }) => ({ id: c.id, name: c.name }))),
         error: () => this.catalogError.set('No se pudieron cargar las categorías. Recarga la página para reintentar.'),
       });
     this.productService.getAllAndSearch(1, 100000, true, '', '', false, '', '', 'name', 'ASC', false, '', ProductAccessContext.Classifieds)
@@ -191,7 +196,7 @@ export class QueryClassifiedsComponent implements OnInit {
               label:'',icon:'fas fa-print',
               tooltip: 'Imprimir',
               disabled: this.validatorsService.withPermission('CLASIFICADOS','reports'),
-              class:'p-button-rounded p-button-sm ms-1',
+              class:'p-button-rounded p-button-info p-button-sm ms-1',
               eventClick: () => {
                 this.classifiedService.printPdfReport(classified.id);
               }

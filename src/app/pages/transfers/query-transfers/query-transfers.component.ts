@@ -130,8 +130,8 @@ export class QueryTransfersComponent implements OnInit {
                 this.transfersService.showModalDetailsTransfer = true;
               }
             },
-            { 
-              label:'',icon:'fas fa-print', 
+            {
+              label:'',icon:'fas fa-print',
               tooltip: 'Imprimir guía de traslado (vertical)',
               disabled: this.validatorsService.withPermission('TRASLADOS','reports'),
               class:'p-button-rounded p-button-sm ms-1',

@@ -25,6 +25,22 @@ export class DecimalFormatService {
     const formatted = places === 0 ? digits : `${digits.slice(0, -places)}.${digits.slice(-places)}`;
     return Number(formatted);
   }
+  roundToConfiguredDecimals(value: number | string | null | undefined): number {
+    const places = this.decimals();
+    const { units, scale } = this.scaled(value);
+    const negative = units < 0n;
+    const absolute = negative ? -units : units;
+    const roundedUnits = scale <= places
+      ? absolute * (10n ** BigInt(places - scale))
+      : (() => {
+          const divisor = 10n ** BigInt(scale - places);
+          const quotient = absolute / divisor;
+          return (absolute % divisor) * 2n >= divisor ? quotient + 1n : quotient;
+        })();
+    const signedUnits = negative ? -roundedUnits : roundedUnits;
+    const divisor = 10n ** BigInt(places);
+    return Number(signedUnits) / Number(divisor);
+  }
   private scaled(value: number | string | null | undefined): { units: bigint; scale: number } {
     const raw = String(value ?? 0).trim().replace(',', '.');
     const match = /^(-?)(\d+)(?:\.(\d+))?$/.exec(raw);

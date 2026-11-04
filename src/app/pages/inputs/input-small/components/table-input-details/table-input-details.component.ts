@@ -75,6 +75,8 @@ export class TableInputDetailsComponent implements OnDestroy {
   }
 
   updateCostProduct(event : any, product : Product) {
+    if (this.isWeighingOperator()) return;
+
     let newCost = 0;
     if(event.value > 99999999999999){
       event.value = 99999999999999;
@@ -128,13 +130,14 @@ export class TableInputDetailsComponent implements OnDestroy {
   }
 
   openModalUpdateMontoSus($event:any,product : Product) : void {
+    if (this.isWeighingOperator()) return;
     if(!$event.target.value) return; //evitar dbl click en increments btns inputNumber
     this.componentsService.setShowModalBsSus = true; 
     this.product_temp.set(product);
   }
 
   showUpdateBs(cambio:number){
-    if(this.product_temp()){
+    if(!this.isWeighingOperator() && this.product_temp()){
       const product = this.product_temp();
       product!.costo = cambio;
       this.inputsService.updateDetailShopping(product!, false);
