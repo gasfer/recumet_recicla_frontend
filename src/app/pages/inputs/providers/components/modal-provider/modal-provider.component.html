@@ -670,10 +670,23 @@
         <section *ngFor="let section of column; trackBy: trackInformationSection" class="provider-information-section" [attr.data-tone]="section.tone" [style.order]="section.id">
           <h3><span class="provider-section-number">{{ section.id }}</span> {{ section.title }}</h3>
           <dl *ngIf="section.fields.length" class="provider-information-grid">
-            <div *ngFor="let field of section.fields" [class.information-full]="field.full">
+            <ng-container *ngFor="let field of section.fields">
+            <div *ngIf="!section.map || !isMapCoordinateField(field.label)" [class.information-full]="field.full">
               <dt>{{ field.label }}</dt>
-              <dd [class.information-empty]="field.value === 'Sin registrar'">{{ field.value }}</dd>
+              <dd [class.information-empty]="field.value === 'Sin registrar'"
+                  [class.information-status-active]="field.label === 'Estado del proveedor' && field.value === 'Activo'"
+                  [class.information-type-badge]="field.label === 'Tipo proveedor'">
+                <ng-container *ngIf="field.label.includes('Categoría') || field.label.includes('Producto'); else plainInformationValue">
+                  <span class="information-chip-list">
+                    <span *ngFor="let item of field.value.split(',')" class="information-chip"
+                      [class.information-chip-category]="field.label.includes('Categoría')"
+                      [class.information-chip-product]="field.label.includes('Producto')">{{ item.trim() }}</span>
+                  </span>
+                </ng-container>
+                <ng-template #plainInformationValue>{{ field.value }}</ng-template>
+              </dd>
             </div>
+            </ng-container>
           </dl>
           <article *ngFor="let record of section.records" class="provider-information-record">
             <h4>{{ record.title }}</h4>

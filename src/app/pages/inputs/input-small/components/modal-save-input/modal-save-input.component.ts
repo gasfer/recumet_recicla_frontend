@@ -509,15 +509,25 @@ export class ModalSaveInputComponent implements OnInit {
         control.markAsTouched();
       }
     }
-    const message = errors.map((item: any) => item.msg).filter(Boolean).join('\n')
+    const serverMessage = errors.map((item: any) => item.msg).filter(Boolean).join('\n')
       || error?.error?.msg
-      || 'No se pudo guardar la compra. Revise los datos e intente nuevamente.';
+      || '';
+    const status = Number(error?.status || 0);
+    const message = status === 0
+      ? 'No se recibió respuesta del servidor. Compruebe su conexión y revise si la compra aparece en el listado antes de volver a guardarla.'
+      : status === 403
+        ? serverMessage || 'Su usuario no tiene acceso a la sucursal seleccionada para registrar esta compra.'
+        : status === 422
+          ? serverMessage || 'La sucursal, el almacén o alguno de los datos operativos no es válido. Revise la compra e intente nuevamente.'
+          : status >= 500
+            ? 'El servidor encontró un error al procesar la compra. Revise si se registró antes de volver a intentarlo.'
+            : serverMessage || 'No se pudo guardar la compra. Revise los datos e intente nuevamente.';
     void Swal.fire({
-      title: error?.status === 0 || error?.status >= 500 ? 'No se confirmó la respuesta' : 'No se pudo guardar la compra',
-      text: error?.status === 0 || error?.status >= 500
-        ? `${message} Si vuelve a intentar con los mismos datos, se reutilizará la misma solicitud para evitar duplicados.`
+      title: status === 0 || status >= 500 ? 'No se confirmó la respuesta' : 'No se pudo guardar la compra',
+      text: status === 0 || status >= 500
+        ? `${message} Si reintenta sin cambiar los datos, se conservará la protección contra duplicados.`
         : message,
-      icon: error?.status === 0 || error?.status >= 500 ? 'warning' : 'error',
+      icon: status === 0 || status >= 500 ? 'warning' : 'error',
       customClass: { container: 'swal-alert' },
     });
   }

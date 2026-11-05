@@ -105,7 +105,7 @@
               </div>
             </div>
             <div class="provider-list-filter-actions">
-              <p-button (click)="applyProviderListFilters()" styleClass="p-button-rounded p-button-sm p-button-info"
+              <p-button (click)="applyProviderListFilters()" styleClass="p-button-rounded p-button-sm p-button-success"
                 label="Buscar" icon="fa-solid fa-magnifying-glass" [loading]="loading()"></p-button>
               <p-button (click)="clearProviderListFilters()" styleClass="p-button-rounded p-button-success p-button-sm"
                 icon="fa-solid fa-broom" label="Limpiar" [disabled]="loading()"></p-button>
@@ -148,15 +148,15 @@
       <div class="flex items-center gap-1.5 text-xs text-erp-text">
         <span class="font-medium text-erp-text-muted">Ordenar por:</span>
         <button type="button" (click)="onQuickSort('amount')"
-          class="px-2 py-1 rounded hover:bg-slate-100 border border-erp-border text-erp-text transition-all font-medium">
+          class="px-2 py-1 rounded hover:bg-erp-success-soft border border-erp-border text-erp-text transition-all font-medium">
           Mayor Compra
         </button>
         <button type="button" (click)="onQuickSort('balance')"
-          class="px-2 py-1 rounded hover:bg-slate-100 border border-erp-border text-erp-text transition-all font-medium">
+          class="px-2 py-1 rounded hover:bg-erp-success-soft border border-erp-border text-erp-text transition-all font-medium">
           Saldo Pendiente
         </button>
         <button type="button" (click)="onQuickSort('last')"
-          class="px-2 py-1 rounded hover:bg-slate-100 border border-erp-border text-erp-text transition-all font-medium">
+          class="px-2 py-1 rounded hover:bg-erp-success-soft border border-erp-border text-erp-text transition-all font-medium">
           Última Entrada
         </button>
       </div>
@@ -182,20 +182,20 @@
   <div *ngIf="accountsLoading()" class="p-4 text-center text-erp-text-muted"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando movimientos reales...</div>
   <ng-container *ngIf="providerAccounts() as history">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-      <div class="bg-erp-info-soft border border-erp-border rounded-lg p-2"><small class="block text-erp-info">Cuentas</small><b>{{ history.totals.total_accounts || 0 }}</b></div>
+      <div class="bg-erp-success-soft border border-erp-border rounded-lg p-2"><small class="block text-erp-success">Cuentas</small><b>{{ history.totals.total_accounts || 0 }}</b></div>
       <div class="bg-erp-bg border border-erp-border rounded-lg p-2"><small class="block text-erp-text">Total</small><b>Bs. {{ history.totals.total_account || 0 | number:'1.2-2' }}</b></div>
       <div class="bg-erp-success-soft border border-erp-border rounded-lg p-2"><small class="block text-erp-success">Pagado</small><b>Bs. {{ history.totals.total_abonados || 0 | number:'1.2-2' }}</b></div>
       <div class="bg-erp-warning-soft border border-erp-border rounded-lg p-2"><small class="block text-erp-warning">Pendiente</small><b>Bs. {{ history.totals.total_restante || 0 | number:'1.2-2' }}</b></div>
     </div>
     <div class="overflow-auto border border-erp-border rounded-lg">
       <table class="w-full text-xs border-collapse">
-        <thead class="bg-erp-header text-white"><tr><th class="p-2 text-left">Boleta</th><th class="p-2 text-left">Fecha compra</th><th class="p-2 text-left">Tipo</th><th class="p-2 text-left">Estado</th><th class="p-2 text-right">Total</th><th class="p-2 text-right">Pagado</th><th class="p-2 text-right">Saldo</th><th class="p-2 text-left">Historial de pagos</th></tr></thead>
+        <thead class="provider-account-table-head"><tr><th class="p-2 text-left">Boleta</th><th class="p-2 text-left">Fecha compra</th><th class="p-2 text-left">Tipo</th><th class="p-2 text-left">Estado</th><th class="p-2 text-right">Total</th><th class="p-2 text-right">Pagado</th><th class="p-2 text-right">Saldo</th><th class="p-2 text-left">Historial de pagos</th></tr></thead>
         <tbody>
           <tr *ngFor="let account of history.data" class="border-b border-erp-border align-top">
             <td class="p-2 font-semibold">{{ account.input.registry_number || account.input.cod || account.cod }}</td>
             <td class="p-2">{{ account.input.date_voucher | date:'dd/MM/yyyy' }}</td>
-            <td class="p-2"><span class="px-2 py-1 rounded-full bg-erp-info-soft text-erp-info">{{ account.input.type_registry || 'COMPRA' }}</span></td>
-            <td class="p-2"><span class="px-2 py-1 rounded-full" [ngClass]="account.status_account === 'PAGADO' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">{{ account.status_account }}</span></td>
+            <td class="p-2"><span class="px-2 py-1 rounded-full bg-erp-success-soft text-erp-success">{{ account.input.type_registry || 'COMPRA' }}</span></td>
+            <td class="p-2"><span class="px-2 py-1 rounded-full" [ngClass]="account.status_account === 'PAGADO' ? 'bg-erp-success-soft text-erp-success' : 'bg-erp-warning-soft text-erp-warning'">{{ account.status_account }}</span></td>
             <td class="p-2 text-right">{{ account.total | number:'1.2-2' }}</td><td class="p-2 text-right text-erp-success">{{ account.monto_abonado | number:'1.2-2' }}</td><td class="p-2 text-right text-erp-warning">{{ account.monto_restante | number:'1.2-2' }}</td>
             <td class="p-2"><div *ngFor="let payment of activePayments(account)" class="mb-1 px-2 py-1 bg-erp-success-soft border border-erp-border rounded"><b>{{ payment.date_abono | date:'dd/MM/yyyy' }}</b> · Bs. {{ payment.monto_abono | number:'1.2-2' }} · {{ payment.type_payment || 'Pago' }}<small *ngIf="payment.number_transaction" class="block text-erp-text-muted">Nº {{ payment.number_transaction }}</small></div><span *ngIf="!activePayments(account).length" class="text-erp-text-muted">Sin pagos</span></td>
           </tr>
@@ -223,9 +223,9 @@
     <i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando ficha completa...
   </div>
 
-  <div *ngIf="selectedProvider() as p" class="space-y-3">
+  <div *ngIf="selectedProvider() as p" class="provider-info-sheet space-y-3">
     <!-- Header banner con resumen ejecutivo -->
-    <div class="p-3 rounded-lg bg-[var(--color-table-header)] text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
+    <div class="provider-info-banner p-3 rounded-lg text-white flex flex-wrap items-center justify-between gap-2 shadow-sm">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-erp-success-soft/30 border border-erp-border flex items-center justify-center text-erp-success text-lg">
           <i class="fa-solid fa-truck-moving"></i>

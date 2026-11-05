@@ -163,3 +163,59 @@
 .provider-info-tabs button i { margin-right:.4rem; }
 .provider-info-tabs button b { margin-left:.35rem; padding:.08rem .38rem; border-radius:999px; background:var(--color-success-light); color:var(--color-success); }
 .provider-info-pane { display:grid; gap:.75rem; }
+
+/* Armonía RECUMET para listas y ficha rápida. */
+:host ::ng-deep .provider-list-filter-card .p-accordion .p-accordion-header .p-accordion-header-link {
+  background: var(--color-primary-light);
+  border-color: var(--color-success-border);
+  color: var(--color-success-text);
+}
+.provider-status-tabs .tab-btn--active.active,
+.provider-info-tabs button.active {
+  background: var(--color-primary-light);
+  border-color: var(--color-success-border);
+  color: var(--color-success-text);
+  box-shadow: none;
+}
+.provider-status-tabs .tab-btn--active.active i,
+.provider-info-tabs button.active i { color: var(--color-success-text); }
+.provider-info-banner {
+  background: var(--color-success-text);
+  border: 1px solid var(--color-success-text);
+  color: var(--color-text-inverse);
+}
+.provider-info-sheet > section {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+.provider-info-sheet > section > div:first-child {
+  color: var(--color-success-text);
+}
+.provider-info-sheet > section > div:first-child i,
+.provider-info-sheet .text-erp-info,
+.provider-info-sheet .text-erp-success {
+  color: var(--color-success-text);
+}
+.provider-info-sheet [class*="bg-erp-info-soft"] {
+  background: var(--color-primary-light);
+}
+.provider-account-table-head {
+  background: var(--color-primary-light);
+  color: var(--color-success-text);
+}
+.provider-account-table-head th { border-bottom: 1px solid var(--color-success-border); }
+.provider-info-sheet .provider-info-banner .text-erp-text-muted { color: rgb(255 255 255 / 82%); }
+:host ::ng-deep .provider-results app-table .p-button-info,
+:host ::ng-deep .provider-results app-table .p-button-secondary,
+:host ::ng-deep .provider-results app-table .p-button-warning {
+  border-color: var(--color-success-border);
+  background: var(--color-primary-light);
+  color: var(--color-success-text);
+}
+:host ::ng-deep .provider-results app-table .p-button-info:hover,
+:host ::ng-deep .provider-results app-table .p-button-secondary:hover,
+:host ::ng-deep .provider-results app-table .p-button-warning:hover {
+  border-color: var(--color-primary);
+  background: var(--color-success-light);
+  color: var(--color-success-text);
+}

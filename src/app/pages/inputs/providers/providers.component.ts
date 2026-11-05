@@ -104,7 +104,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   type      = signal('');
   query     = signal('');
   estadoRegistro = signal('');
-  types = signal<{name:string, code:string}[]>([]);
+  types = signal<{name:string, id:string, code:string}[]>([]);
   types_filtrado = signal([
     {name: 'DIA', code: 'DAY'},
     {name: 'MES', code: 'MONTH'},
@@ -420,12 +420,19 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     this.status.set(status);
     this.cols.set(this.loadColsTableByType());
     const selectedType = this.formReport.get('id_type_provider')?.value;
+    const pendingTypeId = this.activeTab() === 'PENDIENTES'
+      ? Number(this.types().find(item => item.code === 'F')?.id || 0)
+      : 0;
     const request = this.providersService.getManagement({
       ...this.managementQuery,
       page,
       limit,
       status,
-      ...(this.isProviderList() && Number(selectedType?.id) > 0 ? { id_type_provider: Number(selectedType.id) } : {}),
+      ...(pendingTypeId > 0
+        ? { id_type_provider: pendingTypeId }
+        : this.isProviderList() && Number(selectedType?.id) > 0
+          ? { id_type_provider: Number(selectedType.id) }
+          : {}),
       ...(query ? { type, query } : {}),
       field_sort: this.fieldSort(),
       order: this.order(),
@@ -771,12 +778,16 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     if (this.loading() || this.loadingReport()) return;
     this.loadingReport.set(true);
     const providerType = this.formReport.get('id_type_provider')?.value;
+    const pendingTypeId = this.activeTab() === 'PENDIENTES'
+      ? this.types().find(item => item.code === 'F')?.id || ''
+      : '';
     const filters = {
       ...this.managementQuery,
+      ...(pendingTypeId ? { id_type_provider: Number(pendingTypeId) } : {}),
       ...(this.estadoRegistro() ? { estado_registro: this.estadoRegistro() } : {}),
     };
     this.exportRequest = this.providersService.getReportExcel(
-      this.status(), this.type(), this.query(), this.fieldSort(), this.order(), providerType?.id || '', filters, report,
+      this.status(), this.type(), this.query(), this.fieldSort(), this.order(), pendingTypeId || providerType?.id || '', filters, report,
     ).pipe(finalize(() => this.loadingReport.set(false))).subscribe({
       next: data => {
         const fileURL = window.URL.createObjectURL(data);

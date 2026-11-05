@@ -129,6 +129,12 @@ type MapDraft = { values: Record<string, unknown>; center?: L.LatLng; zoom?: num
     .provider-readonly .provider-information-grid > div { padding:.6rem; border:1px solid var(--color-border-subtle); background:var(--color-surface-secondary); border-radius:7px; min-width:0; }
     .provider-readonly .provider-information-grid dt { font-size:8px; text-transform:uppercase; font-weight:700; color:var(--color-text-muted); margin:0 0 .3rem; line-height:1.35; }
     .provider-readonly .provider-information-grid dd { padding:0; min-height:0; border:0; background:transparent; font-size:11px; font-weight:600; line-height:1.5; }
+    .provider-readonly .information-chip-list { display:flex; flex-wrap:wrap; align-items:flex-start; gap:.3rem; }
+    .provider-readonly .information-chip { display:inline-flex; max-width:100%; padding:.16rem .38rem; border:1px solid var(--color-border); border-radius:999px; font-size:9px; font-weight:650; line-height:1.35; white-space:normal; overflow-wrap:anywhere; }
+    .provider-readonly .information-chip-category { color:var(--color-info-text); background:var(--color-info-light); border-color:var(--color-info-border); }
+    .provider-readonly .information-chip-product { color:var(--color-accent-violet-text); background:var(--color-accent-violet-light); border-color:var(--color-border); }
+    .provider-readonly .information-status-active { display:inline-flex; width:max-content; padding:.18rem .5rem; border:1px solid var(--color-success-border); border-radius:999px; color:var(--color-success-text); background:var(--color-success-light); font-size:9px; font-weight:750; }
+    .provider-readonly .information-type-badge { color:var(--provider-accent); }
     .provider-readonly .information-full { grid-column:1 / -1; }
     .provider-readonly .provider-information-record { padding:.65rem; margin-top:.65rem; border-color:var(--color-border); }
     .provider-readonly .provider-information-record h4 { font-size:10px; margin-bottom:.5rem; }
@@ -164,6 +170,36 @@ type MapDraft = { values: Record<string, unknown>; center?: L.LatLng; zoom?: num
     .location-editor{border:1px solid var(--color-success-light);background:var(--color-surface);border-radius:.65rem;padding:.75rem}.location-toolbar{display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem}.location-toolbar>div{flex:1}.location-toolbar b,.location-toolbar small{display:block;font-size:.72rem}.location-toolbar b{color:var(--color-primary)}.location-toolbar small{color:var(--color-text-muted);margin-top:.15rem}.location-map{width:100%;height:210px;border:1px solid var(--color-border);border-radius:.55rem;margin-top:.65rem}.location-map-empty{height:120px;border:1px dashed var(--color-text-muted);border-radius:.55rem;background:var(--color-surface-secondary);color:var(--color-text-muted);display:flex;align-items:center;justify-content:center;gap:.6rem;font-size:.75rem}.location-map-empty i{font-size:1.25rem;color:var(--color-primary)}
     :host ::ng-deep .provider-map-pin{background:transparent;border:0}:host ::ng-deep .provider-map-pin__body{position:relative;display:block;width:34px;height:42px}:host ::ng-deep .provider-map-pin__body i{font-size:2.55rem;color:var(--color-primary);filter:drop-shadow(0 3px 3px color-mix(in srgb, var(--color-text) 33%, transparent))}:host ::ng-deep .provider-map-pin__body b{position:absolute;left:0;top:7px;width:34px;text-align:center;color:var(--color-text-inverse);font-size:.61rem;line-height:1;font-weight:900}:host ::ng-deep .provider-map-pin--b i{color:var(--color-info-card)}:host ::ng-deep .provider-map-pin--c i{color:var(--color-client-icon)}:host ::ng-deep .provider-map-pin--d i{color:var(--color-accent-orange)}:host ::ng-deep .provider-map-pin--e i{color:var(--color-accent-violet)}:host ::ng-deep .provider-map-pin--f i{color:var(--color-danger)}.google-map-search{border-top:1px solid var(--color-border);padding-top:.65rem}.location-map-help{display:flex;align-items:center;justify-content:space-between;gap:.65rem;flex-wrap:wrap;margin:.55rem 0 .15rem;color:var(--color-text-muted);font-size:.68rem}.location-map-help span{display:inline-flex;align-items:center;gap:.35rem}.location-map-help .pin-legend{border:1px solid var(--color-success-light);background:var(--color-success-light);color:var(--color-primary);border-radius:999px;padding:.22rem .5rem}.location-map-help .pin-legend i{color:var(--color-primary)}.location-map-help .pin-legend--b{border-color:var(--color-info-border);background:var(--color-info-light);color:var(--color-info-text)}.location-map-help .pin-legend--b i{color:var(--color-info-card)}.location-map-help .pin-legend--c{border-color:var(--color-warning-border);background:var(--color-warning-light);color:var(--color-warning-text)}.location-map-help .pin-legend--c i{color:var(--color-client-icon)}.location-map-help .pin-legend--d{border-color:var(--color-warning-border);background:var(--color-warning-light);color:var(--color-warning-text)}.location-map-help .pin-legend--d i{color:var(--color-accent-orange)}.location-map-help .pin-legend--e{border-color:var(--color-border);background:var(--color-accent-violet-light);color:var(--color-sale-operation-text)}.location-map-help .pin-legend--e i{color:var(--color-accent-violet)}.location-map-help .pin-legend--f{border-color:var(--color-danger-border);background:var(--color-danger-light);color:var(--color-danger-text)}.location-map-help .pin-legend--f i{color:var(--color-danger)}.location-status{color:var(--color-primary)!important;font-weight:700}
     .supplier-header{display:flex;align-items:center;gap:.8rem;}.supplier-header>i{background:var(--color-primary);border:1px solid var(--color-primary);padding:.65rem;border-radius:.55rem;color:var(--color-success-light)}.supplier-header b,.supplier-header small{display:block}.supplier-header b{font-size:.98rem}.supplier-header small{font-size:.72rem;color:var(--color-info-border);margin-top:.2rem}.supplier-header span{margin-left:auto;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-success-light);border-radius:999px;padding:.25rem .55rem;font-size:.68rem}.supplier-tabs{display:flex;background:var(--color-surface);border-bottom:1px solid var(--color-border);overflow:auto}.supplier-tabs button{border:0;border-bottom:2px solid transparent;background:var(--color-surface);padding:.85rem 1.05rem;color:var(--color-text-muted);font-size:.74rem;font-weight:700;white-space:nowrap}.supplier-tabs button.active{border-color:var(--color-primary);background:var(--color-success-light);color:var(--color-primary)}.supplier-tabs b{background:var(--color-primary);color:white;border-radius:999px;padding:.1rem .35rem;margin-left:.25rem}.supplier-body{padding:1.25rem;max-width:1450px;margin:auto}.supplier-notice,.branch-notice{border:1px solid var(--color-info-border);background:var(--color-info-light);color:var(--color-info-text);border-radius:.6rem;padding:.75rem 1rem;font-size:.75rem;margin-bottom:1rem}.branch-notice{background:var(--color-success-light);border-color:var(--color-success-light);color:var(--color-primary)}.supplier-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:.7rem;padding:1rem;margin-bottom:1rem}.supplier-card h6{font-size:.73rem;font-weight:800;color:var(--color-text);border-bottom:1px solid var(--color-surface-secondary);padding-bottom:.7rem;margin:0 0 .9rem}.supplier-card h6 b{background:var(--color-success-light);color:var(--color-primary);padding:.25rem .45rem;border-radius:.35rem;margin-right:.45rem}.supplier-card h6 small{float:right;color:var(--color-text-muted);font-weight:500}.supplier-card h6 .green{color:var(--color-primary)}.supplier-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}.supplier-grid label{display:flex;flex-direction:column;gap:.3rem;font-size:.7rem;font-weight:700;color:var(--color-text)}.span-2{grid-column:span 2}.span-3{grid-column:1/-1}.compliance{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}.compliance div{border:1px solid var(--color-border);background:var(--color-surface-secondary);padding:.75rem;border-radius:.5rem;position:relative}.compliance strong,.compliance span{display:block;font-size:.7rem}.compliance span{color:var(--color-text-muted);margin-top:.25rem}.compliance p-tag{position:absolute;right:.6rem;top:.6rem}.branch-layout{display:grid;grid-template-columns:290px 1fr;gap:1rem}.branch-layout aside>b{font-size:.72rem;color:var(--color-text);margin-bottom:.5rem;display:block}.branch-layout aside button{width:100%;border:1px solid var(--color-border);background:var(--color-surface);border-radius:.55rem;padding:.75rem;margin-bottom:.6rem;display:flex;gap:.55rem;text-align:left;font-size:.72rem;color:var(--color-text)}.branch-layout aside button.active{border-color:var(--color-primary);box-shadow:0 2px 6px color-mix(in srgb, var(--color-primary) 19%, transparent)}.branch-layout aside strong{background:var(--color-success-light);color:var(--color-primary);padding:.25rem;border-radius:.3rem}.branch-layout aside span{flex:1}.branch-layout aside small{display:block;color:var(--color-text-muted);margin-top:.2rem}.branch-layout aside button> :last-child{color:var(--color-primary)}.summary-banner{background:var(--color-table-header);color:var(--color-text-inverse);border-radius:.7rem;padding:1rem;display:flex;gap:.8rem;align-items:center}.summary-banner i{color:var(--color-success-light);font-size:1.3rem}.summary-banner b,.summary-banner small{display:block}.summary-banner small{color:var(--color-text-muted);font-size:.72rem}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin:1rem 0}.kpis div{background:var(--color-surface);border:1px solid var(--color-border);border-radius:.65rem;padding:.9rem}.kpis small,.kpis span{display:block;font-size:.68rem;color:var(--color-text-muted)}.kpis b{display:block;font-size:1.35rem;color:var(--color-primary);margin:.35rem 0}.supplier-card table{width:100%;border-collapse:collapse;font-size:.73rem}.supplier-card th,.supplier-card td{padding:.7rem;border-bottom:1px solid var(--color-border);text-align:left}.supplier-card th{color:var(--color-text-muted);font-size:.65rem}.supplier-footer{background:var(--color-surface);border-top:1px solid var(--color-border);padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:var(--color-text-muted)}.supplier-footer div{display:flex;gap:.5rem}@media(max-width:800px){.supplier-grid,.kpis,.compliance,.branch-layout{grid-template-columns:1fr}.span-2,.span-3{grid-column:auto}.supplier-header span{display:none}.supplier-footer{flex-direction:column;align-items:stretch}.supplier-footer div{justify-content:flex-end}}
+    .provider-type-theme[data-provider-type] { --provider-accent:var(--color-primary); --provider-tint:var(--color-primary-light); }
+    .provider-information-section[data-tone] { --section-bg:var(--color-primary-light); --section-border:var(--color-success-border); --section-ink:var(--color-success-text); }
+    .provider-readonly .provider-information-section h3 { background:var(--color-primary-light); border-color:var(--color-success-border); color:var(--color-success-text); }
+    .provider-section-number { background:var(--color-success-light); color:var(--color-success-text); }
+    .provider-readonly .information-chip-category { background:var(--color-success-light); border-color:var(--color-success-border); color:var(--color-success-text); }
+    .provider-readonly .information-chip-product { background:var(--color-primary-light); border-color:var(--color-success-border); color:var(--color-success-text); }
+    .profile-card:nth-of-type(n) { border-top-color:var(--color-success-border); }
+    .profile-card h6 b { background:var(--color-success-light); color:var(--color-success-text); }
+    .type-a-profile h6 { background:var(--color-primary-light); border-left-color:var(--color-primary); color:var(--color-success-text); }
+    .profile-note,.branch-management { background:var(--color-primary-light); color:var(--color-success-text); }
+    .assigned-branch { background:var(--color-success-light); border-color:var(--color-success-border); color:var(--color-success-text); }
+    .supplier-editor-dialog .p-dialog-header { background:var(--color-success-text); }
+    :host ::ng-deep .supplier-editor-dialog .p-dialog-header { background:var(--color-success-text); }
+    :host ::ng-deep [class*="provider-template-"] .p-dialog-header { border-bottom-color:var(--color-success-border); }
+    .supplier-header>i { background:var(--color-primary-light); border-color:var(--color-success-border); color:var(--color-success-text); }
+    .supplier-header small { color:var(--color-text-muted); }
+    .supplier-header span,.supplier-tabs b { background:var(--color-primary-light); border-color:var(--color-success-border); color:var(--color-success-text); }
+    .supplier-tabs button.active { background:var(--color-primary-light); color:var(--color-success-text); }
+    .supplier-notice { background:var(--color-primary-light); border-color:var(--color-success-border); color:var(--color-success-text); }
+    :host ::ng-deep .provider-map-pin--b i,
+    :host ::ng-deep .provider-map-pin--c i,
+    :host ::ng-deep .provider-map-pin--d i,
+    :host ::ng-deep .provider-map-pin--e i,
+    :host ::ng-deep .provider-map-pin--f i { color:var(--color-primary); }
+    .location-map-help .pin-legend--b,.location-map-help .pin-legend--c,
+    .location-map-help .pin-legend--d,.location-map-help .pin-legend--e,
+    .location-map-help .pin-legend--f { border-color:var(--color-success-border); background:var(--color-success-light); color:var(--color-success-text); }
+    .location-map-help .pin-legend--b i,.location-map-help .pin-legend--c i,
+    .location-map-help .pin-legend--d i,.location-map-help .pin-legend--e i,
+    .location-map-help .pin-legend--f i { color:var(--color-primary); }
   `]
 })
 
@@ -254,12 +290,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
   currencies = PROVIDER_CURRENCIES;
   operationalTypes = PROVIDER_OPERATIONAL_TYPES;
   wholesaleFrequencies = PROVIDER_FREQUENCIES.filter(option => option.value !== 'ANNUAL');
-  wholesaleOriginChannels = [
-    { label: 'Prospección', value: 'PROSPECTION' }, { label: 'Referido', value: 'REFERRAL' },
-    { label: 'Redes', value: 'SOCIAL_MEDIA' }, { label: 'Puerta', value: 'DOOR' },
-    { label: 'Ruteo', value: 'ROUTING_VISIT' }, { label: 'Contacto directo', value: 'DIRECT_CONTACT' },
-    { label: 'Otro', value: 'OTHER' },
-  ];
+  wholesaleOriginChannels = this.originChannels;
   wholesaleRelationshipStatuses = [
     { label: 'En gestión', value: 'IN_PROGRESS' }, { label: 'Activo', value: 'ACTIVE' },
     { label: 'Sin movimiento', value: 'DORMANT' }, { label: 'Recuperación', value: 'TO_RECOVER' },
@@ -362,12 +393,11 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     this.getAllTypes();
     this.loadBanks();
     this.loadCommercialUsers();
-    this.ensureCollectionRows();
+    if (!this.providersService.isInfo) this.ensureCollectionRows();
     this.loadAvailableProviders(0);
     this.loadDefaultBranchCity();
     this.loadSucursalOptions();
     this.isEditSub$ = this.providersService.editSubs.subscribe(resp => {
-      this.loadProviderForm(resp);
       this.loadAvailableProviders(resp.id);
       this.providersService.getCommercialDetails(resp.id).subscribe({
         next: ({ provider }) => {
@@ -455,7 +485,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     if (!this.contactRows.length && provider.name_contact) {
       this.addContact({ full_name: provider.name_contact, position_area: provider.workAreaOrPositionOrUnit || '', cellphone: String(provider.cellphone_contact || ''), is_main_contact: true });
     }
-    this.ensureCollectionRows();
+    if (!this.providersService.isInfo) this.ensureCollectionRows();
     this.bankAccountRows.clear();
     (provider.bankAccounts || []).forEach((account: Record<string, unknown>) => this.addBankAccount(account));
     const materialIds = (provider.materials || []).filter((item: any) => item.status !== false && item.id_product).map((item: any) => Number(item.id_product));
@@ -569,6 +599,12 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     const corporate = resp.company || resp;
     this.registeredDocuments.set(corporate.documents || []);
     this.registeredCommercialUser.set(corporate.commercialUser?.full_names || resp.commercialUser?.full_names || '');
+    const assignedCommercialUser = corporate.commercialUser || resp.commercialUser;
+    if (assignedCommercialUser?.id && assignedCommercialUser?.full_names) {
+      this.commercialUsers.update(users => users.some(user => Number(user.id) === Number(assignedCommercialUser.id))
+        ? users
+        : [...users, { id: Number(assignedCommercialUser.id), full_names: assignedCommercialUser.full_names, role: assignedCommercialUser.role }]);
+    }
     const rawTypeId = resp.type?.id ?? resp.id_type_provider?.id ?? resp.id_type_provider;
     const savedTypeId = String(rawTypeId ?? '');
     const selectedProviderType = this.types().find(type => type.id === savedTypeId || (resp.type?.code && type.code === resp.type.code))
@@ -923,6 +959,10 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
 
   trackInformationColumn(index: number) { return index; }
 
+  isMapCoordinateField(label: string): boolean {
+    return /^(latitud|longitud|referencia geográfica)$/i.test(label.trim());
+  }
+
   informationSections(branch = false) {
     const value = this.providerForm.getRawValue();
     const text = (input: unknown): string => input === null || input === undefined || input === '' || input === '—' ? 'Sin registrar' : typeof input === 'boolean' ? (input ? 'Sí' : 'No') : String(input);
@@ -946,13 +986,13 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
     {
       const repeated = branch || this.supportsMultipleContacts();
       const contactFields = repeated ? [] : [field('Nombre persona de contacto', value.name_contact), field('Celular persona de contacto', value.cellphone_contact),
-        ...(!this.isTypeA() && this.formP.id_category.view ? [field('Categoría principal', option(this.categories(), value.id_category))] : []),
-        ...(!this.isTypeA() && this.formP.workAreaOrPositionOrUnit.view ? [field(this.formP.workAreaOrPositionOrUnit.label, value.workAreaOrPositionOrUnit)] : []),
+        ...(this.formP.id_category.view ? [field('Categoría principal', option(this.categories(), value.id_category))] : []),
+        ...(this.formP.workAreaOrPositionOrUnit.view ? [field(this.formP.workAreaOrPositionOrUnit.label, value.workAreaOrPositionOrUnit)] : []),
         field('Frecuencia', this.getFrequencyLabel(value.frequency)), ...(this.formP.companyContacts.view ? [field('Contactos empresa', value.companyContacts)] : []),
       ];
       if (repeated && !this.supportsBranches()) {
-        if (!this.isTypeA() && this.formP.id_category.view) contactFields.push(field('Categoría principal', option(this.categories(), value.id_category)));
-        if (!this.isTypeA() && this.formP.workAreaOrPositionOrUnit.view) contactFields.push(field(this.formP.workAreaOrPositionOrUnit.label, value.workAreaOrPositionOrUnit));
+        if (this.formP.id_category.view) contactFields.push(field('Categoría principal', option(this.categories(), value.id_category)));
+        if (this.formP.workAreaOrPositionOrUnit.view) contactFields.push(field(this.formP.workAreaOrPositionOrUnit.label, value.workAreaOrPositionOrUnit));
         contactFields.push(field('Frecuencia', this.getFrequencyLabel(value.frequency)));
         if (this.formP.companyContacts.view) contactFields.push(field('Contactos empresa', value.companyContacts));
       }
@@ -1010,6 +1050,7 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
       name: String((branch ? value.site_name : value.full_names) || 'Proveedor'),
       reference: `ID: ${value.id || 'Sin registrar'}`,
       status: value.status === false ? 'Inactivo' : 'Activo',
+      id_sucursal: Number(this.validatorsService.id_sucursal()) || null,
       sections: this.informationSections(branch),
     };
     this.exportingSheet.set(true);
@@ -1018,9 +1059,10 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         this.pdfActions.show(blob, `ficha-proveedor-${value.id || 'registro'}.pdf`, 'Ficha técnica de proveedor');
         this.exportingSheet.set(false);
       },
-      error: () => {
+      error: error => {
         this.exportingSheet.set(false);
-        Swal.fire('No se pudo exportar', 'Intente nuevamente descargar la ficha de registro.', 'error');
+        const message = error?.error?.msg || error?.error?.errors?.[0]?.msg || 'El servidor no pudo preparar el archivo PDF.';
+        Swal.fire('No se pudo exportar', message, 'error');
       },
     });
   }
@@ -1996,12 +2038,13 @@ export class ModalProviderComponent implements OnInit, OnDestroy {
         this.formP = { ...defaultFormConfig };
         break;
     }
-    // Se capturan en las secciones de materiales/contactos; se conservan en el modelo por compatibilidad.
+    // Estos datos siguen siendo necesarios en la ficha de lectura aunque también existan
+    // en bloques operativos o colecciones. Solo se ocultan campos redundantes para otros tipos.
     this.formP = {
       ...this.formP,
-      id_category: { ...this.formP.id_category, view: false },
-      workAreaOrPositionOrUnit: { ...this.formP.workAreaOrPositionOrUnit, view: false },
-      companyContacts: { ...this.formP.companyContacts, view: false },
+      id_category: { ...this.formP.id_category, view: typeCode === 'A' ? true : false },
+      workAreaOrPositionOrUnit: { ...this.formP.workAreaOrPositionOrUnit, view: typeCode === 'A' ? true : false },
+      companyContacts: { ...this.formP.companyContacts, view: typeCode === 'A' ? true : false },
     };
   }
 
